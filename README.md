@@ -30,6 +30,8 @@ Open:
 
 Local development uses PostgreSQL and Mailpit in Docker while Next.js runs on the host. The default payment provider is the deterministic `fake` provider; Stripe placeholders in `.env.example` are test-mode examples only.
 
+`SITE_URL` controls canonical and alternate metadata. Set it to the final absolute production origin in Vercel (for example, `https://www.example.com`). Blank or invalid values are ignored; when it is absent, deployments use Vercel's system-provided production URL and local development falls back to `http://localhost:3000`.
+
 ## Database
 
 ```bash

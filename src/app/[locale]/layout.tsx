@@ -5,6 +5,7 @@ import {notFound} from "next/navigation";
 import type {ReactNode} from "react";
 
 import {routing} from "@/i18n/routing";
+import {getSiteUrl} from "@/lib/site-url";
 
 import "../globals.css";
 
@@ -27,10 +28,9 @@ export async function generateMetadata({
   }
 
   const t = await getTranslations({locale, namespace: "Metadata"});
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
   return {
-    metadataBase: new URL(siteUrl),
+    metadataBase: getSiteUrl(),
     title: {
       default: t("title"),
       template: `%s | ${t("siteName")}`,
