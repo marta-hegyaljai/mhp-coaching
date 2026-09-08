@@ -1,6 +1,6 @@
 # MHP Hypnose courses
 
-Multilingual Next.js foundation for the MHP Hypnose training website. This bootstrap intentionally contains no catalogue, booking, payment, or account features.
+Multilingual Next.js site for mhp | hypnose: course catalogue, booking, Stripe (TWINT/card) or a fake payment provider, and a small staff booking list.
 
 ## Prerequisites
 
@@ -30,24 +30,28 @@ Open:
 
 Local development uses PostgreSQL and Mailpit in Docker while Next.js runs on the host. The default payment provider is the deterministic `fake` provider; Stripe placeholders in `.env.example` are test-mode examples only.
 
+Set `PAYMENT_PROVIDER=stripe` only with Stripe **test** keys. Never use live Stripe credentials in development or previews.
+
 `SITE_URL` controls canonical and alternate metadata. Set it to the final absolute production origin in Vercel (for example, `https://www.example.com`). Blank or invalid values are ignored; when it is absent, deployments use Vercel's system-provided production URL and local development falls back to `http://localhost:3000`.
+
+Staff booking list: `/{locale}/staff/bookings`, protected by HTTP basic auth (`STAFF_USERNAME` / `STAFF_PASSWORD`). If `STAFF_PASSWORD` is unset, staff routes stay closed.
 
 ## Database
 
 ```bash
 pnpm db:generate  # generate a migration after schema changes
 pnpm db:migrate   # apply committed migrations
-pnpm db:seed      # currently a documented no-op
+pnpm db:seed      # no-op: courses live in source-controlled TypeScript
 pnpm db:studio    # optional local Drizzle Studio
 ```
 
-The bootstrap schema contains only a minimal migration probe. Product tables should be introduced alongside the product feature that needs them.
+Bookings and payment events are persisted in PostgreSQL. Courses and dates stay in `src/features/courses/catalog.ts`.
 
 ## Quality checks
 
 ```bash
 pnpm verify       # lint, typecheck, unit tests, production build
-pnpm test:e2e     # Playwright locale and language-switcher smoke tests
+pnpm test:e2e     # Playwright locale, SEO and fake-booking tests
 ```
 
 Playwright is separate from `verify` because its browser binary is an external installation. Install Chromium once on a new machine with:
@@ -67,11 +71,12 @@ docker compose down -v    # stop services and permanently reset local data
 ## Project guidance
 
 - [`AGENTS.md`](./AGENTS.md) contains the repository-wide agent rules.
-- [`docs/BOOTSTRAP-TASK.md`](./docs/BOOTSTRAP-TASK.md) defines this foundation.
-- [`docs/MVP.md`](./docs/MVP.md), [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md), and [`docs/DESIGN.md`](./docs/DESIGN.md) are authoritative for subsequent product work.
+- [`docs/MVP.md`](./docs/MVP.md), [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md), and [`docs/DESIGN.md`](./docs/DESIGN.md) are authoritative for product work.
 - [`docs/AGENT-WORKFLOW.md`](./docs/AGENT-WORKFLOW.md) defines the verification loop.
 
 Cursor rules in `.cursor/rules/` point back to these authoritative documents.
+
+Public URLs are locale-prefixed (`/fr`, `/de`, `/en`) with localized course slugs. Sitemap, robots, canonical and hreflang tags are generated for those routes. Valuable legacy paths from mhp-hypnose.com 301 to the new French routes.
 
 ## Cursor Cloud Agent environment
 

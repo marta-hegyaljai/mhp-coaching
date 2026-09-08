@@ -106,17 +106,24 @@ Keep the tiny staff protection isolated so it can later be replaced by applicati
 ## Suggested structure
 ```text
 src/
-  app/
+  app/                      # routes only: locales, sitemap, robots, API
     [locale]/
     api/stripe/webhook/
-  components/
-  config/courses/
+    api/staff/bookings.csv/
+  features/
+    courses/                # catalogue, dates, course UI
+    bookings/               # form, validation, persistence
+    payments/{fake,stripe}/ # PaymentProvider adapters + webhook
+    email/                  # confirmation delivery
+    seo/                    # metadata, json-ld, sitemap, legacy 301s
+    site-shell/             # header, footer, language switcher
+    staff/                  # booking list, CSV, basic auth
+    legal/
+    organization/
   db/
   i18n/
   lib/
-    bookings/
-    payments/{fake,stripe}/
-    email/
+  shared/ui/
 messages/{fr,de,en}.json
 drizzle/
 docs/

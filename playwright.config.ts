@@ -7,15 +7,15 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   reporter: "html",
   use: {
-    baseURL: "http://127.0.0.1:3100",
+    baseURL: "http://127.0.0.1:3000",
     trace: "on-first-retry",
   },
   projects: [
     {name: "chromium", use: {...devices["Desktop Chrome"]}},
   ],
   webServer: {
-    command: "pnpm dev --port 3100",
-    url: "http://127.0.0.1:3100/fr",
+    command: "pnpm dev --port 3000",
+    url: "http://127.0.0.1:3000/fr",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },

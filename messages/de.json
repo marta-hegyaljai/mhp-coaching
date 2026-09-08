@@ -1,13 +1,193 @@
 {
   "Metadata": {
-    "siteName": "MHP Hypnose",
-    "title": "MHP Hypnose — Ausbildung",
-    "description": "Mehrsprachige Grundlage für die künftige Ausbildungswebsite von MHP Hypnose."
+    "siteName": "mhp | hypnose",
+    "title": "Ausbildung in elmanischer Hypnose in der Schweiz | mhp | hypnose",
+    "description": "OMNI-Hypnoseausbildung in Lausanne, Genf und Freiburg. Elmanische Hypnose lernen, einen Termin wählen und sicher mit TWINT oder Karte bezahlen."
+  },
+  "Nav": {
+    "label": "Hauptnavigation",
+    "courses": "Ausbildungen",
+    "contact": "Kontakt",
+    "cta": "Platz buchen",
+    "breadcrumb": "Navigationspfad"
+  },
+  "LanguageSwitcher": {
+    "label": "Sprache wählen"
+  },
+  "Payments": {
+    "secureNote": "Sichere Zahlung"
   },
   "HomePage": {
-    "eyebrow": "Grundlage der neuen Website",
-    "title": "MHP Hypnose",
-    "intro": "Die mehrsprachige Ausbildungswebsite wird vorbereitet."
+    "eyebrow": "OMNI Hypnosis Training Center — Romandie & Frankreich",
+    "title": "Ausbildung in elmanischer Hypnose, ruhig und präzise.",
+    "intro": "mhp | hypnose ist offizielle OMNI-Vertretung für die Romandie und Frankreich. Zeitgenössische, direkte, lösungsorientierte Hypnose — in kleinen Gruppen in Lausanne, Genf und Freiburg.",
+    "ctaCourses": "Ausbildungen ansehen",
+    "ctaBook": "Platz buchen",
+    "aboutTitle": "Eine Schule für Menschen, die wirklich praktizieren.",
+    "aboutBody": "Gegründet von Marta Hegyaljai Python bringt mhp | hypnose die OMNI-Methode in die französisch- und deutschsprachige Praxis. Gruppen bleiben klein. Der Unterricht bleibt konkret. Anerkennungen (ASCA, NGH, APSH, eduQua) stützen einen seriösen Berufsweg — ohne diese Website zur Diplomfabrik zu machen.",
+    "coursesTitle": "Nächste Ausbildungen",
+    "coursesIntro": "Beginnen Sie mit der OMNI-Praktikerausbildung, vertiefen Sie danach mit Aufbaumodulen. Daten und Preise stehen hier; Buchung und Zahlung erfolgen auf dieser Website.",
+    "whyTitle": "Warum diese Methode",
+    "whyRapidTitle": "Schnell und prüfbar",
+    "whyRapidBody": "Induktionen zielen auf eine brauchbare Tiefe in kurzer Zeit, mit Tests, die Sie im Raum tatsächlich einsetzen können.",
+    "whyPracticeTitle": "Im Raum unterrichtet",
+    "whyPracticeBody": "Gruppen sind auf sechzehn Personen begrenzt, mit Lehrperson und Assistenz, damit Übung supervidiert statt nur theoretisch bleibt.",
+    "whyNetworkTitle": "Ein internationaler Standard",
+    "whyNetworkBody": "OMNI unterrichtet elmanische Hypnose seit 1979. Die Praktikerausbildung ist der Zugang zu dieser Gemeinschaft und ihren Zertifizierungen.",
+    "coursesLink": "Alle Ausbildungen",
+    "aboutEyebrow": "Die Schule",
+    "whyEyebrow": "Die Methode",
+    "trustLocations": "Lausanne · Genf · Freiburg",
+    "trustGroup": "Gruppen mit maximal 16 Personen",
+    "trustRecognition": "ASCA · NGH · APSH · eduQua"
   },
-  "LanguageSwitcher": {"label": "Sprache wählen"}
+  "CoursesPage": {
+    "title": "Hypnose-Ausbildungen",
+    "description": "Grundlage und Aufbau in elmanischer Hypnose bei mhp | hypnose. Kurs wählen, Termin in der Schweiz nehmen und online buchen.",
+    "intro": "Die Praktikerausbildung ist das Fundament. Aufbaumodule buchen Sie danach einzeln.",
+    "foundation": "Grundlage",
+    "advanced": "Aufbaumodule",
+    "readMore": "Kursdetails",
+    "breadcrumbHome": "Start",
+    "eyebrow": "OMNI-Curriculum",
+    "seats": "max. {count} Teilnehmende",
+    "courseCount": "{count, plural, =1 {# Ausbildung} other {# Ausbildungen}}"
+  },
+  "CourseDetail": {
+    "bookCta": "Diesen Kurs buchen",
+    "upcoming": "Nächste Termine",
+    "noDates": "Derzeit ist kein buchbarer Termin offen. Bitte kontaktieren Sie uns für die nächste Durchführung.",
+    "audience": "Für wen",
+    "duration": "Dauer",
+    "price": "Preis",
+    "breadcrumbCourses": "Ausbildungen",
+    "bookShort": "Buchen",
+    "bookDate": "Diesen Termin wählen",
+    "nextSession": "Nächste Durchführung",
+    "about": "Das Programm",
+    "contactCta": "Kontakt aufnehmen"
+  },
+  "BookingForm": {
+    "title": "Platz buchen",
+    "intro": "Wählen Sie einen Termin, geben Sie Ihre Angaben ein und fahren Sie zur sicheren Zahlung mit TWINT oder Visa/Mastercard fort.",
+    "dateLabel": "Datum und Ort",
+    "firstName": "Vorname",
+    "lastName": "Nachname",
+    "email": "E-Mail",
+    "phone": "Telefon",
+    "privacy": "Ich habe den <privacy>Datenschutzhinweis</privacy> und die <terms>Buchungsbedingungen</terms> gelesen und akzeptiere sie.",
+    "submit": "Weiter zur Zahlung",
+    "submitting": "Checkout wird vorbereitet…",
+    "noDates": "Für diesen Kurs ist derzeit kein Termin offen.",
+    "contactLink": "Kontakt",
+    "errors": {
+      "firstName": "Bitte geben Sie Ihren Vornamen ein.",
+      "lastName": "Bitte geben Sie Ihren Nachnamen ein.",
+      "email": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
+      "phone": "Bitte geben Sie eine erreichbare Telefonnummer ein.",
+      "courseDateId": "Bitte wählen Sie einen verfügbaren Termin.",
+      "privacyAccepted": "Bitte akzeptieren Sie Datenschutz und Bedingungen, um fortzufahren.",
+      "invalid": "Bitte prüfen Sie das Formular und versuchen Sie es erneut.",
+      "courseMissing": "Dieser Kurs ist nicht mehr verfügbar.",
+      "dateUnavailable": "Dieser Termin ist nicht mehr buchbar."
+    },
+    "summaryTitle": "Ihre Buchung",
+    "summaryDate": "Datum",
+    "summaryLocation": "Ort",
+    "summaryTotal": "Total",
+    "chargeNote": "Sie werden zur sicheren Zahlung weitergeleitet. Vorher wird nichts belastet."
+  },
+  "BookingSuccess": {
+    "title": "Danke. Ihr Platz ist bestätigt.",
+    "pendingTitle": "Die Zahlung wird noch bestätigt.",
+    "intro": "Eine Bestätigungsmail ist unterwegs. Bewahren Sie sie auf; sie enthält Kurs, Datum und bezahlten Betrag.",
+    "pendingIntro": "Wenn Sie soeben bezahlt haben, kann diese Seite einen Moment brauchen. Bezahlte Buchungen bestätigt der Zahlungsanbieter, nicht das Öffnen dieser Seite.",
+    "reference": "Buchungsreferenz",
+    "backHome": "Zur Startseite",
+    "statusPaid": "Bezahlt",
+    "statusPending": "Warten auf Zahlungsbestätigung",
+    "course": "Ausbildung",
+    "dates": "Daten",
+    "location": "Ort",
+    "amount": "Bezahlter Betrag",
+    "coursesCta": "Ausbildungen ansehen"
+  },
+  "BookingCancelled": {
+    "title": "Die Zahlung wurde nicht abgeschlossen.",
+    "intro": "Es wurde keine abgeschlossene Buchung belastet. Sie können zum Kurs zurückkehren und es später erneut versuchen. Ein abgebrochener Checkout setzt eine Buchung niemals auf «bezahlt».",
+    "retry": "Zum Kurs zurück",
+    "home": "Start"
+  },
+  "FakeCheckout": {
+    "title": "Testzahlung",
+    "intro": "Lokal- und Preview-Umgebungen nutzen einen fiktiven Zahlungsanbieter. Es wird nichts an Stripe gesendet.",
+    "amount": "Zu bestätigender Betrag: {amount}",
+    "pay": "Erfolgreiche Zahlung simulieren",
+    "cancel": "Abgebrochene Zahlung simulieren",
+    "badge": "Testumgebung"
+  },
+  "ContactPage": {
+    "title": "Kontakt",
+    "description": "Schreiben Sie mhp | hypnose in Villars-sur-Glâne oder Lausanne. Wir bilden auf Französisch, Deutsch und Englisch aus.",
+    "intro": "Für Fragen zur Ausbildung schreiben oder anrufen. Buchungen schliessen Sie online auf der jeweiligen Kursseite ab.",
+    "hq": "Sitz",
+    "lausanne": "Lausanne",
+    "languages": "Wir arbeiten auf Französisch, Deutsch und Englisch."
+  },
+  "Legal": {
+    "imprintTitle": "Impressum",
+    "imprintDescription": "Herausgeber, Adresse und rechtliche Angaben zu mhp | hypnose / MHP & Partners Sàrl.",
+    "privacyTitle": "Datenschutz",
+    "privacyDescription": "Wie mhp | hypnose Buchungsdaten für Anmeldung und Zahlung erhebt und verwendet.",
+    "termsTitle": "Buchungsbedingungen",
+    "termsDescription": "Bedingungen für die Online-Buchung und Zahlung von mhp | hypnose-Kursen."
+  },
+  "Footer": {
+    "tagline": "Ausbildung in elmanischer Hypnose in der Schweiz — kleine Gruppen, praxisnaher Unterricht, professioneller Anspruch.",
+    "visit": "Schule",
+    "legal": "Rechtliches",
+    "imprint": "Impressum",
+    "privacy": "Datenschutz",
+    "terms": "Buchungsbedingungen",
+    "copyright": "© {year} MHP & Partners Sàrl. Alle Rechte vorbehalten.",
+    "ctaEyebrow": "Anmeldung",
+    "ctaTitle": "Bereit, Ihren Platz zu buchen?",
+    "ctaBody": "Ausbildung wählen, Termin in der Schweiz aussuchen und in wenigen Minuten mit TWINT oder Karte bezahlen.",
+    "ctaButton": "Ausbildungen ansehen",
+    "navigation": "Navigation"
+  },
+  "Staff": {
+    "title": "Buchungen",
+    "intro": "Der Status «bezahlt» wird nur durch ein verifiziertes Zahlungsereignis gesetzt, niemals durch die Erfolgsseite.",
+    "empty": "Noch keine Buchungen.",
+    "name": "Name",
+    "email": "E-Mail",
+    "course": "Kurs",
+    "date": "Datum",
+    "amount": "Betrag",
+    "status": "Status",
+    "created": "Erstellt",
+    "paid": "Bezahlt am",
+    "csv": "CSV herunterladen"
+  },
+  "Email": {
+    "bookingConfirmation": {
+      "subject": "Buchung bestätigt — {course}",
+      "greeting": "Guten Tag {name},",
+      "intro": "Ihre Zahlung ist eingegangen und Ihr Platz ist bestätigt.",
+      "detailsTitle": "Ihre Buchung",
+      "courseLine": "Kurs: {course}",
+      "dateLine": "Daten: {date}",
+      "locationLine": "Ort: {location}",
+      "amountLine": "Bezahlter Betrag: {amount}",
+      "referenceLine": "Referenz: {id}",
+      "closing": "Wir freuen uns auf Sie."
+    }
+  },
+  "NotFound": {
+    "title": "Diese Seite wurde nicht gefunden.",
+    "body": "Die Adresse hat sich möglicherweise geändert. Gehen Sie zur Startseite oder zur Kursliste.",
+    "home": "Start",
+    "courses": "Ausbildungen"
+  }
 }

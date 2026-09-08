@@ -1,18 +1,46 @@
 import {expect, test} from "@playwright/test";
 
 const locales = [
-  {locale: "fr", text: "Le site de formation multilingue est en préparation."},
-  {locale: "de", text: "Die mehrsprachige Ausbildungswebsite wird vorbereitet."},
-  {locale: "en", text: "The multilingual training website is being prepared."},
+  {
+    locale: "fr",
+    heading: "La formation en hypnose elmanienne, avec calme et précision.",
+    coursesPath: "/fr/formations",
+    coursesHeading: "Formations en hypnose",
+  },
+  {
+    locale: "de",
+    heading: "Ausbildung in elmanischer Hypnose, ruhig und präzise.",
+    coursesPath: "/de/ausbildungen",
+    coursesHeading: "Hypnose-Ausbildungen",
+  },
+  {
+    locale: "en",
+    heading: "Elmanian hypnosis training, taught with calm precision.",
+    coursesPath: "/en/courses",
+    coursesHeading: "Hypnosis courses",
+  },
 ] as const;
 
-for (const {locale, text} of locales) {
-  test(`${locale} homepage renders its translation`, async ({page}) => {
+for (const {locale, heading, coursesPath, coursesHeading} of locales) {
+  test(`${locale} homepage renders its translation and SEO tags`, async ({page}) => {
     await page.goto(`/${locale}`);
 
     await expect(page.locator("html")).toHaveAttribute("lang", locale);
-    await expect(page.getByRole("heading", {name: "MHP Hypnose"})).toBeVisible();
-    await expect(page.getByText(text)).toBeVisible();
+    await expect(page.getByRole("heading", {level: 1})).toHaveText(heading);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      "href",
+      new RegExp(`/${locale}$`),
+    );
+    await expect(page.locator('link[hreflang="x-default"]')).toHaveAttribute(
+      "href",
+      /\/fr$/,
+    );
+  });
+
+  test(`${locale} course catalogue is reachable on a localized URL`, async ({page}) => {
+    await page.goto(coursesPath);
+    await expect(page.getByRole("heading", {level: 1})).toHaveText(coursesHeading);
+    await expect(page.getByRole("heading", {level: 2}).first()).toBeVisible();
   });
 }
 
@@ -22,7 +50,18 @@ test("root redirects to French and the language switcher preserves the page", as
   await page.goto("/");
   await expect(page).toHaveURL(/\/fr$/);
 
-  await page.getByRole("combobox").selectOption("de");
+  await page.getByRole("button", {name: "de", exact: true}).click();
   await expect(page).toHaveURL(/\/de$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "de");
+});
+
+test("language switcher maps a course to the equivalent localized slug", async ({
+  page,
+}) => {
+  await page.goto("/fr/formations/praticien-hypnose-omni");
+  await expect(page.getByRole("heading", {level: 1})).toContainText("Praticien");
+
+  await page.getByRole("button", {name: "en", exact: true}).click();
+  await expect(page).toHaveURL(/\/en\/courses\/omni-hypnosis-practitioner$/);
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
 });

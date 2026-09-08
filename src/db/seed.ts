@@ -1,5 +1,5 @@
 async function seed() {
-  console.log("No seed data is required for the bootstrap foundation.");
+  console.log("Course dates live in source-controlled catalogue config; no database seed is required.");
 }
 
 seed().catch((error: unknown) => {

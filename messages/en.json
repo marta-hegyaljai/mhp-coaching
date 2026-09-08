@@ -1,13 +1,193 @@
 {
   "Metadata": {
-    "siteName": "MHP Hypnose",
-    "title": "MHP Hypnose — Training",
-    "description": "Multilingual foundation for the future MHP Hypnose training website."
+    "siteName": "mhp | hypnose",
+    "title": "Elmanian hypnosis training in Switzerland | mhp | hypnose",
+    "description": "OMNI hypnosis training in Lausanne, Geneva and Fribourg. Practise Elmanian hypnosis, book a date and pay securely by TWINT or card."
+  },
+  "Nav": {
+    "label": "Main navigation",
+    "courses": "Courses",
+    "contact": "Contact",
+    "cta": "Book a place",
+    "breadcrumb": "Breadcrumb"
+  },
+  "LanguageSwitcher": {
+    "label": "Choose language"
+  },
+  "Payments": {
+    "secureNote": "Secure payment"
   },
   "HomePage": {
-    "eyebrow": "Foundation for the new website",
-    "title": "MHP Hypnose",
-    "intro": "The multilingual training website is being prepared."
+    "eyebrow": "OMNI Hypnosis Training Center — French-speaking Switzerland & France",
+    "title": "Elmanian hypnosis training, taught with calm precision.",
+    "intro": "mhp | hypnose is the official OMNI representative for French-speaking Switzerland and France. Direct, contemporary, solution-focused hypnosis — taught in small groups in Lausanne, Geneva and Fribourg.",
+    "ctaCourses": "View the courses",
+    "ctaBook": "Book a place",
+    "aboutTitle": "A school for people who will actually practise.",
+    "aboutBody": "Founded by Marta Hegyaljai Python, mhp | hypnose brings the OMNI method into French and German-speaking practice. Groups stay small. Teaching stays practical. Recognition (ASCA, NGH, APSH, eduQua) supports a serious professional path — without turning the website into a diploma factory.",
+    "coursesTitle": "Upcoming training",
+    "coursesIntro": "Start with the OMNI practitioner, then deepen with advanced modules. Dates and prices are published here; booking and payment happen on this site.",
+    "whyTitle": "Why this method",
+    "whyRapidTitle": "Rapid and testable",
+    "whyRapidBody": "Inductions are designed to reach a useful depth quickly, with tests you can actually use in the room.",
+    "whyPracticeTitle": "Taught in the room",
+    "whyPracticeBody": "Groups are limited to sixteen people, with an instructor and assistants, so practice is supervised rather than theoretical.",
+    "whyNetworkTitle": "An international standard",
+    "whyNetworkBody": "OMNI has taught Elmanian hypnosis since 1979. The practitioner training is the door into that community and its certifications.",
+    "coursesLink": "All courses",
+    "aboutEyebrow": "The school",
+    "whyEyebrow": "The method",
+    "trustLocations": "Lausanne · Geneva · Fribourg",
+    "trustGroup": "Groups of sixteen people maximum",
+    "trustRecognition": "ASCA · NGH · APSH · eduQua"
   },
-  "LanguageSwitcher": {"label": "Choose language"}
+  "CoursesPage": {
+    "title": "Hypnosis courses",
+    "description": "Foundation and advanced Elmanian hypnosis training with mhp | hypnose. Choose a course, pick a date in Switzerland, and book online.",
+    "intro": "The practitioner training is the foundation. Advanced modules can be booked individually after that base is in place.",
+    "foundation": "Foundation",
+    "advanced": "Advanced modules",
+    "readMore": "Course details",
+    "breadcrumbHome": "Home",
+    "eyebrow": "OMNI curriculum",
+    "seats": "{count} participants max",
+    "courseCount": "{count, plural, =1 {# course} other {# courses}}"
+  },
+  "CourseDetail": {
+    "bookCta": "Book this course",
+    "upcoming": "Upcoming dates",
+    "noDates": "No bookable dates are currently open. Please contact us for the next session.",
+    "audience": "Who it is for",
+    "duration": "Duration",
+    "price": "Price",
+    "breadcrumbCourses": "Courses",
+    "bookShort": "Book",
+    "bookDate": "Choose this date",
+    "nextSession": "Next session",
+    "about": "The programme",
+    "contactCta": "Contact us"
+  },
+  "BookingForm": {
+    "title": "Book your place",
+    "intro": "Choose a date, enter your details, then continue to secure payment by TWINT or Visa/Mastercard.",
+    "dateLabel": "Date and city",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "email": "Email",
+    "phone": "Phone",
+    "privacy": "I have read and accept the <privacy>privacy notice</privacy> and the <terms>booking terms</terms>.",
+    "submit": "Continue to payment",
+    "submitting": "Preparing checkout…",
+    "noDates": "This course has no bookable dates at the moment.",
+    "contactLink": "Contact us",
+    "errors": {
+      "firstName": "Please enter your first name.",
+      "lastName": "Please enter your last name.",
+      "email": "Please enter a valid email address.",
+      "phone": "Please enter a phone number we can reach.",
+      "courseDateId": "Please choose an available date.",
+      "privacyAccepted": "Please accept the privacy notice and terms to continue.",
+      "invalid": "Please check the form and try again.",
+      "courseMissing": "This course is no longer available.",
+      "dateUnavailable": "This date is no longer open for booking."
+    },
+    "summaryTitle": "Your booking",
+    "summaryDate": "Date",
+    "summaryLocation": "Location",
+    "summaryTotal": "Total",
+    "chargeNote": "You will be redirected to secure payment. Nothing is charged before that step."
+  },
+  "BookingSuccess": {
+    "title": "Thank you. Your place is confirmed.",
+    "pendingTitle": "Payment is still being confirmed.",
+    "intro": "A confirmation email is on its way. Keep it for your records; it includes the course, date and amount paid.",
+    "pendingIntro": "If you have just paid, this page may take a moment to update. Paid bookings are confirmed by our payment provider, not by opening this page.",
+    "reference": "Booking reference",
+    "backHome": "Back to the homepage",
+    "statusPaid": "Paid",
+    "statusPending": "Waiting for payment confirmation",
+    "course": "Course",
+    "dates": "Dates",
+    "location": "Location",
+    "amount": "Amount paid",
+    "coursesCta": "View the courses"
+  },
+  "BookingCancelled": {
+    "title": "Payment was not completed.",
+    "intro": "No charge was taken for a completed booking. You can return to the course and try again when you are ready. A cancelled checkout never marks a booking as paid.",
+    "retry": "Return to the course",
+    "home": "Home"
+  },
+  "FakeCheckout": {
+    "title": "Test payment",
+    "intro": "Local and preview environments use a fake payment provider. Nothing is sent to Stripe.",
+    "amount": "Amount to confirm: {amount}",
+    "pay": "Simulate successful payment",
+    "cancel": "Simulate cancelled payment",
+    "badge": "Test environment"
+  },
+  "ContactPage": {
+    "title": "Contact",
+    "description": "Write to mhp | hypnose in Villars-sur-Glâne or Lausanne. We train in French, German and English.",
+    "intro": "For course questions, write or call. Bookings are completed online from each course page.",
+    "hq": "Registered office",
+    "lausanne": "Lausanne",
+    "languages": "We work in French, German and English."
+  },
+  "Legal": {
+    "imprintTitle": "Legal notice",
+    "imprintDescription": "Publisher, address and legal information for mhp | hypnose / MHP & Partners Sàrl.",
+    "privacyTitle": "Privacy notice",
+    "privacyDescription": "How mhp | hypnose collects and uses booking data for course registration and payment.",
+    "termsTitle": "Booking terms",
+    "termsDescription": "Terms for booking and paying for mhp | hypnose courses online."
+  },
+  "Footer": {
+    "tagline": "Elmanian hypnosis training in Switzerland — small groups, practical teaching, serious professional standards.",
+    "visit": "School",
+    "legal": "Legal",
+    "imprint": "Legal notice",
+    "privacy": "Privacy",
+    "terms": "Booking terms",
+    "copyright": "© {year} MHP & Partners Sàrl. All rights reserved.",
+    "ctaEyebrow": "Booking",
+    "ctaTitle": "Ready to book your place?",
+    "ctaBody": "Pick a course, choose a date in Switzerland and pay by TWINT or card in a few minutes.",
+    "ctaButton": "View the courses",
+    "navigation": "Navigation"
+  },
+  "Staff": {
+    "title": "Bookings",
+    "intro": "Paid status is set only by a verified payment event, never by the success page.",
+    "empty": "No bookings yet.",
+    "name": "Name",
+    "email": "Email",
+    "course": "Course",
+    "date": "Date",
+    "amount": "Amount",
+    "status": "Status",
+    "created": "Created",
+    "paid": "Paid at",
+    "csv": "Download CSV"
+  },
+  "Email": {
+    "bookingConfirmation": {
+      "subject": "Booking confirmed — {course}",
+      "greeting": "Hello {name},",
+      "intro": "Your payment was received and your place is confirmed.",
+      "detailsTitle": "Your booking",
+      "courseLine": "Course: {course}",
+      "dateLine": "Dates: {date}",
+      "locationLine": "Location: {location}",
+      "amountLine": "Amount paid: {amount}",
+      "referenceLine": "Reference: {id}",
+      "closing": "We look forward to welcoming you."
+    }
+  },
+  "NotFound": {
+    "title": "This page was not found.",
+    "body": "The address may have changed. Return home or browse the course list.",
+    "home": "Home",
+    "courses": "Courses"
+  }
 }

@@ -1,0 +1,30 @@
+import {describe, expect, it} from "vitest";
+
+import {formatDateRange} from "./dates";
+
+describe("formatDateRange", () => {
+  it("collapses a range inside one month", () => {
+    expect(formatDateRange("2026-10-08", "2026-10-18", "fr")).toBe(
+      "8 – 18 octobre 2026",
+    );
+  });
+
+  it("keeps both months when the range crosses one", () => {
+    expect(formatDateRange("2026-10-28", "2026-11-03", "en")).toBe(
+      "28 October 2026 – 3 November 2026",
+    );
+  });
+
+  it("renders a single day when there is no end date", () => {
+    expect(formatDateRange("2026-10-08", null, "de")).toBe("8. Oktober 2026");
+    expect(formatDateRange("2026-10-08", "2026-10-08", "de")).toBe(
+      "8. Oktober 2026",
+    );
+  });
+
+  it("keeps full dates when the end precedes the start", () => {
+    expect(formatDateRange("2026-10-18", "2026-10-08", "fr")).toBe(
+      "18 octobre 2026 – 8 octobre 2026",
+    );
+  });
+});
