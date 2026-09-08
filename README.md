@@ -71,4 +71,14 @@ docker compose down -v    # stop services and permanently reset local data
 - [`docs/MVP.md`](./docs/MVP.md), [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md), and [`docs/DESIGN.md`](./docs/DESIGN.md) are authoritative for subsequent product work.
 - [`docs/AGENT-WORKFLOW.md`](./docs/AGENT-WORKFLOW.md) defines the verification loop.
 
-Cursor rules in `.cursor/rules/` point back to these authoritative documents. A Cursor Cloud Agent environment file is deliberately not included until its current project-specific setup can be validated in Cursor; configuring that environment is the next infrastructure task before remote agent work.
+Cursor rules in `.cursor/rules/` point back to these authoritative documents.
+
+## Cursor Cloud Agent environment
+
+Remote Cursor Cloud Agents use the configuration in `.cursor/`:
+
+- [`.cursor/environment.json`](./.cursor/environment.json) — runs on the Cursor default base image, wires up the `install`/`start` hooks, exposes ports `3000` (app) and `8025` (Mailpit UI), and launches `pnpm dev` in a `next-dev` terminal.
+- [`.cursor/install.sh`](./.cursor/install.sh) — idempotent bootstrap. Because the base image has no Docker, it installs PostgreSQL natively (in place of `docker compose`), installs Node dependencies, the Playwright Chromium browser, and a Mailpit binary, seeds `.env.local` from `.env.example`, creates the `mhp` role/database, and applies migrations.
+- [`.cursor/start.sh`](./.cursor/start.sh) — per-boot reconciliation. Starts PostgreSQL, applies any pending migrations for the checked-out branch, and starts Mailpit. Safe to re-run.
+
+Local development still uses `docker compose` per the steps above; the `.cursor/` scripts only provision the equivalent services inside the remote agent VM.

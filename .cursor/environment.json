@@ -1,0 +1,17 @@
+{
+  "name": "MHP Hypnose",
+  "user": "ubuntu",
+  "install": "bash .cursor/install.sh",
+  "start": "bash .cursor/start.sh",
+  "terminals": [
+    {
+      "name": "next-dev",
+      "command": "pnpm dev",
+      "description": "Next.js dev server on http://localhost:3000 (redirects to /fr)."
+    }
+  ],
+  "ports": [
+    {"name": "next", "port": 3000},
+    {"name": "mailpit", "port": 8025}
+  ]
+}
