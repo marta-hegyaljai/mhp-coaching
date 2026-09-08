@@ -57,6 +57,14 @@ test("root redirects to French and the language switcher preserves the page", as
   await expect(page.locator("html")).toHaveAttribute("lang", "de");
 });
 
+test("contact details use the MHP Coaching email", async ({page}) => {
+  await page.goto("/fr/contact");
+  const email = page.getByRole("link", {name: "contact@mhp-coaching.ch"});
+  await expect(email).toBeVisible();
+  await expect(email).toHaveAttribute("href", "mailto:contact@mhp-coaching.ch");
+  await expect(page.getByText(/mhp-hypnose/i)).toHaveCount(0);
+});
+
 test("language switcher maps a course to the equivalent localized slug", async ({
   page,
 }) => {

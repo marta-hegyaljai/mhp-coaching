@@ -14,9 +14,9 @@ describe("getSiteUrl", () => {
       getSiteUrl({
         SITE_URL: "  ",
         NEXT_PUBLIC_SITE_URL: "",
-        VERCEL_PROJECT_PRODUCTION_URL: "mhp-hypnose.vercel.app",
+        VERCEL_PROJECT_PRODUCTION_URL: "mhp-coaching.vercel.app",
       }).href,
-    ).toBe("https://mhp-hypnose.vercel.app/");
+    ).toBe("https://mhp-coaching.vercel.app/");
   });
 
   it("supports Vercel preview domains without a URL scheme", () => {

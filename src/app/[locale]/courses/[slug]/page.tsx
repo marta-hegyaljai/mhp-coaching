@@ -275,13 +275,7 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
             ))}
           </div>
           <p className="mt-6 text-xs leading-5 text-ink-subtle">
-            {t.rich("sourceCredit", {
-              link: (chunks) => (
-                <a className="underline underline-offset-4 hover:text-ink" href={sourceContent.sourceUrl}>
-                  {chunks}
-                </a>
-              ),
-            })}
+            {t("sourceCredit")}
           </p>
         </div>
       </Section>
