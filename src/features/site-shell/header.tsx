@@ -27,9 +27,12 @@ export async function SiteHeader({
         <div className="flex min-w-0 items-center gap-4 sm:gap-8">
           <Link
             href="/"
-            className="shrink-0 font-serif text-xl font-semibold tracking-[0.03em] whitespace-nowrap transition-opacity duration-150 hover:opacity-60"
+            aria-label="MHP Coaching"
+            className="flex shrink-0 items-center whitespace-nowrap font-sans text-ink transition-opacity duration-150 hover:opacity-60"
           >
-            mhp-coaching
+            <span className="text-lg font-black tracking-[-0.06em] sm:text-xl">MHP</span>
+            <span aria-hidden="true" className="mx-2.5 h-7 border-l border-ink sm:mx-3 sm:h-8" />
+            <span className="text-lg font-normal tracking-[-0.035em] sm:text-xl">Coaching</span>
           </Link>
           <nav aria-label={t("label")} className="hidden items-center gap-3 sm:flex">
             <Link href="/courses" className={navLink}>

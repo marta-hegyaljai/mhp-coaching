@@ -14,9 +14,6 @@
   "LanguageSwitcher": {
     "label": "Choisir la langue"
   },
-  "Payments": {
-    "secureNote": "Paiement sécurisé"
-  },
   "HomePage": {
     "eyebrow": "OMNI Hypnosis Training Center — Suisse romande & France",
     "title": "La formation en hypnose elmanienne, avec calme et précision.",
@@ -131,10 +128,9 @@
   },
   "ContactPage": {
     "title": "Contact",
-    "description": "Écrire à mhp-coaching à Villars-sur-Glâne ou à Lausanne. Nous formons en français, allemand et anglais.",
+    "description": "Écrire à MHP Coaching à Fribourg. Nous formons en français, allemand et anglais.",
     "intro": "Pour une question de formation, écrivez ou téléphonez. Les inscriptions se finalisent en ligne depuis chaque page de cours.",
-    "hq": "Siège",
-    "lausanne": "Lausanne",
+    "hq": "Fribourg",
     "languages": "Nous travaillons en français, allemand et anglais."
   },
   "Legal": {
@@ -152,10 +148,10 @@
     "imprint": "Mentions légales",
     "privacy": "Confidentialité",
     "terms": "Conditions d’inscription",
-    "copyright": "© {year} MHP & Partners Sàrl. Tous droits réservés.",
+    "copyright": "© {year} MHP Coaching. Tous droits réservés.",
     "ctaEyebrow": "Inscription",
     "ctaTitle": "Prêt·e à réserver votre place ?",
-    "ctaBody": "Choisissez votre formation, sélectionnez une date en Suisse et payez par TWINT ou carte en quelques minutes.",
+    "ctaBody": "Découvrez les formations proposées à Fribourg. Les prochaines dates seront publiées dès qu’elles seront confirmées.",
     "ctaButton": "Voir les formations",
     "navigation": "Navigation"
   },

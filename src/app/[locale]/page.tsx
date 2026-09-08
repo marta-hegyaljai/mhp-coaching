@@ -2,7 +2,6 @@ import {getTranslations, setRequestLocale} from "next-intl/server";
 
 import {CourseCard} from "@/features/courses/components/course-card";
 import {getCourseById, getPublishedCourses} from "@/features/courses/queries";
-import {PaymentMethods} from "@/features/payments/components/payment-methods";
 import {courseListJsonLd} from "@/features/seo/json-ld";
 import {JsonLd} from "@/features/seo/json-ld-script";
 import {buildPageMetadata} from "@/features/seo/metadata";
@@ -34,7 +33,6 @@ export default async function HomePage({params}: HomePageProps) {
   setRequestLocale(locale);
   const t = await getTranslations("HomePage");
   const coursesT = await getTranslations("CoursesPage");
-  const paymentsT = await getTranslations("Payments");
   const courses = getPublishedCourses().slice(0, 3);
   const practitioner = getCourseById("omni-practitioner");
 
@@ -74,8 +72,6 @@ export default async function HomePage({params}: HomePageProps) {
               </Link>
             ) : null}
           </div>
-
-          <PaymentMethods note={paymentsT("secureNote")} className="mt-5" />
 
           <ul className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-line pt-5 text-sm text-ink-subtle">
             <li className="flex items-center gap-2">

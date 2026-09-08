@@ -32,6 +32,7 @@ describe("SEO launch surfaces", () => {
       source: "/formations/praticien-en-hypnose-elmanienne-omni",
       destination: "/fr/formations/praticien-hypnose-omni",
       permanent: true,
+      locale: false,
     });
     expect(legacyRedirects[0]).toMatchObject({source: "/", destination: "/fr"});
   });

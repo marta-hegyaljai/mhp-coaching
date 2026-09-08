@@ -33,7 +33,6 @@ export default async function ContactPage({params}: ContactPageProps) {
   const coursesT = await getTranslations("CoursesPage");
   const navT = await getTranslations("Nav");
   const hq = organization.addresses.headquarters;
-  const lausanne = organization.addresses.lausanne;
 
   return (
     <SiteShell locale={locale}>
@@ -52,7 +51,7 @@ export default async function ContactPage({params}: ContactPageProps) {
           <p className="mt-4 text-base text-ink-muted">{t("languages")}</p>
         </div>
 
-        <div className="mt-14 grid gap-10 md:grid-cols-2 md:gap-16">
+        <div className="mt-14 max-w-xl">
           <section>
             <h2 className="font-serif text-subheading">{t("hq")}</h2>
             <address className="mt-4 text-sm leading-7 text-ink-muted not-italic">
@@ -74,16 +73,6 @@ export default async function ContactPage({params}: ContactPageProps) {
                 {organization.email}
               </a>
             </p>
-          </section>
-          <section>
-            <h2 className="font-serif text-subheading">{t("lausanne")}</h2>
-            <address className="mt-4 text-sm leading-7 text-ink-muted not-italic">
-              {organization.legalName}
-              <br />
-              {lausanne.street}
-              <br />
-              {lausanne.postalCode} {lausanne.city}
-            </address>
           </section>
         </div>
       </Section>

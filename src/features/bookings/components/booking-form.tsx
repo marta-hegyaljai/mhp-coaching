@@ -6,7 +6,6 @@ import {useTranslations} from "next-intl";
 import {createBookingAction} from "@/features/bookings/actions";
 import {formatCourseDateRange} from "@/features/courses/dates";
 import type {Course, CourseDate} from "@/features/courses/types";
-import {PaymentMethods} from "@/features/payments/components/payment-methods";
 import {formatChf} from "@/features/payments/money";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
@@ -25,7 +24,6 @@ export function BookingForm({
   initialDateId?: string;
 }) {
   const t = useTranslations("BookingForm");
-  const paymentsT = useTranslations("Payments");
   const [state, formAction, pending] = useActionState(
     createBookingAction.bind(null, locale, course.id),
     null,
@@ -266,7 +264,6 @@ export function BookingForm({
                 </>
               )}
             </Button>
-            <PaymentMethods note={paymentsT("secureNote")} className="mt-4" />
             <p className="mt-3 text-xs leading-6 text-ink-subtle">
               {t("chargeNote")}
             </p>

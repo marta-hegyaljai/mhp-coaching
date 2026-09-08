@@ -72,6 +72,10 @@ Locales: `fr`, `de`, `en`.
 URLs: `/fr/...`, `/de/...`, `/en/...`.
 Root may redirect to `/fr` for MVP.
 Use locale-aware navigation and localized canonical/alternate metadata.
+`src/proxy.ts` must bypass a second next-intl pass when the
+`x-next-intl-locale` request header is already present. Next 16 can invoke Proxy
+again for the localized-path rewrite; without this guard, localized public
+paths such as `/fr/formations` loop between public and internal route names.
 
 ## Payments
 Provider: Stripe.

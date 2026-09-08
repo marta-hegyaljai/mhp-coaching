@@ -10,7 +10,6 @@ import {
   getWorkshopCourses,
 } from "@/features/courses/queries";
 import type {Course} from "@/features/courses/types";
-import {PaymentMethods} from "@/features/payments/components/payment-methods";
 import {BreadcrumbTrail} from "@/features/seo/breadcrumb-trail";
 import {courseListJsonLd} from "@/features/seo/json-ld";
 import {JsonLd} from "@/features/seo/json-ld-script";
@@ -40,7 +39,6 @@ export default async function CoursesPage({params}: CoursesPageProps) {
   setRequestLocale(locale);
   const t = await getTranslations("CoursesPage");
   const navT = await getTranslations("Nav");
-  const paymentsT = await getTranslations("Payments");
 
   const groups: Array<{title: string; courses: Course[]}> = [
     {title: t("foundation"), courses: getFoundationCourses()},
@@ -66,7 +64,6 @@ export default async function CoursesPage({params}: CoursesPageProps) {
           <Eyebrow>{t("eyebrow")}</Eyebrow>
           <h1 className="mt-4 font-serif text-title">{t("title")}</h1>
           <p className="mt-6 text-lead text-ink-muted">{t("intro")}</p>
-          <PaymentMethods note={paymentsT("secureNote")} className="mt-6" />
         </div>
       </Section>
 

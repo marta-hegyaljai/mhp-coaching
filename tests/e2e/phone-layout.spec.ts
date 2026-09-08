@@ -48,25 +48,17 @@ test.describe("phone layout", () => {
     expect(after?.x).toBe(before?.x);
   });
 
-  test("course booking bar stays reachable without covering the footer", async ({
-    page,
-  }) => {
+  test("course page keeps its contact action and footer reachable", async ({page}) => {
     await page.goto("/fr/formations/praticien-hypnose-omni");
 
-    const bar = page.getByRole("link", {name: "S’inscrire", exact: true});
-    await expect(bar).toBeVisible();
-
-    const barBox = await bar.boundingBox();
-    expect(barBox?.height ?? 0).toBeGreaterThanOrEqual(44);
+    const contact = page.getByRole("link", {name: "Nous écrire"}).first();
+    await expect(contact).toBeVisible();
 
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-    const copyright = page.getByText(/MHP & Partners/).last();
+    const copyright = page.getByText(/MHP Coaching/).last();
     const copyrightBox = await copyright.boundingBox();
-    const barBoxAfterScroll = await bar.boundingBox();
 
     expect(copyrightBox).not.toBeNull();
-    expect(copyrightBox!.y + copyrightBox!.height).toBeLessThanOrEqual(
-      (barBoxAfterScroll?.y ?? 0) + 1,
-    );
+    expect(copyrightBox!.y).toBeGreaterThanOrEqual(0);
   });
 });

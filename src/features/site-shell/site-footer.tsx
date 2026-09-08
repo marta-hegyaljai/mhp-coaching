@@ -59,7 +59,7 @@ export async function SiteFooter({
 
       <Container className="grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
         <div>
-          <p className="font-serif text-subheading">{organization.brandName}</p>
+          <p className="font-sans text-subheading font-semibold">MHP Coaching</p>
           <p className="mt-4 max-w-sm text-sm leading-7 text-ink-muted">
             {t("tagline")}
           </p>
@@ -86,7 +86,7 @@ export async function SiteFooter({
             {t("visit")}
           </p>
           <p className="mt-3 text-sm leading-7 text-ink-muted">
-            {organization.legalName}
+            MHP Coaching
             <br />
             {address.street}
             <br />

@@ -10,7 +10,6 @@ import {
   getCourseBySlug,
   getCourseStaticParams,
 } from "@/features/courses/queries";
-import {PaymentMethods} from "@/features/payments/components/payment-methods";
 import {formatChf} from "@/features/payments/money";
 import {BreadcrumbTrail} from "@/features/seo/breadcrumb-trail";
 import {courseJsonLd, eventJsonLd} from "@/features/seo/json-ld";
@@ -72,7 +71,6 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
   const t = await getTranslations("CourseDetail");
   const coursesT = await getTranslations("CoursesPage");
   const navT = await getTranslations("Nav");
-  const paymentsT = await getTranslations("Payments");
   const dates = getBookableDates(course);
   const nextDate = dates[0];
   const price = formatChf(course.priceChf, locale, {compact: true});
@@ -172,10 +170,6 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
                     {t("bookCta")}
                     <ArrowRightIcon className="transition-transform duration-200 ease-standard group-hover/button:translate-x-0.5" />
                   </Link>
-                  <PaymentMethods
-                    note={paymentsT("secureNote")}
-                    className="mt-5"
-                  />
                 </>
               ) : (
                 <>

@@ -1,5 +1,5 @@
 export const organization = {
-  brandName: "mhp-coaching",
+  brandName: "MHP Coaching",
   legalName: "MHP & Partners Sàrl",
   email: "admin@mhp-hypnose.com",
   phone: "+41 21 311 25 81",
@@ -11,18 +11,6 @@ export const organization = {
       postalCode: "1752",
       city: "Villars-sur-Glâne",
       region: "Fribourg",
-      country: "CH",
-      countryName: {
-        fr: "Suisse",
-        de: "Schweiz",
-        en: "Switzerland",
-      },
-    },
-    lausanne: {
-      street: "Place Chauderon 3",
-      postalCode: "1003",
-      city: "Lausanne",
-      region: "Vaud",
       country: "CH",
       countryName: {
         fr: "Suisse",

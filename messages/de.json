@@ -14,9 +14,6 @@
   "LanguageSwitcher": {
     "label": "Sprache wählen"
   },
-  "Payments": {
-    "secureNote": "Sichere Zahlung"
-  },
   "HomePage": {
     "eyebrow": "OMNI Hypnosis Training Center — Romandie & Frankreich",
     "title": "Ausbildung in elmanischer Hypnose, ruhig und präzise.",
@@ -131,10 +128,9 @@
   },
   "ContactPage": {
     "title": "Kontakt",
-    "description": "Schreiben Sie mhp-coaching in Villars-sur-Glâne oder Lausanne. Wir bilden auf Französisch, Deutsch und Englisch aus.",
+    "description": "Schreiben Sie MHP Coaching in Freiburg. Wir bilden auf Französisch, Deutsch und Englisch aus.",
     "intro": "Für Fragen zur Ausbildung schreiben oder anrufen. Buchungen schliessen Sie online auf der jeweiligen Kursseite ab.",
-    "hq": "Sitz",
-    "lausanne": "Lausanne",
+    "hq": "Freiburg",
     "languages": "Wir arbeiten auf Französisch, Deutsch und Englisch."
   },
   "Legal": {
@@ -152,10 +148,10 @@
     "imprint": "Impressum",
     "privacy": "Datenschutz",
     "terms": "Buchungsbedingungen",
-    "copyright": "© {year} MHP & Partners Sàrl. Alle Rechte vorbehalten.",
+    "copyright": "© {year} MHP Coaching. Alle Rechte vorbehalten.",
     "ctaEyebrow": "Anmeldung",
     "ctaTitle": "Bereit, Ihren Platz zu buchen?",
-    "ctaBody": "Ausbildung wählen, Termin in der Schweiz aussuchen und in wenigen Minuten mit TWINT oder Karte bezahlen.",
+    "ctaBody": "Entdecken Sie die Ausbildungen in Freiburg. Neue Termine werden veröffentlicht, sobald sie bestätigt sind.",
     "ctaButton": "Ausbildungen ansehen",
     "navigation": "Navigation"
   },
