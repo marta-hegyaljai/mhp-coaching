@@ -41,8 +41,9 @@ For MVP, courses and dates live in source-controlled typed TypeScript config.
 The public catalogue mirrors the 20 formations published at
 `https://www.mhp-hypnose.com/formations`, grouped as foundation, advanced,
 medical hypnosis, and practical workshops. All course delivery locations are
-shown as Fribourg. Dates remain empty until confirmed; the UI must show the
-no-dates state and must not imply that booking is available.
+shown as Fribourg. Dates may remain empty until confirmed; an undated course can
+still be booked and paid through Stripe, with its booking snapshot explicitly
+marked as `DATE_TO_BE_CONFIRMED`.
 
 Suggested shape:
 ```ts

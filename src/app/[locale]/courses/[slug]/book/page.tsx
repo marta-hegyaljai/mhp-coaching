@@ -109,7 +109,9 @@ export default async function BookCoursePage({
         <div className="mt-8 max-w-2xl">
           <Eyebrow>{course.title[locale]}</Eyebrow>
           <h1 className="mt-4 font-serif text-title">{t("title")}</h1>
-          <p className="mt-5 text-lead text-ink-muted">{t("intro")}</p>
+          <p className="mt-5 text-lead text-ink-muted">
+            {dates.length === 0 ? t("introWithoutDate") : t("intro")}
+          </p>
         </div>
 
         <div className="mt-10 sm:mt-12">

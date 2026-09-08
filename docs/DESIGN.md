@@ -56,9 +56,9 @@ dashboard.
   link; never nest a second link inside it.
 - Cards must show the decision essentials without another click: title,
   duration/price, Fribourg as the course location, the nearest date when
-  available, and one clear action. Until dates are confirmed, show the explicit
-  no-dates state and direct visitors to contact rather than presenting a booking
-  action.
+  available, and one clear action. An undated course remains bookable; label its
+  schedule as awaiting confirmation and route the primary action through the
+  booking form to Stripe Checkout.
 - Primary actions are black rectangles with white text and reveal gold with
   black text on hover. Inverted primary actions start white and also reveal gold
   on hover. Secondary actions remain monochrome and gain a neutral-grey surface.
@@ -83,6 +83,9 @@ dashboard.
   creates narrow text measures, oversized headings, and excessive empty height.
   Catalogue descriptions are limited to three lines; the full copy belongs on
   the course detail page.
+- The small `/` and `//` registration marks embedded at the top right of the
+  historical square artwork are visually removed wherever it is displayed,
+  without cropping the course name from the image.
 - Detailed course claims, objectives, prerequisites, recognitions, prices, and
   descriptions must trace to the historical MHP catalogue. Do not invent copy
   to fill a layout. A missing translation may fall back visibly to the exact

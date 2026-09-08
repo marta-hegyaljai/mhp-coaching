@@ -1,14 +1,13 @@
-import Image from "next/image";
-
 import {formatCourseDateRange} from "@/features/courses/dates";
 import {getBookableDates} from "@/features/courses/queries";
-import {getCourseImage} from "@/features/courses/source-content";
 import type {Course} from "@/features/courses/types";
 import {formatChf} from "@/features/payments/money";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {ArrowRightIcon, CalendarIcon, PinIcon} from "@/shared/ui/icons";
 import {Eyebrow} from "@/shared/ui/layout";
+
+import {CourseArtwork} from "./course-artwork";
 
 export function CourseCard({
   course,
@@ -43,12 +42,10 @@ export function CourseCard({
 
         <div className="mt-5 grid grid-cols-[5.25rem_minmax(0,1fr)] items-start gap-4 sm:grid-cols-[6rem_minmax(0,1fr)] xl:grid-cols-[5.25rem_minmax(0,1fr)]">
           <div className="relative aspect-square overflow-hidden border border-line bg-white">
-            <Image
-              src={getCourseImage(course)}
-              alt=""
-              fill
+            <CourseArtwork
+              course={course}
               sizes="96px"
-              className="object-contain transition-transform duration-150 group-hover/card:scale-[1.025] motion-reduce:transform-none"
+              interactive
             />
           </div>
           <Heading className="font-serif text-[clamp(1.5rem,1.8vw,1.8rem)] leading-[1.08]">

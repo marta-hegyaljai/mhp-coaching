@@ -2,7 +2,7 @@
 
 import {redirect} from "next/navigation";
 
-import {getBookableDates, getCourseById} from "@/features/courses/queries";
+import {getCourseById} from "@/features/courses/queries";
 import {getPaymentProvider} from "@/features/payments/get-provider";
 import {francsToMinorUnits} from "@/features/payments/money";
 import {localizedPathname} from "@/i18n/path";
@@ -21,6 +21,7 @@ import {
   type BookingFormDraft,
   type BookingFormErrors,
 } from "./validation";
+import {resolveBookingDate} from "./booking-date";
 
 export type CreateBookingState = {
   errors?: BookingFormErrors;
@@ -57,10 +58,7 @@ export async function createBookingAction(
     return {errors: {form: t("courseMissing")}, draft};
   }
 
-  const bookable = getBookableDates(course);
-  const selectedDate = bookable.find(
-    (date) => date.id === values.courseDateId,
-  );
+  const selectedDate = resolveBookingDate(course, values.courseDateId);
 
   if (!selectedDate) {
     return {errors: {courseDateId: t("dateUnavailable")}, draft};

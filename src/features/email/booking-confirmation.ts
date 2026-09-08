@@ -6,6 +6,7 @@ import {hasLocale} from "next-intl";
 import {routing, type AppLocale} from "@/i18n/routing";
 import {organization} from "@/features/organization/info";
 import type {Booking} from "@/db/schema";
+import {isDateToBeConfirmed} from "@/features/bookings/booking-date";
 
 import {sendMail} from "./transport";
 
@@ -14,11 +15,13 @@ export async function sendBookingConfirmation(booking: Booking): Promise<void> {
     ? booking.locale
     : "fr";
   const t = await getTranslations({locale, namespace: "Email.bookingConfirmation"});
-  const dateLabel = formatDateRange(
-    booking.courseDateStart,
-    booking.courseDateEnd,
-    locale,
-  );
+  const dateLabel = isDateToBeConfirmed(booking.courseDateStart)
+    ? t("dateToBeConfirmed")
+    : formatDateRange(
+        booking.courseDateStart,
+        booking.courseDateEnd,
+        locale,
+      );
   const amount = formatChf(minorUnitsToFrancs(booking.amountMinor), locale);
   const subject = t("subject", {course: booking.courseTitle});
   const text = [

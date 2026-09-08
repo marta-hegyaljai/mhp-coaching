@@ -48,11 +48,11 @@ test.describe("phone layout", () => {
     expect(after?.x).toBe(before?.x);
   });
 
-  test("course page keeps its contact action and footer reachable", async ({page}) => {
+  test("course page keeps its booking action and footer reachable", async ({page}) => {
     await page.goto("/fr/formations/praticien-hypnose-omni");
 
-    const contact = page.getByRole("link", {name: "Nous écrire"}).first();
-    await expect(contact).toBeVisible();
+    const booking = page.getByRole("link", {name: "S’inscrire"}).first();
+    await expect(booking).toBeVisible();
 
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
     const copyright = page.getByText(/MHP Coaching/).last();

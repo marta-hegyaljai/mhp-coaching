@@ -2,6 +2,7 @@ import {getTranslations, setRequestLocale} from "next-intl/server";
 import type {ReactNode} from "react";
 
 import {getBookingById} from "@/features/bookings/repository";
+import {isDateToBeConfirmed} from "@/features/bookings/booking-date";
 import {formatDateRange} from "@/features/courses/dates";
 import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
 import {buildPageMetadata} from "@/features/seo/metadata";
@@ -69,11 +70,13 @@ export default async function BookingSuccessPage({
             <dl className="mt-10 divide-y divide-line-soft rounded-panel border border-line bg-parchment px-6">
               <SummaryRow label={t("course")}>{booking.courseTitle}</SummaryRow>
               <SummaryRow label={t("dates")}>
-                {formatDateRange(
-                  booking.courseDateStart,
-                  booking.courseDateEnd,
-                  locale,
-                )}
+                {isDateToBeConfirmed(booking.courseDateStart)
+                  ? t("dateToBeConfirmed")
+                  : formatDateRange(
+                      booking.courseDateStart,
+                      booking.courseDateEnd,
+                      locale,
+                    )}
               </SummaryRow>
               <SummaryRow label={t("location")}>{booking.location}</SummaryRow>
               <SummaryRow label={t("amount")}>

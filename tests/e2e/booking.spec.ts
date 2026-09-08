@@ -1,26 +1,27 @@
 import {expect, test} from "@playwright/test";
 
-test("course pages clearly say that dates are not available yet", async ({page}) => {
+test("an undated course links to its booking and payment flow", async ({page}) => {
   await page.goto("/fr/formations/praticien-hypnose-omni");
 
   await expect(
-    page.getByText("Aucune date n’est ouverte pour le moment.").first(),
+    page.getByText(/La date sera confirmée prochainement/).first(),
   ).toBeVisible();
-  await expect(
-    page.getByRole("link", {name: "S’inscrire à cette formation"}),
-  ).toHaveCount(0);
-  await expect(page.getByRole("link", {name: "Nous écrire"}).first()).toBeVisible();
+  await page
+    .getByRole("link", {name: "S’inscrire à cette formation"})
+    .first()
+    .click();
+  await expect(page).toHaveURL(/\/inscription$/);
 });
 
-test("the booking route remains unavailable until course dates are added", async ({
+test("an undated course can continue to secure payment", async ({
   page,
 }) => {
   await page.goto("/fr/formations/praticien-hypnose-omni/inscription");
 
   await expect(
-    page.getByText("Cette formation n’a pas de date ouverte pour le moment."),
+    page.getByText("Date à confirmer · Fribourg").first(),
   ).toBeVisible();
   await expect(
     page.getByRole("button", {name: "Continuer vers le paiement"}),
-  ).toHaveCount(0);
+  ).toBeVisible();
 });

@@ -1,8 +1,8 @@
-import Image from "next/image";
 import {getTranslations, setRequestLocale} from "next-intl/server";
 import {notFound} from "next/navigation";
 
 import {CourseBookingBar} from "@/features/courses/components/course-booking-bar";
+import {CourseArtwork} from "@/features/courses/components/course-artwork";
 import {CourseDates} from "@/features/courses/components/course-dates";
 import {formatCourseDateRange} from "@/features/courses/dates";
 import {courseLocaleHrefs} from "@/features/courses/locale-hrefs";
@@ -11,10 +11,7 @@ import {
   getCourseBySlug,
   getCourseStaticParams,
 } from "@/features/courses/queries";
-import {
-  getCourseImage,
-  getCourseSourceContent,
-} from "@/features/courses/source-content";
+import {getCourseSourceContent} from "@/features/courses/source-content";
 import {formatChf} from "@/features/payments/money";
 import {BreadcrumbTrail} from "@/features/seo/breadcrumb-trail";
 import {courseJsonLd, eventJsonLd} from "@/features/seo/json-ld";
@@ -85,26 +82,20 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
     <SiteShell
       locale={locale}
       hreflangs={courseLocaleHrefs("/courses/[slug]", course)}
-      footerCta={
-        dates.length > 0
-          ? {
-              href: {
-                pathname: "/courses/[slug]/book",
-                params: {slug: course.slug[locale]},
-              },
-              label: t("bookCta"),
-            }
-          : {href: "/contact", label: t("contactCta")}
-      }
+      footerCta={{
+        href: {
+          pathname: "/courses/[slug]/book",
+          params: {slug: course.slug[locale]},
+        },
+        label: t("bookCta"),
+      }}
       bottomBar={
-        dates.length > 0 ? (
-          <CourseBookingBar
-            course={course}
-            locale={locale}
-            label={t("bookShort")}
-            fromLabel={t("price")}
-          />
-        ) : undefined
+        <CourseBookingBar
+          course={course}
+          locale={locale}
+          label={t("bookShort")}
+          fromLabel={t("price")}
+        />
       }
     >
       <JsonLd data={courseJsonLd(course, locale)} />
@@ -132,13 +123,10 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
           <div className="lg:col-span-7">
             <div className="grid grid-cols-[7rem_minmax(0,1fr)] items-start gap-5 sm:grid-cols-[12rem_minmax(0,1fr)] sm:gap-8">
               <div className="relative aspect-square overflow-hidden border border-ink bg-white">
-                <Image
-                  src={getCourseImage(course)}
-                  alt=""
-                  fill
+                <CourseArtwork
+                  course={course}
                   priority
                   sizes="(min-width: 640px) 192px, 112px"
-                  className="object-contain"
                 />
               </div>
               <div>
@@ -178,32 +166,21 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
                 </div>
               ) : null}
 
-              {dates.length > 0 ? (
-                <>
-                  <Link
-                    href={{
-                      pathname: "/courses/[slug]/book",
-                      params: {slug: course.slug[locale]},
-                    }}
-                    className={`${buttonStyles({size: "lg", block: true})} mt-6`}
-                  >
-                    {t("bookCta")}
-                    <ArrowRightIcon className="transition-transform duration-200 ease-standard group-hover/button:translate-x-0.5" />
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <p className="mt-6 text-sm leading-7 text-ink-muted">
-                    {t("noDates")}
-                  </p>
-                  <Link
-                    href="/contact"
-                    className={`${buttonStyles({variant: "secondary", size: "lg", block: true})} mt-5`}
-                  >
-                    {t("contactCta")}
-                  </Link>
-                </>
-              )}
+              {!nextDate ? (
+                <p className="mt-6 text-sm leading-7 text-ink-muted">
+                  {t("dateToBeConfirmed")}
+                </p>
+              ) : null}
+              <Link
+                href={{
+                  pathname: "/courses/[slug]/book",
+                  params: {slug: course.slug[locale]},
+                }}
+                className={`${buttonStyles({size: "lg", block: true})} mt-6`}
+              >
+                {t("bookCta")}
+                <ArrowRightIcon className="transition-transform duration-200 ease-standard group-hover/button:translate-x-0.5" />
+              </Link>
             </div>
           </aside>
         </div>
@@ -265,19 +242,19 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
           <h2 id="course-content" className="mt-3 font-serif text-heading">
             {t("detailsTitle")}
           </h2>
-          <div className="mt-8 border-t border-ink">
+          <div className="mt-8 overflow-hidden border border-ink bg-white">
             {sourceContent.sections.map((section, index) => (
               <details
                 key={`${section.title}-${index}`}
-                className="group border-b border-line bg-white"
+                className="group border-b border-line bg-white last:border-b-0"
               >
-                <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-5 py-4 text-left font-semibold marker:hidden focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink [&::-webkit-details-marker]:hidden">
+                <summary className="flex min-h-16 cursor-pointer list-none items-center justify-between gap-5 px-5 py-4 text-left font-semibold marker:hidden focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ink sm:px-6 [&::-webkit-details-marker]:hidden">
                   <span>{section.title}</span>
-                  <span aria-hidden="true" className="text-xl font-light leading-none group-open:rotate-45">
+                  <span aria-hidden="true" className="flex h-8 w-8 shrink-0 items-center justify-center text-xl font-light leading-none group-open:rotate-45">
                     +
                   </span>
                 </summary>
-                <div className="pb-6 pr-8">
+                <div className="px-5 pb-6 pr-12 sm:px-6 sm:pr-16">
                   {section.items.length === 1 ? (
                     <p className="text-base leading-8 text-ink-muted">{section.items[0]}</p>
                   ) : (
@@ -312,7 +289,7 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
         </h2>
         {dates.length === 0 ? (
           <p className="mt-4 max-w-xl text-base leading-7 text-ink-muted">
-            {t("noDates")}
+            {t("dateToBeConfirmed")}
           </p>
         ) : (
           <CourseDates

@@ -4,12 +4,13 @@ import {useActionState, useState} from "react";
 import {useTranslations} from "next-intl";
 
 import {createBookingAction} from "@/features/bookings/actions";
+import {unscheduledCourseDateId} from "@/features/bookings/booking-date";
 import {formatCourseDateRange} from "@/features/courses/dates";
 import type {Course, CourseDate} from "@/features/courses/types";
 import {formatChf} from "@/features/payments/money";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
-import {Button, buttonStyles} from "@/shared/ui/button";
+import {Button} from "@/shared/ui/button";
 import {CheckIcon, LockIcon, SpinnerIcon} from "@/shared/ui/icons";
 
 export function BookingForm({
@@ -30,24 +31,14 @@ export function BookingForm({
   );
   const errors = state?.errors;
   const draft = state?.draft;
+  const schedulePending = dates.length === 0;
+  const pendingDateId = unscheduledCourseDateId(course.id);
   const [selectedDateId, setSelectedDateId] = useState(
     () =>
-      dates.find((date) => date.id === initialDateId)?.id ?? dates[0]?.id ?? "",
+      dates.find((date) => date.id === initialDateId)?.id ??
+      dates[0]?.id ??
+      pendingDateId,
   );
-
-  if (dates.length === 0) {
-    return (
-      <div className="rounded-panel border border-line bg-parchment p-6">
-        <p className="text-base leading-7 text-ink-muted">{t("noDates")}</p>
-        <Link
-          href="/contact"
-          className={`${buttonStyles({variant: "secondary"})} mt-5`}
-        >
-          {t("contactLink")}
-        </Link>
-      </div>
-    );
-  }
 
   const selectedDate =
     dates.find((date) => date.id === selectedDateId) ?? dates[0];
@@ -77,62 +68,77 @@ export function BookingForm({
           </p>
         ) : null}
 
-        <fieldset>
-          <legend className="text-sm font-medium text-ink">
-            {t("dateLabel")}
-          </legend>
-          <div className="mt-3 space-y-2.5">
-            {dates.map((date) => {
-              const isSelected = date.id === selectedDate?.id;
+        {schedulePending ? (
+          <div className="border border-ink bg-white p-5">
+            <input type="hidden" name="courseDateId" value={pendingDateId} />
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-bronze">
+              {t("dateLabel")}
+            </p>
+            <p className="mt-2 font-serif text-subheading">
+              {t("dateToBeConfirmed")}
+            </p>
+            <p className="mt-2 text-sm leading-6 text-ink-muted">
+              {t("schedulePendingNote")}
+            </p>
+          </div>
+        ) : (
+          <fieldset>
+            <legend className="text-sm font-medium text-ink">
+              {t("dateLabel")}
+            </legend>
+            <div className="mt-3 space-y-2.5">
+              {dates.map((date) => {
+                const isSelected = date.id === selectedDate?.id;
 
-              return (
-                <label
-                  key={date.id}
-                  className={`flex min-h-14 cursor-pointer items-center gap-4 rounded-panel border px-4 py-3.5 transition duration-200 ease-standard has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-bronze ${
-                    isSelected
-                      ? "border-ink bg-parchment"
-                      : "border-line bg-parchment/60 hover:border-ink/25"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="courseDateId"
-                    value={date.id}
-                    checked={isSelected}
-                    onChange={() => setSelectedDateId(date.id)}
-                    className="sr-only"
-                  />
-                  <span
-                    aria-hidden="true"
-                    className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition duration-200 ${
+                return (
+                  <label
+                    key={date.id}
+                    className={`flex min-h-14 cursor-pointer items-center gap-4 rounded-panel border px-4 py-3.5 transition duration-200 ease-standard has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-bronze ${
                       isSelected
-                        ? "border-bronze bg-bronze text-ivory"
-                        : "border-line bg-ivory"
+                        ? "border-ink bg-parchment"
+                        : "border-line bg-parchment/60 hover:border-ink/25"
                     }`}
                   >
-                    {isSelected ? <CheckIcon className="h-3 w-3" /> : null}
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block font-medium">
-                      {date.location[locale]}
+                    <input
+                      type="radio"
+                      name="courseDateId"
+                      value={date.id}
+                      checked={isSelected}
+                      onChange={() => setSelectedDateId(date.id)}
+                      className="sr-only"
+                    />
+                    <span
+                      aria-hidden="true"
+                      className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition duration-200 ${
+                        isSelected
+                          ? "border-bronze bg-bronze text-ivory"
+                          : "border-line bg-ivory"
+                      }`}
+                    >
+                      {isSelected ? <CheckIcon className="h-3 w-3" /> : null}
                     </span>
-                    <span className="block text-sm text-ink-muted">
-                      {formatCourseDateRange(date, locale)}
+                    <span className="min-w-0 flex-1">
+                      <span className="block font-medium">
+                        {date.location[locale]}
+                      </span>
+                      <span className="block text-sm text-ink-muted">
+                        {formatCourseDateRange(date, locale)}
+                      </span>
                     </span>
-                  </span>
-                  <span className="shrink-0 text-sm font-semibold text-ink">
-                    {price}
-                  </span>
-                </label>
-              );
-            })}
-          </div>
-          {errors?.courseDateId ? (
-            <p role="alert" className="mt-2 text-sm text-bronze">
-              {errors.courseDateId}
-            </p>
-          ) : null}
-        </fieldset>
+                    <span className="shrink-0 text-sm font-semibold text-ink">
+                      {price}
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+            {errors?.courseDateId ? (
+              <p role="alert" className="mt-2 text-sm text-bronze">
+                {errors.courseDateId}
+              </p>
+            ) : null}
+          </fieldset>
+        )}
 
         <div className="grid gap-5 sm:grid-cols-2">
           <Field
@@ -221,7 +227,9 @@ export function BookingForm({
               <div className="flex justify-between gap-4">
                 <dt className="text-ink-subtle">{t("summaryDate")}</dt>
                 <dd className="text-right font-medium">
-                  {selectedDate
+                  {schedulePending
+                    ? t("dateToBeConfirmed")
+                    : selectedDate
                     ? formatCourseDateRange(selectedDate, locale)
                     : "—"}
                 </dd>
@@ -229,7 +237,9 @@ export function BookingForm({
               <div className="flex justify-between gap-4">
                 <dt className="text-ink-subtle">{t("summaryLocation")}</dt>
                 <dd className="text-right font-medium">
-                  {selectedDate ? selectedDate.location[locale] : "—"}
+                  {selectedDate
+                    ? selectedDate.location[locale]
+                    : course.location[locale]}
                 </dd>
               </div>
             </dl>

@@ -23,7 +23,7 @@ export async function SiteShell({
 }) {
   return (
     <div
-      className={`flex min-h-screen flex-col ${bottomBar ? "pb-24 lg:pb-0" : ""}`}
+      className={`flex min-h-screen flex-col overflow-x-clip ${bottomBar ? "pb-24 lg:pb-0" : ""}`}
     >
       <SiteHeader locale={locale} hreflangs={hreflangs} />
       <main className="flex-1">{children}</main>
