@@ -2,7 +2,7 @@ import {describe, expect, it} from "vitest";
 
 import {getCourseById} from "@/features/courses/queries";
 
-import {courseJsonLd, courseListJsonLd, eventJsonLd} from "./json-ld";
+import {courseJsonLd, courseListJsonLd, eventJsonLd, organizationJsonLd} from "./json-ld";
 
 describe("structured data", () => {
   it("lists featured courses with locale-correct URLs", () => {
@@ -26,5 +26,13 @@ describe("structured data", () => {
 
     const events = eventJsonLd(course!, "en");
     expect(events).toEqual([]);
+  });
+
+  it("publishes the MHP Coaching email and phone", () => {
+    const json = organizationJsonLd();
+
+    expect(json.email).toBe("contact@mhp-coaching.ch");
+    expect(json.telephone).toBe("+41 79 451 44 92");
+    expect(JSON.stringify(json)).not.toMatch(/mhp-hypnose/i);
   });
 });

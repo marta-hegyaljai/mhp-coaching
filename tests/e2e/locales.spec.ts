@@ -66,6 +66,7 @@ test("contact details use the MHP Coaching email and phone", async ({page}) => {
   await expect(email).toHaveAttribute("href", "mailto:contact@mhp-coaching.ch");
   await expect(phone).toBeVisible();
   await expect(phone).toHaveAttribute("href", "tel:+41794514492");
+  await expect(page.getByRole("contentinfo").getByRole("link", {name: "contact@mhp-coaching.ch"})).toBeVisible();
   await expect(page.getByText(/mhp-hypnose/i)).toHaveCount(0);
 });
 

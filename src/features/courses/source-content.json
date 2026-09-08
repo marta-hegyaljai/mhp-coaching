@@ -1,6 +1,5 @@
 {
   "omni-practitioner": {
-    "sourceUrl": "https://www.mhp-hypnose.com/formations/praticien-en-hypnose-elmanienne-omni",
     "intro": "La formation de Praticien·ne en Hypnose OMNI® constitue la base du cursus de formation en hypnose thérapeutique. Basée sur l’hypnose Elmanienne, la méthode OMNI® est reconnue pour son approche pragmatique orientée solution, la rapidité et l’efficacité de ces techniques, ainsi que ses formats thérapeutiques innovants. Découvrez l'hypnose comme un outil de travail qui n'a quasiment pas de limite dans son application.",
     "sections": [
       {
@@ -113,7 +112,6 @@
     ]
   },
   "master-practitioner": {
-    "sourceUrl": "https://www.mhp-hypnose.com/formations/maitre-praticien-hypnose-elmanienne",
     "intro": "La formation de Maître Praticien·ne en Hypnose est le deuxième niveau du cursus de formation en Hypnose Elmanienne thérapeutique et vise à approfondir et à spécialiser les connaissances acquises lors de la formation de Praticien·ne en Hypnose OMNI®.",
     "sections": [
       {
@@ -202,7 +200,6 @@
     ]
   },
   "advanced-techniques": {
-    "sourceUrl": "https://www.mhp-hypnose.com/formations/techniques-avancees",
     "intro": null,
     "sections": [
       {
@@ -239,7 +236,6 @@
     ]
   },
   "solution-focused-interview": {
-    "sourceUrl": "https://www.mhp-hypnose.com/formations/entretien-therapie-breve-oriente-solution",
     "intro": null,
     "sections": [
       {
@@ -278,7 +274,6 @@
     ]
   },
   "anxiety-hypnosis": {
-    "sourceUrl": "https://www.mhp-hypnose.com/formations/troubles-anxieux-hypnose",
     "intro": null,
     "sections": [
       {
@@ -318,7 +313,6 @@
     ]
   },
   "sport-hypnosis": {
-    "sourceUrl": "https://www.mhp-hypnose.com/formations/sport-hypnose",
     "intro": null,
     "sections": [
       {
@@ -355,7 +349,6 @@
     ]
   },
   "children-hypnosis": {
-    "sourceUrl": "https://www.mhp-hypnose.com/formations/enfants-hypnose",
     "intro": null,
     "sections": [
       {
@@ -436,7 +429,6 @@
     ]
   },
   "addictions-hypnosis": {
-    "sourceUrl": "https://www.mhp-hypnose.com/formations/addictions-hypnose",
     "intro": null,
     "sections": [
       {
@@ -477,7 +469,6 @@
     ]
   },
   "illness-hypnosis": {
-    "sourceUrl": "https://www.mhp-hypnose.com/formations/maladies-hypnose",
     "intro": null,
     "sections": [
       {
@@ -518,7 +509,6 @@
     ]
   },
   "professional-practice-final-exam": {
-    "sourceUrl": "https://www.mhp-hypnose.com/formations/examen-final-maitre-praticien",
     "intro": null,
     "sections": [
       {
@@ -559,7 +549,6 @@
     ]
   },
   "transgenerational-mia": {
-    "sourceUrl": "https://www.mhp-hypnose.com/formations/hypnose-transgenerationnelle-methode-mia",
     "intro": null,
     "sections": [
       {
@@ -593,7 +582,6 @@
     ]
   },
   "medical-hypnosis-m1": {
-    "sourceUrl": "https://www.mhp-hypnose.com/formations/hypnose-medicale-bases",
     "intro": null,
     "sections": [
       {
@@ -630,7 +618,6 @@
     ]
   },
   "medical-hypnosis-dental-m2": {
-    "sourceUrl": "https://www.mhp-hypnose.com/formations/hypnose-medicale-dentaire",
     "intro": null,
     "sections": [
       {
@@ -665,7 +652,6 @@
     ]
   },
   "medical-hypnosis-clinical-m2": {
-    "sourceUrl": "https://www.mhp-hypnose.com/formations/hypnose-medicale-clinique",
     "intro": null,
     "sections": [
       {
@@ -699,7 +685,6 @@
     ]
   },
   "medical-hypnosis-exam-m3": {
-    "sourceUrl": "https://www.mhp-hypnose.com/formations/hypnose-medicale-examen",
     "intro": null,
     "sections": [
       {
@@ -735,7 +720,6 @@
     ]
   },
   "chronic-pain-hypnosis": {
-    "sourceUrl": "https://www.mhp-hypnose.com/formations/douleurs-choniques-hypnose",
     "intro": null,
     "sections": [
       {
@@ -759,7 +743,6 @@
     ]
   },
   "birth-preparation": {
-    "sourceUrl": "https://www.mhp-hypnose.com/formations/preparation-naissance-las4h",
     "intro": null,
     "sections": [
       {
@@ -783,7 +766,6 @@
     ]
   },
   "weight-loss-hypnosis": {
-    "sourceUrl": "https://www.mhp-hypnose.com/formations/perte-de-poids-hypnose",
     "intro": null,
     "sections": [
       {
@@ -820,7 +802,6 @@
     ]
   },
   "healthy-weight-nutrition-hypnosis": {
-    "sourceUrl": "https://www.mhp-hypnose.com/formations/poids-sante-nutrition-hypnose",
     "intro": null,
     "sections": [
       {
@@ -855,7 +836,6 @@
     ]
   },
   "sensory-anchors-hypnosis": {
-    "sourceUrl": "https://www.mhp-hypnose.com/formations/ancrages-sensoriels",
     "intro": null,
     "sections": [
       {

@@ -8,7 +8,6 @@ export type CourseSourceSection = {
 };
 
 export type CourseSourceContent = {
-  sourceUrl: string;
   intro: string | null;
   sections: CourseSourceSection[];
 };

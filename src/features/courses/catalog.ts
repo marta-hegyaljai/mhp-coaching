@@ -1,7 +1,6 @@
 import type {Course, LocalizedText} from "./types";
 
-// Catalogue source: https://www.mhp-hypnose.com/formations (accessed 2026-09-08).
-// French editorial content is reproduced/adapted under the source site's CC BY 4.0 licence.
+// French editorial content is reproduced/adapted under a CC BY 4.0 licence.
 const location: LocalizedText = {fr: "Fribourg", de: "Freiburg", en: "Fribourg"};
 const noDates: Course["dates"] = [];
 

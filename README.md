@@ -76,7 +76,7 @@ docker compose down -v    # stop services and permanently reset local data
 
 Cursor rules in `.cursor/rules/` point back to these authoritative documents.
 
-Public URLs are locale-prefixed (`/fr`, `/de`, `/en`) with localized course slugs. Sitemap, robots, canonical and hreflang tags are generated for those routes. Valuable legacy paths from mhp-hypnose.com 301 to the new French routes.
+Public URLs are locale-prefixed (`/fr`, `/de`, `/en`) with localized course slugs. Sitemap, robots, canonical and hreflang tags are generated for those routes. Valuable legacy paths 301 to the new French routes.
 
 ## Cursor Cloud Agent environment
 

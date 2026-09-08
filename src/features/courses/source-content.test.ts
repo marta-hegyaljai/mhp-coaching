@@ -14,9 +14,9 @@ describe("historical course content", () => {
       const source = getCourseSourceContent(course);
       const image = getCourseImage(course);
 
-      expect(source.sourceUrl).toMatch(/^https:\/\/www\.mhp-hypnose\.com\/formations\//);
       expect(source.sections.length).toBeGreaterThan(0);
       expect(source.sections.every((section) => section.items.length > 0)).toBe(true);
+      expect(JSON.stringify(source)).not.toMatch(/mhp-hypnose/i);
       expect(existsSync(join(process.cwd(), "public", image))).toBe(true);
     }
   });
