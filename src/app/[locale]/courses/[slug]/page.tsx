@@ -1,3 +1,4 @@
+import Image from "next/image";
 import {getTranslations, setRequestLocale} from "next-intl/server";
 import {notFound} from "next/navigation";
 
@@ -10,6 +11,10 @@ import {
   getCourseBySlug,
   getCourseStaticParams,
 } from "@/features/courses/queries";
+import {
+  getCourseImage,
+  getCourseSourceContent,
+} from "@/features/courses/source-content";
 import {formatChf} from "@/features/payments/money";
 import {BreadcrumbTrail} from "@/features/seo/breadcrumb-trail";
 import {courseJsonLd, eventJsonLd} from "@/features/seo/json-ld";
@@ -74,6 +79,7 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
   const dates = getBookableDates(course);
   const nextDate = dates[0];
   const price = formatChf(course.priceChf, locale, {compact: true});
+  const sourceContent = getCourseSourceContent(course);
 
   return (
     <SiteShell
@@ -124,8 +130,22 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
 
         <div className="mt-8 grid gap-10 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-7">
-            <Eyebrow>{course.duration[locale]}</Eyebrow>
-            <h1 className="mt-4 font-serif text-title">{course.title[locale]}</h1>
+            <div className="grid grid-cols-[7rem_minmax(0,1fr)] items-start gap-5 sm:grid-cols-[12rem_minmax(0,1fr)] sm:gap-8">
+              <div className="relative aspect-square overflow-hidden border border-ink bg-white">
+                <Image
+                  src={getCourseImage(course)}
+                  alt=""
+                  fill
+                  priority
+                  sizes="(min-width: 640px) 192px, 112px"
+                  className="object-contain"
+                />
+              </div>
+              <div>
+                <Eyebrow>{course.duration[locale]}</Eyebrow>
+                <h1 className="mt-4 font-serif text-title">{course.title[locale]}</h1>
+              </div>
+            </div>
             <p className="mt-6 text-lead text-ink-muted">
               {course.shortDescription[locale]}
             </p>
@@ -196,8 +216,13 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
               {t("about")}
             </h2>
             <p className="mt-6 text-base leading-8 text-ink-muted">
-              {course.description[locale]}
+              {sourceContent.intro ?? course.description[locale]}
             </p>
+            {locale !== "fr" ? (
+              <p className="mt-4 border-l-2 border-gold pl-4 text-sm leading-6 text-ink-subtle">
+                {t("sourceLanguageNotice")}
+              </p>
+            ) : null}
           </div>
           <dl className="grid gap-6 lg:col-span-5">
             <div className="border-t border-line pt-4">
@@ -231,6 +256,53 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
               <dd className="mt-2 text-sm text-ink-muted">{price}</dd>
             </div>
           </dl>
+        </div>
+      </Section>
+
+      <Section size="sm" tone="shell" ariaLabelledBy="course-content">
+        <div className="max-w-4xl">
+          <Eyebrow>{t("sourceEyebrow")}</Eyebrow>
+          <h2 id="course-content" className="mt-3 font-serif text-heading">
+            {t("detailsTitle")}
+          </h2>
+          <div className="mt-8 border-t border-ink">
+            {sourceContent.sections.map((section, index) => (
+              <details
+                key={`${section.title}-${index}`}
+                className="group border-b border-line bg-white"
+              >
+                <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-5 py-4 text-left font-semibold marker:hidden focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink [&::-webkit-details-marker]:hidden">
+                  <span>{section.title}</span>
+                  <span aria-hidden="true" className="text-xl font-light leading-none group-open:rotate-45">
+                    +
+                  </span>
+                </summary>
+                <div className="pb-6 pr-8">
+                  {section.items.length === 1 ? (
+                    <p className="text-base leading-8 text-ink-muted">{section.items[0]}</p>
+                  ) : (
+                    <ul className="space-y-3 text-base leading-7 text-ink-muted">
+                      {section.items.map((item, itemIndex) => (
+                        <li key={`${item}-${itemIndex}`} className="flex gap-3">
+                          <span aria-hidden="true" className="mt-[0.72rem] h-1 w-1 shrink-0 bg-gold" />
+                          <span>{item.replace(/^·\s*/, "")}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </details>
+            ))}
+          </div>
+          <p className="mt-6 text-xs leading-5 text-ink-subtle">
+            {t.rich("sourceCredit", {
+              link: (chunks) => (
+                <a className="underline underline-offset-4 hover:text-ink" href={sourceContent.sourceUrl}>
+                  {chunks}
+                </a>
+              ),
+            })}
+          </p>
         </div>
       </Section>
 

@@ -51,6 +51,7 @@
     "eyebrow": "Cursus OMNI",
     "seats": "{count} participant·e·s max.",
     "courseCount": "{count, plural, =1 {# formation} other {# formations}}"
+    ,"instructorImageAlt": "Marta Hegyaljai Python pendant une formation en hypnose"
   },
   "CourseDetail": {
     "bookCta": "S’inscrire à cette formation",
@@ -65,7 +66,11 @@
     "bookDate": "Choisir cette date",
     "nextSession": "Prochaine session",
     "about": "Le programme",
-    "contactCta": "Nous écrire"
+    "contactCta": "Nous écrire",
+    "sourceEyebrow": "Contenu de la formation",
+    "detailsTitle": "Objectifs, programme et prérequis",
+    "sourceLanguageNotice": "Les informations détaillées ci-dessous sont actuellement disponibles dans leur version française d’origine.",
+    "sourceCredit": "Contenu repris du <link>catalogue historique mhp-hypnose</link>."
   },
   "BookingForm": {
     "title": "Réserver votre place",

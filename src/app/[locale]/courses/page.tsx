@@ -1,3 +1,4 @@
+import Image from "next/image";
 import {getTranslations, setRequestLocale} from "next-intl/server";
 import type {ReactNode} from "react";
 
@@ -60,10 +61,21 @@ export default async function CoursesPage({params}: CoursesPageProps) {
             {name: t("title"), path: localizedPath(locale, "/courses")},
           ]}
         />
-        <div className="mt-8 max-w-3xl">
-          <Eyebrow>{t("eyebrow")}</Eyebrow>
-          <h1 className="mt-4 font-serif text-title">{t("title")}</h1>
-          <p className="mt-6 text-lead text-ink-muted">{t("intro")}</p>
+        <div className="relative mt-8 min-h-[22rem] overflow-hidden border border-ink sm:min-h-[30rem]">
+          <Image
+            src="/images/courses/catalogue-instructor.webp"
+            alt={t("instructorImageAlt")}
+            fill
+            priority
+            sizes="(min-width: 1280px) 1200px, 100vw"
+            className="object-cover object-[62%_center]"
+          />
+          <div className="absolute inset-0 bg-black/40" />
+          <div className="relative flex min-h-[22rem] max-w-3xl flex-col justify-end p-6 text-white sm:min-h-[30rem] sm:p-10 lg:p-14">
+            <Eyebrow className="text-white">{t("eyebrow")}</Eyebrow>
+            <h1 className="mt-4 font-serif text-title">{t("title")}</h1>
+            <p className="mt-5 max-w-2xl text-lead text-white/85">{t("intro")}</p>
+          </div>
         </div>
       </Section>
 

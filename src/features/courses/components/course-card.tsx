@@ -1,5 +1,8 @@
+import Image from "next/image";
+
 import {formatCourseDateRange} from "@/features/courses/dates";
 import {getBookableDates} from "@/features/courses/queries";
+import {getCourseImage} from "@/features/courses/source-content";
 import type {Course} from "@/features/courses/types";
 import {formatChf} from "@/features/payments/money";
 import {Link} from "@/i18n/navigation";
@@ -30,8 +33,17 @@ export function CourseCard({
       href={href}
       className="group/card block h-full rounded-panel focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-ink"
     >
-      <article className="flex h-full flex-col border border-ink bg-parchment p-5 transition-[background-color,transform] duration-150 group-hover/card:-translate-y-0.5 group-hover/card:bg-hover sm:p-6">
-        <div className="flex h-full flex-col gap-6">
+      <article className="grid h-full overflow-hidden border border-ink bg-parchment transition-[background-color,transform] duration-150 group-hover/card:-translate-y-0.5 group-hover/card:bg-hover sm:grid-cols-[minmax(10rem,0.72fr)_minmax(0,1.28fr)]">
+        <div className="relative aspect-[4/3] overflow-hidden border-b border-ink bg-white sm:aspect-auto sm:border-b-0 sm:border-r">
+          <Image
+            src={getCourseImage(course)}
+            alt=""
+            fill
+            sizes="(min-width: 768px) 20vw, 100vw"
+            className="object-contain transition-transform duration-150 group-hover/card:scale-[1.015] motion-reduce:transform-none"
+          />
+        </div>
+        <div className="flex h-full flex-col gap-6 p-5 sm:p-6">
           <div className="flex-1">
             <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
               <Eyebrow>{course.duration[locale]}</Eyebrow>

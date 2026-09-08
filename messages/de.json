@@ -51,6 +51,7 @@
     "eyebrow": "OMNI-Curriculum",
     "seats": "max. {count} Teilnehmende",
     "courseCount": "{count, plural, =1 {# Ausbildung} other {# Ausbildungen}}"
+    ,"instructorImageAlt": "Marta Hegyaljai Python während einer Hypnoseausbildung"
   },
   "CourseDetail": {
     "bookCta": "Diesen Kurs buchen",
@@ -65,7 +66,11 @@
     "bookDate": "Diesen Termin wählen",
     "nextSession": "Nächste Durchführung",
     "about": "Das Programm",
-    "contactCta": "Kontakt aufnehmen"
+    "contactCta": "Kontakt aufnehmen",
+    "sourceEyebrow": "Ausbildungsinhalt",
+    "detailsTitle": "Ziele, Programm und Voraussetzungen",
+    "sourceLanguageNotice": "Die ausführlichen Informationen unten sind derzeit in der französischen Originalfassung verfügbar.",
+    "sourceCredit": "Inhalt aus dem <link>historischen mhp-hypnose-Katalog</link>."
   },
   "BookingForm": {
     "title": "Platz buchen",

@@ -51,6 +51,7 @@
     "eyebrow": "OMNI curriculum",
     "seats": "{count} participants max",
     "courseCount": "{count, plural, =1 {# course} other {# courses}}"
+    ,"instructorImageAlt": "Marta Hegyaljai Python teaching a hypnosis course"
   },
   "CourseDetail": {
     "bookCta": "Book this course",
@@ -65,7 +66,11 @@
     "bookDate": "Choose this date",
     "nextSession": "Next session",
     "about": "The programme",
-    "contactCta": "Contact us"
+    "contactCta": "Contact us",
+    "sourceEyebrow": "Course content",
+    "detailsTitle": "Objectives, programme and prerequisites",
+    "sourceLanguageNotice": "The detailed information below is currently available in its original French version.",
+    "sourceCredit": "Content from the <link>historical mhp-hypnose catalogue</link>."
   },
   "BookingForm": {
     "title": "Book your place",

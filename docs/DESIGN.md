@@ -69,6 +69,23 @@ dashboard.
 - Booking forms use the same bordered, rectangular language and keep the live
   summary visible on desktop. Validation must remain localized and accessible.
 
+## Course imagery and source content
+
+- The course catalogue opens with the instructor photograph from the historical
+  MHP catalogue. Keep it editorial, high-contrast, and structurally separate
+  from the card grid; do not replace it with generic stock imagery.
+- Every course card and detail page uses its corresponding historical course
+  image from `public/images/courses`. Images support recognition and hierarchy;
+  they must not become decorative full-page backgrounds or introduce new accent
+  colors into controls.
+- Detailed course claims, objectives, prerequisites, recognitions, prices, and
+  descriptions must trace to the historical MHP catalogue. Do not invent copy
+  to fill a layout. A missing translation may fall back visibly to the exact
+  French source until a faithful translation is added.
+- Legacy references to Lausanne or Geneva must not be restored. The current and
+  only course location is Fribourg. Course dates remain unpublished until the
+  business supplies them.
+
 ## Motion allowlist
 
 Motion exists only to reinforce something clickable:
