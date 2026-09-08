@@ -30,13 +30,14 @@ export default async function OpenGraphImage({
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          background: "#f4efe4",
-          color: "#1f1b16",
+          background: "#ffffff",
+          color: "#090909",
           padding: 72,
+          border: "16px solid #090909",
         }}
       >
         <div style={{fontSize: 28, letterSpacing: 6, textTransform: "uppercase"}}>
-          mhp | hypnose
+          mhp-coaching
         </div>
         <div style={{fontSize: 58, lineHeight: 1.1, maxWidth: 900}}>
           {t("title")}

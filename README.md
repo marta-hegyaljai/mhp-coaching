@@ -1,6 +1,6 @@
 # MHP Hypnose courses
 
-Multilingual Next.js site for mhp | hypnose: course catalogue, booking, Stripe (TWINT/card) or a fake payment provider, and a small staff booking list.
+Multilingual Next.js site for mhp-coaching: course catalogue, booking, Stripe (TWINT/card) or a fake payment provider, and a small staff booking list.
 
 ## Prerequisites
 

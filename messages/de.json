@@ -1,8 +1,8 @@
 {
   "Metadata": {
-    "siteName": "mhp | hypnose",
-    "title": "Ausbildung in elmanischer Hypnose in der Schweiz | mhp | hypnose",
-    "description": "OMNI-Hypnoseausbildung in Lausanne, Genf und Freiburg. Elmanische Hypnose lernen, einen Termin wählen und sicher mit TWINT oder Karte bezahlen."
+    "siteName": "mhp-coaching",
+    "title": "Ausbildung in elmanischer Hypnose in der Schweiz | mhp-coaching",
+    "description": "Hypnoseausbildungen in Freiburg: OMNI®-Lehrgang, Vertiefung, medizinische Hypnose und Praxisworkshops."
   },
   "Nav": {
     "label": "Hauptnavigation",
@@ -20,13 +20,13 @@
   "HomePage": {
     "eyebrow": "OMNI Hypnosis Training Center — Romandie & Frankreich",
     "title": "Ausbildung in elmanischer Hypnose, ruhig und präzise.",
-    "intro": "mhp | hypnose ist offizielle OMNI-Vertretung für die Romandie und Frankreich. Zeitgenössische, direkte, lösungsorientierte Hypnose — in kleinen Gruppen in Lausanne, Genf und Freiburg.",
+    "intro": "mhp-coaching bietet in Freiburg zeitgenössische, direkte und lösungsorientierte Hypnose — präzise vermittelt in einem professionellen Rahmen.",
     "ctaCourses": "Ausbildungen ansehen",
     "ctaBook": "Platz buchen",
     "aboutTitle": "Eine Schule für Menschen, die wirklich praktizieren.",
-    "aboutBody": "Gegründet von Marta Hegyaljai Python bringt mhp | hypnose die OMNI-Methode in die französisch- und deutschsprachige Praxis. Gruppen bleiben klein. Der Unterricht bleibt konkret. Anerkennungen (ASCA, NGH, APSH, eduQua) stützen einen seriösen Berufsweg — ohne diese Website zur Diplomfabrik zu machen.",
-    "coursesTitle": "Nächste Ausbildungen",
-    "coursesIntro": "Beginnen Sie mit der OMNI-Praktikerausbildung, vertiefen Sie danach mit Aufbaumodulen. Daten und Preise stehen hier; Buchung und Zahlung erfolgen auf dieser Website.",
+    "aboutBody": "Gegründet von Marta Hegyaljai Python bringt mhp-coaching die OMNI-Methode in die französisch- und deutschsprachige Praxis. Gruppen bleiben klein. Der Unterricht bleibt konkret. Anerkennungen (ASCA, NGH, APSH, eduQua) stützen einen seriösen Berufsweg — ohne diese Website zur Diplomfabrik zu machen.",
+    "coursesTitle": "Ausbildungen entdecken",
+    "coursesIntro": "Beginnen Sie mit dem OMNI®-Lehrgang und vertiefen Sie danach mit Aufbaumodulen, medizinischer Hypnose und Praxisworkshops. Termine folgen demnächst.",
     "whyTitle": "Warum diese Methode",
     "whyRapidTitle": "Schnell und prüfbar",
     "whyRapidBody": "Induktionen zielen auf eine brauchbare Tiefe in kurzer Zeit, mit Tests, die Sie im Raum tatsächlich einsetzen können.",
@@ -37,16 +37,18 @@
     "coursesLink": "Alle Ausbildungen",
     "aboutEyebrow": "Die Schule",
     "whyEyebrow": "Die Methode",
-    "trustLocations": "Lausanne · Genf · Freiburg",
+    "trustLocations": "Freiburg",
     "trustGroup": "Gruppen mit maximal 16 Personen",
     "trustRecognition": "ASCA · NGH · APSH · eduQua"
   },
   "CoursesPage": {
     "title": "Hypnose-Ausbildungen",
-    "description": "Grundlage und Aufbau in elmanischer Hypnose bei mhp | hypnose. Kurs wählen, Termin in der Schweiz nehmen und online buchen.",
-    "intro": "Die Praktikerausbildung ist das Fundament. Aufbaumodule buchen Sie danach einzeln.",
+    "description": "Alle mhp-coaching-Ausbildungen in Freiburg: OMNI®-Lehrgang, Aufbaumodule, medizinische Hypnose und Praxisworkshops.",
+    "intro": "Entdecken Sie den gesamten Katalog in Freiburg. Verfügbare Termine werden in einem nächsten Schritt ergänzt.",
     "foundation": "Grundlage",
     "advanced": "Aufbaumodule",
+    "medical": "Medizinische Hypnose",
+    "workshops": "Praxisworkshops",
     "readMore": "Kursdetails",
     "breadcrumbHome": "Start",
     "eyebrow": "OMNI-Curriculum",
@@ -59,6 +61,7 @@
     "noDates": "Derzeit ist kein buchbarer Termin offen. Bitte kontaktieren Sie uns für die nächste Durchführung.",
     "audience": "Für wen",
     "duration": "Dauer",
+    "location": "Ort",
     "price": "Preis",
     "breadcrumbCourses": "Ausbildungen",
     "bookShort": "Buchen",
@@ -128,7 +131,7 @@
   },
   "ContactPage": {
     "title": "Kontakt",
-    "description": "Schreiben Sie mhp | hypnose in Villars-sur-Glâne oder Lausanne. Wir bilden auf Französisch, Deutsch und Englisch aus.",
+    "description": "Schreiben Sie mhp-coaching in Villars-sur-Glâne oder Lausanne. Wir bilden auf Französisch, Deutsch und Englisch aus.",
     "intro": "Für Fragen zur Ausbildung schreiben oder anrufen. Buchungen schliessen Sie online auf der jeweiligen Kursseite ab.",
     "hq": "Sitz",
     "lausanne": "Lausanne",
@@ -136,11 +139,11 @@
   },
   "Legal": {
     "imprintTitle": "Impressum",
-    "imprintDescription": "Herausgeber, Adresse und rechtliche Angaben zu mhp | hypnose / MHP & Partners Sàrl.",
+    "imprintDescription": "Herausgeber, Adresse und rechtliche Angaben zu mhp-coaching / MHP & Partners Sàrl.",
     "privacyTitle": "Datenschutz",
-    "privacyDescription": "Wie mhp | hypnose Buchungsdaten für Anmeldung und Zahlung erhebt und verwendet.",
+    "privacyDescription": "Wie mhp-coaching Buchungsdaten für Anmeldung und Zahlung erhebt und verwendet.",
     "termsTitle": "Buchungsbedingungen",
-    "termsDescription": "Bedingungen für die Online-Buchung und Zahlung von mhp | hypnose-Kursen."
+    "termsDescription": "Bedingungen für die Online-Buchung und Zahlung von mhp-coaching-Kursen."
   },
   "Footer": {
     "tagline": "Ausbildung in elmanischer Hypnose in der Schweiz — kleine Gruppen, praxisnaher Unterricht, professioneller Anspruch.",

@@ -23,8 +23,8 @@ type SectionProps = ContainerProps & {
 
 const paddings = {
   sm: "py-10 sm:py-12",
-  md: "py-14 sm:py-20",
-  lg: "py-16 sm:py-24 lg:py-28",
+  md: "py-12 sm:py-16",
+  lg: "py-14 sm:py-20 lg:py-24",
 } as const;
 
 export function Section({
@@ -51,7 +51,7 @@ export function Section({
 export function Eyebrow({children, className = ""}: ContainerProps) {
   return (
     <p
-      className={`text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-bronze ${className}`}
+      className={`text-[0.7rem] font-bold uppercase tracking-[0.2em] text-gold-deep ${className}`}
     >
       {children}
     </p>

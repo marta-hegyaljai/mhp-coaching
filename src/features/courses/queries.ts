@@ -16,6 +16,14 @@ export function getAdvancedCourses(): Course[] {
   return courses.filter((course) => course.category === "advanced");
 }
 
+export function getMedicalCourses(): Course[] {
+  return courses.filter((course) => course.category === "medical");
+}
+
+export function getWorkshopCourses(): Course[] {
+  return courses.filter((course) => course.category === "workshop");
+}
+
 export function getCourseById(id: string): Course | undefined {
   return courses.find((course) => course.id === id);
 }

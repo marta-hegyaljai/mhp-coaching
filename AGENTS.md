@@ -11,6 +11,17 @@ Read `docs/PRODUCT-VISION.md` only for long-term context.
 ## Current priority
 Ship the MVP quickly enough to replace the unreliable legacy site and stop lost bookings. Do not implement long-term features unless explicitly requested.
 
+## Binding UI direction
+Before any visual or component work, read `docs/DESIGN.md`. The public UI uses
+a pure-white and black foundation with gold limited to primary CTA hover and
+small editorial eyebrow labels; it is minimalist,
+mildly brutalist, and classy. Do not introduce beige/cream surfaces, bronze or
+brown, shadows, decorative animation, hidden phone navigation, long full-width
+option lists, or locale-dependent control shifts.
+Course/date possibilities use compact bordered card grids. The language
+switcher remains a fixed-width dropdown. These rules apply to Codex and all
+other coding agents.
+
 ## Stack
 - Next.js App Router + TypeScript
 - pnpm

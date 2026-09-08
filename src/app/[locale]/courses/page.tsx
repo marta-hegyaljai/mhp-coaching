@@ -5,7 +5,9 @@ import {CourseCard} from "@/features/courses/components/course-card";
 import {
   getAdvancedCourses,
   getFoundationCourses,
+  getMedicalCourses,
   getPublishedCourses,
+  getWorkshopCourses,
 } from "@/features/courses/queries";
 import type {Course} from "@/features/courses/types";
 import {PaymentMethods} from "@/features/payments/components/payment-methods";
@@ -43,6 +45,8 @@ export default async function CoursesPage({params}: CoursesPageProps) {
   const groups: Array<{title: string; courses: Course[]}> = [
     {title: t("foundation"), courses: getFoundationCourses()},
     {title: t("advanced"), courses: getAdvancedCourses()},
+    {title: t("medical"), courses: getMedicalCourses()},
+    {title: t("workshops"), courses: getWorkshopCourses()},
   ];
 
   return (
@@ -58,7 +62,7 @@ export default async function CoursesPage({params}: CoursesPageProps) {
             {name: t("title"), path: localizedPath(locale, "/courses")},
           ]}
         />
-        <div className="mt-8 max-w-3xl rise">
+        <div className="mt-8 max-w-3xl">
           <Eyebrow>{t("eyebrow")}</Eyebrow>
           <h1 className="mt-4 font-serif text-title">{t("title")}</h1>
           <p className="mt-6 text-lead text-ink-muted">{t("intro")}</p>
@@ -79,7 +83,6 @@ export default async function CoursesPage({params}: CoursesPageProps) {
                 course={course}
                 locale={locale}
                 detailsLabel={t("readMore")}
-                seatsLabel={t("seats", {count: course.dates[0]?.capacity ?? 16})}
                 headingLevel="h3"
               />
             ))}
@@ -107,7 +110,7 @@ function CourseGroup({
           {count}
         </p>
       </div>
-      {children}
+      <div className="mt-5 grid gap-4 md:grid-cols-2">{children}</div>
     </section>
   );
 }

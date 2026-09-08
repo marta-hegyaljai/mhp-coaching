@@ -23,16 +23,16 @@ export function CourseDates({
   seatsLabel: (capacity: number) => string;
 }) {
   return (
-    <ul className="mt-6">
+    <ul className="mt-6 grid gap-3 md:grid-cols-2">
       {dates.map((date) => (
         <li
           key={date.id}
-          className="flex flex-col gap-4 border-t border-line py-5 sm:flex-row sm:items-center sm:justify-between sm:gap-8"
+          className="flex flex-col justify-between gap-5 border border-ink bg-parchment p-5"
         >
           <div className="min-w-0">
             <p className="font-serif text-subheading">{date.location[locale]}</p>
             <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-ink-muted">
-              <CalendarIcon className="h-3.5 w-3.5 text-bronze" />
+              <CalendarIcon className="h-3.5 w-3.5" />
               {formatCourseDateRange(date, locale)}
               <span aria-hidden="true" className="text-ink-subtle">
                 ·

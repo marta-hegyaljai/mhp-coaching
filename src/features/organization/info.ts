@@ -1,5 +1,5 @@
 export const organization = {
-  brandName: "mhp | hypnose",
+  brandName: "mhp-coaching",
   legalName: "MHP & Partners Sàrl",
   email: "admin@mhp-hypnose.com",
   phone: "+41 21 311 25 81",

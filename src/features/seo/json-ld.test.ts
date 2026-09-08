@@ -16,7 +16,7 @@ describe("structured data", () => {
     expect(String(item.url)).toContain("/de/ausbildungen/omni-hypnose-praktiker");
   });
 
-  it("emits Course and Event markup with ISO start dates", () => {
+  it("emits Course markup without events while dates are pending", () => {
     const course = getCourseById("omni-practitioner");
     expect(course).toBeDefined();
 
@@ -25,7 +25,6 @@ describe("structured data", () => {
     expect(json.inLanguage).toBe("fr");
 
     const events = eventJsonLd(course!, "en");
-    expect(events[0]?.startDate).toMatch(/^\d{4}-\d{2}-\d{2}T09:00:00\+02:00$/);
-    expect(String(events[0]?.url)).toContain("/en/courses/omni-hypnosis-practitioner");
+    expect(events).toEqual([]);
   });
 });

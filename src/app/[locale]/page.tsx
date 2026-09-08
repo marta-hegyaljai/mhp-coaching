@@ -48,16 +48,16 @@ export default async function HomePage({params}: HomePageProps) {
     <SiteShell locale={locale}>
       <JsonLd data={courseListJsonLd(courses, locale)} />
 
-      <Section size="lg" className="pt-10 sm:pt-14">
-        <div className="rise">
+      <Section size="lg" className="pt-9 pb-10 sm:pt-12 sm:pb-16">
+        <div>
           <Eyebrow>{t("eyebrow")}</Eyebrow>
-          <h1 className="mt-6 max-w-4xl font-serif text-display">{t("title")}</h1>
-          <p className="mt-7 max-w-2xl text-lead text-ink-muted">{t("intro")}</p>
+          <h1 className="mt-5 max-w-4xl font-serif text-display">{t("title")}</h1>
+          <p className="mt-5 max-w-2xl text-lead text-ink-muted">{t("intro")}</p>
 
-          <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="mt-7 grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3">
             <Link
               href="/courses"
-              className={`${buttonStyles({size: "lg"})} w-full sm:w-auto`}
+              className={`${buttonStyles({size: "lg"})} w-full px-3 text-sm sm:w-auto sm:px-7 sm:text-base`}
             >
               {t("ctaCourses")}
               <ArrowRightIcon className="transition-transform duration-200 ease-standard group-hover/button:translate-x-0.5" />
@@ -68,16 +68,16 @@ export default async function HomePage({params}: HomePageProps) {
                   pathname: "/courses/[slug]/book",
                   params: {slug: practitioner.slug[locale]},
                 }}
-                className={`${buttonStyles({variant: "secondary", size: "lg"})} w-full sm:w-auto`}
+                className={`${buttonStyles({variant: "secondary", size: "lg"})} w-full px-3 text-sm sm:w-auto sm:px-7 sm:text-base`}
               >
                 {t("ctaBook")}
               </Link>
             ) : null}
           </div>
 
-          <PaymentMethods note={paymentsT("secureNote")} className="mt-6" />
+          <PaymentMethods note={paymentsT("secureNote")} className="mt-5" />
 
-          <ul className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-line pt-6 text-sm text-ink-subtle">
+          <ul className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-line pt-5 text-sm text-ink-subtle">
             <li className="flex items-center gap-2">
               <PinIcon className="h-3.5 w-3.5 text-bronze" />
               {t("trustLocations")}
@@ -122,7 +122,7 @@ export default async function HomePage({params}: HomePageProps) {
           </Link>
         </div>
 
-        <div className="mt-10">
+        <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {courses.map((course) => (
             <CourseCard
               key={course.id}

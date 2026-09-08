@@ -22,7 +22,7 @@ export function FakeCheckoutPanel({
   const amount = formatChf(minorUnitsToFrancs(booking.amountMinor), locale);
 
   return (
-    <div className="max-w-lg rounded-panel border border-line bg-parchment p-6 shadow-press sm:p-8">
+    <div className="max-w-lg rounded-panel border border-line bg-parchment p-6 sm:p-8">
       <p className="font-serif text-subheading">{booking.courseTitle}</p>
       <p className="mt-2 text-sm text-ink-muted">
         {amountLabel.replace("{amount}", amount)}

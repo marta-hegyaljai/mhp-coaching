@@ -20,7 +20,8 @@ export type Course = {
   description: LocalizedText;
   audience: LocalizedText;
   duration: LocalizedText;
+  location: LocalizedText;
   priceChf: number;
-  category: "foundation" | "advanced";
+  category: "foundation" | "advanced" | "medical" | "workshop";
   dates: CourseDate[];
 };

@@ -20,7 +20,7 @@ export const legalDocuments: LegalDoc[] = [
         {
           heading: "Éditeur",
           paragraphs: [
-            `${organization.legalName} édite le site mhp | hypnose. Activité : formation en hypnose et coaching, ainsi que des services connexes de développement professionnel.`,
+            `${organization.legalName} édite le site mhp-coaching. Activité : formation en hypnose et coaching, ainsi que des services connexes de développement professionnel.`,
             `Siège : ${addressLine}. Téléphone : ${organization.phone}. E-mail : ${organization.email}.`,
             `Fondatrice et directrice : ${organization.founder}.`,
           ],
@@ -30,7 +30,7 @@ export const legalDocuments: LegalDoc[] = [
         {
           heading: "Herausgeber",
           paragraphs: [
-            `${organization.legalName} gibt die Website mhp | hypnose heraus. Tätigkeit: Hypnoseausbildung und Coaching sowie verbundene Dienstleistungen der beruflichen Entwicklung.`,
+            `${organization.legalName} gibt die Website mhp-coaching heraus. Tätigkeit: Hypnoseausbildung und Coaching sowie verbundene Dienstleistungen der beruflichen Entwicklung.`,
             `Sitz: ${addressLine}. Telefon: ${organization.phone}. E-Mail: ${organization.email}.`,
             `Gründerin und Direktorin: ${organization.founder}.`,
           ],
@@ -40,7 +40,7 @@ export const legalDocuments: LegalDoc[] = [
         {
           heading: "Publisher",
           paragraphs: [
-            `${organization.legalName} publishes the mhp | hypnose website. Activity: hypnosis training and coaching, and related professional-development services.`,
+            `${organization.legalName} publishes the mhp-coaching website. Activity: hypnosis training and coaching, and related professional-development services.`,
             `Registered office: ${addressLine}. Phone: ${organization.phone}. Email: ${organization.email}.`,
             `Founder and director: ${organization.founder}.`,
           ],

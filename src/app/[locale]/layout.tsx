@@ -32,7 +32,7 @@ type LocaleLayoutProps = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f7f2e8",
+  themeColor: "#ffffff",
   width: "device-width",
   initialScale: 1,
 };

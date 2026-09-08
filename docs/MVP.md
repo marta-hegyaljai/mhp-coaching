@@ -38,6 +38,12 @@ Do not delay launch for secondary content.
 ## Course data
 For MVP, courses and dates live in source-controlled typed TypeScript config.
 
+The public catalogue mirrors the 20 formations published at
+`https://www.mhp-hypnose.com/formations`, grouped as foundation, advanced,
+medical hypnosis, and practical workshops. All course delivery locations are
+shown as Fribourg. Dates remain empty until confirmed; the UI must show the
+no-dates state and must not imply that booking is available.
+
 Suggested shape:
 ```ts
 type Course = {
@@ -46,7 +52,9 @@ type Course = {
   title: { fr: string; de: string; en: string };
   shortDescription: { fr: string; de: string; en: string };
   description: { fr: string; de: string; en: string };
+  location: { fr: string; de: string; en: string };
   priceChf: number;
+  category: "foundation" | "advanced" | "medical" | "workshop";
   dates: CourseDate[];
 };
 

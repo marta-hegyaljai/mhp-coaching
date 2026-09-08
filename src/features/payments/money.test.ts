@@ -8,6 +8,7 @@ describe("payment money helpers", () => {
     expect(francsToMinorUnits(3490.5)).toBe(349050);
     expect(minorUnitsToFrancs(349050)).toBe(3490.5);
     expect(formatChf(3490, "fr")).toContain("CHF");
+    expect(formatChf(3490, "de", {compact: true})).toContain("3’490");
   });
 
   it("keeps decimals by default and drops them only for whole compact amounts", () => {

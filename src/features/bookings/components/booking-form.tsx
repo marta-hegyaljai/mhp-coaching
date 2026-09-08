@@ -92,7 +92,7 @@ export function BookingForm({
                   key={date.id}
                   className={`flex min-h-14 cursor-pointer items-center gap-4 rounded-panel border px-4 py-3.5 transition duration-200 ease-standard has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-bronze ${
                     isSelected
-                      ? "border-bronze bg-parchment shadow-press"
+                      ? "border-ink bg-parchment"
                       : "border-line bg-parchment/60 hover:border-ink/25"
                   }`}
                 >
@@ -211,7 +211,7 @@ export function BookingForm({
 
       <aside className="lg:col-span-5">
         <div className="lg:sticky lg:top-24">
-          <div className="rounded-panel border border-line bg-parchment p-6 shadow-press">
+          <div className="rounded-panel border border-line bg-parchment p-6">
             <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-bronze">
               {t("summaryTitle")}
             </p>

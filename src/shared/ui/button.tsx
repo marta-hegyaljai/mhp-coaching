@@ -9,10 +9,10 @@ type StyleOptions = {
   block?: boolean;
 };
 
-// Tap targets stay at or above 44px and every button confirms the press with a
-// short scale, so links and submits feel the same under a thumb.
+// Rectangular controls carry the mildly brutal visual language. Motion is
+// reserved for actionable controls and confirms intent without decoration.
 const base =
-  "group/button inline-flex items-center justify-center gap-2 rounded-full font-medium tracking-wide transition duration-200 ease-standard active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 disabled:pointer-events-none disabled:opacity-55";
+  "group/button inline-flex items-center justify-center gap-2 rounded-panel border border-transparent font-semibold tracking-[0.02em] transition-[background-color,color,border-color,transform] duration-150 ease-standard active:translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2 disabled:pointer-events-none disabled:opacity-55";
 
 const sizes: Record<ButtonSize, string> = {
   md: "min-h-11 px-5 text-sm",
@@ -23,12 +23,12 @@ const sizes: Record<ButtonSize, string> = {
 // the surface the button sits on.
 const variants: Record<ButtonVariant, string> = {
   primary:
-    "bg-ink text-ivory shadow-press hover:bg-bronze hover:shadow-lift focus-visible:outline-bronze",
+    "border-ink bg-ink text-parchment hover:border-gold hover:bg-gold hover:text-ink focus-visible:outline-ink",
   secondary:
-    "border border-ink/15 bg-parchment text-ink shadow-press hover:border-bronze hover:text-bronze focus-visible:outline-bronze",
-  quiet: "text-ink-muted hover:text-bronze focus-visible:outline-bronze",
+    "border-ink bg-transparent text-ink hover:bg-hover focus-visible:outline-ink",
+  quiet: "text-ink underline-offset-4 hover:underline focus-visible:outline-ink",
   invert:
-    "bg-ivory text-ink shadow-press hover:bg-bronze hover:text-ivory focus-visible:outline-ivory",
+    "border-parchment bg-parchment text-ink hover:border-gold hover:bg-gold focus-visible:outline-parchment",
 };
 
 export function buttonStyles({

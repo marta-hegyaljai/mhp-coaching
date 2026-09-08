@@ -29,18 +29,23 @@ test.describe("phone layout", () => {
     });
   }
 
-  test("language segments stay thumb-sized", async ({page}) => {
+  test("language dropdown stays stable and thumb-sized", async ({page}) => {
     await page.goto("/fr");
 
-    const segments = page.getByRole("group", {name: "Choisir la langue"});
-    const buttons = segments.getByRole("button");
-    await expect(buttons).toHaveCount(3);
+    const switcher = page.getByRole("button", {name: "Choisir la langue"});
+    const before = await switcher.boundingBox();
+    expect(before?.height ?? 0).toBeGreaterThanOrEqual(44);
+    expect(before?.width ?? 0).toBeGreaterThanOrEqual(44);
 
-    for (const button of await buttons.all()) {
-      const box = await button.boundingBox();
-      expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
-      expect(box?.width ?? 0).toBeGreaterThanOrEqual(44);
-    }
+    await switcher.click();
+    await page.getByRole("menuitemradio", {name: /Deutsch/}).click();
+    await expect(page).toHaveURL(/\/de$/);
+    const after = await page
+      .getByRole("button", {name: "Sprache wählen"})
+      .boundingBox();
+
+    expect(after?.width).toBe(before?.width);
+    expect(after?.x).toBe(before?.x);
   });
 
   test("course booking bar stays reachable without covering the footer", async ({

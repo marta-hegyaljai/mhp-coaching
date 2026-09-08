@@ -58,7 +58,7 @@ export default async function FakeCheckoutPage({
   return (
     <SiteShell locale={locale} footerCta={null}>
       <Section size="md">
-        <p className="inline-flex items-center rounded-full border border-bronze/40 bg-parchment px-3 py-1.5 text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-bronze">
+        <p className="inline-flex items-center rounded-panel border border-ink bg-parchment px-3 py-1.5 text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-ink">
           {t("badge")}
         </p>
         <h1 className="mt-6 font-serif text-title">{t("title")}</h1>

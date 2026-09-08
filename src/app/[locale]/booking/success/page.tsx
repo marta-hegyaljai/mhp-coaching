@@ -48,7 +48,7 @@ export default async function BookingSuccessPage({
       <Section size="md">
         <div className="max-w-3xl">
           <p
-            className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[0.7rem] font-semibold uppercase tracking-[0.16em] ${
+            className={`inline-flex items-center gap-2 rounded-panel border px-3 py-1.5 text-[0.7rem] font-semibold uppercase tracking-[0.16em] ${
               paid
                 ? "border-bronze/40 bg-parchment text-bronze"
                 : "border-line bg-parchment text-ink-subtle"

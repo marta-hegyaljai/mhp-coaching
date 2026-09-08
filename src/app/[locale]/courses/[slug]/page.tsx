@@ -20,7 +20,7 @@ import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link, redirect} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {buttonStyles} from "@/shared/ui/button";
-import {ArrowRightIcon, CalendarIcon} from "@/shared/ui/icons";
+import {ArrowRightIcon, CalendarIcon, PinIcon} from "@/shared/ui/icons";
 import {Eyebrow, Section} from "@/shared/ui/layout";
 
 type CoursePageProps = {
@@ -125,7 +125,7 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
         />
 
         <div className="mt-8 grid gap-10 lg:grid-cols-12 lg:gap-16">
-          <div className="lg:col-span-7 rise">
+          <div className="lg:col-span-7">
             <Eyebrow>{course.duration[locale]}</Eyebrow>
             <h1 className="mt-4 font-serif text-title">{course.title[locale]}</h1>
             <p className="mt-6 text-lead text-ink-muted">
@@ -134,13 +134,17 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
           </div>
 
           <aside className="lg:col-span-5">
-            <div className="rounded-panel border border-line bg-parchment p-6 shadow-press sm:p-7">
+            <div className="rounded-panel border border-line bg-parchment p-6 sm:p-7">
               <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-ink-subtle">
                 {t("price")}
               </p>
               <p className="mt-2 font-serif text-heading">{price}</p>
               <p className="mt-1 text-sm text-ink-subtle">
                 {course.duration[locale]}
+              </p>
+              <p className="mt-2 flex items-center gap-1.5 text-sm text-ink-subtle">
+                <PinIcon className="h-3.5 w-3.5" />
+                {course.location[locale]}
               </p>
 
               {nextDate ? (
@@ -216,6 +220,14 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
               </dt>
               <dd className="mt-2 text-sm text-ink-muted">
                 {course.duration[locale]}
+              </dd>
+            </div>
+            <div className="border-t border-line pt-4">
+              <dt className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-bronze">
+                {t("location")}
+              </dt>
+              <dd className="mt-2 text-sm text-ink-muted">
+                {course.location[locale]}
               </dd>
             </div>
             <div className="border-t border-line pt-4">

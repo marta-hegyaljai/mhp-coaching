@@ -19,7 +19,7 @@ export function PaymentMethods({
         {methods.map((method) => (
           <li
             key={method}
-            className="rounded-full border border-line bg-parchment px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-ink-muted"
+            className="rounded-panel border border-line bg-transparent px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-[0.12em] text-ink-muted"
           >
             {method}
           </li>

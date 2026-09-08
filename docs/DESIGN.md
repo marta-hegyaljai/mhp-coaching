@@ -1,85 +1,108 @@
-# MHP Hypnose — Design Direction
+# MHP Hypnose — UI Direction (Binding)
 
-## Reference
-Primary visual reference: https://marta-hegyaljai.com/fr
+This document is the source of truth for every public UI change. The intended
+expression is **black and white with subtle gold, minimalist, mildly brutalist,
+and classy**.
+It is a serious European hypnosis school, not a wellness spa and not a SaaS
+dashboard.
 
-Use it as brand/visual direction, not as a pixel-for-pixel clone. Do not copy assets unless they are explicitly provided/owned by MHP.
+## Non-negotiable visual rules
 
-## Desired feeling
-- premium
-- calm
-- artistic
-- confident
-- human
-- European/editorial
-- mature
-- trustworthy
+- Use pure white (`#fff`) for the page and panel background. Do not use beige,
+  cream, ivory, or warm off-white surfaces.
+- Use strong black rules, restrained neutral-grey hierarchy, editorial serif
+  headings, functional sans-serif body copy, and the provided `gold` tokens.
+- Gold is a scarce behavioral and editorial accent: it appears when
+  high-priority CTA buttons are hovered and on selected small uppercase eyebrow
+  labels, including course duration (days/hours). Never use gold as a resting
+  button color, selected control state, large background, body-copy color, card
+  fill, or dense repeated decoration.
+- No bronze, brown, gradients, or additional accent colors. The legacy token
+  name `bronze` is a black compatibility alias and must not guide new work.
+- Geometry is rectangular with `rounded-panel` (2px). The compact language
+  trigger is the sole capsule exception. Never use pills for buttons, cards,
+  tags, or status displays.
+- Do not use shadows on public UI. Depth comes from contrast, borders, spacing,
+  and typographic scale.
+- Brutalist details are controlled: crisp borders, uppercase micro-labels,
+  visible structure, and direct copy. Avoid noisy grids, novelty type,
+  oversized outlines, or deliberately awkward layouts.
+- Prefer a compact grid of cards when presenting two or more possibilities.
+  Do not turn choices into a long sequence of full-width rows or force users
+  through oversized vertical sections.
+- Keep page sections compact enough to reveal the next decision. Whitespace is
+  deliberate, never used to make a sparse page feel artificially large.
 
-This is a hypnosis training school, not a SaaS product.
+## Navigation and locale stability
 
-## Direction
-Prefer:
-- warm off-white / ivory / stone backgrounds
-- charcoal/near-black text
-- restrained earthy/bronze/brown accents
-- large editorial headings
-- generous whitespace
-- strong typographic hierarchy
-- high-quality art/photography when provided
-- simple layouts, occasional deliberate asymmetry
-- subtle motion only if it adds polish
-- excellent mobile typography/spacing
+- Header navigation must expose Courses and Contact at every viewport. On
+  phones they appear in one compact row below the brand; do not hide them in a
+  menu unless the information architecture grows beyond the MVP.
+- The language switcher is a custom accessible dropdown. Its closed trigger
+  is a compact neutral capsule inspired by the reference site, shows only the
+  stable locale code, has a fixed width, and opens a bordered menu with native
+  language names. The menu and selected item remain monochrome. It preserves the
+  equivalent localized route where available.
+- Switching FR/DE/EN must not move adjacent controls. Any localized control in
+  shared chrome needs fixed or minimum dimensions based on the longest label.
+- Keep no more than one high-emphasis booking action in the header/viewport.
+  Labels may wrap inside content cards but may not resize the card grid or
+  cause horizontal movement.
 
-Avoid:
-- generic blue SaaS palettes
-- bright gradients
-- excessive rounded cards
-- dashboard aesthetics on public pages
-- glassmorphism
-- heavy shadows
-- generic stock business imagery
-- clutter/tiny text
-- performance-harming animation
+## Cards and actions
 
-## Components
-Public UI should feel editorial:
-- header/navigation
-- language switcher
-- hero
-- course introduction/list
-- course detail sections
-- date selection
-- obvious booking CTA
-- footer
+- Course and date cards use a 1px black border, white background, 2px radius,
+  equal-height grid behavior, and no shadow. A course card is one full-surface
+  link; never nest a second link inside it.
+- Cards must show the decision essentials without another click: title,
+  duration/price, Fribourg as the course location, the nearest date when
+  available, and one clear action. Until dates are confirmed, show the explicit
+  no-dates state and direct visitors to contact rather than presenting a booking
+  action.
+- Primary actions are black rectangles with white text and reveal gold with
+  black text on hover. Inverted primary actions start white and also reveal gold
+  on hover. Secondary actions remain monochrome and gain a neutral-grey surface.
+  Never make a control blend into its surrounding surface. Tap targets are at
+  least 44px.
+- One primary action per decision area. Supporting actions are secondary or
+  underlined text links.
+- Booking forms use the same bordered, rectangular language and keep the live
+  summary visible on desktop. Validation must remain localized and accessible.
 
-Use cards sparingly; prefer typography, spacing and layout before wrapping everything in boxes.
+## Motion allowlist
 
-## Responsive
-Design mobile-first.
-Always inspect around 390px phone width, tablet and desktop.
-No horizontal overflow; comfortable tap targets; booking/date controls must work one-handed.
+Motion exists only to reinforce something clickable:
 
-## Accessibility
-Semantic structure, sufficient contrast, visible focus states, labels/errors, keyboard access, no color-only meaning, reduced-motion respect.
+- buttons/linked cards: 150ms tonal change or at most a 2px lift;
+- arrow inside a call to action: at most 4px horizontal movement;
+- pressed controls: at most 1px vertical movement;
+- loading spinner: rotation while work is pending.
 
-## Implemented system
-Tokens live in `src/app/globals.css` under `@theme`. Use them instead of raw values:
-- surfaces: `ivory` (page), `shell` (alternating section), `parchment` (panels, inputs)
-- text: `ink`, `ink-muted`, `ink-subtle` (all above 4.5:1 on ivory), `bronze` for accents
-- type: `text-display`, `text-title`, `text-heading`, `text-subheading`, `text-lead` (fluid, clamped)
-- surface detail: `rounded-panel`, `shadow-press`, `shadow-lift`, `ease-standard`
+No entrance animation, scroll animation, parallax, pulsing decoration, ambient
+motion, or animated background. Always honor `prefers-reduced-motion`.
 
-Primitives live in `src/shared/ui`:
-- `buttonStyles()` / `<Button>` — capsule calls to action, variants `primary`, `secondary`, `quiet`, `invert` (dark surfaces), sizes `md` (44px) and `lg` (52px), with press feedback and per-variant focus ring. Never combine a responsive `hidden` with these styles on the same element; wrap the element instead.
-- `Section`, `Container`, `Eyebrow` — page rhythm and section tone
-- `icons.tsx` — inline currentColor icons
+## Responsive and accessibility
 
-Call to action conventions:
-- one primary action per view; supporting actions use `secondary` or `quiet`
-- course pages carry a phone-only action bar (`CourseBookingBar`) and `SiteShell` reserves the space it covers
-- each published date is its own link into the booking form, which preselects it from `?date=`
-- the booking form shows a live summary, keeps typed input when validation fails, and suppresses browser validation bubbles in favour of localized messages
-- `SiteShell` closes pages with a dark call to action band; pass `footerCta={null}` where a page is already the offer
+- Design mobile-first and inspect at approximately 390px, tablet, and desktop.
+- No horizontal overflow. Maintain 44px controls and one-handed booking/date
+  interaction. Avoid sticky elements covering content.
+- Use semantic structure, sufficient contrast, visible focus, explicit labels,
+  keyboard access, and no meaning conveyed by color alone.
+- Check FR, DE, and EN for wrapping, header stability, card height, and control
+  width before completion.
 
-## Agent rule
-For visual work: read this file → implement → inspect browser → inspect phone viewport → fix defects → only then report completion.
+## Implemented primitives
+
+- Tokens: `src/app/globals.css` (`ivory` and `parchment` are pure-white
+  compatibility names; `shell`, `hover`, `ink`, muted greys, `gold`, lines,
+  type scale, 2px `rounded-panel`, `ease-standard`).
+- Actions: `buttonStyles()` / `<Button>` in `src/shared/ui/button.tsx`.
+- Rhythm: `Section`, `Container`, `Eyebrow` in `src/shared/ui/layout.tsx`.
+- Shell: `src/features/site-shell`; do not fork per-page headers or switchers.
+- Course decisions: `CourseCard`, `CourseDates`, and `CourseBookingBar`.
+
+## Agent completion gate
+
+For visual work: read this file, reuse the primitives, implement, run
+`pnpm verify`, inspect the affected flow in a browser at desktop and ~390px,
+check FR/DE/EN, inspect browser/server errors, fix defects, then report.

@@ -9,7 +9,7 @@ import {ArrowRightIcon} from "@/shared/ui/icons";
 import {Container} from "@/shared/ui/layout";
 
 const footerLink =
-  "inline-flex min-h-9 items-center text-sm text-ink-muted transition-colors duration-200 hover:text-bronze";
+  "inline-flex min-h-9 items-center text-sm text-ink-muted underline-offset-4 transition-colors duration-150 hover:text-ink hover:underline";
 
 /** Closing call to action; pass `null` on pages that already are the offer. */
 export type FooterCta = {
@@ -33,14 +33,14 @@ export async function SiteFooter({
   return (
     <footer className={band ? "" : "mt-20 sm:mt-28"}>
       {band ? (
-        <section className="bg-ink text-ivory">
+        <section className="border-y border-ink bg-ink text-parchment">
           <Container className="flex flex-col gap-8 py-14 sm:py-20 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
-              <p className="text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-ivory/60">
+              <p className="text-[0.7rem] font-bold uppercase tracking-[0.2em] text-parchment/65">
                 {t("ctaEyebrow")}
               </p>
               <h2 className="mt-4 font-serif text-heading">{t("ctaTitle")}</h2>
-              <p className="mt-4 max-w-xl text-base leading-7 text-ivory/75">
+              <p className="mt-4 max-w-xl text-base leading-7 text-parchment/75">
                 {t("ctaBody")}
               </p>
             </div>
@@ -65,7 +65,7 @@ export async function SiteFooter({
           </p>
         </div>
         <nav aria-label={t("navigation")}>
-          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-bronze">
+          <p className="text-[0.7rem] font-bold uppercase tracking-[0.2em] text-ink">
             {t("navigation")}
           </p>
           <ul className="mt-2 space-y-1">
@@ -82,7 +82,7 @@ export async function SiteFooter({
           </ul>
         </nav>
         <div>
-          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-bronze">
+          <p className="text-[0.7rem] font-bold uppercase tracking-[0.2em] text-ink">
             {t("visit")}
           </p>
           <p className="mt-3 text-sm leading-7 text-ink-muted">
@@ -105,7 +105,7 @@ export async function SiteFooter({
           </p>
         </div>
         <nav aria-label={t("legal")}>
-          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-bronze">
+          <p className="text-[0.7rem] font-bold uppercase tracking-[0.2em] text-ink">
             {t("legal")}
           </p>
           <ul className="mt-2 space-y-1">

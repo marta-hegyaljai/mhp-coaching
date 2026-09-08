@@ -1,7 +1,8 @@
 # MHP Hypnose — Agentic Development Workflow
 
 ## Goal
-Support phone-driven development using Cursor Cloud Agents:
+Support disciplined development with Codex, Cursor Cloud Agents, and local
+contributors:
 
 Prompt → agent branch → implementation → verification → browser inspection → PR → Vercel preview → phone review → follow-up or merge.
 
@@ -9,6 +10,8 @@ Prompt → agent branch → implementation → verification → browser inspecti
 For every meaningful task:
 
 1. **Understand** — read AGENTS.md + relevant docs and inspect current code.
+   Visual work must follow `docs/DESIGN.md` and, for Cursor, the mirrored
+   `.cursor/rules/mhp-ui.mdc` guardrail.
 2. **Plan** — choose the smallest reviewable vertical slice; preserve MVP scope.
 3. **Implement** — keep provider code localized; prefer Server Components; keep UI mobile/accessibility friendly.
 4. **Verify mechanically** — run `pnpm verify` + relevant tests.

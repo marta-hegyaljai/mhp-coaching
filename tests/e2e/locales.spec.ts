@@ -41,6 +41,7 @@ for (const {locale, heading, coursesPath, coursesHeading} of locales) {
     await page.goto(coursesPath);
     await expect(page.getByRole("heading", {level: 1})).toHaveText(coursesHeading);
     await expect(page.getByRole("heading", {level: 2}).first()).toBeVisible();
+    await expect(page.locator("a:has(> article)").first()).toBeVisible();
   });
 }
 
@@ -50,7 +51,8 @@ test("root redirects to French and the language switcher preserves the page", as
   await page.goto("/");
   await expect(page).toHaveURL(/\/fr$/);
 
-  await page.getByRole("button", {name: "de", exact: true}).click();
+  await page.getByRole("button", {name: "Choisir la langue"}).click();
+  await page.getByRole("menuitemradio", {name: /Deutsch/}).click();
   await expect(page).toHaveURL(/\/de$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "de");
 });
@@ -61,7 +63,8 @@ test("language switcher maps a course to the equivalent localized slug", async (
   await page.goto("/fr/formations/praticien-hypnose-omni");
   await expect(page.getByRole("heading", {level: 1})).toContainText("Praticien");
 
-  await page.getByRole("button", {name: "en", exact: true}).click();
+  await page.getByRole("button", {name: "Choisir la langue"}).click();
+  await page.getByRole("menuitemradio", {name: /English/}).click();
   await expect(page).toHaveURL(/\/en\/courses\/omni-hypnosis-practitioner$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
 });

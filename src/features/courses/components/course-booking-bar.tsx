@@ -21,7 +21,7 @@ export function CourseBookingBar({
   fromLabel: string;
 }) {
   return (
-    <div className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-ivory shadow-[0_-10px_28px_-24px_rgba(27,23,18,0.5)] lg:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-30 border-t border-ink bg-ivory lg:hidden">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-8">
         <div className="min-w-0">
           <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-ink-subtle">

@@ -56,7 +56,7 @@ export function buildPageMetadata(input: {
     openGraph: {
       type: "website",
       locale: openGraphLocale[input.locale],
-      siteName: "mhp | hypnose",
+      siteName: "mhp-coaching",
       title: input.title,
       description: input.description,
       url: canonical,
