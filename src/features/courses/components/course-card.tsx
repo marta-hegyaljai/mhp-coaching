@@ -33,43 +33,47 @@ export function CourseCard({
       href={href}
       className="group/card block h-full rounded-panel focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-ink"
     >
-      <article className="grid h-full overflow-hidden border border-ink bg-parchment transition-[background-color,transform] duration-150 group-hover/card:-translate-y-0.5 group-hover/card:bg-hover sm:grid-cols-[minmax(10rem,0.72fr)_minmax(0,1.28fr)]">
-        <div className="relative aspect-[4/3] overflow-hidden border-b border-ink bg-white sm:aspect-auto sm:border-b-0 sm:border-r">
-          <Image
-            src={getCourseImage(course)}
-            alt=""
-            fill
-            sizes="(min-width: 768px) 20vw, 100vw"
-            className="object-contain transition-transform duration-150 group-hover/card:scale-[1.015] motion-reduce:transform-none"
-          />
+      <article className="flex h-full flex-col border border-ink bg-parchment p-5 transition-[background-color,transform] duration-150 group-hover/card:-translate-y-0.5 group-hover/card:bg-hover sm:p-6">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+          <Eyebrow>{course.duration[locale]}</Eyebrow>
+          <p className="text-sm font-semibold">
+            {formatChf(course.priceChf, locale, {compact: true})}
+          </p>
         </div>
-        <div className="flex h-full flex-col gap-6 p-5 sm:p-6">
-          <div className="flex-1">
-            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-              <Eyebrow>{course.duration[locale]}</Eyebrow>
-              <p className="text-sm font-semibold">
-                {formatChf(course.priceChf, locale, {compact: true})}
-              </p>
-            </div>
-            <Heading className="mt-3 font-serif text-heading">
-              {course.title[locale]}
-            </Heading>
-            <p className="mt-3 text-base leading-7 text-ink-muted">
-              {course.shortDescription[locale]}
-            </p>
-            <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-line-soft pt-4 text-sm text-ink-subtle">
-              {nextDate ? (
-                <span className="flex items-center gap-1.5">
-                  <CalendarIcon className="h-3.5 w-3.5" />
-                  {formatCourseDateRange(nextDate, locale)}
-                </span>
-              ) : null}
-              <span className="flex items-center gap-1.5">
-                <PinIcon className="h-3.5 w-3.5" />
-                {course.location[locale]}
-              </span>
-            </div>
+
+        <div className="mt-5 grid grid-cols-[5.25rem_minmax(0,1fr)] items-start gap-4 sm:grid-cols-[6rem_minmax(0,1fr)] xl:grid-cols-[5.25rem_minmax(0,1fr)]">
+          <div className="relative aspect-square overflow-hidden border border-line bg-white">
+            <Image
+              src={getCourseImage(course)}
+              alt=""
+              fill
+              sizes="96px"
+              className="object-contain transition-transform duration-150 group-hover/card:scale-[1.025] motion-reduce:transform-none"
+            />
           </div>
+          <Heading className="font-serif text-[clamp(1.5rem,1.8vw,1.8rem)] leading-[1.08]">
+            {course.title[locale]}
+          </Heading>
+        </div>
+
+        <p className="mt-5 line-clamp-3 text-base leading-7 text-ink-muted">
+          {course.shortDescription[locale]}
+        </p>
+
+        <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-line-soft pt-4 text-sm text-ink-subtle">
+          {nextDate ? (
+            <span className="flex items-center gap-1.5">
+              <CalendarIcon className="h-3.5 w-3.5" />
+              {formatCourseDateRange(nextDate, locale)}
+            </span>
+          ) : null}
+          <span className="flex items-center gap-1.5">
+            <PinIcon className="h-3.5 w-3.5" />
+            {course.location[locale]}
+          </span>
+        </div>
+
+        <div className="mt-auto pt-6">
           <span className="inline-flex min-h-11 w-full items-center justify-between border-t border-current pt-3 text-sm font-bold uppercase tracking-[0.08em] sm:w-auto">
             {detailsLabel}
             <ArrowRightIcon className="transition-transform duration-150 ease-standard group-hover/card:translate-x-1" />

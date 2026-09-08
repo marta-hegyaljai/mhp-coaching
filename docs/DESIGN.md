@@ -78,6 +78,11 @@ dashboard.
   image from `public/images/courses`. Images support recognition and hierarchy;
   they must not become decorative full-page backgrounds or introduce new accent
   colors into controls.
+- Course-card artwork is a compact square thumbnail beside the title. Never
+  split a card into two tall columns or give artwork half the card width: that
+  creates narrow text measures, oversized headings, and excessive empty height.
+  Catalogue descriptions are limited to three lines; the full copy belongs on
+  the course detail page.
 - Detailed course claims, objectives, prerequisites, recognitions, prices, and
   descriptions must trace to the historical MHP catalogue. Do not invent copy
   to fill a layout. A missing translation may fall back visibly to the exact

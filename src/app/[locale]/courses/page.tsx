@@ -119,7 +119,9 @@ function CourseGroup({
           {count}
         </p>
       </div>
-      <div className="mt-5 grid gap-4 md:grid-cols-2">{children}</div>
+      <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {children}
+      </div>
     </section>
   );
 }
