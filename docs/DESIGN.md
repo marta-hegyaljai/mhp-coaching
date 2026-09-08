@@ -12,6 +12,8 @@ dashboard.
   cream, ivory, or warm off-white surfaces.
 - Use strong black rules, restrained neutral-grey hierarchy, editorial serif
   headings, functional sans-serif body copy, and the provided `gold` tokens.
+  Course prices are commercial figures: set them in the sans-serif with
+  tabular numbers, never the editorial serif.
 - Gold is a scarce behavioral and editorial accent: it appears when
   high-priority CTA buttons are hovered and on selected small uppercase eyebrow
   labels, including course duration (days/hours). Never use gold as a resting
@@ -36,8 +38,9 @@ dashboard.
 ## Navigation and locale stability
 
 - Header navigation must expose Courses and Contact at every viewport. On
-  phones they appear in one compact row below the brand; do not hide them in a
-  menu unless the information architecture grows beyond the MVP.
+  phones they share one compact row with the brand and language control. The
+  wordmark may shorten to MHP so those links stay visible and tappable. Do not
+  hide them in a menu unless the information architecture grows beyond the MVP.
 - The language switcher is a custom accessible dropdown. Its closed trigger
   is a compact neutral capsule inspired by the reference site, shows only the
   stable locale code, has a fixed width, and opens a bordered menu with native
@@ -123,6 +126,7 @@ motion, or animated background. Always honor `prefers-reduced-motion`.
   type scale, 2px `rounded-panel`, `ease-standard`).
 - Actions: `buttonStyles()` / `<Button>` in `src/shared/ui/button.tsx`.
 - Rhythm: `Section`, `Container`, `Eyebrow` in `src/shared/ui/layout.tsx`.
+- Prices: `<Price>` in `src/shared/ui/price.tsx`.
 - Shell: `src/features/site-shell`; do not fork per-page headers or switchers.
 - Course decisions: `CourseCard`, `CourseDates`, and `CourseBookingBar`.
 

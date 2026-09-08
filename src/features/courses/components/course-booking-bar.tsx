@@ -4,6 +4,7 @@ import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {buttonStyles} from "@/shared/ui/button";
 import {ArrowRightIcon} from "@/shared/ui/icons";
+import {Price} from "@/shared/ui/price";
 
 /**
  * Phone-only action bar that keeps the booking call to action within thumb
@@ -27,9 +28,9 @@ export function CourseBookingBar({
           <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-ink-subtle">
             {fromLabel}
           </p>
-          <p className="font-serif text-lg leading-tight">
+          <Price size="md" className="mt-1 leading-tight">
             {formatChf(course.priceChf, locale, {compact: true})}
-          </p>
+          </Price>
         </div>
         <Link
           href={{

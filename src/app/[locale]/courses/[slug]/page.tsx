@@ -23,6 +23,7 @@ import type {AppLocale} from "@/i18n/routing";
 import {buttonStyles} from "@/shared/ui/button";
 import {ArrowRightIcon, CalendarIcon, PinIcon} from "@/shared/ui/icons";
 import {Eyebrow, Section} from "@/shared/ui/layout";
+import {Price} from "@/shared/ui/price";
 
 type CoursePageProps = {
   params: Promise<{locale: AppLocale; slug: string}>;
@@ -144,7 +145,9 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
               <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-ink-subtle">
                 {t("price")}
               </p>
-              <p className="mt-2 font-serif text-heading">{price}</p>
+              <Price size="lg" className="mt-2">
+                {price}
+              </Price>
               <p className="mt-1 text-sm text-ink-subtle">
                 {course.duration[locale]}
               </p>

@@ -6,6 +6,7 @@ import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {ArrowRightIcon, CalendarIcon, PinIcon} from "@/shared/ui/icons";
 import {Eyebrow} from "@/shared/ui/layout";
+import {Price} from "@/shared/ui/price";
 
 import {CourseArtwork} from "./course-artwork";
 
@@ -35,9 +36,9 @@ export function CourseCard({
       <article className="flex h-full flex-col border border-ink bg-parchment p-5 transition-[background-color,transform] duration-150 group-hover/card:-translate-y-0.5 group-hover/card:bg-hover sm:p-6">
         <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
           <Eyebrow>{course.duration[locale]}</Eyebrow>
-          <p className="text-sm font-semibold">
+          <Price size="sm">
             {formatChf(course.priceChf, locale, {compact: true})}
-          </p>
+          </Price>
         </div>
 
         <div className="mt-5 grid grid-cols-[5.25rem_minmax(0,1fr)] items-start gap-4 sm:grid-cols-[6rem_minmax(0,1fr)] xl:grid-cols-[5.25rem_minmax(0,1fr)]">

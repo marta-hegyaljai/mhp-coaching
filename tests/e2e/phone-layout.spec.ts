@@ -29,6 +29,56 @@ test.describe("phone layout", () => {
     });
   }
 
+  test("phone header keeps brand, courses, contact and language on one row", async ({
+    page,
+  }) => {
+    await page.goto("/de");
+
+    const header = page.locator("header").first();
+    const brand = header.getByRole("link", {name: "MHP Coaching"});
+    const courses = header.getByRole("link", {name: "Ausbildungen"});
+    const contact = header.getByRole("link", {name: "Kontakt"});
+    const language = header.getByRole("button", {name: "Sprache wählen"});
+
+    await expect(brand).toBeVisible();
+    await expect(courses).toBeVisible();
+    await expect(contact).toBeVisible();
+    await expect(language).toBeVisible();
+
+    const [headerBox, brandBox, coursesBox, contactBox, languageBox] =
+      await Promise.all([
+        header.boundingBox(),
+        brand.boundingBox(),
+        courses.boundingBox(),
+        contact.boundingBox(),
+        language.boundingBox(),
+      ]);
+
+    expect(headerBox?.height ?? 999).toBeLessThanOrEqual(72);
+
+    const midY = (box: {y: number; height: number} | null) =>
+      (box?.y ?? 0) + (box?.height ?? 0) / 2;
+
+    const brandMid = midY(brandBox);
+    expect(Math.abs(midY(coursesBox) - brandMid)).toBeLessThanOrEqual(8);
+    expect(Math.abs(midY(contactBox) - brandMid)).toBeLessThanOrEqual(8);
+    expect(Math.abs(midY(languageBox) - brandMid)).toBeLessThanOrEqual(8);
+  });
+
+  test("course price uses the functional sans-serif", async ({page}) => {
+    await page.goto("/fr/formations/praticien-hypnose-omni");
+
+    const price = page.getByText(/3’490/).first();
+    await expect(price).toBeVisible();
+
+    const fontFamily = await price.evaluate(
+      (node) => getComputedStyle(node).fontFamily,
+    );
+
+    expect(fontFamily.toLowerCase()).not.toContain("cormorant");
+    expect(fontFamily.toLowerCase()).toMatch(/source sans|sans-serif/);
+  });
+
   test("language dropdown stays stable and thumb-sized", async ({page}) => {
     await page.goto("/fr");
 

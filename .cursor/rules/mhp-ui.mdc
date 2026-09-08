@@ -19,7 +19,10 @@ source of truth and overrides generic design preferences.
   spacing, 2px corners, no shadows, no pills.
 - Present multiple courses or dates as compact equal-height bordered card
   grids, not oversized full-width rows or long-scroll sections.
-- Keep Courses and Contact visible in phone navigation.
+- Keep Courses and Contact visible in phone navigation on the same compact
+  row as the brand and language control; do not use a second header row.
+- Set course prices in the functional sans-serif with tabular numbers, never
+  the editorial serif.
 - Keep the language control as the custom fixed-width dropdown and preserve
   localized equivalent routes. Switching FR/DE/EN must not move surrounding
   controls.

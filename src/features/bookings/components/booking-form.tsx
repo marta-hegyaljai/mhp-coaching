@@ -12,6 +12,7 @@ import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {Button} from "@/shared/ui/button";
 import {CheckIcon, LockIcon, SpinnerIcon} from "@/shared/ui/icons";
+import {Price} from "@/shared/ui/price";
 
 export function BookingForm({
   locale,
@@ -125,9 +126,9 @@ export function BookingForm({
                         {formatCourseDateRange(date, locale)}
                       </span>
                     </span>
-                    <span className="shrink-0 text-sm font-semibold text-ink">
+                    <Price size="sm" className="shrink-0">
                       {price}
-                    </span>
+                    </Price>
                   </label>
                 );
               })}
@@ -244,9 +245,9 @@ export function BookingForm({
               </div>
             </dl>
 
-            <div className="mt-4 flex items-baseline justify-between gap-4 border-t border-line-soft pt-4">
+            <div className="mt-4 flex items-center justify-between gap-4 border-t border-line-soft pt-4">
               <p className="text-sm text-ink-muted">{t("summaryTotal")}</p>
-              <p className="font-serif text-subheading">{price}</p>
+              <Price size="lg">{price}</Price>
             </div>
 
             {fieldErrorCount > 0 ? (
