@@ -1,0 +1,8 @@
+---
+description: Public website visual direction
+globs:
+  - "src/app/**/*"
+  - "src/components/**/*"
+  - "src/**/*.css"
+---
+Read `docs/DESIGN.md` before visual work. Public UI is premium, calm, artistic and editorial—not generic SaaS. Inspect ~390px mobile and desktop. Do not copy reference assets unless provided/owned.

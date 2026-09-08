@@ -1,0 +1,22 @@
+You are bootstrapping the MHP Hypnose repository.
+
+First read, in order:
+1. AGENTS.md
+2. docs/BOOTSTRAP-TASK.md
+3. docs/MVP.md
+4. docs/ARCHITECTURE.md
+5. docs/DESIGN.md
+6. docs/AGENT-WORKFLOW.md
+
+Then execute docs/BOOTSTRAP-TASK.md completely.
+
+Important:
+- Work in the existing repository root.
+- It is an intentionally new/empty repository; initialize it in place.
+- Do not implement course catalogue, booking flow, Stripe, admin, student accounts or other product features yet.
+- The objective is a clean, tested foundation ready for Cursor Cloud Agents and Vercel later.
+- Use current stable packages and their current official setup; avoid stale syntax.
+- Preserve the supplied docs as authoritative project context.
+- Run all verification and smoke tests before finishing.
+- Do not commit secrets.
+- At the end, give a concise summary of what you created, commands/tests run, deliberate deviations and anything I need to do manually.

@@ -1,0 +1,5 @@
+---
+description: Architecture constraints
+alwaysApply: true
+---
+Read `docs/ARCHITECTURE.md`. Use one Next.js application, standard PostgreSQL via Drizzle and small provider adapters. Keep core data portable. No microservices or provider-coupled DB/auth patterns. Prefer Server Components.

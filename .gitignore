@@ -1,0 +1,27 @@
+# Dependencies
+/node_modules
+/.pnpm-store/
+
+# Next.js output
+/.next/
+/out/
+
+# Test output
+/coverage/
+/playwright-report/
+/test-results/
+
+# Local environment files (the documented template is committed)
+.env
+.env.*
+!.env.example
+
+# Tooling and OS files
+*.tsbuildinfo
+next-env.d.ts
+.DS_Store
+.vercel
+
+# Logs
+*.log
+pnpm-debug.log*

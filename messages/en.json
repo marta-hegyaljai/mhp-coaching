@@ -1,0 +1,13 @@
+{
+  "Metadata": {
+    "siteName": "MHP Hypnose",
+    "title": "MHP Hypnose — Training",
+    "description": "Multilingual foundation for the future MHP Hypnose training website."
+  },
+  "HomePage": {
+    "eyebrow": "Foundation for the new website",
+    "title": "MHP Hypnose",
+    "intro": "The multilingual training website is being prepared."
+  },
+  "LanguageSwitcher": {"label": "Choose language"}
+}

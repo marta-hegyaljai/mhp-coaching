@@ -1,0 +1,5 @@
+---
+description: MHP Hypnose MVP scope and product priorities
+alwaysApply: true
+---
+Read `docs/MVP.md` before feature work. Current priority is MVP; `docs/PRODUCT-VISION.md` is context, not scope. FR/DE/EN and mobile are mandatory. Do not implement student accounts, diplomas, exams, attendance, evaluations, packages or CMS unless explicitly requested.

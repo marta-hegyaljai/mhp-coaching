@@ -1,0 +1,5 @@
+---
+description: Verification and definition of done
+alwaysApply: true
+---
+Read `docs/AGENT-WORKFLOW.md`. Before completion run `pnpm verify` and relevant tests. Inspect UI in browser/mobile. Verify FR/DE/EN for locale work. Do not weaken tests to make them pass.
