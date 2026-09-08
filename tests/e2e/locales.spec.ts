@@ -59,8 +59,9 @@ test("root redirects to French and the language switcher preserves the page", as
 
 test("contact details use the MHP Coaching email and phone", async ({page}) => {
   await page.goto("/fr/contact");
-  const email = page.getByRole("link", {name: "contact@mhp-coaching.ch"});
-  const phone = page.getByRole("link", {name: "+41 79 451 44 92"});
+  const main = page.getByRole("main");
+  const email = main.getByRole("link", {name: "contact@mhp-coaching.ch"});
+  const phone = main.getByRole("link", {name: "+41 79 451 44 92"});
   await expect(email).toBeVisible();
   await expect(email).toHaveAttribute("href", "mailto:contact@mhp-coaching.ch");
   await expect(phone).toBeVisible();
