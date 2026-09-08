@@ -57,11 +57,14 @@ test("root redirects to French and the language switcher preserves the page", as
   await expect(page.locator("html")).toHaveAttribute("lang", "de");
 });
 
-test("contact details use the MHP Coaching email", async ({page}) => {
+test("contact details use the MHP Coaching email and phone", async ({page}) => {
   await page.goto("/fr/contact");
   const email = page.getByRole("link", {name: "contact@mhp-coaching.ch"});
+  const phone = page.getByRole("link", {name: "+41 79 451 44 92"});
   await expect(email).toBeVisible();
   await expect(email).toHaveAttribute("href", "mailto:contact@mhp-coaching.ch");
+  await expect(phone).toBeVisible();
+  await expect(phone).toHaveAttribute("href", "tel:+41794514492");
   await expect(page.getByText(/mhp-hypnose/i)).toHaveCount(0);
 });
 

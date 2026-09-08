@@ -17,7 +17,7 @@ describe("parseBookingForm", () => {
         firstName: "Marta",
         lastName: "Hegyaljai",
         email: "marta@example.com",
-        phone: "+41 21 311 25 81",
+        phone: "+41 79 123 45 67",
         courseDateId: "omni-practitioner-fribourg-future",
         privacyAccepted: "on",
       }),
