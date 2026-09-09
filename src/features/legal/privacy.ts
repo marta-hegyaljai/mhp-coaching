@@ -30,7 +30,7 @@ export const privacyDocument = {
           "Liste d’attente : prénom, nom, e-mail, téléphone, langue, formation concernée.",
           "Formulaire de contact et demande d’un autre moyen de paiement : nom, e-mail, téléphone le cas échéant, message, langue, et éventuellement la formation ou la réservation concernée.",
           "Paiement : Stripe nous communique le statut de la transaction, un identifiant de paiement et les métadonnées nécessaires à la comptabilité. Nous ne stockons pas le numéro complet de carte ni le secret TWINT.",
-          "Mesure d’audience : Vercel Analytics enregistre des statistiques d’usage agrégées, sans cookie publicitaire et sans identifier nominativement les visiteurs.",
+          "Mesure d’audience : Vercel Analytics enregistre des statistiques d’usage agrégées, sans cookie et sans identifier nominativement les visiteurs.",
         ],
       },
       {
@@ -57,8 +57,10 @@ export const privacyDocument = {
       {
         heading: "Cookies et traceurs",
         paragraphs: [
-          "Le site n’utilise pas de cookies publicitaires ni de profilage marketing. Vercel Analytics n’installe pas de cookie publicitaire. Des cookies ou stockages strictement nécessaires au fonctionnement du site, de la sécurité ou du paiement (y compris sur les pages Stripe) peuvent être utilisés.",
-          "Aucun bandeau de consentement n’est affiché pour ces traitements essentiels. Si des traceurs non essentiels étaient ajoutés plus tard, un consentement préalable serait demandé.",
+          "Aucun bandeau de consentement n’est affiché : le site n’installe pas de cookies non essentiels (publicité, profilage, mesure d’audience par cookie).",
+          "La langue est dans l’URL (/fr, /de, /en) ; aucun cookie de langue n’est déposé. Vercel Analytics mesure l’audience de façon agrégée, sans cookie et sans suivre les visiteurs d’un jour à l’autre ou d’un site à l’autre.",
+          "Stripe peut déposer des cookies strictement nécessaires sur ses propres pages de paiement lorsque vous payez par TWINT, Visa ou Mastercard. Ces cookies servent à exécuter le paiement que vous avez demandé.",
+          "Si des traceurs non essentiels étaient ajoutés plus tard, un consentement préalable serait demandé avant leur activation.",
         ],
       },
       {
@@ -98,7 +100,7 @@ export const privacyDocument = {
           "Warteliste: Vorname, Nachname, E-Mail, Telefon, Sprache, betroffener Kurs.",
           "Kontaktformular und Wunsch nach einem anderen Zahlungsmittel: Name, E-Mail, gegebenenfalls Telefon, Nachricht, Sprache sowie gegebenenfalls Kurs oder Buchung.",
           "Zahlung: Stripe übermittelt Transaktionsstatus, eine Zahlungsreferenz und buchhalterisch nötige Metadaten. Wir speichern keine vollständige Kartennummer und kein TWINT-Geheimnis.",
-          "Reichweitenmessung: Vercel Analytics erfasst aggregierte Nutzungsstatistiken ohne Werbe-Cookies und ohne namentliche Identifikation.",
+          "Reichweitenmessung: Vercel Analytics erfasst aggregierte Nutzungsstatistiken ohne Cookies und ohne namentliche Identifikation.",
         ],
       },
       {
@@ -125,8 +127,10 @@ export const privacyDocument = {
       {
         heading: "Cookies und Tracker",
         paragraphs: [
-          "Die Website verwendet keine Werbe-Cookies und kein Marketing-Profiling. Vercel Analytics setzt keinen Werbe-Cookie. Technisch notwendige Cookies oder Speicher für Betrieb, Sicherheit oder Zahlung (einschliesslich auf Stripe-Seiten) können eingesetzt werden.",
-          "Für diese wesentlichen Verarbeitungen wird kein Einwilligungsbanner angezeigt. Würden später nicht notwendige Tracker ergänzt, wäre zuvor eine Einwilligung einzuholen.",
+          "Es wird kein Einwilligungsbanner angezeigt: die Website setzt keine nicht notwendigen Cookies (Werbung, Profiling, Reichweitenmessung per Cookie).",
+          "Die Sprache steht in der URL (/fr, /de, /en); es wird kein Sprach-Cookie gesetzt. Vercel Analytics misst die Nutzung aggregiert, ohne Cookie und ohne Besucher über Tage oder Websites hinweg zu verfolgen.",
+          "Stripe kann auf den eigenen Zahlungsseiten technisch notwendige Cookies setzen, wenn Sie mit TWINT, Visa oder Mastercard bezahlen. Diese Cookies dienen der von Ihnen angeforderten Zahlung.",
+          "Würden später nicht notwendige Tracker ergänzt, wäre zuvor eine Einwilligung einzuholen.",
         ],
       },
       {
@@ -166,7 +170,7 @@ export const privacyDocument = {
           "Waiting list: first name, last name, email, phone, language, course concerned.",
           "Contact form and request for another payment method: name, email, phone if provided, message, language, and optionally the related course or booking.",
           "Payment: Stripe sends transaction status, a payment reference and metadata needed for accounting. We do not store full card numbers or TWINT secrets.",
-          "Audience measurement: Vercel Analytics records aggregated usage statistics without advertising cookies and without naming visitors.",
+          "Audience measurement: Vercel Analytics records aggregated usage statistics without cookies and without naming visitors.",
         ],
       },
       {
@@ -193,8 +197,10 @@ export const privacyDocument = {
       {
         heading: "Cookies and trackers",
         paragraphs: [
-          "The site does not use advertising cookies or marketing profiling. Vercel Analytics does not set an advertising cookie. Strictly necessary cookies or storage for operation, security or payment (including on Stripe pages) may be used.",
-          "No consent banner is shown for these essential processing operations. If non-essential trackers were added later, prior consent would be required.",
+          "No consent banner is shown: the site does not set non-essential cookies (advertising, profiling, cookie-based analytics).",
+          "The language is in the URL (/fr, /de, /en); no language cookie is stored. Vercel Analytics measures aggregated usage without cookies and without tracking visitors across days or websites.",
+          "Stripe may set strictly necessary cookies on its own checkout pages when you pay with TWINT, Visa or Mastercard. Those cookies exist to complete the payment you requested.",
+          "If non-essential trackers were added later, prior consent would be required before they run.",
         ],
       },
       {

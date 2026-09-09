@@ -36,6 +36,14 @@ describe("legal documents", () => {
     expect(french).toContain(organization.founder);
   });
 
+  it("states that there is no consent banner because cookies are not non-essential", () => {
+    const privacy = legalDocuments.find((document) => document.slug === "privacy");
+    expect(privacy).toBeDefined();
+    expect(JSON.stringify(privacy!.sections.fr)).toMatch(/Aucun bandeau de consentement/);
+    expect(JSON.stringify(privacy!.sections.de)).toMatch(/kein Einwilligungsbanner/);
+    expect(JSON.stringify(privacy!.sections.en)).toMatch(/No consent banner/);
+  });
+
   it("states TWINT, cards, CHF and Stripe in the booking terms", () => {
     const terms = legalDocuments.find((document) => document.slug === "terms");
     const blob = JSON.stringify(terms);
