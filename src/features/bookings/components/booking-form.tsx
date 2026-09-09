@@ -1,10 +1,18 @@
 "use client";
 
-import {useActionState, useState} from "react";
+import {useActionState, useEffect, useState, type FormEvent} from "react";
 import {useTranslations} from "next-intl";
 
 import {createBookingAction} from "@/features/bookings/actions";
 import {unscheduledCourseDateId} from "@/features/bookings/booking-date";
+import {
+  bookingIssueLabelKeys,
+  focusBookingIssue,
+  localizeBookingFormErrors,
+  visibleBookingIssueKeys,
+  type BookingFormIssueKey,
+} from "@/features/bookings/form-errors";
+import {parseBookingForm, type BookingFormErrors} from "@/features/bookings/validation";
 import {formatCourseDateRange} from "@/features/courses/dates";
 import type {Course, CourseDate} from "@/features/courses/types";
 import {formatChf} from "@/features/payments/money";
@@ -30,7 +38,10 @@ export function BookingForm({
     createBookingAction.bind(null, locale, course.id),
     null,
   );
-  const errors = state?.errors;
+  const [clientErrors, setClientErrors] = useState<BookingFormErrors | null>(
+    null,
+  );
+  const errors = clientErrors ?? state?.errors;
   const draft = state?.draft;
   const schedulePending = dates.length === 0;
   const pendingDateId = unscheduledCourseDateId(course.id);
@@ -49,25 +60,64 @@ export function BookingForm({
 
   const selectedDate = dates.find((date) => date.id === selectedDateId);
   const price = formatChf(course.priceChf, locale, {compact: true});
-  const fieldErrorCount = errors
-    ? Object.keys(errors).filter((key) => key !== "form").length
-    : 0;
+  const missingKeys = errors ? visibleBookingIssueKeys(errors) : [];
+  const missingSignature = missingKeys.join(",");
+
+  useEffect(() => {
+    if (!missingSignature) {
+      return;
+    }
+
+    const firstKey = missingSignature.split(",")[0];
+    if (firstKey) {
+      focusBookingIssue(firstKey as (typeof missingKeys)[number]);
+    }
+  }, [missingSignature]);
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    const formData = new FormData(event.currentTarget);
+    const submitter = "submitter" in event.nativeEvent
+      ? (event.nativeEvent as SubmitEvent).submitter
+      : null;
+
+    if (submitter instanceof HTMLButtonElement && submitter.name === "intent") {
+      formData.set("intent", submitter.value);
+    }
+
+    const parsed = parseBookingForm(formData);
+
+    if (parsed.errors) {
+      event.preventDefault();
+      setPendingIntent(null);
+      setClientErrors(
+        localizeBookingFormErrors(parsed.errors, (key) =>
+          t(`errors.${key}` as "errors.invalid"),
+        ),
+      );
+      return;
+    }
+
+    setClientErrors(null);
+  }
 
   return (
     <form
       action={formAction}
+      onSubmit={handleSubmit}
       aria-busy={pending}
       noValidate
       className="grid gap-10 lg:grid-cols-12 lg:gap-16"
     >
       <div className="space-y-8 lg:col-span-7">
-        {errors?.form ? (
-          <p
-            role="alert"
-            className="rounded-panel border border-bronze/45 bg-parchment px-4 py-3 text-sm text-bronze"
-          >
-            {errors.form}
-          </p>
+        {errors?.form || missingKeys.length > 0 ? (
+          <MissingFields
+            intro={t("errors.missingIntro")}
+            issues={missingKeys.map((key) => ({
+              key,
+              label: t(bookingIssueLabelKeys[key]),
+            }))}
+            formError={errors?.form}
+          />
         ) : null}
 
         {schedulePending ? (
@@ -84,7 +134,7 @@ export function BookingForm({
             </p>
           </div>
         ) : (
-          <fieldset>
+          <fieldset id="booking-date" tabIndex={-1} className="scroll-mt-24">
             <legend className="font-serif text-subheading">
               {t("dateLabel")}
             </legend>
@@ -132,7 +182,7 @@ export function BookingForm({
               })}
             </div>
             {errors?.courseDateId ? (
-              <p role="alert" className="mt-2 text-sm text-bronze">
+              <p role="alert" className="mt-2 text-sm text-ink">
                 {errors.courseDateId}
               </p>
             ) : null}
@@ -207,6 +257,7 @@ export function BookingForm({
         <div>
           <label className="flex cursor-pointer items-start gap-3 rounded-panel border border-line bg-parchment/60 p-4 text-sm leading-6 transition duration-200 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-ink">
             <input
+              id="privacyAccepted"
               type="checkbox"
               name="privacyAccepted"
               required
@@ -235,7 +286,7 @@ export function BookingForm({
             </span>
           </label>
           {errors?.privacyAccepted ? (
-            <p role="alert" className="mt-2 text-sm text-bronze">
+            <p role="alert" className="mt-2 text-sm text-ink">
               {errors.privacyAccepted}
             </p>
           ) : null}
@@ -278,10 +329,18 @@ export function BookingForm({
               <Price size="lg">{price}</Price>
             </div>
 
-            {fieldErrorCount > 0 ? (
-              <p role="alert" className="mt-5 text-sm text-bronze">
-                {t("errors.invalid")}
-              </p>
+            {errors?.form || missingKeys.length > 0 ? (
+              <div className="mt-5">
+                <MissingFields
+                  intro={t("errors.missingIntro")}
+                  issues={missingKeys.map((key) => ({
+                    key,
+                    label: t(bookingIssueLabelKeys[key]),
+                  }))}
+                  formError={errors?.form}
+                  duplicate
+                />
+              </div>
             ) : null}
 
             <Button
@@ -336,6 +395,46 @@ export function BookingForm({
   );
 }
 
+function MissingFields({
+  intro,
+  issues,
+  formError,
+  duplicate = false,
+}: {
+  intro: string;
+  issues: {key: BookingFormIssueKey; label: string}[];
+  formError?: string;
+  duplicate?: boolean;
+}) {
+  return (
+    <div
+      role={duplicate ? undefined : "alert"}
+      aria-hidden={duplicate || undefined}
+      className="rounded-panel border border-ink bg-white px-4 py-3 text-sm text-ink"
+    >
+      {formError ? <p>{formError}</p> : null}
+      {issues.length > 0 ? (
+        <>
+          <p className={formError ? "mt-2 font-medium" : "font-medium"}>{intro}</p>
+          <ul className="mt-2 list-disc space-y-1 pl-5">
+            {issues.map((issue) => (
+              <li key={issue.key}>
+                <button
+                  type="button"
+                  className="text-left underline underline-offset-2 transition-opacity duration-150 hover:opacity-60"
+                  onClick={() => focusBookingIssue(issue.key)}
+                >
+                  {issue.label}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </>
+      ) : null}
+    </div>
+  );
+}
+
 function Field({
   name,
   label,
@@ -373,11 +472,11 @@ function Field({
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? errorId : undefined}
         className={`mt-2 block min-h-12 w-full rounded-panel border bg-parchment px-3.5 text-base text-ink transition duration-200 placeholder:text-ink-subtle focus:border-ink ${
-          error ? "border-bronze" : "border-line"
+          error ? "border-ink" : "border-line"
         }`}
       />
       {error ? (
-        <p id={errorId} role="alert" className="mt-1.5 text-sm text-bronze">
+        <p id={errorId} role="alert" className="mt-1.5 text-sm text-ink">
           {error}
         </p>
       ) : null}

@@ -96,6 +96,9 @@
     "bookShort": "Book",
     "bookDate": "Choose this date",
     "nextSession": "Next session",
+    "upcomingSessions": "Upcoming sessions",
+    "showMoreSessions": "Show {count, plural, =1 {# more date} other {# more dates}}",
+    "showLessSessions": "Show less",
     "about": "The programme",
     "contactCta": "Contact us",
     "dateToBeConfirmed": "The date is not published yet. Join the waiting list and we will contact you when a session opens.",
@@ -125,6 +128,7 @@
     "country": "Country",
     "countryDefault": "Switzerland",
     "privacy": "I have read and accept the <privacy>privacy notice</privacy> and the <terms>booking terms</terms>.",
+    "privacyShort": "Privacy and terms",
     "submit": "Continue to payment",
     "submitLead": "I prefer another payment method",
     "submitting": "Preparing checkout…",
@@ -146,7 +150,8 @@
       "courseMissing": "This course is no longer available.",
       "dateUnavailable": "This date is no longer open for booking.",
       "waitlistOnly": "This course has no date yet. Join the waiting list.",
-      "saveFailed": "We could not start payment. Please try again in a moment."
+      "saveFailed": "We could not start payment. Please try again in a moment.",
+      "missingIntro": "Required fields still missing:"
     },
     "summaryTitle": "Your booking",
     "summaryDate": "Date",
@@ -199,7 +204,10 @@
     "retry": "Return to the course",
     "home": "Home",
     "otherPaymentTitle": "Pay another way",
-    "otherPaymentIntro": "If online payment failed or you would rather arrange another method, write to us. We will get back to you with a solution."
+    "otherPaymentIntro": "If online payment failed or you would rather arrange another method, write to us. We will get back to you with a solution.",
+    "course": "Course",
+    "dates": "Dates",
+    "dateToBeConfirmed": "Date to be confirmed"
   },
   "FakeCheckout": {
     "title": "Test payment",
@@ -228,6 +236,8 @@
     "submitting": "Sending…",
     "success": "Thank you. Your message is on its way. We will reply by email.",
     "leadSuccess": "Thank you. Your booking request is saved. We will contact you to arrange another payment method.",
+    "courseContext": "About: {course}",
+    "courseContextWithDates": "About: {course} · {dates}",
     "errors": {
       "name": "Please enter your name.",
       "email": "Please enter a valid email address.",
@@ -314,6 +324,9 @@
       "emailLine": "Email: {email}",
       "phoneLine": "Phone: {phone}",
       "courseLine": "Course: {course}",
+      "dateLine": "Dates: {date}",
+      "dateToBeConfirmed": "Date to be confirmed",
+      "referenceLine": "Booking reference: {id}",
       "messageLine": "Message:"
     },
     "waitlistNotification": {

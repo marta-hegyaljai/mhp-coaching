@@ -96,6 +96,9 @@
     "bookShort": "S’inscrire",
     "bookDate": "Choisir cette date",
     "nextSession": "Prochaine session",
+    "upcomingSessions": "Prochaines sessions",
+    "showMoreSessions": "Voir {count, plural, =1 {# autre date} other {# autres dates}}",
+    "showLessSessions": "Réduire",
     "about": "Le programme",
     "contactCta": "Nous écrire",
     "dateToBeConfirmed": "La date n’est pas encore publiée. Inscrivez-vous sur la liste d’attente : nous vous contactons dès qu’une session ouvre.",
@@ -125,6 +128,7 @@
     "country": "Pays",
     "countryDefault": "Suisse",
     "privacy": "J’ai lu et j’accepte la <privacy>notice de confidentialité</privacy> et les <terms>conditions d’inscription</terms>.",
+    "privacyShort": "Confidentialité et conditions",
     "submit": "Continuer vers le paiement",
     "submitLead": "Je préfère un autre moyen de paiement",
     "submitting": "Préparation du paiement…",
@@ -146,7 +150,8 @@
       "courseMissing": "Cette formation n’est plus disponible.",
       "dateUnavailable": "Cette date n’est plus ouverte à l’inscription.",
       "waitlistOnly": "Cette formation n’a pas encore de date. Inscrivez-vous sur la liste d’attente.",
-      "saveFailed": "Nous n’avons pas pu préparer le paiement. Veuillez réessayer dans un instant."
+      "saveFailed": "Nous n’avons pas pu préparer le paiement. Veuillez réessayer dans un instant.",
+      "missingIntro": "Champs obligatoires manquants :"
     },
     "summaryTitle": "Votre inscription",
     "summaryDate": "Date",
@@ -199,7 +204,10 @@
     "retry": "Retour à la formation",
     "home": "Accueil",
     "otherPaymentTitle": "Payer autrement",
-    "otherPaymentIntro": "Si le paiement en ligne a échoué ou si vous préférez un autre arrangement, écrivez-nous. Nous vous recontacterons pour trouver une solution."
+    "otherPaymentIntro": "Si le paiement en ligne a échoué ou si vous préférez un autre arrangement, écrivez-nous. Nous vous recontacterons pour trouver une solution.",
+    "course": "Formation",
+    "dates": "Dates",
+    "dateToBeConfirmed": "Date à confirmer"
   },
   "FakeCheckout": {
     "title": "Paiement de test",
@@ -228,6 +236,8 @@
     "submitting": "Envoi…",
     "success": "Merci. Votre message est bien parti. Nous vous répondrons par e-mail.",
     "leadSuccess": "Merci. Votre demande d’inscription est enregistrée. Nous vous recontacterons pour convenir d’un autre moyen de paiement.",
+    "courseContext": "À propos de : {course}",
+    "courseContextWithDates": "À propos de : {course} · {dates}",
     "errors": {
       "name": "Veuillez indiquer votre nom.",
       "email": "Veuillez indiquer une adresse e-mail valide.",
@@ -314,6 +324,9 @@
       "emailLine": "E-mail : {email}",
       "phoneLine": "Téléphone : {phone}",
       "courseLine": "Formation : {course}",
+      "dateLine": "Dates : {date}",
+      "dateToBeConfirmed": "Date à confirmer",
+      "referenceLine": "Référence d’inscription : {id}",
       "messageLine": "Message :"
     },
     "waitlistNotification": {

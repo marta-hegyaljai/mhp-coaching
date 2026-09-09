@@ -4,13 +4,14 @@ import {notFound} from "next/navigation";
 import {CourseBookingBar} from "@/features/courses/components/course-booking-bar";
 import {CourseArtwork} from "@/features/courses/components/course-artwork";
 import {CourseDates} from "@/features/courses/components/course-dates";
-import {formatCourseDateRange} from "@/features/courses/dates";
+import {CourseUpcomingSessions} from "@/features/courses/components/course-upcoming-sessions";
 import {courseLocaleHrefs} from "@/features/courses/locale-hrefs";
 import {
   getBookableDates,
   getCourseBySlug,
   getCourseStaticParams,
 } from "@/features/courses/queries";
+import {UPCOMING_SESSION_PREVIEW_COUNT} from "@/features/courses/upcoming-sessions";
 import {getCourseSourceContent} from "@/features/courses/source-content";
 import {formatChf} from "@/features/payments/money";
 import {BreadcrumbTrail} from "@/features/seo/breadcrumb-trail";
@@ -21,7 +22,7 @@ import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link, redirect} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {buttonStyles} from "@/shared/ui/button";
-import {ArrowRightIcon, CalendarIcon, PinIcon} from "@/shared/ui/icons";
+import {ArrowRightIcon, PinIcon} from "@/shared/ui/icons";
 import {Eyebrow, Section} from "@/shared/ui/layout";
 import {Price} from "@/shared/ui/price";
 
@@ -75,8 +76,11 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
   const coursesT = await getTranslations("CoursesPage");
   const navT = await getTranslations("Nav");
   const dates = getBookableDates(course);
-  const nextDate = dates[0];
   const hasDates = dates.length > 0;
+  const extraSessionCount = Math.max(
+    dates.length - UPCOMING_SESSION_PREVIEW_COUNT,
+    0,
+  );
   const bookHref = {
     pathname: "/courses/[slug]/book",
     params: {slug: course.slug[locale]},
@@ -158,24 +162,22 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
                 {course.location[locale]}
               </p>
 
-              {nextDate ? (
-                <div className="mt-5 border-t border-line-soft pt-5">
-                  <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-ink-subtle">
-                    <CalendarIcon className="h-3.5 w-3.5 text-bronze" />
-                    {t("nextSession")}
-                  </p>
-                  <p className="mt-1.5 text-sm font-medium">
-                    {nextDate.location[locale]} ·{" "}
-                    {formatCourseDateRange(nextDate, locale)}
-                  </p>
-                </div>
-              ) : null}
-
-              {!nextDate ? (
+              {hasDates ? (
+                <CourseUpcomingSessions
+                  dates={dates}
+                  locale={locale}
+                  courseSlug={course.slug[locale]}
+                  heading={
+                    dates.length > 1 ? t("upcomingSessions") : t("nextSession")
+                  }
+                  showMoreLabel={t("showMoreSessions", {count: extraSessionCount})}
+                  showLessLabel={t("showLessSessions")}
+                />
+              ) : (
                 <p className="mt-6 text-sm leading-7 text-ink-muted">
                   {t("dateToBeConfirmed")}
                 </p>
-              ) : null}
+              )}
               <Link
                 href={bookHref}
                 className={`${buttonStyles({size: "lg", block: true})} mt-6`}

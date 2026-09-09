@@ -96,6 +96,9 @@
     "bookShort": "Buchen",
     "bookDate": "Diesen Termin wählen",
     "nextSession": "Nächste Durchführung",
+    "upcomingSessions": "Nächste Durchführungen",
+    "showMoreSessions": "{count, plural, =1 {# weiteren Termin anzeigen} other {# weitere Termine anzeigen}}",
+    "showLessSessions": "Weniger anzeigen",
     "about": "Das Programm",
     "contactCta": "Kontakt aufnehmen",
     "dateToBeConfirmed": "Der Termin ist noch nicht veröffentlicht. Tragen Sie sich auf die Warteliste ein; wir benachrichtigen Sie, sobald eine Session öffnet.",
@@ -125,6 +128,7 @@
     "country": "Land",
     "countryDefault": "Schweiz",
     "privacy": "Ich habe den <privacy>Datenschutzhinweis</privacy> und die <terms>Buchungsbedingungen</terms> gelesen und akzeptiere sie.",
+    "privacyShort": "Datenschutz und Bedingungen",
     "submit": "Weiter zur Zahlung",
     "submitLead": "Ich möchte anders bezahlen",
     "submitting": "Checkout wird vorbereitet…",
@@ -146,7 +150,8 @@
       "courseMissing": "Dieser Kurs ist nicht mehr verfügbar.",
       "dateUnavailable": "Dieser Termin ist nicht mehr buchbar.",
       "waitlistOnly": "Für diesen Kurs gibt es noch keinen Termin. Tragen Sie sich auf die Warteliste ein.",
-      "saveFailed": "Die Zahlung konnte nicht vorbereitet werden. Bitte versuchen Sie es in einem Moment erneut."
+      "saveFailed": "Die Zahlung konnte nicht vorbereitet werden. Bitte versuchen Sie es in einem Moment erneut.",
+      "missingIntro": "Pflichtfelder fehlen noch:"
     },
     "summaryTitle": "Ihre Buchung",
     "summaryDate": "Datum",
@@ -199,7 +204,10 @@
     "retry": "Zum Kurs zurück",
     "home": "Start",
     "otherPaymentTitle": "Anders bezahlen",
-    "otherPaymentIntro": "Wenn die Online-Zahlung fehlgeschlagen ist oder Sie eine andere Lösung bevorzugen, schreiben Sie uns. Wir melden uns, um eine Lösung zu finden."
+    "otherPaymentIntro": "Wenn die Online-Zahlung fehlgeschlagen ist oder Sie eine andere Lösung bevorzugen, schreiben Sie uns. Wir melden uns, um eine Lösung zu finden.",
+    "course": "Ausbildung",
+    "dates": "Daten",
+    "dateToBeConfirmed": "Termin wird bestätigt"
   },
   "FakeCheckout": {
     "title": "Testzahlung",
@@ -228,6 +236,8 @@
     "submitting": "Wird gesendet…",
     "success": "Danke. Ihre Nachricht ist unterwegs. Wir antworten per E-Mail.",
     "leadSuccess": "Danke. Ihre Anmelde-Anfrage ist gespeichert. Wir melden uns, um eine andere Zahlung zu vereinbaren.",
+    "courseContext": "Betrifft: {course}",
+    "courseContextWithDates": "Betrifft: {course} · {dates}",
     "errors": {
       "name": "Bitte geben Sie Ihren Namen ein.",
       "email": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
@@ -314,6 +324,9 @@
       "emailLine": "E-Mail: {email}",
       "phoneLine": "Telefon: {phone}",
       "courseLine": "Ausbildung: {course}",
+      "dateLine": "Daten: {date}",
+      "dateToBeConfirmed": "Datum noch zu bestätigen",
+      "referenceLine": "Buchungsreferenz: {id}",
       "messageLine": "Nachricht:"
     },
     "waitlistNotification": {

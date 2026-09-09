@@ -14,12 +14,20 @@ export function ContactForm({
   bookingId,
   courseId,
   courseTitle,
+  courseDates,
+  defaultName,
+  defaultEmail,
+  defaultPhone,
 }: {
   locale: AppLocale;
   kind?: "general" | "payment";
   bookingId?: string;
   courseId?: string;
   courseTitle?: string;
+  courseDates?: string;
+  defaultName?: string;
+  defaultEmail?: string;
+  defaultPhone?: string;
 }) {
   const t = useTranslations("ContactForm");
   const [state, formAction, pending] = useActionState(
@@ -33,7 +41,7 @@ export function ContactForm({
         role="status"
         className="border border-ink bg-white px-4 py-5 text-sm leading-7 text-ink"
       >
-        {t("success")}
+        {kind === "payment" ? t("leadSuccess") : t("success")}
       </p>
     );
   }
@@ -43,21 +51,34 @@ export function ContactForm({
 
   return (
     <form action={formAction} noValidate className="space-y-5" aria-busy={pending}>
+      {courseTitle ? (
+        <p className="text-sm leading-6 text-ink-muted">
+          {courseDates
+            ? t("courseContextWithDates", {course: courseTitle, dates: courseDates})
+            : t("courseContext", {course: courseTitle})}
+        </p>
+      ) : null}
       {errors?.form ? (
-        <p role="alert" className="border border-bronze/45 px-4 py-3 text-sm text-bronze">
+        <p role="alert" className="border border-ink px-4 py-3 text-sm text-ink">
           {errors.form}
         </p>
       ) : null}
 
       <div className="grid gap-5 sm:grid-cols-2">
-        <Field name="name" label={t("name")} error={errors?.name} defaultValue={draft?.name} autoComplete="name" />
+        <Field
+          name="name"
+          label={t("name")}
+          error={errors?.name}
+          defaultValue={draft?.name ?? defaultName}
+          autoComplete="name"
+        />
         <Field
           name="email"
           type="email"
           inputMode="email"
           label={t("email")}
           error={errors?.email}
-          defaultValue={draft?.email}
+          defaultValue={draft?.email ?? defaultEmail}
           autoComplete="email"
         />
         <Field
@@ -66,7 +87,7 @@ export function ContactForm({
           inputMode="tel"
           label={t("phone")}
           error={errors?.phone}
-          defaultValue={draft?.phone}
+          defaultValue={draft?.phone ?? defaultPhone}
           autoComplete="tel"
           required={false}
         />

@@ -4,7 +4,6 @@ import {redirect} from "next/navigation";
 import {getTranslations} from "next-intl/server";
 import {hasLocale} from "next-intl";
 
-import {sendLeadNotification} from "@/features/email/lead-notification";
 import {getCourseById, getBookableDates} from "@/features/courses/queries";
 import {isCoursePublished} from "@/features/courses/types";
 import {getPaymentProvider} from "@/features/payments/get-provider";
@@ -18,6 +17,7 @@ import {
   attachPaymentReference,
   createPendingBooking,
 } from "./repository";
+import {localizeBookingFormErrors} from "./form-errors";
 import {
   parseBookingForm,
   readBookingDraft,
@@ -49,7 +49,10 @@ export async function createBookingAction(
 
   if (parsed.errors || !values) {
     return {
-      errors: localizeErrors(parsed.errors ?? {form: "invalid"}, t),
+      errors: localizeBookingFormErrors(
+        parsed.errors ?? {form: "invalid"},
+        (key) => t(key as "invalid"),
+      ),
       draft,
     };
   }
@@ -101,14 +104,8 @@ export async function createBookingAction(
     });
 
     if (isLead) {
-      try {
-        await sendLeadNotification(booking);
-      } catch (error) {
-        console.error("Failed to send lead notification", error);
-      }
-
-      const contactPath = localizedPathname(resolvedLocale, "/contact");
-      nextUrl = `${contactPath}?sent=payment`;
+      const cancelPath = localizedPathname(resolvedLocale, "/booking/cancelled");
+      nextUrl = `${cancelPath}?bookingId=${booking.id}&source=other`;
     } else {
       const checkoutProvider = getPaymentProvider();
       const successPath = localizedPathname(resolvedLocale, "/booking/success");
@@ -136,52 +133,4 @@ export async function createBookingAction(
   }
 
   redirect(nextUrl);
-}
-
-const errorKeys = [
-  "firstName",
-  "lastName",
-  "email",
-  "phone",
-  "street",
-  "postalCode",
-  "city",
-  "country",
-  "courseDateId",
-  "privacyAccepted",
-  "form",
-] as const;
-
-function localizeErrors(
-  errors: BookingFormErrors,
-  t: (
-    key:
-      | "firstName"
-      | "lastName"
-      | "email"
-      | "phone"
-      | "street"
-      | "postalCode"
-      | "city"
-      | "country"
-      | "courseDateId"
-      | "privacyAccepted"
-      | "invalid",
-  ) => string,
-): BookingFormErrors {
-  const mapped: BookingFormErrors = {};
-
-  for (const key of errorKeys) {
-    if (!errors[key]) {
-      continue;
-    }
-
-    mapped[key] = key === "form" ? t("invalid") : t(key);
-  }
-
-  if (Object.keys(mapped).length === 0) {
-    mapped.form = t("invalid");
-  }
-
-  return mapped;
 }
