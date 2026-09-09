@@ -89,9 +89,10 @@ dashboard.
 
 ## Course imagery and source content
 
-- The course catalogue opens with the instructor photograph from the historical
-  MHP catalogue. Keep it editorial, high-contrast, and structurally separate
-  from the card grid; do not replace it with generic stock imagery.
+- The course catalogue opens with a compact editorial portrait of the
+  instructor beside the page title, not a full-bleed banner that hides the
+  course grid. Keep the photograph high-contrast and structurally separate
+  from the cards; do not replace it with generic stock imagery.
 - Every course card and detail page uses its corresponding historical course
   image from `public/images/courses`. Images support recognition and hierarchy;
   they must not become decorative full-page backgrounds or introduce new accent

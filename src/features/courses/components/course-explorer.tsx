@@ -1,10 +1,12 @@
 "use client";
 
+import Image from "next/image";
 import {useMemo, useState} from "react";
 import type {ReactNode} from "react";
 
 import {CourseCalendar} from "@/features/courses/components/course-calendar";
 import {CourseCard} from "@/features/courses/components/course-card";
+import {CATALOGUE_INSTRUCTOR_IMAGE} from "@/features/courses/components/course-catalogue-masthead";
 import {
   toCalendarSession,
   type CalendarSession,
@@ -48,11 +50,17 @@ export function CourseExplorer({
   groups,
   detailsLabel,
   labels,
+  lead,
+  portrait,
+  portraitAlt,
 }: {
   locale: AppLocale;
   groups: Array<{title: string; courses: Course[]}>;
   detailsLabel: string;
   labels: ExplorerLabels;
+  lead?: ReactNode;
+  portrait?: ReactNode;
+  portraitAlt?: string;
 }) {
   const allCourses = groups.flatMap((group) => group.courses);
   const sessions = useMemo(
@@ -87,8 +95,7 @@ export function CourseExplorer({
     }))
     .filter((group) => group.courses.length > 0);
 
-  return (
-    <div>
+  const toolbar = (
       <div className="grid gap-3 border border-ink bg-white p-4 sm:grid-cols-[minmax(0,1fr)_12rem_auto] sm:items-end">
         <div>
           <label htmlFor="course-search" className="block text-sm font-medium text-ink">
@@ -143,6 +150,36 @@ export function CourseExplorer({
           </ViewButton>
         </div>
       </div>
+  );
+
+  return (
+    <div>
+      {lead && portrait ? (
+        <div className="mt-8 grid lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-stretch lg:gap-x-10 lg:gap-y-6 xl:grid-cols-[minmax(0,1fr)_20rem]">
+          <div className="relative isolate overflow-hidden rounded-panel border border-ink lg:overflow-visible lg:rounded-none lg:border-0">
+            <div className="relative z-10 flex min-h-52 flex-col justify-end p-5 sm:min-h-56 sm:p-6 lg:min-h-0 lg:justify-start lg:p-0">
+              {lead}
+            </div>
+            {portraitAlt ? (
+              <div className="absolute inset-0 -z-10 lg:hidden">
+                <Image
+                  src={CATALOGUE_INSTRUCTOR_IMAGE}
+                  alt={portraitAlt}
+                  fill
+                  priority
+                  sizes="100vw"
+                  className="object-cover object-[62%_18%]"
+                />
+                <div className="absolute inset-0 bg-black/45" />
+              </div>
+            ) : null}
+          </div>
+          <div className="hidden lg:row-span-2 lg:block">{portrait}</div>
+          <div className="mt-6 lg:mt-0">{toolbar}</div>
+        </div>
+      ) : (
+        toolbar
+      )}
 
       {filteredCourses.length === 0 ? (
         <p className="mt-8 text-sm leading-7 text-ink-muted">{labels.noResults}</p>
@@ -157,7 +194,7 @@ export function CourseExplorer({
       ) : (
         <div className="mt-4">
           {visibleGroups.map((group) => (
-            <section key={group.title} className="mt-12 first:mt-8">
+            <section key={group.title} className="mt-10 first:mt-8">
               <div className="flex items-baseline justify-between gap-4 border-b border-ink/15 pb-3">
                 <h2 className="font-serif text-subheading">{group.title}</h2>
                 <p className="text-xs uppercase tracking-[0.16em] text-ink-subtle">

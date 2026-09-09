@@ -54,8 +54,40 @@ for (const {locale, heading, coursesPath, coursesHeading} of locales) {
     await expect(page.getByRole("heading", {level: 1})).toHaveText(coursesHeading);
     await expect(page.getByRole("heading", {level: 2}).first()).toBeVisible();
     await expect(page.locator("a:has(> article)").first()).toBeVisible();
+    await expect(
+      page.getByRole("img", {name: /Marta Hegyaljai Python/}).locator("visible=true"),
+    ).toBeVisible();
   });
 }
+
+test("course catalogue keeps the instructor portrait without hiding the courses", async ({
+  page,
+}) => {
+  await page.setViewportSize({width: 1280, height: 900});
+  await page.goto("/fr/formations");
+
+  const photo = page.getByRole("img", {name: /Marta Hegyaljai Python/}).last();
+  const firstCard = page.locator("a:has(> article)").first();
+  const [photoBox, cardBox] = await Promise.all([
+    photo.boundingBox(),
+    firstCard.boundingBox(),
+  ]);
+
+  expect(photoBox?.height ?? 0).toBeGreaterThan(200);
+  expect(photoBox?.height ?? 999).toBeLessThan(480);
+  expect(cardBox?.y ?? 999).toBeLessThan(900);
+
+  await page.setViewportSize({width: 390, height: 844});
+  await page.goto("/fr/formations");
+  const phonePhoto = await page
+    .getByRole("img", {name: /Marta Hegyaljai Python/})
+    .first()
+    .boundingBox();
+  const phoneCard = await page.locator("a:has(> article)").first().boundingBox();
+
+  expect(phonePhoto?.height ?? 999).toBeLessThan(280);
+  expect(phoneCard?.y ?? 999).toBeLessThan(844);
+});
 
 test("root redirects to French and locale URLs still work without the picker", async ({
   page,
