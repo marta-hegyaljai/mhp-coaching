@@ -91,6 +91,8 @@ The Stripe webhook is authoritative. Never mark a booking paid just because the 
 
 Undated published courses skip checkout. The course page sends visitors to a
 waiting-list form (first name, last name, email, phone, privacy acceptance).
+Dated courses keep purchase as the primary action and offer the same waiting
+list as a quieter secondary option when none of the published dates fit.
 A unique `(courseId, email)` row is stored in `waitlist_entries` so staff can
 contact people when a date opens.
 

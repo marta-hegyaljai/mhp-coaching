@@ -58,6 +58,59 @@ test("a single-date course keeps the singular next-session label", async ({
   await expect(card.getByText("Prochaines sessions")).toHaveCount(0);
 });
 
+test("a dated course offers a quieter waitlist when no published date fits", async ({
+  page,
+}) => {
+  await page.goto("/fr/formations/praticien-hypnose-omni");
+
+  const card = page.getByRole("complementary");
+  await expect(card.getByRole("link", {name: "S’inscrire à cette formation"})).toBeVisible();
+  await expect(card.getByText("Pas de date qui vous convienne ?")).toBeVisible();
+
+  await card.getByRole("link", {name: "Rejoindre la liste d’attente"}).click();
+  await expect(page).toHaveURL(/waitlist=1/);
+  await expect(page.getByRole("heading", {name: "Rejoindre la liste d’attente"})).toBeVisible();
+  await expect(page.getByText(/Aucune des dates publiées ne vous convient/)).toBeVisible();
+  await expect(page.getByRole("button", {name: "Continuer vers le paiement"})).toHaveCount(0);
+});
+
+test("DE and EN dated course pages keep waitlist as a secondary action", async ({
+  page,
+}) => {
+  await page.goto("/de/ausbildungen/omni-hypnose-praktiker");
+  await expect(
+    page.getByRole("complementary").getByText("Kein passender Termin?"),
+  ).toBeVisible();
+  await page
+    .getByRole("complementary")
+    .getByRole("link", {name: "Auf die Warteliste"})
+    .click();
+  await expect(page).toHaveURL(/waitlist=1/);
+  await expect(page.getByText(/Keiner der veröffentlichten Termine passt/)).toBeVisible();
+
+  await page.goto("/en/courses/omni-hypnosis-practitioner");
+  await expect(
+    page.getByRole("complementary").getByText("No suitable date?"),
+  ).toBeVisible();
+  await page
+    .getByRole("complementary")
+    .getByRole("link", {name: "Join the waiting list"})
+    .click();
+  await expect(page).toHaveURL(/waitlist=1/);
+  await expect(page.getByText(/None of the published dates work for you/)).toBeVisible();
+});
+
+test("an undated course keeps waitlist as the only course-page action", async ({
+  page,
+}) => {
+  await page.goto("/fr/formations/maitre-praticien-hypnose-elmanienne");
+
+  const card = page.getByRole("complementary");
+  await expect(card.getByRole("link", {name: "Rejoindre la liste d’attente"})).toBeVisible();
+  await expect(card.getByRole("link", {name: "S’inscrire à cette formation"})).toHaveCount(0);
+  await expect(card.getByText("Pas de date qui vous convienne ?")).toHaveCount(0);
+});
+
 test("an undated course collects a waiting-list request instead of payment", async ({page}) => {
   await page.goto("/fr/formations/hypnose-medicale-techniques-base/inscription");
 

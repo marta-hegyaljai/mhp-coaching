@@ -18,7 +18,7 @@ import {Eyebrow, Section} from "@/shared/ui/layout";
 
 type BookPageProps = {
   params: Promise<{locale: AppLocale; slug: string}>;
-  searchParams: Promise<{date?: string}>;
+  searchParams: Promise<{date?: string; waitlist?: string}>;
 };
 
 export function generateStaticParams() {
@@ -53,7 +53,7 @@ export default async function BookCoursePage({
   searchParams,
 }: BookPageProps) {
   const {locale, slug} = await params;
-  const {date} = await searchParams;
+  const {date, waitlist} = await searchParams;
   setRequestLocale(locale);
   const course = getCourseBySlug(slug);
 
@@ -66,6 +66,14 @@ export default async function BookCoursePage({
       href: {
         pathname: "/courses/[slug]/book",
         params: {slug: course.slug[locale]},
+        ...(date || waitlist
+          ? {
+              query: {
+                ...(date ? {date} : {}),
+                ...(waitlist ? {waitlist} : {}),
+              },
+            }
+          : {}),
       },
       locale,
     });
@@ -77,6 +85,7 @@ export default async function BookCoursePage({
   const courseT = await getTranslations("CourseDetail");
   const navT = await getTranslations("Nav");
   const dates = getBookableDates(course);
+  const showWaitlist = dates.length === 0 || waitlist === "1";
 
   return (
     <SiteShell
@@ -113,15 +122,19 @@ export default async function BookCoursePage({
         <div className="mt-8 max-w-2xl">
           <Eyebrow>{course.title[locale]}</Eyebrow>
           <h1 className="mt-4 font-serif text-title">
-            {dates.length === 0 ? courseT("waitlistCta") : t("title")}
+            {showWaitlist ? courseT("waitlistCta") : t("title")}
           </h1>
           <p className="mt-5 text-lead text-ink-muted">
-            {dates.length === 0 ? waitlistT("intro") : t("intro")}
+            {showWaitlist
+              ? dates.length > 0
+                ? waitlistT("introUnsuitableDates")
+                : waitlistT("intro")
+              : t("intro")}
           </p>
         </div>
 
         <div className="mt-10 sm:mt-12">
-          {dates.length === 0 ? (
+          {showWaitlist ? (
             <WaitlistForm locale={locale} course={course} />
           ) : (
             <BookingForm

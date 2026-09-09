@@ -65,7 +65,7 @@ integration may inject (`NEON_DATABASE_URL`, `NEON_POSTGRES_URL`, `POSTGRES_URL`
 Initial durable concepts:
 - bookings
 - optional payment_events
-- waitlist_entries for undated published courses
+- waitlist_entries for published courses (undated, or dated when no session fits)
 
 Courses/course dates stay in typed source config initially.
 A booking should snapshot commercially important values so historic bookings remain understandable if course config later changes.
@@ -122,7 +122,7 @@ src/
   features/
     courses/                # catalogue, dates, course UI
     bookings/               # form, validation, persistence
-    waitlist/               # undated-course waiting list
+    waitlist/               # waiting list for published courses
     inquiries/              # contact and alternative-payment forms
     payments/{fake,stripe}/ # PaymentProvider adapters + webhook
     email/                  # confirmation + inquiry delivery

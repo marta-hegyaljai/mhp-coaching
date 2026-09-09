@@ -5,6 +5,7 @@ import {CourseBookingBar} from "@/features/courses/components/course-booking-bar
 import {CourseArtwork} from "@/features/courses/components/course-artwork";
 import {CourseDates} from "@/features/courses/components/course-dates";
 import {CourseUpcomingSessions} from "@/features/courses/components/course-upcoming-sessions";
+import {CourseWaitlistLink} from "@/features/courses/components/course-waitlist-link";
 import {courseLocaleHrefs} from "@/features/courses/locale-hrefs";
 import {
   getBookableDates,
@@ -185,6 +186,14 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
                 {hasDates ? t("bookCta") : t("waitlistCta")}
                 <ArrowRightIcon className="transition-transform duration-200 ease-standard group-hover/button:translate-x-0.5" />
               </Link>
+              {hasDates ? (
+                <CourseWaitlistLink
+                  courseSlug={course.slug[locale]}
+                  prompt={t("waitlistAltPrompt")}
+                  label={t("waitlistCta")}
+                  className="mt-3"
+                />
+              ) : null}
             </div>
           </aside>
         </div>
@@ -298,6 +307,14 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
             seatsLabel={(capacity) => coursesT("seats", {count: capacity})}
           />
         )}
+        {dates.length > 0 ? (
+          <CourseWaitlistLink
+            courseSlug={course.slug[locale]}
+            prompt={t("waitlistAltPrompt")}
+            label={t("waitlistCta")}
+            className="mt-6 max-w-xl"
+          />
+        ) : null}
       </Section>
     </SiteShell>
   );

@@ -1,6 +1,6 @@
 import {describe, expect, it} from "vitest";
 
-import {formatDateRange, eachIsoDateInRange} from "./dates";
+import {formatDateRange, formatDateParts, eachIsoDateInRange} from "./dates";
 
 describe("formatDateRange", () => {
   it("collapses a range inside one month", () => {
@@ -26,6 +26,32 @@ describe("formatDateRange", () => {
     expect(formatDateRange("2026-10-18", "2026-10-08", "fr")).toBe(
       "18 octobre 2026 – 8 octobre 2026",
     );
+  });
+});
+
+describe("formatDateParts", () => {
+  it("aligns a one-digit start day with a two-digit neighbour", () => {
+    expect(formatDateParts("2026-09-10", "2026-09-20", "fr")).toEqual({
+      days: "10 – 20",
+      month: "septembre",
+      year: "2026",
+      label: "10 – 20 septembre 2026",
+    });
+    expect(formatDateParts("2026-10-08", "2026-10-18", "fr")).toEqual({
+      days: "\u20078 – 18",
+      month: "octobre",
+      year: "2026",
+      label: "8 – 18 octobre 2026",
+    });
+  });
+
+  it("keeps both months when a range crosses one", () => {
+    expect(formatDateParts("2026-10-30", "2026-11-01", "fr")).toEqual({
+      days: "30 – \u20071",
+      month: "octobre – novembre",
+      year: "2026",
+      label: "30 octobre 2026 – 1 novembre 2026",
+    });
   });
 });
 

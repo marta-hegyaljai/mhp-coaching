@@ -1,14 +1,17 @@
-import {formatCourseDateRange} from "@/features/courses/dates";
+import {useTranslations} from "next-intl";
+
 import {getBookableDates} from "@/features/courses/queries";
 import type {Course} from "@/features/courses/types";
+import {partitionUpcomingSessions} from "@/features/courses/upcoming-sessions";
 import {formatChf} from "@/features/payments/money";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
-import {ArrowRightIcon, CalendarIcon, PinIcon} from "@/shared/ui/icons";
+import {ArrowRightIcon} from "@/shared/ui/icons";
 import {Eyebrow} from "@/shared/ui/layout";
 import {Price} from "@/shared/ui/price";
 
 import {CourseArtwork} from "./course-artwork";
+import {CourseCardSchedule} from "./course-card-schedule";
 
 export function CourseCard({
   course,
@@ -23,7 +26,9 @@ export function CourseCard({
   awaitingDateLabel?: string;
   headingLevel?: "h2" | "h3";
 }) {
-  const nextDate = getBookableDates(course)[0];
+  const t = useTranslations("CoursesPage");
+  const {preview, extra} = partitionUpcomingSessions(getBookableDates(course));
+  const hiddenDateCount = extra.length;
   const Heading = headingLevel;
   const href = {
     pathname: "/courses/[slug]",
@@ -60,23 +65,15 @@ export function CourseCard({
           {course.shortDescription[locale]}
         </p>
 
-        <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-line-soft pt-4 text-sm text-ink-subtle">
-          {nextDate ? (
-            <span className="flex items-center gap-1.5">
-              <CalendarIcon className="h-3.5 w-3.5" />
-              {formatCourseDateRange(nextDate, locale)}
-            </span>
-          ) : awaitingDateLabel ? (
-            <span className="flex items-center gap-1.5">
-              <CalendarIcon className="h-3.5 w-3.5" />
-              {awaitingDateLabel}
-            </span>
-          ) : null}
-          <span className="flex items-center gap-1.5">
-            <PinIcon className="h-3.5 w-3.5" />
-            {course.location[locale]}
-          </span>
-        </div>
+        <CourseCardSchedule
+          dates={preview}
+          locale={locale}
+          location={course.location[locale]}
+          awaitingDateLabel={awaitingDateLabel}
+          hiddenDateCount={hiddenDateCount}
+          laterDatesLabel={t("laterDates", {count: hiddenDateCount})}
+          laterDatesShort={t("laterDatesShort", {count: hiddenDateCount})}
+        />
 
         <div className="mt-auto pt-6">
           <span className="inline-flex min-h-11 w-full items-center justify-between border-t border-current pt-3 text-sm font-bold uppercase tracking-[0.08em] sm:w-auto">

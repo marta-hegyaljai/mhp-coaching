@@ -61,6 +61,72 @@ export function formatCourseDateRange(
   return formatDateRange(date.startDate, date.endDate, locale);
 }
 
+export type FormattedDateParts = {
+  days: string;
+  month: string;
+  year: string;
+  label: string;
+};
+
+const FIGURE_SPACE = "\u2007";
+
+/**
+ * Splits a range into day, month and year columns so stacked card dates can
+ * share one grid: months start together, years start together.
+ */
+export function formatDateParts(
+  startDate: string,
+  endDate: string | null | undefined,
+  locale: AppLocale,
+): FormattedDateParts {
+  const label = formatDateRange(startDate, endDate, locale);
+  const intl = intlLocale(locale);
+  const start = parseZurichDate(startDate);
+  const lastIso = endDate && endDate !== startDate ? endDate : startDate;
+  const end = parseZurichDate(lastIso);
+  const dayFormatter = new Intl.DateTimeFormat(intl, {
+    timeZone: ZURICH,
+    day: "numeric",
+  });
+  const monthFormatter = new Intl.DateTimeFormat(intl, {
+    timeZone: ZURICH,
+    month: "long",
+  });
+  const startDay = padDay(dayFormatter.format(start));
+  const endDay = padDay(dayFormatter.format(end));
+  const startMonth = monthFormatter.format(start);
+  const endMonth = monthFormatter.format(end);
+  const startYear = startDate.slice(0, 4);
+  const endYear = lastIso.slice(0, 4);
+
+  if (!endDate || endDate === startDate) {
+    return {days: startDay, month: startMonth, year: startYear, label};
+  }
+
+  if (endDate < startDate || startYear !== endYear) {
+    return {days: label, month: "", year: "", label};
+  }
+
+  return {
+    days: `${startDay} – ${endDay}`,
+    month: startMonth === endMonth ? startMonth : `${startMonth} – ${endMonth}`,
+    year: endYear,
+    label,
+  };
+}
+
+export function formatCourseDateParts(
+  date: CourseDate,
+  locale: AppLocale,
+): FormattedDateParts {
+  return formatDateParts(date.startDate, date.endDate, locale);
+}
+
+function padDay(day: string): string {
+  const digits = day.replace(/\D/g, "");
+  return digits.length === 1 ? `${FIGURE_SPACE}${day}` : day;
+}
+
 export function eachIsoDateInRange(
   startDate: string,
   endDate?: string,

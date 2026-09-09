@@ -4,7 +4,7 @@ import {getTranslations} from "next-intl/server";
 import {hasLocale} from "next-intl";
 
 import {sendWaitlistNotification} from "@/features/email/waitlist-notification";
-import {getCourseById, getBookableDates} from "@/features/courses/queries";
+import {getCourseById} from "@/features/courses/queries";
 import {isCoursePublished} from "@/features/courses/types";
 import {routing, type AppLocale} from "@/i18n/routing";
 
@@ -52,7 +52,7 @@ export async function createWaitlistAction(
 
   const course = getCourseById(courseId);
 
-  if (!course || !isCoursePublished(course) || getBookableDates(course).length > 0) {
+  if (!course || !isCoursePublished(course)) {
     return {errors: {form: t("unavailable")}, draft};
   }
 

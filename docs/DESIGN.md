@@ -69,13 +69,21 @@ dashboard.
   available, and one clear action. An undated course is not sold until a
   session is published. Label its schedule as awaiting confirmation and route
   the primary action to a waiting-list form stored in PostgreSQL.
+- When a course has several bookable dates, the card lists up to three of them
+  in one grid: days, month and year each occupy a column so months start
+  together and years start together. The nearest date stays on the meta line
+  beside Fribourg. Any remaining dates become a small bordered `+n` counter
+  next to the last listed year, with the spelled-out count in its accessible
+  name.
 - Primary actions are black rectangles with white text and reveal gold with
   black text on hover. Inverted primary actions start white and also reveal gold
   on hover. Secondary actions remain monochrome and gain a neutral-grey surface.
   Never make a control blend into its surrounding surface. Tap targets are at
   least 44px.
 - One primary action per decision area. Supporting actions are secondary or
-  underlined text links.
+  underlined text links. On a dated course page the purchase button stays
+  primary; a quieter waitlist link under it captures visitors whose published
+  dates do not fit.
 - Booking forms use the same bordered, rectangular language and keep the live
   summary visible on desktop. Validation must remain localized and accessible.
 
