@@ -1,6 +1,29 @@
 # MHP Hypnose — MVP Product Specification
 
-## Objective
+## Scope and status
+
+This document defines the **course-booking MVP baseline**. That baseline is
+implemented and must remain reliable while the product expands into the MHP
+Platform. It does not define the next room-booking release; see
+[`ROOM-BOOKING.md`](./ROOM-BOOKING.md).
+Implementation progress and the next deliverable are tracked only in
+[`IMPLEMENTATION-PLAN.md`](./IMPLEMENTATION-PLAN.md).
+
+Implemented today:
+
+- localized public pages and SEO routes for French, German and English;
+- source-controlled course catalogue, sessions, calendar and waitlists;
+- guest course registration with postal address persisted before payment;
+- fake and Stripe Checkout providers, signed webhook processing and email;
+- alternative-payment inquiries; and
+- Basic-Auth staff booking/waitlist lists with CSV export.
+
+Not implemented today: user accounts, verified-email booking reconciliation,
+roles/capabilities, student dashboard/history/certificates, a full admin product,
+or any room-booking feature.
+
+## Original objective
+
 Launch a reliable multilingual course website and booking flow quickly.
 
 A visitor must be able to:
@@ -11,6 +34,19 @@ A visitor must be able to:
 5. receive confirmation.
 
 Staff must have a reliable record of who booked what and whether payment succeeded.
+
+## Actors and forward compatibility
+
+The course MVP deliberately permits guest checkout. A visitor does not have to
+create an account to register. The registration retains the submitted email as
+a durable snapshot.
+
+The planned account system adds normal users, therapists and admins. After a
+new account verifies its email, existing guest course registrations with the
+same normalized email become visible to that user. An account is not required
+retroactively and room-booking permission is never inferred from course history.
+See [`PRODUCT-VISION.md`](./PRODUCT-VISION.md) and
+[`ROOM-BOOKING.md`](./ROOM-BOOKING.md) for the broader model.
 
 ## Languages
 Launch in French, German and English using explicit SEO routes:
@@ -132,7 +168,10 @@ At least:
 - confirmation-email timestamp if sent
 
 ## Staff view
-Later in MVP: small protected booking list with name, email, course/date, amount, status and timestamps. CSV export/filtering only if cheap.
+
+The implemented MVP has a small Basic-Auth-protected booking and waitlist view
+with CSV export. This is a temporary operational bridge. The platform account
+phase replaces it with PostgreSQL-backed admin authentication and authorization.
 
 Do not build a broad admin product.
 
@@ -166,6 +205,11 @@ Before replacing the old website, map valuable old URLs to 301 redirects.
 - invoice workflow
 - accounting reconciliation
 - vouchers and CRM-style waitlist tooling beyond the undated-course list
+
+These exclusions describe the completed course MVP, not a permanent prohibition.
+Accounts, student-owned course history/certificates, roles and room booking are
+now approved planned work. They must be implemented only in the ordered platform
+slices, rather than being folded opportunistically into unrelated MVP fixes.
 
 ## MVP success criteria
 1. Courses are usable on a modern phone in FR/DE/EN.

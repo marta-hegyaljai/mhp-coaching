@@ -1,6 +1,20 @@
-# MHP Hypnose courses
+# MHP Platform
 
-Multilingual Next.js site for mhp-coaching: course catalogue, booking, Stripe (TWINT/card) or a fake payment provider, and a small staff booking list.
+Multilingual Next.js platform for MHP Coaching. The implemented baseline is the
+public course catalogue, guest registration, Stripe (TWINT/card) or fake payment,
+waitlist/contact flows and a small protected staff list.
+
+The next approved expansion adds shared user accounts and a private room-booking
+module for selected therapists. It is planned, not implemented. The same modular
+monolith will support visitors, normal course users, therapists with explicit
+room access and admins. See
+[`docs/ROOM-BOOKING.md`](./docs/ROOM-BOOKING.md).
+
+Execution progress is tracked in
+[`docs/IMPLEMENTATION-PLAN.md`](./docs/IMPLEMENTATION-PLAN.md). Future work can be
+requested unambiguously as “implement CP-01” or “implement through CP-05”; agents
+must update that ledger with status and verification evidence after each completed
+checkpoint.
 
 ## Prerequisites
 
@@ -35,6 +49,11 @@ Set `PAYMENT_PROVIDER=stripe` only with Stripe **test** keys. Never use live Str
 `SITE_URL` controls canonical and alternate metadata. Set it to the final absolute production origin in Vercel (for example, `https://www.example.com`). Blank or invalid values are ignored; when it is absent, deployments use Vercel's system-provided production URL and local development falls back to `http://localhost:3000`.
 
 Staff booking list: `/{locale}/staff/bookings`, protected by HTTP basic auth (`STAFF_USERNAME` / `STAFF_PASSWORD`). If `STAFF_PASSWORD` is unset, staff routes stay closed.
+
+HTTP Basic Auth is an MVP bridge. The planned PostgreSQL account system will
+replace it with roles/capabilities. Guest course checkout will remain available;
+after verified signup, existing course registrations will be linked by normalized
+email. No account or room feature exists in the current code yet.
 
 ## Database
 
@@ -71,7 +90,10 @@ docker compose down -v    # stop services and permanently reset local data
 ## Project guidance
 
 - [`AGENTS.md`](./AGENTS.md) contains the repository-wide agent rules.
-- [`docs/MVP.md`](./docs/MVP.md), [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md), and [`docs/DESIGN.md`](./docs/DESIGN.md) are authoritative for product work.
+- [`docs/MVP.md`](./docs/MVP.md) records the implemented course baseline.
+- [`docs/ROOM-BOOKING.md`](./docs/ROOM-BOOKING.md) defines accounts, roles and the approved room module.
+- [`docs/IMPLEMENTATION-PLAN.md`](./docs/IMPLEMENTATION-PLAN.md) is the authoritative checkpoint/status ledger.
+- [`docs/PRODUCT-VISION.md`](./docs/PRODUCT-VISION.md), [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md), and [`docs/DESIGN.md`](./docs/DESIGN.md) define the broader direction and constraints.
 - [`docs/AGENT-WORKFLOW.md`](./docs/AGENT-WORKFLOW.md) defines the verification loop.
 
 Cursor rules in `.cursor/rules/` point back to these authoritative documents.

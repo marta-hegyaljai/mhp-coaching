@@ -5,11 +5,22 @@ Before non-trivial work, read:
 2. `docs/ARCHITECTURE.md`
 3. `docs/DESIGN.md`
 4. `docs/AGENT-WORKFLOW.md`
+5. `docs/IMPLEMENTATION-PLAN.md`
+6. `docs/ROOM-BOOKING.md` for account, authorization, room, or billing work
 
 Read `docs/PRODUCT-VISION.md` only for long-term context.
 
 ## Current priority
-Ship the MVP quickly enough to replace the unreliable legacy site and stop lost bookings. Do not implement long-term features unless explicitly requested.
+Preserve the implemented course MVP while expanding the product through the
+ordered checkpoints in `docs/IMPLEMENTATION-PLAN.md`; use
+`docs/ROOM-BOOKING.md` for binding room behavior. Do not implement unrelated
+long-term course or post-launch room features unless explicitly requested.
+
+`docs/IMPLEMENTATION-PLAN.md` is the execution source of truth. If a request says
+“implement through CP-XX”, start at the first incomplete checkpoint, complete
+checkpoints in order through that ID, and update the plan status and completion
+evidence after each checkpoint. When no checkpoint is named, implement only the
+recorded next checkpoint. Never mark a partially implemented checkpoint complete.
 
 ## Binding UI direction
 Before any visual or component work, read `docs/DESIGN.md`. The public UI uses
@@ -35,6 +46,12 @@ other coding agents.
 
 ## Principles
 - One Next.js app. No microservices.
+- One PostgreSQL-backed account and one Stripe customer identity per person.
+- Keep Courses and Rooms as separate domains in the modular monolith.
+- Guest course checkout remains supported; only verified account emails may
+  claim historical registrations.
+- Room access is an explicit admin-granted capability. Admins cannot read
+  therapists' private booking notes.
 - Server Components by default.
 - Public pages must be fast, crawlable and SEO-friendly.
 - `/fr`, `/de`, `/en` are first-class routes.
@@ -44,14 +61,16 @@ other coding agents.
 - Never commit secrets.
 - Never use production Stripe credentials in development or previews.
 
-## MVP discipline
-For MVP:
-- Courses/prices/dates may be hardcoded in typed TypeScript config.
-- No CMS/admin editor for courses.
-- No student account.
-- No diploma/exam/evaluation/attendance system.
-- Persist bookings and payment state.
-- Provide a small protected staff booking list later.
+## Course MVP baseline
+
+- Courses/prices/dates remain in typed TypeScript config until a specific
+  course-admin slice replaces them.
+- Guest course booking, persisted leads/payments, waitlist, email and the small
+  protected staff list are implemented and must not regress.
+- Accounts and available-certificate views are approved only through the shared
+  account/platform roadmap.
+- Do not opportunistically add a course CMS, exams, evaluations, attendance,
+  packages or the complete student lifecycle.
 
 ## Definition of done
 Before declaring a task complete:
@@ -62,6 +81,8 @@ Before declaring a task complete:
 5. Check FR/DE/EN for locale-sensitive work.
 6. Check browser/server console for errors.
 7. Update docs when behavior or architecture changes.
+8. For checkpoint work, update `docs/IMPLEMENTATION-PLAN.md` status, current
+   position, remaining work or completion evidence.
 
 Do not weaken tests just to make them pass.
 

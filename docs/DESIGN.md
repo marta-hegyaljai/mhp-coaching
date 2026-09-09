@@ -1,6 +1,8 @@
 # MHP Hypnose — UI Direction (Binding)
 
-This document is the source of truth for every public UI change. The intended
+This document is the source of truth for public and authenticated platform UI.
+Room-specific behavior is defined in [`ROOM-BOOKING.md`](./ROOM-BOOKING.md).
+The intended
 expression is **black and white with subtle gold, minimalist, mildly brutalist,
 and classy**.
 It is a serious European hypnosis school, not a wellness spa and not a SaaS
@@ -58,6 +60,49 @@ dashboard.
 - Keep no more than one high-emphasis booking action in the header/viewport.
   Labels may wrap inside content cards but may not resize the card grid or
   cause horizontal movement.
+
+Public and authenticated shells may organize navigation differently, but they
+must share tokens, controls and brand language. Authenticated navigation exposes
+only server-derived capabilities: a course-only user does not see Rooms/Billing;
+a therapist does. Admin navigation may group operational screens without turning
+the whole product into a generic sidebar-heavy SaaS dashboard. On phones, use a
+clear compact navigation pattern once the authenticated information architecture
+no longer fits the public single-row rule; never hide the current section or
+primary action behind an ambiguous icon.
+
+## Authenticated platform and room calendar
+
+- Keep the authenticated experience coherent with the public site: white
+  surfaces, black rules, restrained gold, square geometry, no shadows and the
+  same type hierarchy. Dense operational screens may use tighter functional
+  sans-serif text while editorial headings retain the serif.
+- Week is the primary room-calendar view and day view is required. On a phone,
+  prioritize one navigable day or a horizontally controlled time grid rather
+  than shrinking a seven-day desktop grid into illegibility. Preserve 44px
+  targets and keep the selected date/room visible.
+- Availability, booked, unavailable and “my booking” states must differ through
+  label, border/pattern and contrast—not color alone. Other users' bookings say
+  only “Booked”; never render names, notes or hidden private metadata.
+- Use compact room filters/cards and time-slot controls. Avoid a long full-width
+  list of every room/time combination. Show conflicts and changed availability
+  next to the affected selection, then preserve the user's safe inputs.
+- Before booking confirmation, keep the room, Zurich-local date/time, duration,
+  base rate, discount when applicable and final CHF amount together. There is no
+  payment step at booking time; say that monthly billing applies.
+- Late cancellation is a destructive financial confirmation. State that the
+  room will be released and show the exact retained charge. The safe “Keep
+  booking” action must be visually clear; never rely on color alone.
+- Private-note input includes the “no medical records or detailed clinical
+  information” warning. Do not echo note content in calendar summaries,
+  confirmations, admin previews or toasts visible to support staff.
+- No-availability state offers an explicit request action and explains that a
+  request does not reserve the slot. Its admin-visible message field carries a
+  separate patient-information warning.
+- Billing screens show minutes/hours, line items, adjustments, total and payment
+  state with tabular numerals. Finalized historical statements must look fixed;
+  admin corrections are separate labeled adjustments.
+- Status styles remain monochrome and textual. Gold does not become a semantic
+  success/warning/error color.
 
 ## Cards and actions
 
@@ -154,3 +199,7 @@ motion, or animated background. Always honor `prefers-reduced-motion`.
 For visual work: read this file, reuse the primitives, implement, run
 `pnpm verify`, inspect the affected flow in a browser at desktop and ~390px,
 check FR/DE/EN, inspect browser/server errors, fix defects, then report.
+
+For room UI, also inspect privacy-safe calendar payloads, day/week navigation,
+late-cancellation copy, Zurich-local time rendering, capability-dependent
+navigation and owner/admin views. A desktop calendar alone is not acceptance.

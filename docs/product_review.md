@@ -1,4 +1,10 @@
 ## Product Review:
+> Historical course-MVP review. These notes drove the implemented catalogue,
+> dates, booking and SEO work and are not the forward roadmap. Current product
+> sources of truth are [`MVP.md`](./MVP.md),
+> [`PRODUCT-VISION.md`](./PRODUCT-VISION.md) and
+> [`ROOM-BOOKING.md`](./ROOM-BOOKING.md).
+
 * hide the language picker but don't remove the ability from the website. we might enable it again later. keep French only for now
 * get the picture of the statue from this page https://www.mhp-hypnose.com/ and use it in the landing banner in the first page. don't make it too big just a nice touch. you don't need to match the styling of mhp-coaching. also very important remember the SEO instructions with the alt link and all the image stuff
 * Reserve une place should be more like a shortcut to book courses quickly. basically if someone just knows what course they want this should save them clicks, but shouldn't assume which course they are looking for. act as a UI/UX designer and make it intuitive. avoid long drop downs, maybe make a calendar view instead to select the course there

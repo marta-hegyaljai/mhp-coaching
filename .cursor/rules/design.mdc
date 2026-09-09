@@ -1,8 +1,10 @@
 ---
-description: Public website visual direction
+description: Public and authenticated platform visual direction
 globs:
   - "src/app/**/*"
   - "src/components/**/*"
   - "src/**/*.css"
 ---
-Read `docs/DESIGN.md` before visual work. Public UI is premium, calm, artistic and editorial—not generic SaaS. Inspect ~390px mobile and desktop. Do not copy reference assets unless provided/owned.
+Read `docs/DESIGN.md` before visual work and `docs/ROOM-BOOKING.md` for room
+behavior. UI is premium, calm, artistic and editorial—not generic SaaS. Inspect
+~390px mobile and desktop. Do not copy reference assets unless provided/owned.

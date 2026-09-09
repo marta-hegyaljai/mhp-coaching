@@ -1,9 +1,14 @@
 # Codex Task — Bootstrap the Repository
 
+> Historical record: this bootstrap task is complete. It is retained to explain
+> the repository foundation and is not the current product roadmap. The
+> implemented course baseline is documented in [`MVP.md`](./MVP.md); the next
+> platform expansion is [`ROOM-BOOKING.md`](./ROOM-BOOKING.md).
+
 ## Objective
 Initialize this new repository so later work can be done reliably by Codex locally and Cursor Cloud Agents remotely.
 
-**Do not build the course catalogue, booking system or Stripe integration in this task.** Build only the foundation.
+**Do not build the course catalogue, booking system or Stripe integration in this historical task.** Build only the foundation.
 
 ## 1. Next.js
 Initialize the existing repository root with the current stable Next.js App Router using:

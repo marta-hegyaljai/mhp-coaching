@@ -1,5 +1,11 @@
 ---
-description: MHP Hypnose MVP scope and product priorities
+description: MHP Platform product priorities
 alwaysApply: true
 ---
-Read `docs/MVP.md` before feature work. Current priority is MVP; `docs/PRODUCT-VISION.md` is context, not scope. FR/DE/EN and mobile are mandatory. Do not implement student accounts, diplomas, exams, attendance, evaluations, packages or CMS unless explicitly requested.
+Read `docs/MVP.md` before feature work. The course MVP is the protected baseline.
+Read `docs/IMPLEMENTATION-PLAN.md` for every non-trivial implementation task and
+obey its next checkpoint, target semantics, scope and status-update protocol.
+For accounts, authorization, rooms or billing, also read `docs/ROOM-BOOKING.md`
+and follow its ordered slices. `docs/PRODUCT-VISION.md` is broader context, not
+blanket scope. Preserve guest course checkout. FR/DE/EN and mobile are mandatory.
+Do not add unrelated student-lifecycle or post-launch room features unless asked.
