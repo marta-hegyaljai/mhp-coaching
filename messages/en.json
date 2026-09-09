@@ -253,12 +253,17 @@
     }
   },
   "Legal": {
+    "updated": "Last updated: {date}",
     "imprintTitle": "Legal notice",
-    "imprintDescription": "Publisher, address and legal information for mhp-coaching / MHP & Partners Sàrl.",
+    "imprintDescription": "Publisher, registered office and legal information for MHP Coaching.",
     "privacyTitle": "Privacy notice",
-    "privacyDescription": "How mhp-coaching collects and uses booking data for course registration and payment.",
+    "privacyDescription": "How mhp-coaching collects and uses booking, payment and contact data (Swiss FADP and GDPR).",
     "termsTitle": "Booking terms",
-    "termsDescription": "Terms for booking and paying for mhp-coaching courses online."
+    "termsDescription": "Enrolment, TWINT payment and postponement terms for mhp-coaching courses.",
+    "termsOfUseTitle": "Terms of use",
+    "termsOfUseDescription": "Rules for accessing and using the mhp-coaching website.",
+    "copyrightTitle": "Copyright",
+    "copyrightDescription": "CC BY 4.0 licence for mhp-coaching content and the OMNI exception."
   },
   "Footer": {
     "tagline": "Elmanian hypnosis training in Switzerland — small groups, practical teaching, serious professional standards.",
@@ -267,7 +272,9 @@
     "imprint": "Legal notice",
     "privacy": "Privacy",
     "terms": "Booking terms",
-    "copyright": "© {year} MHP Coaching. All rights reserved.",
+    "termsOfUse": "Terms of use",
+    "copyrightNotice": "Copyright",
+    "copyright": "© {year} MHP Coaching. Content licensed CC BY 4.0 unless stated otherwise.",
     "ctaEyebrow": "Booking",
     "ctaTitle": "Ready to book your place?",
     "ctaBody": "Pick a Fribourg session in the calendar, or browse the course catalogue.",

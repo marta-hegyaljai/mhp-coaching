@@ -104,13 +104,23 @@ export async function SiteFooter({
                 </Link>
               </li>
               <li>
-                <Link href="/legal/privacy" className={footerLink}>
-                  {t("privacy")}
+                <Link href="/legal/terms-of-use" className={footerLink}>
+                  {t("termsOfUse")}
                 </Link>
               </li>
               <li>
                 <Link href="/legal/terms" className={footerLink}>
                   {t("terms")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/legal/privacy" className={footerLink}>
+                  {t("privacy")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/legal/copyright" className={footerLink}>
+                  {t("copyrightNotice")}
                 </Link>
               </li>
             </ul>

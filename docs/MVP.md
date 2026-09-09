@@ -32,7 +32,7 @@ Minimum:
 - Booking step/form
 - Payment success
 - Payment cancelled/failed
-- Privacy/legal pages
+- Privacy/legal pages (imprint, terms of use, booking terms, privacy, copyright)
 - Contact/footer information
 
 Do not delay launch for secondary content.

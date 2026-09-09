@@ -171,11 +171,12 @@ test("another payment method opens the cancelled-payment contact form with the c
   await expect(page.getByRole("textbox", {name: "Message"})).toBeVisible();
 });
 
-test("quick booking calendar is reachable from the homepage shortcut", async ({page}) => {
+test("the booking shortcut opens the catalogue in calendar view", async ({page}) => {
   await page.goto("/fr");
   await page.getByRole("link", {name: "Réserver une place"}).first().click();
-  await expect(page).toHaveURL(/\/fr\/inscription$/);
-  await expect(page.getByRole("heading", {level: 1})).toHaveText("Réserver une place");
+  await expect(page).toHaveURL(/\/fr\/formations\?view=calendar/);
+  await expect(page.getByRole("heading", {level: 1})).toHaveText("Formations en hypnose");
+  await expect(page.getByRole("button", {name: "Calendrier", pressed: true})).toBeVisible();
   await expect(page.getByRole("grid")).toBeVisible();
   await expect(page.getByRole("button", {name: /OMNI/}).first()).toBeVisible();
 });

@@ -64,6 +64,16 @@ export const routing = defineRouting({
       de: "/rechtliches/impressum",
       en: "/legal/imprint",
     },
+    "/legal/terms-of-use": {
+      fr: "/mentions-legales/cgu",
+      de: "/rechtliches/nutzungsbedingungen",
+      en: "/legal/terms-of-use",
+    },
+    "/legal/copyright": {
+      fr: "/mentions-legales/droits-auteur",
+      de: "/rechtliches/urheberrecht",
+      en: "/legal/copyright",
+    },
     "/staff/bookings": "/staff/bookings",
   },
 });

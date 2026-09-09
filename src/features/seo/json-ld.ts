@@ -11,6 +11,7 @@ type JsonLd = Record<string, unknown>;
 
 export function organizationJsonLd(): JsonLd {
   const site = getSiteUrl().origin;
+  const office = organization.addresses.headquarters;
 
   return {
     "@context": "https://schema.org",
@@ -27,11 +28,11 @@ export function organizationJsonLd(): JsonLd {
     },
     address: {
       "@type": "PostalAddress",
-      streetAddress: organization.addresses.headquarters.street,
-      postalCode: organization.addresses.headquarters.postalCode,
-      addressLocality: organization.addresses.headquarters.city,
-      addressRegion: organization.addresses.headquarters.region,
-      addressCountry: organization.addresses.headquarters.country,
+      streetAddress: office.street,
+      postalCode: office.postalCode,
+      addressLocality: office.city,
+      addressRegion: office.region,
+      addressCountry: office.country,
     },
   };
 }

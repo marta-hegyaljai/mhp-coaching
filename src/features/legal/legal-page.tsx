@@ -2,11 +2,11 @@ import {getTranslations, setRequestLocale} from "next-intl/server";
 import {notFound} from "next/navigation";
 
 import {getLegalDocument} from "@/features/legal/content";
+import type {LegalSlug} from "@/features/legal/types";
 import {OrganizationContactText} from "@/features/organization/contact-links";
 import {BreadcrumbTrail} from "@/features/seo/breadcrumb-trail";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
-import type {AppPathname} from "@/i18n/routing";
 import type {AppLocale} from "@/i18n/routing";
 import {Section} from "@/shared/ui/layout";
 
@@ -14,13 +14,15 @@ type LegalPageProps = {
   params: Promise<{locale: AppLocale}>;
 };
 
-const pathnames = {
-  imprint: "/legal/imprint",
-  privacy: "/legal/privacy",
-  terms: "/legal/terms",
-} as const satisfies Record<string, AppPathname>;
+function formatUpdatedAt(locale: AppLocale, isoDate: string) {
+  const [year, month, day] = isoDate.split("-").map(Number);
+  return new Intl.DateTimeFormat(
+    locale === "en" ? "en-GB" : locale === "de" ? "de-CH" : "fr-CH",
+    {day: "numeric", month: "long", year: "numeric"},
+  ).format(new Date(year, month - 1, day));
+}
 
-function legalPage(slug: "imprint" | "privacy" | "terms") {
+function legalPage(slug: LegalSlug) {
   return {
     generateMetadata: async function generateMetadata({params}: LegalPageProps) {
       const {locale} = await params;
@@ -35,7 +37,7 @@ function legalPage(slug: "imprint" | "privacy" | "terms") {
         locale,
         title: t(document.titleKey),
         description: t(document.descriptionKey),
-        hrefForLocale: () => pathnames[slug],
+        hrefForLocale: () => document.pathname,
       });
     },
     Page: async function LegalDocumentPage({params}: LegalPageProps) {
@@ -60,12 +62,15 @@ function legalPage(slug: "imprint" | "privacy" | "terms") {
                 {name: homeT("breadcrumbHome"), path: localizedPath(locale, "/")},
                 {
                   name: t(document.titleKey),
-                  path: localizedPath(locale, pathnames[slug]),
+                  path: localizedPath(locale, document.pathname),
                 },
               ]}
             />
             <article className="mt-8 max-w-3xl">
               <h1 className="font-serif text-title">{t(document.titleKey)}</h1>
+              <p className="mt-4 text-sm text-ink-muted">
+                {t("updated", {date: formatUpdatedAt(locale, document.updatedAt)})}
+              </p>
               {document.sections[locale].map((section) => (
                 <section key={section.heading} className="mt-12">
                   <h2 className="font-serif text-subheading">{section.heading}</h2>
@@ -77,6 +82,19 @@ function legalPage(slug: "imprint" | "privacy" | "terms") {
                       linkClassName="text-ink underline underline-offset-4 decoration-line transition-colors duration-200 hover:text-bronze"
                     />
                   ))}
+                  {section.items && section.items.length > 0 ? (
+                    <ul className="mt-4 list-disc space-y-2 pl-5 text-base leading-8 text-ink-muted">
+                      {section.items.map((item) => (
+                        <li key={item}>
+                          <OrganizationContactText
+                            as="span"
+                            text={item}
+                            linkClassName="text-ink underline underline-offset-4 decoration-line transition-colors duration-200 hover:text-bronze"
+                          />
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
                 </section>
               ))}
             </article>
@@ -90,3 +108,5 @@ function legalPage(slug: "imprint" | "privacy" | "terms") {
 export const imprint = legalPage("imprint");
 export const privacy = legalPage("privacy");
 export const terms = legalPage("terms");
+export const termsOfUse = legalPage("termsOfUse");
+export const copyright = legalPage("copyright");

@@ -23,10 +23,12 @@ export function OrganizationContactText({
   text,
   className,
   linkClassName,
+  as: Tag = "p",
 }: {
   text: string;
   className?: string;
   linkClassName: string;
+  as?: "p" | "span";
 }) {
   const parts = text.split(
     new RegExp(
@@ -35,7 +37,7 @@ export function OrganizationContactText({
   );
 
   return (
-    <p className={className}>
+    <Tag className={className}>
       {parts.map((part, index) => {
         if (part === organization.email) {
           return (
@@ -55,7 +57,7 @@ export function OrganizationContactText({
 
         return <span key={`${part}-${index}`}>{part}</span>;
       })}
-    </p>
+    </Tag>
   );
 }
 

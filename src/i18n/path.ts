@@ -12,11 +12,25 @@ export function localizedPathname(
 
   let path = externalPath(locale, href.pathname);
 
-  for (const [key, value] of Object.entries(href.params)) {
-    path = path.replaceAll(`[${key}]`, encodeURIComponent(String(value)));
+  if ("params" in href) {
+    for (const [key, value] of Object.entries(href.params)) {
+      path = path.replaceAll(`[${key}]`, encodeURIComponent(String(value)));
+    }
   }
 
-  return withLocalePrefix(locale, path);
+  const prefix = withLocalePrefix(locale, path);
+  const query =
+    "query" in href && href.query
+      ? new URLSearchParams(
+          Object.entries(href.query).flatMap(([key, value]) =>
+            value ? [[key, value]] : [],
+          ),
+        )
+      : null;
+  const search =
+    query && [...query.keys()].length > 0 ? `?${query.toString()}` : "";
+
+  return `${prefix}${search}`;
 }
 
 function externalPath(locale: AppLocale, pathname: string): string {

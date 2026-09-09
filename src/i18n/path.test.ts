@@ -11,6 +11,19 @@ describe("localizedPathname", () => {
     expect(localizedPathname("de", "/contact")).toBe("/de/kontakt");
     expect(localizedPathname("fr", "/book")).toBe("/fr/inscription");
     expect(localizedPathname("en", "/book")).toBe("/en/book");
+    expect(localizedPathname("fr", "/legal/imprint")).toBe("/fr/mentions-legales");
+    expect(localizedPathname("fr", "/legal/terms-of-use")).toBe(
+      "/fr/mentions-legales/cgu",
+    );
+    expect(localizedPathname("de", "/legal/copyright")).toBe(
+      "/de/rechtliches/urheberrecht",
+    );
+    expect(
+      localizedPathname("fr", {
+        pathname: "/courses",
+        query: {view: "calendar"},
+      }),
+    ).toBe("/fr/formations?view=calendar");
   });
 
   it("fills localized dynamic course slugs", () => {

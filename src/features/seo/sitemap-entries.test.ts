@@ -25,6 +25,10 @@ describe("SEO launch surfaces", () => {
     expect(urls.some((url) => url.includes("/de/ausbildungen"))).toBe(true);
     expect(urls.some((url) => url.includes("/en/courses/omni-hypnosis-practitioner"))).toBe(true);
     expect(urls.every((url) => !url.includes("/staff"))).toBe(true);
+    expect(urls.some((url) => url.endsWith("/fr/mentions-legales"))).toBe(true);
+    expect(urls.some((url) => url.endsWith("/fr/mentions-legales/cgu"))).toBe(true);
+    expect(urls.some((url) => url.endsWith("/de/rechtliches/agb"))).toBe(true);
+    expect(urls.some((url) => url.endsWith("/en/legal/copyright"))).toBe(true);
   });
 
   it("maps valuable legacy French URLs to the new locale-prefixed routes", () => {

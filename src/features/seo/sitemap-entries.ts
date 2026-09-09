@@ -20,11 +20,12 @@ const publicStaticPaths: Array<{
 }> = [
   {href: "/", changeFrequency: "weekly", priority: 1},
   {href: "/courses", changeFrequency: "weekly", priority: 0.9},
-  {href: "/book", changeFrequency: "weekly", priority: 0.8},
   {href: "/contact", changeFrequency: "monthly", priority: 0.6},
   {href: "/legal/privacy", changeFrequency: "yearly", priority: 0.3},
   {href: "/legal/terms", changeFrequency: "yearly", priority: 0.3},
   {href: "/legal/imprint", changeFrequency: "yearly", priority: 0.3},
+  {href: "/legal/terms-of-use", changeFrequency: "yearly", priority: 0.3},
+  {href: "/legal/copyright", changeFrequency: "yearly", priority: 0.3},
 ];
 
 export function buildSitemapEntries(): MetadataRoute.Sitemap {

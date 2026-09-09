@@ -20,6 +20,7 @@ import {Section} from "@/shared/ui/layout";
 
 type CoursesPageProps = {
   params: Promise<{locale: AppLocale}>;
+  searchParams: Promise<{view?: string}>;
 };
 
 export async function generateMetadata({params}: CoursesPageProps) {
@@ -34,8 +35,9 @@ export async function generateMetadata({params}: CoursesPageProps) {
   });
 }
 
-export default async function CoursesPage({params}: CoursesPageProps) {
+export default async function CoursesPage({params, searchParams}: CoursesPageProps) {
   const {locale} = await params;
+  const {view} = await searchParams;
   setRequestLocale(locale);
   const t = await getTranslations("CoursesPage");
   const navT = await getTranslations("Nav");
@@ -74,6 +76,7 @@ export default async function CoursesPage({params}: CoursesPageProps) {
           }
           portrait={<CourseCataloguePortrait imageAlt={t("instructorImageAlt")} />}
           portraitAlt={t("instructorImageAlt")}
+          initialView={view === "calendar" ? "calendar" : "grid"}
           labels={{
             search: t("search"),
             searchPlaceholder: t("searchPlaceholder"),

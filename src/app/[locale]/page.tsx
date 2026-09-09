@@ -8,6 +8,7 @@ import {JsonLd} from "@/features/seo/json-ld-script";
 import {homeStatue, homeStatueAlt} from "@/features/seo/home-statue";
 import {buildPageMetadata} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
+import {catalogueCalendarHref} from "@/i18n/href";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {buttonStyles} from "@/shared/ui/button";
@@ -83,7 +84,7 @@ export default async function HomePage({params}: HomePageProps) {
                 <ArrowRightIcon className="transition-transform duration-200 ease-standard group-hover/button:translate-x-0.5" />
               </Link>
               <Link
-                href="/book"
+                href={catalogueCalendarHref}
                 className="inline-flex min-h-11 items-center justify-center text-sm font-semibold text-parchment underline-offset-4 hover:underline sm:text-base"
               >
                 {t("ctaBook")}

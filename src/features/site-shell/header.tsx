@@ -1,6 +1,6 @@
 import {getTranslations} from "next-intl/server";
 
-import type {PathnameHref} from "@/i18n/href";
+import {catalogueCalendarHref, type PathnameHref} from "@/i18n/href";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {buttonStyles} from "@/shared/ui/button";
@@ -54,7 +54,7 @@ export async function SiteHeader({
             <LanguageSwitcher hreflangs={hreflangs} />
           ) : null}
           <div className="ml-3 hidden lg:block">
-            <Link href="/book" className={`${buttonStyles()} min-w-40`}>
+            <Link href={catalogueCalendarHref} className={`${buttonStyles()} min-w-40`}>
               {t("cta")}
               <ArrowRightIcon className="transition-transform duration-150 ease-standard group-hover/button:translate-x-1" />
             </Link>

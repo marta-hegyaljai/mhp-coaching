@@ -131,7 +131,7 @@
     "city": "Ort",
     "country": "Land",
     "countryDefault": "Schweiz",
-    "privacy": "Ich habe den <privacy>Datenschutzhinweis</privacy> und die <terms>Buchungsbedingungen</terms> gelesen und akzeptiere sie.",
+    "privacy": "Ich habe den <privacy>Datenschutzhinweis</privacy> und die <terms>Anmeldebedingungen</terms> gelesen und akzeptiere sie.",
     "privacyShort": "Datenschutz und Bedingungen",
     "submit": "Weiter zur Zahlung",
     "submitLead": "Ich möchte anders bezahlen",
@@ -253,12 +253,17 @@
     }
   },
   "Legal": {
+    "updated": "Letzte Aktualisierung: {date}",
     "imprintTitle": "Impressum",
-    "imprintDescription": "Herausgeber, Adresse und rechtliche Angaben zu mhp-coaching / MHP & Partners Sàrl.",
+    "imprintDescription": "Herausgeber, Sitz und rechtliche Angaben zu MHP Coaching.",
     "privacyTitle": "Datenschutz",
-    "privacyDescription": "Wie mhp-coaching Buchungsdaten für Anmeldung und Zahlung erhebt und verwendet.",
-    "termsTitle": "Buchungsbedingungen",
-    "termsDescription": "Bedingungen für die Online-Buchung und Zahlung von mhp-coaching-Kursen."
+    "privacyDescription": "Wie mhp-coaching Anmeldungs-, Zahlungs- und Kontaktdaten erhebt und verwendet (revDSG und DSGVO).",
+    "termsTitle": "Anmeldebedingungen",
+    "termsDescription": "Anmelde-, TWINT-Zahlungs- und Verschiebungsbedingungen für mhp-coaching-Kurse.",
+    "termsOfUseTitle": "Nutzungsbedingungen",
+    "termsOfUseDescription": "Regeln für den Zugang zur Website mhp-coaching.",
+    "copyrightTitle": "Urheberrecht",
+    "copyrightDescription": "CC-BY-4.0-Lizenz der mhp-coaching-Inhalte und OMNI-Ausnahme."
   },
   "Footer": {
     "tagline": "Ausbildung in elmanischer Hypnose in der Schweiz — kleine Gruppen, praxisnaher Unterricht, professioneller Anspruch.",
@@ -266,8 +271,10 @@
     "legal": "Rechtliches",
     "imprint": "Impressum",
     "privacy": "Datenschutz",
-    "terms": "Buchungsbedingungen",
-    "copyright": "© {year} MHP Coaching. Alle Rechte vorbehalten.",
+    "terms": "Anmeldebedingungen",
+    "termsOfUse": "Nutzungsbedingungen",
+    "copyrightNotice": "Urheberrecht",
+    "copyright": "© {year} MHP Coaching. Inhalte unter CC BY 4.0, soweit nicht anders angegeben.",
     "ctaEyebrow": "Anmeldung",
     "ctaTitle": "Bereit, Ihren Platz zu buchen?",
     "ctaBody": "Wählen Sie eine Session in Freiburg im Kalender oder durchsuchen Sie den Ausbildungskatalog.",

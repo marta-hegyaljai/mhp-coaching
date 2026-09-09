@@ -108,6 +108,10 @@ const publicContactSurfaces = [
   "/fr/mentions-legales",
   "/de/rechtliches/impressum",
   "/en/legal/imprint",
+  "/fr/mentions-legales/cgu",
+  "/fr/mentions-legales/conditions",
+  "/fr/mentions-legales/confidentialite",
+  "/fr/mentions-legales/droits-auteur",
 ] as const;
 
 for (const path of publicContactSurfaces) {
@@ -145,7 +149,53 @@ test("homepage structured data uses the MHP Coaching email and phone", async ({
 
   expect(blob).toContain("contact@mhp-coaching.ch");
   expect(blob).toContain("+41 79 451 44 92");
-  expect(blob).not.toMatch(/admin@mhp|21 311 25 81/i);
+  expect(blob).toContain("MHP Coaching");
+  expect(blob).not.toMatch(/admin@mhp|21 311 25 81|mhp-hypnose|Partners Sàrl|CHE-459/i);
+});
+
+test("legal pages publish Swiss identity, TWINT terms and no retired brand", async ({
+  page,
+}) => {
+  await page.setViewportSize({width: 390, height: 844});
+  await page.goto("/fr/mentions-legales");
+  await expect(page.getByRole("heading", {level: 1})).toHaveText("Mentions légales");
+  await expect(page.getByText("MHP Coaching").first()).toBeVisible();
+  await expect(page.getByText("Chemin de la Fenetta 42").first()).toBeVisible();
+  await expect(page.getByText("1752 Villars-sur-Glâne").first()).toBeVisible();
+  await expect(page.getByText("Marta Hegyaljai Python").first()).toBeVisible();
+  await expect(page.locator("body")).not.toContainText(
+    /mhp-hypnose|Partners Sàrl|CHE-459/i,
+  );
+
+  const footer = page.getByRole("contentinfo");
+  await expect(footer.getByRole("link", {name: "Mentions légales"})).toBeVisible();
+  await expect(
+    footer.getByRole("link", {name: /Conditions d.utilisation/}),
+  ).toBeVisible();
+  await expect(
+    footer.getByRole("link", {name: /Conditions d.inscription/}),
+  ).toBeVisible();
+  await expect(
+    footer.getByRole("link", {name: "Protection des données"}),
+  ).toBeVisible();
+  await expect(footer.getByRole("link", {name: /Droits d.auteur/})).toBeVisible();
+
+  await page.goto("/fr/mentions-legales/conditions");
+  await expect(page.getByRole("heading", {level: 1})).toHaveText(
+    "Conditions générales d’inscription",
+  );
+  await expect(page.getByText(/TWINT/).first()).toBeVisible();
+  await expect(page.getByText(/Visa/).first()).toBeVisible();
+  await expect(page.locator("body")).not.toContainText(/mhp-hypnose/i);
+
+  await page.goto("/de/rechtliches/impressum");
+  await expect(page.getByRole("heading", {level: 1})).toHaveText("Impressum");
+  await expect(page.getByText("MHP Coaching").first()).toBeVisible();
+  await expect(page.getByText("Villars-sur-Glâne").first()).toBeVisible();
+
+  await page.goto("/en/legal/privacy");
+  await expect(page.getByRole("heading", {level: 1})).toHaveText("Privacy notice");
+  await expect(page.getByText(/GDPR|FADP/).first()).toBeVisible();
 });
 
 test("serves the mhp-coaching.ch favicon", async ({page, request}) => {

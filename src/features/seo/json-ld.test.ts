@@ -35,6 +35,10 @@ describe("structured data", () => {
 
     expect(json.email).toBe("contact@mhp-coaching.ch");
     expect(json.telephone).toBe("+41 79 451 44 92");
-    expect(JSON.stringify(json)).not.toMatch(/mhp-hypnose/i);
+    expect(json.legalName).toBe("MHP Coaching");
+    expect((json.address as {streetAddress: string}).streetAddress).toBe(
+      "Chemin de la Fenetta 42",
+    );
+    expect(JSON.stringify(json)).not.toMatch(/mhp-hypnose|Partners Sàrl|CHE-459/i);
   });
 });

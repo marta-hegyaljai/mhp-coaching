@@ -53,6 +53,7 @@ export function CourseExplorer({
   lead,
   portrait,
   portraitAlt,
+  initialView = "grid",
 }: {
   locale: AppLocale;
   groups: Array<{title: string; courses: Course[]}>;
@@ -61,6 +62,7 @@ export function CourseExplorer({
   lead?: ReactNode;
   portrait?: ReactNode;
   portraitAlt?: string;
+  initialView?: ViewMode;
 }) {
   const allCourses = groups.flatMap((group) => group.courses);
   const sessions = useMemo(
@@ -72,7 +74,9 @@ export function CourseExplorer({
   );
   const [query, setQuery] = useState("");
   const [month, setMonth] = useState("");
-  const [view, setView] = useState<ViewMode>("grid");
+  const [view, setView] = useState<ViewMode>(
+    initialView === "calendar" ? "calendar" : "grid",
+  );
 
   const months = useMemo(() => uniqueMonths(sessions, locale), [sessions, locale]);
   const filteredCourses = allCourses.filter((course) =>
