@@ -151,6 +151,9 @@ Provide a single `pnpm verify` command that runs at least lint, typecheck, unit 
 ## Deployment
 GitHub is source of truth.
 Vercel branch/PR previews are part of the development loop.
+Production Vercel builds (`VERCEL_ENV=production`, typically `main`) run
+`pnpm db:migrate` before `next build` so committed SQL is applied to Neon.
+Preview and local builds skip that step.
 Do not connect the final production domain until MVP acceptance.
 
 ## Portability

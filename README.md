@@ -45,7 +45,7 @@ pnpm db:seed      # no-op: courses live in source-controlled TypeScript
 pnpm db:studio    # optional local Drizzle Studio
 ```
 
-Bookings and payment events are persisted in PostgreSQL. Courses and dates stay in `src/features/courses/catalog.ts`. Hosted Neon on Vercel may inject `NEON_DATABASE_URL` instead of `DATABASE_URL`; the app accepts that fallback.
+Bookings and payment events are persisted in PostgreSQL. Courses and dates stay in `src/features/courses/catalog.ts`. Hosted Neon on Vercel may inject `NEON_DATABASE_URL` instead of `DATABASE_URL`; the app accepts that fallback. Production Vercel builds apply committed migrations (`pnpm db:migrate`) before compiling the app. Preview and local builds do not.
 
 ## Quality checks
 
