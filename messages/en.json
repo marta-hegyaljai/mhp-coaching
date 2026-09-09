@@ -145,7 +145,8 @@
       "invalid": "Please check the form and try again.",
       "courseMissing": "This course is no longer available.",
       "dateUnavailable": "This date is no longer open for booking.",
-      "waitlistOnly": "This course has no date yet. Join the waiting list."
+      "waitlistOnly": "This course has no date yet. Join the waiting list.",
+      "saveFailed": "We could not start payment. Please try again in a moment."
     },
     "summaryTitle": "Your booking",
     "summaryDate": "Date",
@@ -188,7 +189,8 @@
       "phone": "Please enter a phone number we can reach.",
       "privacyAccepted": "Please accept the privacy notice and terms to continue.",
       "invalid": "Please check the form and try again.",
-      "unavailable": "The waiting list is not open for this course."
+      "unavailable": "The waiting list is not open for this course.",
+      "saveFailed": "We could not save your request. Please try again in a moment."
     }
   },
   "BookingCancelled": {
@@ -231,7 +233,8 @@
       "email": "Please enter a valid email address.",
       "phone": "Please enter a phone number we can reach.",
       "message": "Please write a message of at least a few words.",
-      "invalid": "Please check the form and try again."
+      "invalid": "Please check the form and try again.",
+      "saveFailed": "We could not send your message. Please try again in a moment."
     }
   },
   "Legal": {

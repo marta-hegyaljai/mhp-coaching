@@ -22,6 +22,9 @@ next-env.d.ts
 .DS_Store
 .vercel
 
+# Accidental Cursor user-data folder if the workspace is nested under ~
+/~
+
 # Logs
 *.log
 pnpm-debug.log*

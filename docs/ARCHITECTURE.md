@@ -58,6 +58,8 @@ Expected URLs:
 Use standard PostgreSQL + Drizzle ORM with source-controlled migrations.
 Hosted provider initially Neon; local provider official PostgreSQL Docker image.
 Avoid Neon-specific application APIs where a standard PostgreSQL connection works.
+Read `DATABASE_URL` first, then the connection-string aliases the Neon Vercel
+integration may inject (`NEON_DATABASE_URL`, `NEON_POSTGRES_URL`, `POSTGRES_URL`).
 
 Initial durable concepts:
 - bookings

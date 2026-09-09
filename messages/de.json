@@ -145,7 +145,8 @@
       "invalid": "Bitte prüfen Sie das Formular und versuchen Sie es erneut.",
       "courseMissing": "Dieser Kurs ist nicht mehr verfügbar.",
       "dateUnavailable": "Dieser Termin ist nicht mehr buchbar.",
-      "waitlistOnly": "Für diesen Kurs gibt es noch keinen Termin. Tragen Sie sich auf die Warteliste ein."
+      "waitlistOnly": "Für diesen Kurs gibt es noch keinen Termin. Tragen Sie sich auf die Warteliste ein.",
+      "saveFailed": "Die Zahlung konnte nicht vorbereitet werden. Bitte versuchen Sie es in einem Moment erneut."
     },
     "summaryTitle": "Ihre Buchung",
     "summaryDate": "Datum",
@@ -188,7 +189,8 @@
       "phone": "Bitte geben Sie eine erreichbare Telefonnummer ein.",
       "privacyAccepted": "Bitte akzeptieren Sie Datenschutz und Bedingungen, um fortzufahren.",
       "invalid": "Bitte prüfen Sie das Formular und versuchen Sie es erneut.",
-      "unavailable": "Die Warteliste ist für diesen Kurs nicht geöffnet."
+      "unavailable": "Die Warteliste ist für diesen Kurs nicht geöffnet.",
+      "saveFailed": "Ihre Anfrage konnte nicht gespeichert werden. Bitte versuchen Sie es in einem Moment erneut."
     }
   },
   "BookingCancelled": {
@@ -231,7 +233,8 @@
       "email": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
       "phone": "Bitte geben Sie eine erreichbare Telefonnummer ein.",
       "message": "Bitte schreiben Sie eine Nachricht mit ein paar Worten.",
-      "invalid": "Bitte prüfen Sie das Formular und versuchen Sie es erneut."
+      "invalid": "Bitte prüfen Sie das Formular und versuchen Sie es erneut.",
+      "saveFailed": "Ihre Nachricht konnte nicht gesendet werden. Bitte versuchen Sie es in einem Moment erneut."
     }
   },
   "Legal": {

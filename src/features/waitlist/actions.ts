@@ -56,16 +56,23 @@ export async function createWaitlistAction(
     return {errors: {form: t("unavailable")}, draft};
   }
 
-  const entry = await createWaitlistEntry({
-    courseId: course.id,
-    courseTitle: course.title[resolvedLocale],
-    firstName: parsed.values.firstName,
-    lastName: parsed.values.lastName,
-    email: parsed.values.email.toLowerCase(),
-    phone: parsed.values.phone,
-    locale: resolvedLocale,
-    privacyAcceptedAt: new Date(),
-  });
+  let entry: Awaited<ReturnType<typeof createWaitlistEntry>>;
+
+  try {
+    entry = await createWaitlistEntry({
+      courseId: course.id,
+      courseTitle: course.title[resolvedLocale],
+      firstName: parsed.values.firstName,
+      lastName: parsed.values.lastName,
+      email: parsed.values.email.toLowerCase(),
+      phone: parsed.values.phone,
+      locale: resolvedLocale,
+      privacyAcceptedAt: new Date(),
+    });
+  } catch (error) {
+    console.error("Failed to save waitlist entry", error);
+    return {errors: {form: t("saveFailed")}, draft};
+  }
 
   if (entry === "duplicate") {
     return {alreadyListed: true, draft};

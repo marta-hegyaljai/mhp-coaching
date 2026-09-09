@@ -47,17 +47,24 @@ export async function createInquiryAction(
     };
   }
 
-  const inquiry = await createInquiry({
-    name: parsed.values.name,
-    email: parsed.values.email,
-    phone: parsed.values.phone || null,
-    message: parsed.values.message,
-    locale: resolvedLocale,
-    kind: context.kind,
-    bookingId: context.bookingId,
-    courseId: context.courseId,
-    courseTitle: context.courseTitle,
-  });
+  let inquiry: Awaited<ReturnType<typeof createInquiry>>;
+
+  try {
+    inquiry = await createInquiry({
+      name: parsed.values.name,
+      email: parsed.values.email,
+      phone: parsed.values.phone || null,
+      message: parsed.values.message,
+      locale: resolvedLocale,
+      kind: context.kind,
+      bookingId: context.bookingId,
+      courseId: context.courseId,
+      courseTitle: context.courseTitle,
+    });
+  } catch (error) {
+    console.error("Failed to save inquiry", error);
+    return {errors: {form: t("saveFailed")}, draft};
+  }
 
   try {
     await sendInquiryNotification(inquiry);

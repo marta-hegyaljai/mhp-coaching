@@ -2,6 +2,12 @@ import Stripe from "stripe";
 
 import type {CreateCheckoutInput, CheckoutResult, PaymentProvider} from "../types";
 
+const checkoutLocales = {
+  fr: "fr",
+  de: "de",
+  en: "en",
+} as const;
+
 function getStripe(): Stripe {
   const secretKey = process.env.STRIPE_SECRET_KEY;
 
@@ -10,6 +16,12 @@ function getStripe(): Stripe {
   }
 
   return new Stripe(secretKey);
+}
+
+function checkoutLocale(
+  locale: string,
+): Stripe.Checkout.SessionCreateParams.Locale {
+  return checkoutLocales[locale as keyof typeof checkoutLocales] ?? "auto";
 }
 
 export class StripePaymentProvider implements PaymentProvider {
@@ -22,7 +34,7 @@ export class StripePaymentProvider implements PaymentProvider {
       currency: input.currency.toLowerCase(),
       customer_email: input.customerEmail,
       client_reference_id: input.bookingId,
-      payment_method_types: ["card", "twint"],
+      locale: checkoutLocale(input.locale),
       line_items: [
         {
           quantity: 1,

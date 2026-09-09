@@ -2,6 +2,7 @@ import {createHmac, timingSafeEqual} from "node:crypto";
 
 import {hasLocale} from "next-intl";
 
+import {getDatabaseUrl} from "@/lib/database-url";
 import {localizedPathname} from "@/i18n/path";
 import {routing} from "@/i18n/routing";
 
@@ -10,7 +11,7 @@ import type {CreateCheckoutInput, CheckoutResult, PaymentProvider} from "../type
 function signingSecret(): string {
   return (
     process.env.FAKE_PAYMENT_SECRET ||
-    process.env.DATABASE_URL ||
+    getDatabaseUrl() ||
     "mhp-fake-payment-local-secret"
   );
 }

@@ -25,6 +25,8 @@ export function generateStaticParams() {
   return getCourseStaticParams();
 }
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({params}: BookPageProps) {
   const {locale, slug} = await params;
   const course = getCourseBySlug(slug);
@@ -126,7 +128,7 @@ export default async function BookCoursePage({
               locale={locale}
               course={course}
               dates={dates}
-              initialDateId={date}
+              {...(date ? {initialDateId: date} : {})}
             />
           )}
         </div>

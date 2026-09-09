@@ -145,7 +145,8 @@
       "invalid": "Veuillez vérifier le formulaire et réessayer.",
       "courseMissing": "Cette formation n’est plus disponible.",
       "dateUnavailable": "Cette date n’est plus ouverte à l’inscription.",
-      "waitlistOnly": "Cette formation n’a pas encore de date. Inscrivez-vous sur la liste d’attente."
+      "waitlistOnly": "Cette formation n’a pas encore de date. Inscrivez-vous sur la liste d’attente.",
+      "saveFailed": "Nous n’avons pas pu préparer le paiement. Veuillez réessayer dans un instant."
     },
     "summaryTitle": "Votre inscription",
     "summaryDate": "Date",
@@ -188,7 +189,8 @@
       "phone": "Veuillez indiquer un numéro de téléphone joignable.",
       "privacyAccepted": "Veuillez accepter la confidentialité et les conditions pour continuer.",
       "invalid": "Veuillez vérifier le formulaire et réessayer.",
-      "unavailable": "La liste d’attente n’est pas ouverte pour cette formation."
+      "unavailable": "La liste d’attente n’est pas ouverte pour cette formation.",
+      "saveFailed": "Nous n’avons pas pu enregistrer votre demande. Veuillez réessayer dans un instant."
     }
   },
   "BookingCancelled": {
@@ -231,7 +233,8 @@
       "email": "Veuillez indiquer une adresse e-mail valide.",
       "phone": "Veuillez indiquer un numéro de téléphone joignable.",
       "message": "Veuillez écrire un message d’au moins quelques mots.",
-      "invalid": "Veuillez vérifier le formulaire et réessayer."
+      "invalid": "Veuillez vérifier le formulaire et réessayer.",
+      "saveFailed": "Nous n’avons pas pu envoyer votre message. Veuillez réessayer dans un instant."
     }
   },
   "Legal": {
