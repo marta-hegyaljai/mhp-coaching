@@ -35,11 +35,18 @@ for (const {locale, heading, coursesPath, coursesHeading} of locales) {
       "href",
       /\/fr$/,
     );
-    await expect(
-      page.getByRole("img", {
-        name: /sculpture|skulptur|statue/i,
-      }),
-    ).toBeVisible();
+    const statue = page.getByRole("img", {
+      name: /sculpture|skulptur|statue/i,
+    });
+    await expect(statue).toBeVisible();
+    const statueBox = await statue.boundingBox();
+    expect(statueBox?.width ?? 0).toBeGreaterThan(280);
+
+    const footer = page.locator("footer");
+    await expect(footer).toBeVisible();
+    await expect
+      .poll(async () => footer.evaluate((node) => getComputedStyle(node).backgroundColor))
+      .toBe("rgb(9, 9, 9)");
   });
 
   test(`${locale} course catalogue is reachable on a localized URL`, async ({page}) => {

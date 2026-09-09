@@ -41,7 +41,9 @@ export default async function HomePage({params}: HomePageProps) {
   setRequestLocale(locale);
   const t = await getTranslations("HomePage");
   const coursesT = await getTranslations("CoursesPage");
-  const courses = getPublishedCourses().slice(0, 3);
+  const publishedCourses = getPublishedCourses();
+  const courses = publishedCourses.slice(0, 3);
+  const hiddenCourseCount = publishedCourses.length - courses.length;
 
   const reasons = [
     {title: t("whyRapidTitle"), body: t("whyRapidBody")},
@@ -54,50 +56,49 @@ export default async function HomePage({params}: HomePageProps) {
       <JsonLd data={courseListJsonLd(courses, locale)} />
       <JsonLd data={homeStatueJsonLd(locale)} />
 
-      <Section size="lg" className="pt-9 pb-10 sm:pt-12 sm:pb-16">
-        <div className="grid items-end gap-8 lg:grid-cols-12 lg:gap-12">
-          <div className="lg:col-span-8">
-            <Eyebrow>{t("eyebrow")}</Eyebrow>
-            <h1 className="mt-5 max-w-4xl font-serif text-display">{t("title")}</h1>
-            <p className="mt-5 max-w-2xl text-lead text-ink-muted">{t("intro")}</p>
+      {/* Banner: the statue fills the block, the copy rides on one solid panel. */}
+      <Section size="sm" className="pt-6 sm:pt-8">
+        <div className="relative isolate flex min-h-[26rem] items-end overflow-hidden rounded-panel border border-ink bg-ink px-3 pb-3 pt-24 sm:min-h-[30rem] sm:px-5 sm:pb-5 sm:pt-32 lg:min-h-[34rem] lg:items-center lg:p-8">
+          <Image
+            src={homeStatue.src}
+            alt={homeStatueAlt[locale]}
+            fill
+            priority
+            sizes="(min-width: 1200px) 1152px, 100vw"
+            className="-z-10 object-cover object-[center_38%]"
+          />
+          <div className="w-full max-w-xl rounded-panel border border-parchment/25 bg-ink/85 p-5 backdrop-blur-sm sm:p-7">
+            <p className="text-[0.7rem] font-bold uppercase tracking-[0.2em] text-gold">
+              {t("eyebrow")}
+            </p>
+            <h1 className="mt-4 font-serif text-title text-parchment">{t("title")}</h1>
+            <p className="mt-4 text-base leading-7 text-parchment/80">{t("intro")}</p>
 
-            <div className="mt-7 grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3">
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
               <Link
                 href="/courses"
-                className={`${buttonStyles({size: "lg"})} w-full px-3 text-sm sm:w-auto sm:px-7 sm:text-base`}
+                className={`${buttonStyles({variant: "invert", size: "lg"})} w-full sm:w-auto`}
               >
                 {t("ctaCourses")}
                 <ArrowRightIcon className="transition-transform duration-200 ease-standard group-hover/button:translate-x-0.5" />
               </Link>
               <Link
                 href="/book"
-                className={`${buttonStyles({variant: "secondary", size: "lg"})} w-full px-3 text-sm sm:w-auto sm:px-7 sm:text-base`}
+                className="inline-flex min-h-11 items-center justify-center text-sm font-semibold text-parchment underline-offset-4 hover:underline sm:text-base"
               >
                 {t("ctaBook")}
               </Link>
             </div>
 
-            <ul className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-line pt-5 text-sm text-ink-subtle">
-              <li className="flex items-center gap-2">
-                <PinIcon className="h-3.5 w-3.5 text-bronze" />
+            <ul className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-1.5 border-t border-parchment/20 pt-4 text-xs text-parchment/70 sm:text-sm">
+              <li className="flex items-center gap-1.5">
+                <PinIcon className="h-3.5 w-3.5" />
                 {t("trustLocations")}
               </li>
               <li>{t("trustGroup")}</li>
               <li>{t("trustRecognition")}</li>
             </ul>
           </div>
-
-          <figure className="mx-auto w-[min(100%,16.5rem)] lg:col-span-4 lg:mx-0 lg:justify-self-end">
-            <Image
-              src={homeStatue.src}
-              alt={homeStatueAlt[locale]}
-              width={homeStatue.width}
-              height={homeStatue.height}
-              priority
-              sizes="(min-width: 1024px) 264px, 264px"
-              className="border border-ink bg-white object-cover"
-            />
-          </figure>
         </div>
       </Section>
 
@@ -116,23 +117,14 @@ export default async function HomePage({params}: HomePageProps) {
       </Section>
 
       <Section ariaLabelledBy="courses-title">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-2xl">
-            <Eyebrow>{coursesT("eyebrow")}</Eyebrow>
-            <h2 id="courses-title" className="mt-4 font-serif text-heading">
-              {t("coursesTitle")}
-            </h2>
-            <p className="mt-4 text-base leading-7 text-ink-muted">
-              {t("coursesIntro")}
-            </p>
-          </div>
-          <Link
-            href="/courses"
-            className={`${buttonStyles({variant: "quiet"})} self-start px-0`}
-          >
-            {t("coursesLink")}
-            <ArrowRightIcon className="transition-transform duration-200 ease-standard group-hover/button:translate-x-0.5" />
-          </Link>
+        <div className="max-w-2xl">
+          <Eyebrow>{coursesT("eyebrow")}</Eyebrow>
+          <h2 id="courses-title" className="mt-4 font-serif text-heading">
+            {t("coursesTitle")}
+          </h2>
+          <p className="mt-4 text-base leading-7 text-ink-muted">
+            {t("coursesIntro")}
+          </p>
         </div>
 
         <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -146,6 +138,25 @@ export default async function HomePage({params}: HomePageProps) {
               headingLevel="h3"
             />
           ))}
+        </div>
+
+        {/* The grid is a preview: name the rest of the catalogue explicitly. */}
+        <div className="mt-4 flex flex-col gap-5 rounded-panel border border-ink bg-shell p-5 sm:flex-row sm:items-center sm:justify-between sm:gap-8 sm:p-6">
+          {hiddenCourseCount > 0 ? (
+            <p className="text-base leading-7 text-ink-muted">
+              {t("coursesMore", {
+                shown: courses.length,
+                count: publishedCourses.length,
+              })}
+            </p>
+          ) : null}
+          <Link
+            href="/courses"
+            className={`${buttonStyles({size: "lg"})} w-full shrink-0 sm:w-auto`}
+          >
+            {t("coursesLink", {count: publishedCourses.length})}
+            <ArrowRightIcon className="transition-transform duration-200 ease-standard group-hover/button:translate-x-0.5" />
+          </Link>
         </div>
       </Section>
 

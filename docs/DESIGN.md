@@ -9,7 +9,10 @@ dashboard.
 ## Non-negotiable visual rules
 
 - Use pure white (`#fff`) for the page and panel background. Do not use beige,
-  cream, ivory, or warm off-white surfaces.
+  cream, ivory, or warm off-white surfaces. The site footer is the one
+  full-width black exception: a closing slab. Put the enrolment call to action
+  inside that footer, separated by a hairline, never as a second black banner
+  above a white footer.
 - Use strong black rules, restrained neutral-grey hierarchy, editorial serif
   headings, functional sans-serif body copy, and the provided `gold` tokens.
   Course prices are commercial figures: set them in the sans-serif with
@@ -84,7 +87,9 @@ dashboard.
 - Every course card and detail page uses its corresponding historical course
   image from `public/images/courses`. Images support recognition and hierarchy;
   they must not become decorative full-page backgrounds or introduce new accent
-  colors into controls.
+  colors into controls. The homepage statue is cropped from the top and carries
+  a black overlay panel for the intro and booking actions, in the same register
+  as the hypnomeditation overlay on the legacy site.
 - Course-card artwork is a compact square thumbnail beside the title. Never
   split a card into two tall columns or give artwork half the card width: that
   creates narrow text measures, oversized headings, and excessive empty height.
@@ -132,6 +137,7 @@ motion, or animated background. Always honor `prefers-reduced-motion`.
 - Rhythm: `Section`, `Container`, `Eyebrow` in `src/shared/ui/layout.tsx`.
 - Prices: `<Price>` in `src/shared/ui/price.tsx`.
 - Shell: `src/features/site-shell`; do not fork per-page headers or switchers.
+  `SiteFooter` is black; inverted (white) buttons sit on it.
 - Course decisions: `CourseCard`, `CourseDates`, and `CourseBookingBar`.
 
 ## Agent completion gate

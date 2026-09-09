@@ -24,6 +24,7 @@ Vercel CDN + Next.js
       +---- Neon PostgreSQL (Frankfurt)
       +---- Stripe
       +---- Email provider
+      +---- Vercel Web Analytics
 ```
 
 Keep Vercel compute near Neon in Central Europe/Frankfurt.
@@ -158,5 +159,7 @@ Do not connect the final production domain until MVP acceptance.
 
 ## Portability
 Neon replacement: dump/restore PostgreSQL + change `DATABASE_URL`.
-Vercel replacement: deploy Next.js elsewhere.
+Vercel replacement: deploy Next.js elsewhere. Web Analytics is the
+`@vercel/analytics` script in the locale layout; drop or replace that
+component if the host changes.
 Stripe replacement: implement another payment adapter.

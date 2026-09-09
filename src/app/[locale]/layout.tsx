@@ -4,6 +4,7 @@ import {hasLocale, NextIntlClientProvider} from "next-intl";
 import {getTranslations, setRequestLocale} from "next-intl/server";
 import {notFound} from "next/navigation";
 import type {ReactNode} from "react";
+import {Analytics} from "@vercel/analytics/next";
 
 import {JsonLd} from "@/features/seo/json-ld-script";
 import {organizationJsonLd, websiteJsonLd} from "@/features/seo/json-ld";
@@ -94,6 +95,7 @@ export default async function LocaleLayout({
         <JsonLd data={organizationJsonLd()} />
         <JsonLd data={websiteJsonLd(locale)} />
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <Analytics />
       </body>
     </html>
   );
