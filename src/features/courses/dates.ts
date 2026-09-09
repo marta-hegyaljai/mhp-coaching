@@ -61,6 +61,33 @@ export function formatCourseDateRange(
   return formatDateRange(date.startDate, date.endDate, locale);
 }
 
+export function eachIsoDateInRange(
+  startDate: string,
+  endDate?: string,
+): string[] {
+  const last = endDate && endDate > startDate ? endDate : startDate;
+  const days: string[] = [];
+  let cursor = startDate;
+
+  while (cursor <= last) {
+    days.push(cursor);
+    cursor = nextIsoDay(cursor);
+  }
+
+  return days;
+}
+
+export function courseOccupiesDate(date: CourseDate, isoDate: string): boolean {
+  const last = date.endDate && date.endDate > date.startDate ? date.endDate : date.startDate;
+  return isoDate >= date.startDate && isoDate <= last;
+}
+
+function nextIsoDay(isoDate: string): string {
+  const [year, month, day] = isoDate.split("-").map(Number);
+  const next = new Date(Date.UTC(year, month - 1, day + 1));
+  return next.toISOString().slice(0, 10);
+}
+
 export function toIsoDateTime(date: string): string {
   return `${date}T09:00:00+02:00`;
 }

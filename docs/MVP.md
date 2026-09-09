@@ -18,7 +18,9 @@ Launch in French, German and English using explicit SEO routes:
 - `/de/...`
 - `/en/...`
 
-For MVP, `/` may redirect to `/fr`.
+For MVP, `/` may redirect to `/fr`. The language switcher stays implemented but
+can be hidden in public chrome while French remains the default public locale.
+DE/EN routes, hreflang and sitemaps remain in place.
 
 A language switcher must preserve the equivalent page where possible.
 
@@ -39,10 +41,14 @@ Do not delay launch for secondary content.
 For MVP, courses and dates live in source-controlled typed TypeScript config.
 
 The public catalogue covers the 20 published formations, grouped as foundation, advanced,
-medical hypnosis, and practical workshops. All course delivery locations are
-shown as Fribourg. Dates may remain empty until confirmed; an undated course can
-still be booked and paid through Stripe, with its booking snapshot explicitly
-marked as `DATE_TO_BE_CONFIRMED`.
+medical hypnosis, and practical workshops. Workshops and the M.I.A. transgenerational
+course can be paused in catalogue config without deleting them, so a later admin panel
+can republish rows from the same structure. All course delivery locations are
+shown as Fribourg. Dates may remain empty until confirmed; an undated course
+cannot be purchased. Visitors join a per-course waiting list (name, email,
+phone) stored in PostgreSQL so staff can contact them when a session opens.
+Confirmed dates are stored on each course and must be chosen explicitly when
+more than one session is open.
 
 Suggested shape:
 ```ts
@@ -83,12 +89,18 @@ Course page
 
 The Stripe webhook is authoritative. Never mark a booking paid just because the success URL was loaded.
 
+Undated published courses skip checkout. The course page sends visitors to a
+waiting-list form (first name, last name, email, phone, privacy acceptance).
+A unique `(courseId, email)` row is stored in `waitlist_entries` so staff can
+contact people when a date opens.
+
 ## Booking fields
 Minimum:
 - first name
 - last name
 - email
 - phone if required by the business
+- postal address
 - selected course/date
 - locale
 - required privacy/terms acceptance
@@ -112,7 +124,8 @@ At least:
 - course/date/location/price snapshot where useful
 - amount in minor units + currency
 - payment provider/reference
-- status: `PENDING | PAID | FAILED | REFUNDED | CANCELLED`
+- status: `LEAD | PENDING | PAID | FAILED | REFUNDED | CANCELLED`
+- postal address snapshot
 - paid timestamp
 - confirmation-email timestamp if sent
 
@@ -150,7 +163,7 @@ Before replacing the old website, map valuable old URLs to 301 redirects.
 - complex roles
 - invoice workflow
 - accounting reconciliation
-- vouchers/waitlists
+- vouchers and CRM-style waitlist tooling beyond the undated-course list
 
 ## MVP success criteria
 1. Courses are usable on a modern phone in FR/DE/EN.

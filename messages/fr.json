@@ -23,7 +23,7 @@
     "aboutTitle": "Une école pour celles et ceux qui pratiqueront vraiment.",
     "aboutBody": "Fondée par Marta Hegyaljai Python, mhp-coaching inscrit la méthode OMNI dans une pratique francophone et germanophone. Les groupes restent petits. L’enseignement reste concret. Les reconnaissances (ASCA, NGH, APSH, eduQua) soutiennent un parcours professionnel sérieux — sans transformer ce site en usine à diplômes.",
     "coursesTitle": "Formations à découvrir",
-    "coursesIntro": "Commencez par le cursus OMNI®, puis approfondissez avec les modules avancés, l’hypnose médicale et les ateliers pratiques. Les dates seront publiées prochainement.",
+    "coursesIntro": "Commencez par le cursus OMNI®, puis approfondissez avec les modules avancés et l’hypnose médicale. Les prochaines dates sont affichées sur chaque formation.",
     "whyTitle": "Pourquoi cette méthode",
     "whyRapidTitle": "Rapide et vérifiable",
     "whyRapidBody": "Les inductions visent une profondeur utile en peu de temps, avec des tests que vous pouvez réellement utiliser en séance.",
@@ -41,17 +41,48 @@
   "CoursesPage": {
     "title": "Formations en hypnose",
     "description": "Toutes les formations mhp-coaching à Fribourg : cursus OMNI®, modules avancés, hypnose médicale et ateliers pratiques.",
-    "intro": "Découvrez l’ensemble du catalogue à Fribourg. Les dates disponibles seront ajoutées dans une prochaine étape.",
+    "intro": "Découvrez l’ensemble du catalogue à Fribourg. Cherchez une formation, filtrez par mois, ou affichez le calendrier des sessions.",
     "foundation": "Formation de base",
     "advanced": "Modules avancés",
     "medical": "Hypnose médicale",
     "workshops": "Ateliers pratiques",
     "readMore": "Détail de la formation",
+    "waitlistLabel": "Liste d’attente",
     "breadcrumbHome": "Accueil",
     "eyebrow": "Cursus OMNI",
     "seats": "{count} participant·e·s max.",
-    "courseCount": "{count, plural, =1 {# formation} other {# formations}}"
-    ,"instructorImageAlt": "Marta Hegyaljai Python pendant une formation en hypnose"
+    "courseCount": "{count, plural, =1 {# formation} other {# formations}}",
+    "instructorImageAlt": "Marta Hegyaljai Python pendant une formation en hypnose",
+    "search": "Rechercher",
+    "searchPlaceholder": "Nom de la formation",
+    "monthFilter": "Mois",
+    "allMonths": "Tous les mois",
+    "gridView": "Liste",
+    "calendarView": "Calendrier",
+    "noResults": "Aucune formation ne correspond à cette recherche."
+  },
+  "CourseCalendar": {
+    "previousMonth": "Mois précédent",
+    "nextMonth": "Mois suivant",
+    "emptyDay": "Aucune session ce jour-là. Choisissez un jour marqué.",
+    "sessionsOnDay": "Sessions ce jour",
+    "caption": "Une bande continue couvre tous les jours de la formation. Le nom apparaît sur la bande.",
+    "book": "Choisir cette date",
+    "weekday": {
+      "mon": "Lun",
+      "tue": "Mar",
+      "wed": "Mer",
+      "thu": "Jeu",
+      "fri": "Ven",
+      "sat": "Sam",
+      "sun": "Dim"
+    }
+  },
+  "QuickBookPage": {
+    "eyebrow": "Inscription rapide",
+    "title": "Réserver une place",
+    "description": "Choisissez une session dans le calendrier des formations mhp-coaching à Fribourg, puis continuez vers l’inscription.",
+    "intro": "Si vous savez déjà quand vous êtes disponible, choisissez un jour dans le calendrier. Chaque formation de plusieurs jours apparaît comme une bande continue, avec son nom sur le calendrier."
   },
   "CourseDetail": {
     "bookCta": "S’inscrire à cette formation",
@@ -67,7 +98,9 @@
     "nextSession": "Prochaine session",
     "about": "Le programme",
     "contactCta": "Nous écrire",
-    "dateToBeConfirmed": "La date sera confirmée prochainement. Vous pouvez déjà réserver votre place.",
+    "dateToBeConfirmed": "La date n’est pas encore publiée. Inscrivez-vous sur la liste d’attente : nous vous contactons dès qu’une session ouvre.",
+    "waitlistCta": "Rejoindre la liste d’attente",
+    "waitlistShort": "Liste d’attente",
     "sourceEyebrow": "Contenu de la formation",
     "detailsTitle": "Objectifs, programme et prérequis",
     "sourceLanguageNotice": "Les informations détaillées ci-dessous sont actuellement disponibles dans leur version française d’origine.",
@@ -77,16 +110,25 @@
     "title": "Réserver votre place",
     "intro": "Choisissez une date, indiquez vos coordonnées, puis continuez vers le paiement sécurisé par TWINT ou Visa/Mastercard.",
     "introWithoutDate": "Indiquez vos coordonnées, puis continuez vers le paiement sécurisé par TWINT ou Visa/Mastercard. La date de la formation sera confirmée prochainement.",
-    "dateLabel": "Date et ville",
+    "dateLabel": "Choisissez votre date",
+    "dateHelp": "Une seule date à la fois. Le jour et la période sont affichés en toutes lettres.",
+    "dateUnset": "À choisir",
     "dateToBeConfirmed": "Date à confirmer · Fribourg",
     "schedulePendingNote": "Votre réservation porte sur cette formation à Fribourg. Nous vous communiquerons la date dès qu’elle sera confirmée.",
     "firstName": "Prénom",
     "lastName": "Nom",
     "email": "E-mail",
     "phone": "Téléphone",
+    "street": "Adresse",
+    "postalCode": "Code postal",
+    "city": "Ville",
+    "country": "Pays",
+    "countryDefault": "Suisse",
     "privacy": "J’ai lu et j’accepte la <privacy>notice de confidentialité</privacy> et les <terms>conditions d’inscription</terms>.",
     "submit": "Continuer vers le paiement",
+    "submitLead": "Je préfère un autre moyen de paiement",
     "submitting": "Préparation du paiement…",
+    "submittingLead": "Envoi de la demande…",
     "noDates": "Cette formation n’a pas de date ouverte pour le moment.",
     "contactLink": "Nous écrire",
     "errors": {
@@ -94,11 +136,16 @@
       "lastName": "Veuillez indiquer votre nom.",
       "email": "Veuillez indiquer une adresse e-mail valide.",
       "phone": "Veuillez indiquer un numéro de téléphone joignable.",
+      "street": "Veuillez indiquer votre adresse.",
+      "postalCode": "Veuillez indiquer un code postal.",
+      "city": "Veuillez indiquer votre ville.",
+      "country": "Veuillez indiquer votre pays.",
       "courseDateId": "Veuillez choisir une date disponible.",
       "privacyAccepted": "Veuillez accepter la confidentialité et les conditions pour continuer.",
       "invalid": "Veuillez vérifier le formulaire et réessayer.",
       "courseMissing": "Cette formation n’est plus disponible.",
-      "dateUnavailable": "Cette date n’est plus ouverte à l’inscription."
+      "dateUnavailable": "Cette date n’est plus ouverte à l’inscription.",
+      "waitlistOnly": "Cette formation n’a pas encore de date. Inscrivez-vous sur la liste d’attente."
     },
     "summaryTitle": "Votre inscription",
     "summaryDate": "Date",
@@ -122,11 +169,35 @@
     "amount": "Montant payé",
     "coursesCta": "Voir les formations"
   },
+  "WaitlistForm": {
+    "intro": "Cette formation n’a pas encore de date publiée. Laissez vos coordonnées : nous vous contactons dès qu’une session ouvre à Fribourg.",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "email": "E-mail",
+    "phone": "Téléphone",
+    "company": "Entreprise",
+    "privacy": "J’ai lu et j’accepte la <privacy>notice de confidentialité</privacy> et les <terms>conditions d’inscription</terms>.",
+    "submit": "Rejoindre la liste d’attente",
+    "submitting": "Enregistrement…",
+    "success": "Vous êtes sur la liste d’attente. Nous vous écrirons dès qu’une date sera ouverte.",
+    "alreadyListed": "Cet e-mail est déjà inscrit sur la liste d’attente de cette formation.",
+    "errors": {
+      "firstName": "Veuillez indiquer votre prénom.",
+      "lastName": "Veuillez indiquer votre nom.",
+      "email": "Veuillez indiquer une adresse e-mail valide.",
+      "phone": "Veuillez indiquer un numéro de téléphone joignable.",
+      "privacyAccepted": "Veuillez accepter la confidentialité et les conditions pour continuer.",
+      "invalid": "Veuillez vérifier le formulaire et réessayer.",
+      "unavailable": "La liste d’attente n’est pas ouverte pour cette formation."
+    }
+  },
   "BookingCancelled": {
     "title": "Le paiement n’a pas été mené à terme.",
     "intro": "Aucun encaissement d’inscription aboutie n’a eu lieu. Vous pouvez revenir à la formation et réessayer. Un paiement annulé ne passe jamais une inscription en « payé ».",
     "retry": "Retour à la formation",
-    "home": "Accueil"
+    "home": "Accueil",
+    "otherPaymentTitle": "Payer autrement",
+    "otherPaymentIntro": "Si le paiement en ligne a échoué ou si vous préférez un autre arrangement, écrivez-nous. Nous vous recontacterons pour trouver une solution."
   },
   "FakeCheckout": {
     "title": "Paiement de test",
@@ -141,7 +212,27 @@
     "description": "Écrire à MHP Coaching à Fribourg. Nous formons en français, allemand et anglais.",
     "intro": "Pour une question de formation, écrivez ou téléphonez. Les inscriptions se finalisent en ligne depuis chaque page de cours.",
     "hq": "Fribourg",
-    "languages": "Nous travaillons en français, allemand et anglais."
+    "languages": "Nous travaillons en français, allemand et anglais.",
+    "formTitle": "Écrire à l’école",
+    "formIntro": "Pour une question, un paiement ou une date, laissez vos coordonnées. Nous répondons par e-mail."
+  },
+  "ContactForm": {
+    "name": "Nom",
+    "email": "E-mail",
+    "phone": "Téléphone (facultatif)",
+    "message": "Message",
+    "company": "Société",
+    "submit": "Envoyer",
+    "submitting": "Envoi…",
+    "success": "Merci. Votre message est bien parti. Nous vous répondrons par e-mail.",
+    "leadSuccess": "Merci. Votre demande d’inscription est enregistrée. Nous vous recontacterons pour convenir d’un autre moyen de paiement.",
+    "errors": {
+      "name": "Veuillez indiquer votre nom.",
+      "email": "Veuillez indiquer une adresse e-mail valide.",
+      "phone": "Veuillez indiquer un numéro de téléphone joignable.",
+      "message": "Veuillez écrire un message d’au moins quelques mots.",
+      "invalid": "Veuillez vérifier le formulaire et réessayer."
+    }
   },
   "Legal": {
     "imprintTitle": "Mentions légales",
@@ -161,7 +252,7 @@
     "copyright": "© {year} MHP Coaching. Tous droits réservés.",
     "ctaEyebrow": "Inscription",
     "ctaTitle": "Prêt·e à réserver votre place ?",
-    "ctaBody": "Découvrez les formations proposées à Fribourg. Les prochaines dates seront publiées dès qu’elles seront confirmées.",
+    "ctaBody": "Choisissez une session à Fribourg dans le calendrier, ou parcourez le catalogue des formations.",
     "ctaButton": "Voir les formations",
     "navigation": "Navigation"
   },
@@ -177,7 +268,12 @@
     "status": "Statut",
     "created": "Créée",
     "paid": "Payée le",
-    "csv": "Télécharger CSV"
+    "csv": "Télécharger CSV",
+    "waitlistTitle": "Listes d’attente",
+    "waitlistIntro": "Personnes à contacter quand une date ouvre, regroupées par formation.",
+    "waitlistEmpty": "Aucune inscription sur liste d’attente.",
+    "waitlistCsv": "CSV listes d’attente",
+    "phone": "Téléphone"
   },
   "Email": {
     "bookingConfirmation": {
@@ -192,6 +288,38 @@
       "amountLine": "Montant payé : {amount}",
       "referenceLine": "Référence : {id}",
       "closing": "Nous avons hâte de vous accueillir."
+    },
+    "leadNotification": {
+      "subject": "Demande d’inscription hors paiement en ligne — {course}",
+      "intro": "Une personne a demandé un autre moyen de paiement.",
+      "nameLine": "Nom : {name}",
+      "emailLine": "E-mail : {email}",
+      "phoneLine": "Téléphone : {phone}",
+      "addressLine": "Adresse : {address}",
+      "courseLine": "Formation : {course}",
+      "dateLine": "Dates : {date}",
+      "dateToBeConfirmed": "Date à confirmer",
+      "amountLine": "Montant : {amount}",
+      "referenceLine": "Référence : {id}"
+    },
+    "inquiryNotification": {
+      "subject": "Message du site — {kind}",
+      "kindGeneral": "contact",
+      "kindPayment": "paiement",
+      "intro": "Un message a été envoyé depuis le site.",
+      "nameLine": "Nom : {name}",
+      "emailLine": "E-mail : {email}",
+      "phoneLine": "Téléphone : {phone}",
+      "courseLine": "Formation : {course}",
+      "messageLine": "Message :"
+    },
+    "waitlistNotification": {
+      "subject": "Liste d’attente — {course}",
+      "intro": "Une personne a rejoint la liste d’attente.",
+      "nameLine": "Nom : {name}",
+      "emailLine": "E-mail : {email}",
+      "phoneLine": "Téléphone : {phone}",
+      "courseLine": "Formation : {course}"
     }
   },
   "NotFound": {

@@ -18,12 +18,18 @@ describe("parseBookingForm", () => {
         lastName: "Hegyaljai",
         email: "marta@example.com",
         phone: "+41 79 123 45 67",
+        street: "Chemin de la Fenetta 42",
+        postalCode: "1752",
+        city: "Villars-sur-Glâne",
+        country: "Suisse",
         courseDateId: "omni-practitioner-fribourg-future",
         privacyAccepted: "on",
       }),
     );
 
     expect(result.values?.email).toBe("marta@example.com");
+    expect(result.values?.street).toBe("Chemin de la Fenetta 42");
+    expect(result.values?.intent).toBe("checkout");
     expect(result.errors).toBeUndefined();
   });
 

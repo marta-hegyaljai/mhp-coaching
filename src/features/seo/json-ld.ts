@@ -3,6 +3,8 @@ import {getSiteUrl} from "@/lib/site-url";
 import {organization} from "@/features/organization/info";
 import type {Course} from "@/features/courses/types";
 import {toIsoDateTime} from "@/features/courses/dates";
+import {getBookableDates} from "@/features/courses/queries";
+import {homeStatue, homeStatueAlt} from "./home-statue";
 import {localizedPath} from "./metadata";
 
 type JsonLd = Record<string, unknown>;
@@ -112,9 +114,7 @@ export function courseJsonLd(course: Course, locale: AppLocale): JsonLd {
       availability: "https://schema.org/InStock",
       url: `${site}${path}`,
     },
-    hasCourseInstance: course.dates
-      .filter((date) => date.active)
-      .map((date) => ({
+    hasCourseInstance: getBookableDates(course).map((date) => ({
         "@type": "CourseInstance",
         name: course.title[locale],
         startDate: toIsoDateTime(date.startDate),
@@ -125,6 +125,26 @@ export function courseJsonLd(course: Course, locale: AppLocale): JsonLd {
           address: date.venue?.[locale],
         },
       })),
+  };
+}
+
+export function homeStatueJsonLd(locale: AppLocale): JsonLd {
+  const site = getSiteUrl().origin;
+  const alt = homeStatueAlt[locale];
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    contentUrl: `${site}${homeStatue.src}`,
+    url: `${site}${homeStatue.src}`,
+    name: alt,
+    description: alt,
+    encodingFormat: "image/webp",
+    width: homeStatue.width,
+    height: homeStatue.height,
+    inLanguage: locale,
+    representativeOfPage: true,
+    creator: {"@id": `${site}/#organization`},
   };
 }
 
@@ -139,8 +159,7 @@ export function eventJsonLd(course: Course, locale: AppLocale): JsonLd[] {
     params: {slug: course.slug[locale]},
   });
 
-  return course.dates
-    .filter((date) => date.active)
+  return getBookableDates(course)
     .map((date) => ({
       "@context": "https://schema.org",
       "@type": "Event",

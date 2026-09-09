@@ -1,9 +1,11 @@
+import Image from "next/image";
 import {getTranslations, setRequestLocale} from "next-intl/server";
 
 import {CourseCard} from "@/features/courses/components/course-card";
-import {getCourseById, getPublishedCourses} from "@/features/courses/queries";
-import {courseListJsonLd} from "@/features/seo/json-ld";
+import {getPublishedCourses} from "@/features/courses/queries";
+import {homeStatueJsonLd, courseListJsonLd} from "@/features/seo/json-ld";
 import {JsonLd} from "@/features/seo/json-ld-script";
+import {homeStatue, homeStatueAlt} from "@/features/seo/home-statue";
 import {buildPageMetadata} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
@@ -25,6 +27,12 @@ export async function generateMetadata({params}: HomePageProps) {
     title: t("title"),
     description: t("description"),
     hrefForLocale: () => "/",
+    image: {
+      url: homeStatue.src,
+      width: homeStatue.width,
+      height: homeStatue.height,
+      alt: homeStatueAlt[locale],
+    },
   });
 }
 
@@ -34,7 +42,6 @@ export default async function HomePage({params}: HomePageProps) {
   const t = await getTranslations("HomePage");
   const coursesT = await getTranslations("CoursesPage");
   const courses = getPublishedCourses().slice(0, 3);
-  const practitioner = getCourseById("omni-practitioner");
 
   const reasons = [
     {title: t("whyRapidTitle"), body: t("whyRapidBody")},
@@ -45,42 +52,52 @@ export default async function HomePage({params}: HomePageProps) {
   return (
     <SiteShell locale={locale}>
       <JsonLd data={courseListJsonLd(courses, locale)} />
+      <JsonLd data={homeStatueJsonLd(locale)} />
 
       <Section size="lg" className="pt-9 pb-10 sm:pt-12 sm:pb-16">
-        <div>
-          <Eyebrow>{t("eyebrow")}</Eyebrow>
-          <h1 className="mt-5 max-w-4xl font-serif text-display">{t("title")}</h1>
-          <p className="mt-5 max-w-2xl text-lead text-ink-muted">{t("intro")}</p>
+        <div className="grid items-end gap-8 lg:grid-cols-12 lg:gap-12">
+          <div className="lg:col-span-8">
+            <Eyebrow>{t("eyebrow")}</Eyebrow>
+            <h1 className="mt-5 max-w-4xl font-serif text-display">{t("title")}</h1>
+            <p className="mt-5 max-w-2xl text-lead text-ink-muted">{t("intro")}</p>
 
-          <div className="mt-7 grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3">
-            <Link
-              href="/courses"
-              className={`${buttonStyles({size: "lg"})} w-full px-3 text-sm sm:w-auto sm:px-7 sm:text-base`}
-            >
-              {t("ctaCourses")}
-              <ArrowRightIcon className="transition-transform duration-200 ease-standard group-hover/button:translate-x-0.5" />
-            </Link>
-            {practitioner ? (
+            <div className="mt-7 grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3">
               <Link
-                href={{
-                  pathname: "/courses/[slug]/book",
-                  params: {slug: practitioner.slug[locale]},
-                }}
+                href="/courses"
+                className={`${buttonStyles({size: "lg"})} w-full px-3 text-sm sm:w-auto sm:px-7 sm:text-base`}
+              >
+                {t("ctaCourses")}
+                <ArrowRightIcon className="transition-transform duration-200 ease-standard group-hover/button:translate-x-0.5" />
+              </Link>
+              <Link
+                href="/book"
                 className={`${buttonStyles({variant: "secondary", size: "lg"})} w-full px-3 text-sm sm:w-auto sm:px-7 sm:text-base`}
               >
                 {t("ctaBook")}
               </Link>
-            ) : null}
+            </div>
+
+            <ul className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-line pt-5 text-sm text-ink-subtle">
+              <li className="flex items-center gap-2">
+                <PinIcon className="h-3.5 w-3.5 text-bronze" />
+                {t("trustLocations")}
+              </li>
+              <li>{t("trustGroup")}</li>
+              <li>{t("trustRecognition")}</li>
+            </ul>
           </div>
 
-          <ul className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-line pt-5 text-sm text-ink-subtle">
-            <li className="flex items-center gap-2">
-              <PinIcon className="h-3.5 w-3.5 text-bronze" />
-              {t("trustLocations")}
-            </li>
-            <li>{t("trustGroup")}</li>
-            <li>{t("trustRecognition")}</li>
-          </ul>
+          <figure className="mx-auto w-[min(100%,16.5rem)] lg:col-span-4 lg:mx-0 lg:justify-self-end">
+            <Image
+              src={homeStatue.src}
+              alt={homeStatueAlt[locale]}
+              width={homeStatue.width}
+              height={homeStatue.height}
+              priority
+              sizes="(min-width: 1024px) 264px, 264px"
+              className="border border-ink bg-white object-cover"
+            />
+          </figure>
         </div>
       </Section>
 
@@ -125,6 +142,7 @@ export default async function HomePage({params}: HomePageProps) {
               course={course}
               locale={locale}
               detailsLabel={coursesT("readMore")}
+              awaitingDateLabel={coursesT("waitlistLabel")}
               headingLevel="h3"
             />
           ))}

@@ -62,6 +62,7 @@ Avoid Neon-specific application APIs where a standard PostgreSQL connection work
 Initial durable concepts:
 - bookings
 - optional payment_events
+- waitlist_entries for undated published courses
 
 Courses/course dates stay in typed source config initially.
 A booking should snapshot commercially important values so historic bookings remain understandable if course config later changes.
@@ -101,7 +102,7 @@ Webhook rules:
 ## Email
 Application owns template/content; provider adapter owns delivery.
 Local: SMTP to Mailpit.
-Hosted: Resend/Postmark later.
+Hosted: Resend when `RESEND_API_KEY` is set.
 
 ## Authentication
 No student authentication in MVP.
@@ -114,14 +115,17 @@ src/
     [locale]/
     api/stripe/webhook/
     api/staff/bookings.csv/
+    api/staff/waitlist.csv/
   features/
     courses/                # catalogue, dates, course UI
     bookings/               # form, validation, persistence
+    waitlist/               # undated-course waiting list
+    inquiries/              # contact and alternative-payment forms
     payments/{fake,stripe}/ # PaymentProvider adapters + webhook
-    email/                  # confirmation delivery
+    email/                  # confirmation + inquiry delivery
     seo/                    # metadata, json-ld, sitemap, legacy 301s
     site-shell/             # header, footer, language switcher
-    staff/                  # booking list, CSV, basic auth
+    staff/                  # booking and waitlist lists, CSV, basic auth
     legal/
     organization/
   db/

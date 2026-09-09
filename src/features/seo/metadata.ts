@@ -39,11 +39,25 @@ export function buildPageMetadata(input: {
   description: string;
   hrefForLocale: (locale: AppLocale) => PathnameHref;
   robots?: Metadata["robots"];
+  image?: {
+    url: string;
+    width: number;
+    height: number;
+    alt: string;
+  };
 }): Metadata {
   const canonical = absoluteUrl(
     localizedPath(input.locale, input.hrefForLocale(input.locale)),
   );
   const languages = languageAlternates(input.hrefForLocale);
+  const image = input.image
+    ? {
+        url: absoluteUrl(input.image.url),
+        width: input.image.width,
+        height: input.image.height,
+        alt: input.image.alt,
+      }
+    : undefined;
 
   return {
     title: input.title,
@@ -60,11 +74,13 @@ export function buildPageMetadata(input: {
       title: input.title,
       description: input.description,
       url: canonical,
+      images: image ? [image] : undefined,
     },
     twitter: {
-      card: "summary_large_image",
+      card: image ? "summary_large_image" : "summary_large_image",
       title: input.title,
       description: input.description,
+      images: image ? [image.url] : undefined,
     },
   };
 }

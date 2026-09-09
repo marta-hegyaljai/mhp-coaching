@@ -1,8 +1,7 @@
 import Image from "next/image";
 import {getTranslations, setRequestLocale} from "next-intl/server";
-import type {ReactNode} from "react";
 
-import {CourseCard} from "@/features/courses/components/course-card";
+import {CourseExplorer} from "@/features/courses/components/course-explorer";
 import {
   getAdvancedCourses,
   getFoundationCourses,
@@ -40,16 +39,16 @@ export default async function CoursesPage({params}: CoursesPageProps) {
   setRequestLocale(locale);
   const t = await getTranslations("CoursesPage");
   const navT = await getTranslations("Nav");
+  const calendarT = await getTranslations("CourseCalendar");
 
   const groups: Array<{title: string; courses: Course[]}> = [
     {title: t("foundation"), courses: getFoundationCourses()},
     {title: t("advanced"), courses: getAdvancedCourses()},
     {title: t("medical"), courses: getMedicalCourses()},
     {title: t("workshops"), courses: getWorkshopCourses()},
-  ];
+  ].filter((group) => group.courses.length > 0);
 
   return (
-    // The page is already a list of calls to action, so it skips the band.
     <SiteShell locale={locale} footerCta={null}>
       <JsonLd data={courseListJsonLd(getPublishedCourses(), locale)} />
 
@@ -80,48 +79,37 @@ export default async function CoursesPage({params}: CoursesPageProps) {
       </Section>
 
       <Section size="sm" className="pb-16 sm:pb-24">
-        {groups.map((group) => (
-          <CourseGroup
-            key={group.title}
-            title={group.title}
-            count={t("courseCount", {count: group.courses.length})}
-          >
-            {group.courses.map((course) => (
-              <CourseCard
-                key={course.id}
-                course={course}
-                locale={locale}
-                detailsLabel={t("readMore")}
-                headingLevel="h3"
-              />
-            ))}
-          </CourseGroup>
-        ))}
+        <CourseExplorer
+          locale={locale}
+          groups={groups}
+          detailsLabel={t("readMore")}
+          labels={{
+            search: t("search"),
+            searchPlaceholder: t("searchPlaceholder"),
+            month: t("monthFilter"),
+            allMonths: t("allMonths"),
+            gridView: t("gridView"),
+            calendarView: t("calendarView"),
+            noResults: t("noResults"),
+            previousMonth: calendarT("previousMonth"),
+            nextMonth: calendarT("nextMonth"),
+            emptyDay: calendarT("emptyDay"),
+            sessionsOnDay: calendarT("sessionsOnDay"),
+            caption: calendarT("caption"),
+            awaitingDateLabel: t("waitlistLabel"),
+            book: calendarT("book"),
+            weekday: {
+              mon: calendarT("weekday.mon"),
+              tue: calendarT("weekday.tue"),
+              wed: calendarT("weekday.wed"),
+              thu: calendarT("weekday.thu"),
+              fri: calendarT("weekday.fri"),
+              sat: calendarT("weekday.sat"),
+              sun: calendarT("weekday.sun"),
+            },
+          }}
+        />
       </Section>
     </SiteShell>
-  );
-}
-
-function CourseGroup({
-  title,
-  count,
-  children,
-}: {
-  title: string;
-  count: string;
-  children: ReactNode;
-}) {
-  return (
-    <section className="mt-16 first:mt-0">
-      <div className="flex items-baseline justify-between gap-4 border-b border-ink/15 pb-3">
-        <h2 className="font-serif text-subheading">{title}</h2>
-        <p className="text-xs uppercase tracking-[0.16em] text-ink-subtle">
-          {count}
-        </p>
-      </div>
-      <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {children}
-      </div>
-    </section>
   );
 }

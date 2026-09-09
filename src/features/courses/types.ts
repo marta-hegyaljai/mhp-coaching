@@ -12,6 +12,8 @@ export type CourseDate = {
   active: boolean;
 };
 
+export type CourseCategory = "foundation" | "advanced" | "medical" | "workshop";
+
 export type Course = {
   id: string;
   slug: LocalizedText;
@@ -22,6 +24,15 @@ export type Course = {
   duration: LocalizedText;
   location: LocalizedText;
   priceChf: number;
-  category: "foundation" | "advanced" | "medical" | "workshop";
+  category: CourseCategory;
+  /**
+   * Catalogue rows stay in source (and later in PostgreSQL) even when paused.
+   * Public listings, sitemap and JSON-LD only use published courses.
+   */
+  published?: boolean;
   dates: CourseDate[];
 };
+
+export function isCoursePublished(course: Course): boolean {
+  return course.published !== false;
+}

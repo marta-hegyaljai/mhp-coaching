@@ -10,8 +10,13 @@ const bookingFormSchema = z.object({
     .min(7)
     .max(40)
     .regex(/^[0-9+().\s-]+$/),
+  street: z.string().trim().min(3).max(120),
+  postalCode: z.string().trim().min(3).max(12),
+  city: z.string().trim().min(2).max(80),
+  country: z.string().trim().min(2).max(56),
   courseDateId: z.string().trim().min(1),
   privacyAccepted: z.literal(true),
+  intent: z.enum(["checkout", "lead"]).default("checkout"),
 });
 
 export type BookingFormValues = z.infer<typeof bookingFormSchema>;
@@ -25,6 +30,10 @@ export type BookingFormDraft = {
   lastName: string;
   email: string;
   phone: string;
+  street: string;
+  postalCode: string;
+  city: string;
+  country: string;
   courseDateId: string;
 };
 
@@ -38,14 +47,18 @@ export function readBookingDraft(formData: FormData): BookingFormDraft {
     lastName: readString(formData, "lastName"),
     email: readString(formData, "email"),
     phone: readString(formData, "phone"),
+    street: readString(formData, "street"),
+    postalCode: readString(formData, "postalCode", 12),
+    city: readString(formData, "city"),
+    country: readString(formData, "country", 56) || "CH",
     courseDateId: readString(formData, "courseDateId"),
   };
 }
 
-function readString(formData: FormData, key: string): string {
+function readString(formData: FormData, key: string, max = 200): string {
   const value = formData.get(key);
 
-  return typeof value === "string" ? value.slice(0, 200) : "";
+  return typeof value === "string" ? value.slice(0, max) : "";
 }
 
 export function parseBookingForm(formData: FormData): {
@@ -53,13 +66,19 @@ export function parseBookingForm(formData: FormData): {
   errors?: BookingFormErrors;
 } {
   const privacyRaw = formData.get("privacyAccepted");
+  const intentRaw = formData.get("intent");
   const parsed = bookingFormSchema.safeParse({
     firstName: formData.get("firstName"),
     lastName: formData.get("lastName"),
     email: formData.get("email"),
     phone: formData.get("phone"),
+    street: formData.get("street"),
+    postalCode: formData.get("postalCode"),
+    city: formData.get("city"),
+    country: formData.get("country"),
     courseDateId: formData.get("courseDateId"),
     privacyAccepted: privacyRaw === "on" || privacyRaw === "true" || privacyRaw === "1",
+    intent: intentRaw === "lead" ? "lead" : "checkout",
   });
 
   if (parsed.success) {

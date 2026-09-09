@@ -34,18 +34,21 @@ export function BookingForm({
   const draft = state?.draft;
   const schedulePending = dates.length === 0;
   const pendingDateId = unscheduledCourseDateId(course.id);
-  const [selectedDateId, setSelectedDateId] = useState(
-    () =>
-      dates.find((date) => date.id === initialDateId)?.id ??
-      dates[0]?.id ??
-      pendingDateId,
+  const [selectedDateId, setSelectedDateId] = useState(() => {
+    if (schedulePending) {
+      return pendingDateId;
+    }
+    if (initialDateId && dates.some((date) => date.id === initialDateId)) {
+      return initialDateId;
+    }
+    return dates.length === 1 ? dates[0].id : "";
+  });
+  const [pendingIntent, setPendingIntent] = useState<"checkout" | "lead" | null>(
+    null,
   );
 
-  const selectedDate =
-    dates.find((date) => date.id === selectedDateId) ?? dates[0];
+  const selectedDate = dates.find((date) => date.id === selectedDateId);
   const price = formatChf(course.priceChf, locale, {compact: true});
-  // The submit button sits away from the fields on phones, so a rejected
-  // submission needs a signal next to the button the visitor just pressed.
   const fieldErrorCount = errors
     ? Object.keys(errors).filter((key) => key !== "form").length
     : 0;
@@ -54,8 +57,6 @@ export function BookingForm({
     <form
       action={formAction}
       aria-busy={pending}
-      // Fields keep `required` for assistive tech, but browser bubbles are
-      // suppressed so visitors see our localized, styled messages instead.
       noValidate
       className="grid gap-10 lg:grid-cols-12 lg:gap-16"
     >
@@ -72,7 +73,7 @@ export function BookingForm({
         {schedulePending ? (
           <div className="border border-ink bg-white p-5">
             <input type="hidden" name="courseDateId" value={pendingDateId} />
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-bronze">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold-deep">
               {t("dateLabel")}
             </p>
             <p className="mt-2 font-serif text-subheading">
@@ -84,20 +85,21 @@ export function BookingForm({
           </div>
         ) : (
           <fieldset>
-            <legend className="text-sm font-medium text-ink">
+            <legend className="font-serif text-subheading">
               {t("dateLabel")}
             </legend>
-            <div className="mt-3 space-y-2.5">
+            <p className="mt-2 text-sm text-ink-muted">{t("dateHelp")}</p>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
               {dates.map((date) => {
-                const isSelected = date.id === selectedDate?.id;
+                const isSelected = date.id === selectedDateId;
 
                 return (
                   <label
                     key={date.id}
-                    className={`flex min-h-14 cursor-pointer items-center gap-4 rounded-panel border px-4 py-3.5 transition duration-200 ease-standard has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-bronze ${
+                    className={`flex min-h-24 cursor-pointer flex-col justify-between gap-3 rounded-panel border p-4 transition duration-150 ease-standard has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-ink ${
                       isSelected
-                        ? "border-ink bg-parchment"
-                        : "border-line bg-parchment/60 hover:border-ink/25"
+                        ? "border-ink bg-hover"
+                        : "border-line bg-white hover:border-ink"
                     }`}
                   >
                     <input
@@ -108,27 +110,23 @@ export function BookingForm({
                       onChange={() => setSelectedDateId(date.id)}
                       className="sr-only"
                     />
-                    <span
-                      aria-hidden="true"
-                      className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition duration-200 ${
-                        isSelected
-                          ? "border-bronze bg-bronze text-ivory"
-                          : "border-line bg-ivory"
-                      }`}
-                    >
-                      {isSelected ? <CheckIcon className="h-3 w-3" /> : null}
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block font-medium">
-                        {date.location[locale]}
-                      </span>
-                      <span className="block text-sm text-ink-muted">
+                    <span className="flex items-start justify-between gap-3">
+                      <span className="font-medium">
                         {formatCourseDateRange(date, locale)}
                       </span>
+                      <span
+                        aria-hidden="true"
+                        className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center border ${
+                          isSelected ? "border-ink bg-ink text-parchment" : "border-line bg-white"
+                        }`}
+                      >
+                        {isSelected ? <CheckIcon className="h-3 w-3" /> : null}
+                      </span>
                     </span>
-                    <Price size="sm" className="shrink-0">
-                      {price}
-                    </Price>
+                    <span className="flex items-end justify-between gap-3 text-sm text-ink-muted">
+                      <span>{date.location[locale]}</span>
+                      <Price size="sm">{price}</Price>
+                    </span>
                   </label>
                 );
               })}
@@ -174,10 +172,40 @@ export function BookingForm({
             error={errors?.phone}
             defaultValue={draft?.phone}
           />
+          <Field
+            name="street"
+            autoComplete="street-address"
+            label={t("street")}
+            error={errors?.street}
+            defaultValue={draft?.street}
+            className="sm:col-span-2"
+          />
+          <Field
+            name="postalCode"
+            autoComplete="postal-code"
+            label={t("postalCode")}
+            error={errors?.postalCode}
+            defaultValue={draft?.postalCode}
+          />
+          <Field
+            name="city"
+            autoComplete="address-level2"
+            label={t("city")}
+            error={errors?.city}
+            defaultValue={draft?.city}
+          />
+          <Field
+            name="country"
+            autoComplete="country-name"
+            label={t("country")}
+            error={errors?.country}
+            defaultValue={draft?.country ?? t("countryDefault")}
+            className="sm:col-span-2"
+          />
         </div>
 
         <div>
-          <label className="flex cursor-pointer items-start gap-3 rounded-panel border border-line bg-parchment/60 p-4 text-sm leading-6 transition duration-200 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-bronze">
+          <label className="flex cursor-pointer items-start gap-3 rounded-panel border border-line bg-parchment/60 p-4 text-sm leading-6 transition duration-200 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-ink">
             <input
               type="checkbox"
               name="privacyAccepted"
@@ -190,7 +218,7 @@ export function BookingForm({
                 privacy: (chunks) => (
                   <Link
                     href="/legal/privacy"
-                    className="text-bronze underline underline-offset-2"
+                    className="text-ink underline underline-offset-2"
                   >
                     {chunks}
                   </Link>
@@ -198,7 +226,7 @@ export function BookingForm({
                 terms: (chunks) => (
                   <Link
                     href="/legal/terms"
-                    className="text-bronze underline underline-offset-2"
+                    className="text-ink underline underline-offset-2"
                   >
                     {chunks}
                   </Link>
@@ -217,7 +245,7 @@ export function BookingForm({
       <aside className="lg:col-span-5">
         <div className="lg:sticky lg:top-24">
           <div className="rounded-panel border border-line bg-parchment p-6">
-            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-bronze">
+            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-gold-deep">
               {t("summaryTitle")}
             </p>
             <p className="mt-3 font-serif text-subheading">
@@ -231,8 +259,8 @@ export function BookingForm({
                   {schedulePending
                     ? t("dateToBeConfirmed")
                     : selectedDate
-                    ? formatCourseDateRange(selectedDate, locale)
-                    : "—"}
+                      ? formatCourseDateRange(selectedDate, locale)
+                      : t("dateUnset")}
                 </dd>
               </div>
               <div className="flex justify-between gap-4">
@@ -258,12 +286,15 @@ export function BookingForm({
 
             <Button
               type="submit"
+              name="intent"
+              value="checkout"
               size="lg"
               block
               disabled={pending}
               className="mt-5"
+              onClick={() => setPendingIntent("checkout")}
             >
-              {pending ? (
+              {pending && pendingIntent === "checkout" ? (
                 <>
                   <SpinnerIcon />
                   {t("submitting")}
@@ -273,6 +304,26 @@ export function BookingForm({
                   <LockIcon />
                   {t("submit")}
                 </>
+              )}
+            </Button>
+            <Button
+              type="submit"
+              name="intent"
+              value="lead"
+              variant="secondary"
+              size="lg"
+              block
+              disabled={pending}
+              className="mt-3"
+              onClick={() => setPendingIntent("lead")}
+            >
+              {pending && pendingIntent === "lead" ? (
+                <>
+                  <SpinnerIcon />
+                  {t("submittingLead")}
+                </>
+              ) : (
+                t("submitLead")
               )}
             </Button>
             <p className="mt-3 text-xs leading-6 text-ink-subtle">
@@ -293,6 +344,7 @@ function Field({
   inputMode,
   autoComplete,
   defaultValue,
+  className = "",
 }: {
   name: string;
   label: string;
@@ -301,11 +353,12 @@ function Field({
   inputMode?: "email" | "tel" | "text";
   autoComplete?: string;
   defaultValue?: string;
+  className?: string;
 }) {
   const errorId = `${name}-error`;
 
   return (
-    <div>
+    <div className={className}>
       <label htmlFor={name} className="block text-sm font-medium text-ink">
         {label}
       </label>
@@ -319,7 +372,7 @@ function Field({
         required
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? errorId : undefined}
-        className={`mt-2 block min-h-12 w-full rounded-panel border bg-parchment px-3.5 text-base text-ink transition duration-200 placeholder:text-ink-subtle focus:border-bronze ${
+        className={`mt-2 block min-h-12 w-full rounded-panel border bg-parchment px-3.5 text-base text-ink transition duration-200 placeholder:text-ink-subtle focus:border-ink ${
           error ? "border-bronze" : "border-line"
         }`}
       />

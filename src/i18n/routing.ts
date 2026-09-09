@@ -24,6 +24,11 @@ export const routing = defineRouting({
       de: "/ausbildungen/[slug]/anmeldung",
       en: "/courses/[slug]/book",
     },
+    "/book": {
+      fr: "/inscription",
+      de: "/anmeldung",
+      en: "/book",
+    },
     "/booking/success": {
       fr: "/inscription/succes",
       de: "/anmeldung/erfolg",

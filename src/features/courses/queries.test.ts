@@ -1,7 +1,9 @@
 import {describe, expect, it} from "vitest";
 
+import {agendaByCourseId} from "./sessions";
 import {
   getAdvancedCourses,
+  getCatalogueCourses,
   getCourseById,
   getCourseBySlug,
   getCourseStaticParams,
@@ -27,15 +29,18 @@ describe("course catalogue", () => {
     }
   });
 
-  it("matches the published 20-course catalogue and its four groups", () => {
-    expect(getPublishedCourses()).toHaveLength(20);
+  it("keeps paused workshops and the M.I.A. course in the catalogue but off public lists", () => {
+    expect(getCatalogueCourses()).toHaveLength(20);
+    expect(getPublishedCourses()).toHaveLength(14);
     expect(getFoundationCourses()).toHaveLength(1);
-    expect(getAdvancedCourses()).toHaveLength(10);
+    expect(getAdvancedCourses()).toHaveLength(9);
     expect(getMedicalCourses()).toHaveLength(4);
-    expect(getWorkshopCourses()).toHaveLength(5);
+    expect(getWorkshopCourses()).toHaveLength(0);
+    expect(getCourseById("transgenerational-mia")?.published).toBe(false);
+    expect(getCourseBySlug("hypnose-transgenerationnelle-methode-mia")).toBeUndefined();
   });
 
-  it("static params only pair each locale with its own slug", () => {
+  it("static params only pair each locale with its own published slug", () => {
     const params = getCourseStaticParams();
     const practitioner = getCourseById("omni-practitioner");
 
@@ -51,7 +56,7 @@ describe("course catalogue", () => {
     expect(params).toHaveLength(getPublishedCourses().length * 3);
   });
 
-  it("keeps the published prices, Fribourg location, and dates pending", () => {
+  it("keeps the published prices, Fribourg location, and agenda dates", () => {
     const course = getCourseById("omni-practitioner");
     const medicalExam = getCourseById("medical-hypnosis-exam-m3");
 
@@ -59,6 +64,16 @@ describe("course catalogue", () => {
     expect(course?.priceChf).toBe(3490);
     expect(medicalExam?.priceChf).toBe(550);
     expect(getPublishedCourses().every((item) => item.location.fr === "Fribourg")).toBe(true);
-    expect(getPublishedCourses().every((item) => item.dates.length === 0)).toBe(true);
+    expect(course?.dates.map((date) => date.startDate)).toEqual([
+      "2026-09-10",
+      "2026-10-08",
+      "2026-11-12",
+    ]);
+    expect(agendaByCourseId["omni-practitioner"]?.[0]?.endDate).toBe("2026-09-20");
+    expect(
+      getPublishedCourses().every((item) =>
+        item.dates.every((date) => date.location.fr === "Fribourg"),
+      ),
+    ).toBe(true);
   });
 });

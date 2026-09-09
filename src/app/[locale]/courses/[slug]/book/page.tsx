@@ -2,6 +2,7 @@ import {getTranslations, setRequestLocale} from "next-intl/server";
 import {notFound} from "next/navigation";
 
 import {BookingForm} from "@/features/bookings/components/booking-form";
+import {WaitlistForm} from "@/features/waitlist/components/waitlist-form";
 import {courseLocaleHrefs} from "@/features/courses/locale-hrefs";
 import {
   getBookableDates,
@@ -69,6 +70,7 @@ export default async function BookCoursePage({
   }
 
   const t = await getTranslations("BookingForm");
+  const waitlistT = await getTranslations("WaitlistForm");
   const coursesT = await getTranslations("CoursesPage");
   const courseT = await getTranslations("CourseDetail");
   const navT = await getTranslations("Nav");
@@ -108,19 +110,25 @@ export default async function BookCoursePage({
 
         <div className="mt-8 max-w-2xl">
           <Eyebrow>{course.title[locale]}</Eyebrow>
-          <h1 className="mt-4 font-serif text-title">{t("title")}</h1>
+          <h1 className="mt-4 font-serif text-title">
+            {dates.length === 0 ? courseT("waitlistCta") : t("title")}
+          </h1>
           <p className="mt-5 text-lead text-ink-muted">
-            {dates.length === 0 ? t("introWithoutDate") : t("intro")}
+            {dates.length === 0 ? waitlistT("intro") : t("intro")}
           </p>
         </div>
 
         <div className="mt-10 sm:mt-12">
-          <BookingForm
-            locale={locale}
-            course={course}
-            dates={dates}
-            initialDateId={date}
-          />
+          {dates.length === 0 ? (
+            <WaitlistForm locale={locale} course={course} />
+          ) : (
+            <BookingForm
+              locale={locale}
+              course={course}
+              dates={dates}
+              initialDateId={date}
+            />
+          )}
         </div>
       </Section>
     </SiteShell>

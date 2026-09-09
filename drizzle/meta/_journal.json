@@ -15,6 +15,20 @@
       "when": 1788852000000,
       "tag": "0001_bookings",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1788970000000,
+      "tag": "0002_booking_leads",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1788972000000,
+      "tag": "0003_waitlist",
+      "breakpoints": true
     }
   ]
 }

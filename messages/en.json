@@ -23,7 +23,7 @@
     "aboutTitle": "A school for people who will actually practise.",
     "aboutBody": "Founded by Marta Hegyaljai Python, mhp-coaching brings the OMNI method into French and German-speaking practice. Groups stay small. Teaching stays practical. Recognition (ASCA, NGH, APSH, eduQua) supports a serious professional path — without turning the website into a diploma factory.",
     "coursesTitle": "Courses to discover",
-    "coursesIntro": "Start with the OMNI® curriculum, then deepen your practice through advanced modules, medical hypnosis and practical workshops. Dates will be published soon.",
+    "coursesIntro": "Start with the OMNI® curriculum, then deepen your practice through advanced modules and medical hypnosis. Upcoming dates are shown on each course.",
     "whyTitle": "Why this method",
     "whyRapidTitle": "Rapid and testable",
     "whyRapidBody": "Inductions are designed to reach a useful depth quickly, with tests you can actually use in the room.",
@@ -41,17 +41,48 @@
   "CoursesPage": {
     "title": "Hypnosis courses",
     "description": "All mhp-coaching courses in Fribourg: the OMNI® curriculum, advanced modules, medical hypnosis and practical workshops.",
-    "intro": "Explore the complete catalogue in Fribourg. Available dates will be added in a later step.",
+    "intro": "Explore the complete catalogue in Fribourg. Search for a course, filter by month, or open the calendar view.",
     "foundation": "Foundation",
     "advanced": "Advanced modules",
     "medical": "Medical hypnosis",
     "workshops": "Practical workshops",
     "readMore": "Course details",
+    "waitlistLabel": "Waiting list",
     "breadcrumbHome": "Home",
     "eyebrow": "OMNI curriculum",
     "seats": "{count} participants max",
-    "courseCount": "{count, plural, =1 {# course} other {# courses}}"
-    ,"instructorImageAlt": "Marta Hegyaljai Python teaching a hypnosis course"
+    "courseCount": "{count, plural, =1 {# course} other {# courses}}",
+    "instructorImageAlt": "Marta Hegyaljai Python teaching a hypnosis course",
+    "search": "Search",
+    "searchPlaceholder": "Course name",
+    "monthFilter": "Month",
+    "allMonths": "All months",
+    "gridView": "List",
+    "calendarView": "Calendar",
+    "noResults": "No courses match this search."
+  },
+  "CourseCalendar": {
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "emptyDay": "No session on this day. Choose a marked date.",
+    "sessionsOnDay": "Sessions on this day",
+    "caption": "A continuous bar covers every day of the course. The name sits on the bar.",
+    "book": "Choose this date",
+    "weekday": {
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat",
+      "sun": "Sun"
+    }
+  },
+  "QuickBookPage": {
+    "eyebrow": "Quick booking",
+    "title": "Book a place",
+    "description": "Pick a session in the mhp-coaching course calendar in Fribourg, then continue to registration.",
+    "intro": "If you already know when you are free, pick a day on the calendar. Multi-day courses appear as one continuous bar, with the name on the calendar itself."
   },
   "CourseDetail": {
     "bookCta": "Book this course",
@@ -67,7 +98,9 @@
     "nextSession": "Next session",
     "about": "The programme",
     "contactCta": "Contact us",
-    "dateToBeConfirmed": "The date will be confirmed shortly. You can already book your place.",
+    "dateToBeConfirmed": "The date is not published yet. Join the waiting list and we will contact you when a session opens.",
+    "waitlistCta": "Join the waiting list",
+    "waitlistShort": "Waiting list",
     "sourceEyebrow": "Course content",
     "detailsTitle": "Objectives, programme and prerequisites",
     "sourceLanguageNotice": "The detailed information below is currently available in its original French version.",
@@ -77,16 +110,25 @@
     "title": "Book your place",
     "intro": "Choose a date, enter your details, then continue to secure payment by TWINT or Visa/Mastercard.",
     "introWithoutDate": "Enter your details, then continue to secure payment by TWINT or Visa/Mastercard. The course date will be confirmed shortly.",
-    "dateLabel": "Date and city",
+    "dateLabel": "Choose your date",
+    "dateHelp": "One date at a time. The day and period are written in full.",
+    "dateUnset": "Choose a date",
     "dateToBeConfirmed": "Date to be confirmed · Fribourg",
     "schedulePendingNote": "Your booking is for this course in Fribourg. We will send you the date as soon as it is confirmed.",
     "firstName": "First name",
     "lastName": "Last name",
     "email": "Email",
     "phone": "Phone",
+    "street": "Address",
+    "postalCode": "Postal code",
+    "city": "City",
+    "country": "Country",
+    "countryDefault": "Switzerland",
     "privacy": "I have read and accept the <privacy>privacy notice</privacy> and the <terms>booking terms</terms>.",
     "submit": "Continue to payment",
+    "submitLead": "I prefer another payment method",
     "submitting": "Preparing checkout…",
+    "submittingLead": "Sending the request…",
     "noDates": "This course has no bookable dates at the moment.",
     "contactLink": "Contact us",
     "errors": {
@@ -94,11 +136,16 @@
       "lastName": "Please enter your last name.",
       "email": "Please enter a valid email address.",
       "phone": "Please enter a phone number we can reach.",
+      "street": "Please enter your address.",
+      "postalCode": "Please enter a postal code.",
+      "city": "Please enter your city.",
+      "country": "Please enter your country.",
       "courseDateId": "Please choose an available date.",
       "privacyAccepted": "Please accept the privacy notice and terms to continue.",
       "invalid": "Please check the form and try again.",
       "courseMissing": "This course is no longer available.",
-      "dateUnavailable": "This date is no longer open for booking."
+      "dateUnavailable": "This date is no longer open for booking.",
+      "waitlistOnly": "This course has no date yet. Join the waiting list."
     },
     "summaryTitle": "Your booking",
     "summaryDate": "Date",
@@ -122,11 +169,35 @@
     "amount": "Amount paid",
     "coursesCta": "View the courses"
   },
+  "WaitlistForm": {
+    "intro": "This course has no published date yet. Leave your details and we will contact you when a Fribourg session opens.",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "email": "Email",
+    "phone": "Phone",
+    "company": "Company",
+    "privacy": "I have read and accept the <privacy>privacy notice</privacy> and the <terms>booking terms</terms>.",
+    "submit": "Join the waiting list",
+    "submitting": "Saving…",
+    "success": "You are on the waiting list. We will write when a date opens.",
+    "alreadyListed": "This email is already on the waiting list for this course.",
+    "errors": {
+      "firstName": "Please enter your first name.",
+      "lastName": "Please enter your last name.",
+      "email": "Please enter a valid email address.",
+      "phone": "Please enter a phone number we can reach.",
+      "privacyAccepted": "Please accept the privacy notice and terms to continue.",
+      "invalid": "Please check the form and try again.",
+      "unavailable": "The waiting list is not open for this course."
+    }
+  },
   "BookingCancelled": {
     "title": "Payment was not completed.",
     "intro": "No charge was taken for a completed booking. You can return to the course and try again when you are ready. A cancelled checkout never marks a booking as paid.",
     "retry": "Return to the course",
-    "home": "Home"
+    "home": "Home",
+    "otherPaymentTitle": "Pay another way",
+    "otherPaymentIntro": "If online payment failed or you would rather arrange another method, write to us. We will get back to you with a solution."
   },
   "FakeCheckout": {
     "title": "Test payment",
@@ -141,7 +212,27 @@
     "description": "Contact MHP Coaching in Fribourg. We train in French, German and English.",
     "intro": "For course questions, write or call. Bookings are completed online from each course page.",
     "hq": "Fribourg",
-    "languages": "We work in French, German and English."
+    "languages": "We work in French, German and English.",
+    "formTitle": "Write to the school",
+    "formIntro": "For a question, a payment or a date, leave your details. We reply by email."
+  },
+  "ContactForm": {
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone (optional)",
+    "message": "Message",
+    "company": "Company",
+    "submit": "Send",
+    "submitting": "Sending…",
+    "success": "Thank you. Your message is on its way. We will reply by email.",
+    "leadSuccess": "Thank you. Your booking request is saved. We will contact you to arrange another payment method.",
+    "errors": {
+      "name": "Please enter your name.",
+      "email": "Please enter a valid email address.",
+      "phone": "Please enter a phone number we can reach.",
+      "message": "Please write a message of at least a few words.",
+      "invalid": "Please check the form and try again."
+    }
   },
   "Legal": {
     "imprintTitle": "Legal notice",
@@ -161,7 +252,7 @@
     "copyright": "© {year} MHP Coaching. All rights reserved.",
     "ctaEyebrow": "Booking",
     "ctaTitle": "Ready to book your place?",
-    "ctaBody": "Explore the courses offered in Fribourg. New dates will be published as soon as they are confirmed.",
+    "ctaBody": "Pick a Fribourg session in the calendar, or browse the course catalogue.",
     "ctaButton": "View the courses",
     "navigation": "Navigation"
   },
@@ -177,7 +268,12 @@
     "status": "Status",
     "created": "Created",
     "paid": "Paid at",
-    "csv": "Download CSV"
+    "csv": "Download CSV",
+    "waitlistTitle": "Waiting lists",
+    "waitlistIntro": "People to contact when a date opens, grouped by course.",
+    "waitlistEmpty": "No waiting-list entries yet.",
+    "waitlistCsv": "Waiting-list CSV",
+    "phone": "Phone"
   },
   "Email": {
     "bookingConfirmation": {
@@ -192,6 +288,38 @@
       "amountLine": "Amount paid: {amount}",
       "referenceLine": "Reference: {id}",
       "closing": "We look forward to welcoming you."
+    },
+    "leadNotification": {
+      "subject": "Booking request without online payment — {course}",
+      "intro": "Someone asked for another payment method.",
+      "nameLine": "Name: {name}",
+      "emailLine": "Email: {email}",
+      "phoneLine": "Phone: {phone}",
+      "addressLine": "Address: {address}",
+      "courseLine": "Course: {course}",
+      "dateLine": "Dates: {date}",
+      "dateToBeConfirmed": "Date to be confirmed",
+      "amountLine": "Amount: {amount}",
+      "referenceLine": "Reference: {id}"
+    },
+    "inquiryNotification": {
+      "subject": "Website message — {kind}",
+      "kindGeneral": "contact",
+      "kindPayment": "payment",
+      "intro": "A message was sent from the website.",
+      "nameLine": "Name: {name}",
+      "emailLine": "Email: {email}",
+      "phoneLine": "Phone: {phone}",
+      "courseLine": "Course: {course}",
+      "messageLine": "Message:"
+    },
+    "waitlistNotification": {
+      "subject": "Waiting list — {course}",
+      "intro": "Someone joined the waiting list.",
+      "nameLine": "Name: {name}",
+      "emailLine": "Email: {email}",
+      "phoneLine": "Phone: {phone}",
+      "courseLine": "Course: {course}"
     }
   },
   "NotFound": {

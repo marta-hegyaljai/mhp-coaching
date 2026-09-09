@@ -20,5 +20,5 @@ export const legacyRedirects = [
   },
   {source: "/a-propos", destination: "/fr", permanent: true, locale: false},
   {source: "/contact", destination: "/fr/contact", permanent: true, locale: false},
-  {source: "/agenda", destination: "/fr/formations", permanent: true, locale: false},
+  {source: "/agenda", destination: "/fr/inscription", permanent: true, locale: false},
 ] as const;

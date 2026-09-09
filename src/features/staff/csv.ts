@@ -1,4 +1,4 @@
-import type {Booking} from "@/db/schema";
+import type {Booking, WaitlistEntry} from "@/db/schema";
 import {minorUnitsToFrancs, formatChf} from "@/features/payments/money";
 
 export function bookingsToCsv(rows: Booking[]): string {
@@ -10,6 +10,10 @@ export function bookingsToCsv(rows: Booking[]): string {
     "lastName",
     "email",
     "phone",
+    "street",
+    "postalCode",
+    "city",
+    "country",
     "locale",
     "courseId",
     "courseTitle",
@@ -37,6 +41,10 @@ export function bookingsToCsv(rows: Booking[]): string {
         row.lastName,
         row.email,
         row.phone,
+        row.street,
+        row.postalCode,
+        row.city,
+        row.country,
         row.locale,
         row.courseId,
         row.courseTitle,
@@ -50,6 +58,42 @@ export function bookingsToCsv(rows: Booking[]): string {
         row.paymentReference ?? "",
         row.paidAt?.toISOString() ?? "",
         row.confirmationEmailSentAt?.toISOString() ?? "",
+      ]
+        .map(csvCell)
+        .join(","),
+    );
+  }
+
+  return `${lines.join("\n")}\n`;
+}
+
+export function waitlistToCsv(rows: WaitlistEntry[]): string {
+  const header = [
+    "id",
+    "createdAt",
+    "courseId",
+    "courseTitle",
+    "firstName",
+    "lastName",
+    "email",
+    "phone",
+    "locale",
+  ];
+
+  const lines = [header.join(",")];
+
+  for (const row of rows) {
+    lines.push(
+      [
+        row.id,
+        row.createdAt.toISOString(),
+        row.courseId,
+        row.courseTitle,
+        row.firstName,
+        row.lastName,
+        row.email,
+        row.phone,
+        row.locale,
       ]
         .map(csvCell)
         .join(","),

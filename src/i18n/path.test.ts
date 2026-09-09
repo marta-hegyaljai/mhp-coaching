@@ -9,6 +9,8 @@ describe("localizedPathname", () => {
     expect(localizedPathname("de", "/courses")).toBe("/de/ausbildungen");
     expect(localizedPathname("en", "/courses")).toBe("/en/courses");
     expect(localizedPathname("de", "/contact")).toBe("/de/kontakt");
+    expect(localizedPathname("fr", "/book")).toBe("/fr/inscription");
+    expect(localizedPathname("en", "/book")).toBe("/en/book");
   });
 
   it("fills localized dynamic course slugs", () => {

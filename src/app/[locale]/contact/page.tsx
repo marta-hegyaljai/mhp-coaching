@@ -1,5 +1,7 @@
 import {getTranslations, setRequestLocale} from "next-intl/server";
 
+import {ContactForm} from "@/features/inquiries/components/contact-form";
+import {ContactLinks} from "@/features/organization/contact-links";
 import {organization} from "@/features/organization/info";
 import {BreadcrumbTrail} from "@/features/seo/breadcrumb-trail";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
@@ -9,6 +11,7 @@ import {Eyebrow, Section} from "@/shared/ui/layout";
 
 type ContactPageProps = {
   params: Promise<{locale: AppLocale}>;
+  searchParams: Promise<{sent?: string}>;
 };
 
 const contactLink =
@@ -26,13 +29,16 @@ export async function generateMetadata({params}: ContactPageProps) {
   });
 }
 
-export default async function ContactPage({params}: ContactPageProps) {
+export default async function ContactPage({params, searchParams}: ContactPageProps) {
   const {locale} = await params;
+  const {sent} = await searchParams;
   setRequestLocale(locale);
   const t = await getTranslations("ContactPage");
+  const formT = await getTranslations("ContactForm");
   const coursesT = await getTranslations("CoursesPage");
   const navT = await getTranslations("Nav");
   const hq = organization.addresses.headquarters;
+  const leadReceived = sent === "payment";
 
   return (
     <SiteShell locale={locale}>
@@ -51,8 +57,8 @@ export default async function ContactPage({params}: ContactPageProps) {
           <p className="mt-4 text-base text-ink-muted">{t("languages")}</p>
         </div>
 
-        <div className="mt-14 max-w-xl">
-          <section>
+        <div className="mt-14 grid gap-12 lg:grid-cols-12">
+          <section className="max-w-xl lg:col-span-5">
             <h2 className="font-serif text-subheading">{t("hq")}</h2>
             <address className="mt-4 text-sm leading-7 text-ink-muted not-italic">
               {organization.legalName}
@@ -61,18 +67,22 @@ export default async function ContactPage({params}: ContactPageProps) {
               <br />
               {hq.postalCode} {hq.city}
             </address>
-            <p className="mt-4 text-sm leading-8">
-              <a className={contactLink} href={organization.phoneHref}>
-                {organization.phone}
-              </a>
-              <br />
-              <a
-                className={contactLink}
-                href={`mailto:${organization.email}`}
+            <ContactLinks className="mt-4 text-sm leading-8" linkClassName={contactLink} />
+          </section>
+
+          <section className="lg:col-span-7">
+            <h2 className="font-serif text-subheading">{t("formTitle")}</h2>
+            <p className="mt-3 mb-6 text-sm leading-7 text-ink-muted">{t("formIntro")}</p>
+            {leadReceived ? (
+              <p
+                role="status"
+                className="border border-ink bg-white px-4 py-5 text-sm leading-7 text-ink"
               >
-                {organization.email}
-              </a>
-            </p>
+                {formT("leadSuccess")}
+              </p>
+            ) : (
+              <ContactForm locale={locale} kind="general" />
+            )}
           </section>
         </div>
       </Section>

@@ -1,8 +1,7 @@
-import type {Course, LocalizedText} from "./types";
+import {agendaDates, courseLocation as location} from "./sessions";
+import type {Course} from "./types";
 
 // French editorial content is reproduced/adapted under a CC BY 4.0 licence.
-const location: LocalizedText = {fr: "Fribourg", de: "Freiburg", en: "Fribourg"};
-const noDates: Course["dates"] = [];
 
 export const courses: Course[] = [
   {
@@ -28,7 +27,7 @@ export const courses: Course[] = [
     location,
     priceChf: 3490,
     category: "foundation",
-    dates: noDates,
+    dates: agendaDates("omni-practitioner"),
   },
   {
     id: "master-practitioner",
@@ -53,7 +52,7 @@ export const courses: Course[] = [
     location,
     priceChf: 4950,
     category: "advanced",
-    dates: noDates,
+    dates: agendaDates("master-practitioner"),
   },
   {
     id: "advanced-techniques",
@@ -74,7 +73,7 @@ export const courses: Course[] = [
     location,
     priceChf: 890,
     category: "advanced",
-    dates: noDates,
+    dates: agendaDates("advanced-techniques"),
   },
   {
     id: "solution-focused-interview",
@@ -95,7 +94,7 @@ export const courses: Course[] = [
     location,
     priceChf: 580,
     category: "advanced",
-    dates: noDates,
+    dates: agendaDates("solution-focused-interview"),
   },
   {
     id: "anxiety-hypnosis",
@@ -116,7 +115,7 @@ export const courses: Course[] = [
     location,
     priceChf: 890,
     category: "advanced",
-    dates: noDates,
+    dates: agendaDates("anxiety-hypnosis"),
   },
   {
     id: "sport-hypnosis",
@@ -129,7 +128,7 @@ export const courses: Course[] = [
     location,
     priceChf: 580,
     category: "advanced",
-    dates: noDates,
+    dates: agendaDates("sport-hypnosis"),
   },
   {
     id: "children-hypnosis",
@@ -142,7 +141,7 @@ export const courses: Course[] = [
     location,
     priceChf: 580,
     category: "advanced",
-    dates: noDates,
+    dates: agendaDates("children-hypnosis"),
   },
   {
     id: "addictions-hypnosis",
@@ -155,7 +154,7 @@ export const courses: Course[] = [
     location,
     priceChf: 580,
     category: "advanced",
-    dates: noDates,
+    dates: agendaDates("addictions-hypnosis"),
   },
   {
     id: "illness-hypnosis",
@@ -168,7 +167,7 @@ export const courses: Course[] = [
     location,
     priceChf: 580,
     category: "advanced",
-    dates: noDates,
+    dates: agendaDates("illness-hypnosis"),
   },
   {
     id: "professional-practice-final-exam",
@@ -181,7 +180,7 @@ export const courses: Course[] = [
     location,
     priceChf: 1150,
     category: "advanced",
-    dates: noDates,
+    dates: agendaDates("professional-practice-final-exam"),
   },
   {
     id: "transgenerational-mia",
@@ -194,7 +193,8 @@ export const courses: Course[] = [
     location,
     priceChf: 1890,
     category: "advanced",
-    dates: noDates,
+    published: false,
+    dates: agendaDates("transgenerational-mia"),
   },
   {
     id: "medical-hypnosis-m1",
@@ -207,7 +207,7 @@ export const courses: Course[] = [
     location,
     priceChf: 1450,
     category: "medical",
-    dates: noDates,
+    dates: agendaDates("medical-hypnosis-m1"),
   },
   {
     id: "medical-hypnosis-dental-m2",
@@ -220,7 +220,7 @@ export const courses: Course[] = [
     location,
     priceChf: 1450,
     category: "medical",
-    dates: noDates,
+    dates: agendaDates("medical-hypnosis-dental-m2"),
   },
   {
     id: "medical-hypnosis-clinical-m2",
@@ -233,7 +233,7 @@ export const courses: Course[] = [
     location,
     priceChf: 1450,
     category: "medical",
-    dates: noDates,
+    dates: agendaDates("medical-hypnosis-clinical-m2"),
   },
   {
     id: "medical-hypnosis-exam-m3",
@@ -246,7 +246,7 @@ export const courses: Course[] = [
     location,
     priceChf: 550,
     category: "medical",
-    dates: noDates,
+    dates: agendaDates("medical-hypnosis-exam-m3"),
   },
   {
     id: "chronic-pain-hypnosis",
@@ -259,7 +259,8 @@ export const courses: Course[] = [
     location,
     priceChf: 300,
     category: "workshop",
-    dates: noDates,
+    published: false,
+    dates: agendaDates("chronic-pain-hypnosis"),
   },
   {
     id: "birth-preparation",
@@ -272,7 +273,8 @@ export const courses: Course[] = [
     location,
     priceChf: 300,
     category: "workshop",
-    dates: noDates,
+    published: false,
+    dates: agendaDates("birth-preparation"),
   },
   {
     id: "weight-loss-hypnosis",
@@ -285,7 +287,8 @@ export const courses: Course[] = [
     location,
     priceChf: 300,
     category: "workshop",
-    dates: noDates,
+    published: false,
+    dates: agendaDates("weight-loss-hypnosis"),
   },
   {
     id: "healthy-weight-nutrition-hypnosis",
@@ -298,7 +301,8 @@ export const courses: Course[] = [
     location,
     priceChf: 450,
     category: "workshop",
-    dates: noDates,
+    published: false,
+    dates: agendaDates("healthy-weight-nutrition-hypnosis"),
   },
   {
     id: "sensory-anchors-hypnosis",
@@ -311,6 +315,7 @@ export const courses: Course[] = [
     location,
     priceChf: 300,
     category: "workshop",
-    dates: noDates,
+    published: false,
+    dates: agendaDates("sensory-anchors-hypnosis"),
   },
 ];

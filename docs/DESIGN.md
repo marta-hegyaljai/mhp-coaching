@@ -34,6 +34,10 @@ dashboard.
   through oversized vertical sections.
 - Keep page sections compact enough to reveal the next decision. Whitespace is
   deliberate, never used to make a sparse page feel artificially large.
+- Multi-day sessions on the public calendar are one continuous named bar that
+  spans every occupied day, including week wraps with continuation marks.
+  Show the course name in small sans-serif type on the bar itself. Do not
+  reduce a range to disconnected dotted cells.
 
 ## Navigation and locale stability
 
@@ -59,9 +63,9 @@ dashboard.
   link; never nest a second link inside it.
 - Cards must show the decision essentials without another click: title,
   duration/price, Fribourg as the course location, the nearest date when
-  available, and one clear action. An undated course remains bookable; label its
-  schedule as awaiting confirmation and route the primary action through the
-  booking form to Stripe Checkout.
+  available, and one clear action. An undated course is not sold until a
+  session is published. Label its schedule as awaiting confirmation and route
+  the primary action to a waiting-list form stored in PostgreSQL.
 - Primary actions are black rectangles with white text and reveal gold with
   black text on hover. Inverted primary actions start white and also reveal gold
   on hover. Secondary actions remain monochrome and gain a neutral-grey surface.

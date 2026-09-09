@@ -14,11 +14,13 @@ export function CourseCard({
   course,
   locale,
   detailsLabel,
+  awaitingDateLabel,
   headingLevel = "h2",
 }: {
   course: Course;
   locale: AppLocale;
   detailsLabel: string;
+  awaitingDateLabel?: string;
   headingLevel?: "h2" | "h3";
 }) {
   const nextDate = getBookableDates(course)[0];
@@ -63,6 +65,11 @@ export function CourseCard({
             <span className="flex items-center gap-1.5">
               <CalendarIcon className="h-3.5 w-3.5" />
               {formatCourseDateRange(nextDate, locale)}
+            </span>
+          ) : awaitingDateLabel ? (
+            <span className="flex items-center gap-1.5">
+              <CalendarIcon className="h-3.5 w-3.5" />
+              {awaitingDateLabel}
             </span>
           ) : null}
           <span className="flex items-center gap-1.5">

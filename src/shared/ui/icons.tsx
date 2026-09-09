@@ -93,6 +93,24 @@ export function PinIcon({className = ""}: IconProps) {
   );
 }
 
+export function SearchIcon({className = ""}: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={`${base} ${className}`}
+    >
+      <circle cx="7" cy="7" r="4.25" />
+      <path d="M10.5 10.5L14 14" />
+    </svg>
+  );
+}
+
 export function SpinnerIcon({className = ""}: IconProps) {
   return (
     <svg

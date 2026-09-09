@@ -1,5 +1,5 @@
 export function reduceBookingStatus(
-  current: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "CANCELLED",
+  current: "LEAD" | "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "CANCELLED",
   event: "paid" | "cancelled" | "failed",
 ): {next: typeof current; apply: boolean} {
   if (current === "PAID") {

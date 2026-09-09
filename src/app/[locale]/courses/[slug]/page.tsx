@@ -76,6 +76,11 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
   const navT = await getTranslations("Nav");
   const dates = getBookableDates(course);
   const nextDate = dates[0];
+  const hasDates = dates.length > 0;
+  const bookHref = {
+    pathname: "/courses/[slug]/book",
+    params: {slug: course.slug[locale]},
+  } as const;
   const price = formatChf(course.priceChf, locale, {compact: true});
   const sourceContent = getCourseSourceContent(course);
 
@@ -84,17 +89,14 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
       locale={locale}
       hreflangs={courseLocaleHrefs("/courses/[slug]", course)}
       footerCta={{
-        href: {
-          pathname: "/courses/[slug]/book",
-          params: {slug: course.slug[locale]},
-        },
-        label: t("bookCta"),
+        href: bookHref,
+        label: hasDates ? t("bookCta") : t("waitlistCta"),
       }}
       bottomBar={
         <CourseBookingBar
           course={course}
           locale={locale}
-          label={t("bookShort")}
+          label={hasDates ? t("bookShort") : t("waitlistShort")}
           fromLabel={t("price")}
         />
       }
@@ -175,13 +177,10 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
                 </p>
               ) : null}
               <Link
-                href={{
-                  pathname: "/courses/[slug]/book",
-                  params: {slug: course.slug[locale]},
-                }}
+                href={bookHref}
                 className={`${buttonStyles({size: "lg", block: true})} mt-6`}
               >
-                {t("bookCta")}
+                {hasDates ? t("bookCta") : t("waitlistCta")}
                 <ArrowRightIcon className="transition-transform duration-200 ease-standard group-hover/button:translate-x-0.5" />
               </Link>
             </div>

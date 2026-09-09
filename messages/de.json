@@ -23,7 +23,7 @@
     "aboutTitle": "Eine Schule für Menschen, die wirklich praktizieren.",
     "aboutBody": "Gegründet von Marta Hegyaljai Python bringt mhp-coaching die OMNI-Methode in die französisch- und deutschsprachige Praxis. Gruppen bleiben klein. Der Unterricht bleibt konkret. Anerkennungen (ASCA, NGH, APSH, eduQua) stützen einen seriösen Berufsweg — ohne diese Website zur Diplomfabrik zu machen.",
     "coursesTitle": "Ausbildungen entdecken",
-    "coursesIntro": "Beginnen Sie mit dem OMNI®-Lehrgang und vertiefen Sie danach mit Aufbaumodulen, medizinischer Hypnose und Praxisworkshops. Termine folgen demnächst.",
+    "coursesIntro": "Beginnen Sie mit dem OMNI®-Lehrgang und vertiefen Sie danach mit Aufbaumodulen und medizinischer Hypnose. Die nächsten Termine stehen bei jeder Ausbildung.",
     "whyTitle": "Warum diese Methode",
     "whyRapidTitle": "Schnell und prüfbar",
     "whyRapidBody": "Induktionen zielen auf eine brauchbare Tiefe in kurzer Zeit, mit Tests, die Sie im Raum tatsächlich einsetzen können.",
@@ -41,17 +41,48 @@
   "CoursesPage": {
     "title": "Hypnose-Ausbildungen",
     "description": "Alle mhp-coaching-Ausbildungen in Freiburg: OMNI®-Lehrgang, Aufbaumodule, medizinische Hypnose und Praxisworkshops.",
-    "intro": "Entdecken Sie den gesamten Katalog in Freiburg. Verfügbare Termine werden in einem nächsten Schritt ergänzt.",
+    "intro": "Entdecken Sie den gesamten Katalog in Freiburg. Suchen Sie eine Ausbildung, filtern Sie nach Monat oder öffnen Sie die Kalenderansicht.",
     "foundation": "Grundlage",
     "advanced": "Aufbaumodule",
     "medical": "Medizinische Hypnose",
     "workshops": "Praxisworkshops",
     "readMore": "Kursdetails",
+    "waitlistLabel": "Warteliste",
     "breadcrumbHome": "Start",
     "eyebrow": "OMNI-Curriculum",
     "seats": "max. {count} Teilnehmende",
-    "courseCount": "{count, plural, =1 {# Ausbildung} other {# Ausbildungen}}"
-    ,"instructorImageAlt": "Marta Hegyaljai Python während einer Hypnoseausbildung"
+    "courseCount": "{count, plural, =1 {# Ausbildung} other {# Ausbildungen}}",
+    "instructorImageAlt": "Marta Hegyaljai Python während einer Hypnoseausbildung",
+    "search": "Suchen",
+    "searchPlaceholder": "Name der Ausbildung",
+    "monthFilter": "Monat",
+    "allMonths": "Alle Monate",
+    "gridView": "Liste",
+    "calendarView": "Kalender",
+    "noResults": "Keine Ausbildung entspricht dieser Suche."
+  },
+  "CourseCalendar": {
+    "previousMonth": "Vorheriger Monat",
+    "nextMonth": "Nächster Monat",
+    "emptyDay": "An diesem Tag findet keine Session statt. Wählen Sie einen markierten Tag.",
+    "sessionsOnDay": "Sessions an diesem Tag",
+    "caption": "Ein durchgehender Balken deckt alle Kurstage ab. Der Name steht auf dem Balken.",
+    "book": "Diesen Termin wählen",
+    "weekday": {
+      "mon": "Mo",
+      "tue": "Di",
+      "wed": "Mi",
+      "thu": "Do",
+      "fri": "Fr",
+      "sat": "Sa",
+      "sun": "So"
+    }
+  },
+  "QuickBookPage": {
+    "eyebrow": "Schnelle Anmeldung",
+    "title": "Platz buchen",
+    "description": "Wählen Sie eine Session im Kalender der mhp-coaching-Ausbildungen in Freiburg und fahren Sie zur Anmeldung fort.",
+    "intro": "Wenn Sie bereits wissen, wann Sie Zeit haben, wählen Sie einen Tag im Kalender. Mehrere Kurstage erscheinen als durchgehender Balken mit dem Namen auf dem Kalender."
   },
   "CourseDetail": {
     "bookCta": "Diesen Kurs buchen",
@@ -67,7 +98,9 @@
     "nextSession": "Nächste Durchführung",
     "about": "Das Programm",
     "contactCta": "Kontakt aufnehmen",
-    "dateToBeConfirmed": "Der Termin wird in Kürze bestätigt. Sie können Ihren Platz bereits buchen.",
+    "dateToBeConfirmed": "Der Termin ist noch nicht veröffentlicht. Tragen Sie sich auf die Warteliste ein; wir benachrichtigen Sie, sobald eine Session öffnet.",
+    "waitlistCta": "Auf die Warteliste",
+    "waitlistShort": "Warteliste",
     "sourceEyebrow": "Ausbildungsinhalt",
     "detailsTitle": "Ziele, Programm und Voraussetzungen",
     "sourceLanguageNotice": "Die ausführlichen Informationen unten sind derzeit in der französischen Originalfassung verfügbar.",
@@ -77,16 +110,25 @@
     "title": "Platz buchen",
     "intro": "Wählen Sie einen Termin, geben Sie Ihre Angaben ein und fahren Sie zur sicheren Zahlung mit TWINT oder Visa/Mastercard fort.",
     "introWithoutDate": "Geben Sie Ihre Angaben ein und fahren Sie zur sicheren Zahlung mit TWINT oder Visa/Mastercard fort. Der Kurstermin wird in Kürze bestätigt.",
-    "dateLabel": "Datum und Ort",
+    "dateLabel": "Wählen Sie Ihren Termin",
+    "dateHelp": "Nur ein Termin auf einmal. Tag und Zeitraum stehen ausgeschrieben da.",
+    "dateUnset": "Bitte wählen",
     "dateToBeConfirmed": "Termin wird bestätigt · Freiburg",
     "schedulePendingNote": "Ihre Buchung gilt für diese Ausbildung in Freiburg. Wir teilen Ihnen den Termin mit, sobald er bestätigt ist.",
     "firstName": "Vorname",
     "lastName": "Nachname",
     "email": "E-Mail",
     "phone": "Telefon",
+    "street": "Adresse",
+    "postalCode": "Postleitzahl",
+    "city": "Ort",
+    "country": "Land",
+    "countryDefault": "Schweiz",
     "privacy": "Ich habe den <privacy>Datenschutzhinweis</privacy> und die <terms>Buchungsbedingungen</terms> gelesen und akzeptiere sie.",
     "submit": "Weiter zur Zahlung",
+    "submitLead": "Ich möchte anders bezahlen",
     "submitting": "Checkout wird vorbereitet…",
+    "submittingLead": "Anfrage wird gesendet…",
     "noDates": "Für diesen Kurs ist derzeit kein Termin offen.",
     "contactLink": "Kontakt",
     "errors": {
@@ -94,11 +136,16 @@
       "lastName": "Bitte geben Sie Ihren Nachnamen ein.",
       "email": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
       "phone": "Bitte geben Sie eine erreichbare Telefonnummer ein.",
+      "street": "Bitte geben Sie Ihre Adresse ein.",
+      "postalCode": "Bitte geben Sie eine Postleitzahl ein.",
+      "city": "Bitte geben Sie Ihren Ort ein.",
+      "country": "Bitte geben Sie Ihr Land ein.",
       "courseDateId": "Bitte wählen Sie einen verfügbaren Termin.",
       "privacyAccepted": "Bitte akzeptieren Sie Datenschutz und Bedingungen, um fortzufahren.",
       "invalid": "Bitte prüfen Sie das Formular und versuchen Sie es erneut.",
       "courseMissing": "Dieser Kurs ist nicht mehr verfügbar.",
-      "dateUnavailable": "Dieser Termin ist nicht mehr buchbar."
+      "dateUnavailable": "Dieser Termin ist nicht mehr buchbar.",
+      "waitlistOnly": "Für diesen Kurs gibt es noch keinen Termin. Tragen Sie sich auf die Warteliste ein."
     },
     "summaryTitle": "Ihre Buchung",
     "summaryDate": "Datum",
@@ -122,11 +169,35 @@
     "amount": "Bezahlter Betrag",
     "coursesCta": "Ausbildungen ansehen"
   },
+  "WaitlistForm": {
+    "intro": "Für diesen Kurs ist noch kein Termin veröffentlicht. Hinterlassen Sie Ihre Daten: wir benachrichtigen Sie, sobald eine Session in Freiburg öffnet.",
+    "firstName": "Vorname",
+    "lastName": "Nachname",
+    "email": "E-Mail",
+    "phone": "Telefon",
+    "company": "Unternehmen",
+    "privacy": "Ich habe die <privacy>Datenschutzhinweise</privacy> und die <terms>Anmeldebedingungen</terms> gelesen und akzeptiere sie.",
+    "submit": "Auf die Warteliste",
+    "submitting": "Wird gespeichert…",
+    "success": "Sie stehen auf der Warteliste. Wir schreiben Ihnen, sobald ein Termin offen ist.",
+    "alreadyListed": "Diese E-Mail steht bereits auf der Warteliste dieses Kurses.",
+    "errors": {
+      "firstName": "Bitte geben Sie Ihren Vornamen ein.",
+      "lastName": "Bitte geben Sie Ihren Nachnamen ein.",
+      "email": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
+      "phone": "Bitte geben Sie eine erreichbare Telefonnummer ein.",
+      "privacyAccepted": "Bitte akzeptieren Sie Datenschutz und Bedingungen, um fortzufahren.",
+      "invalid": "Bitte prüfen Sie das Formular und versuchen Sie es erneut.",
+      "unavailable": "Die Warteliste ist für diesen Kurs nicht geöffnet."
+    }
+  },
   "BookingCancelled": {
     "title": "Die Zahlung wurde nicht abgeschlossen.",
     "intro": "Es wurde keine abgeschlossene Buchung belastet. Sie können zum Kurs zurückkehren und es später erneut versuchen. Ein abgebrochener Checkout setzt eine Buchung niemals auf «bezahlt».",
     "retry": "Zum Kurs zurück",
-    "home": "Start"
+    "home": "Start",
+    "otherPaymentTitle": "Anders bezahlen",
+    "otherPaymentIntro": "Wenn die Online-Zahlung fehlgeschlagen ist oder Sie eine andere Lösung bevorzugen, schreiben Sie uns. Wir melden uns, um eine Lösung zu finden."
   },
   "FakeCheckout": {
     "title": "Testzahlung",
@@ -141,7 +212,27 @@
     "description": "Schreiben Sie MHP Coaching in Freiburg. Wir bilden auf Französisch, Deutsch und Englisch aus.",
     "intro": "Für Fragen zur Ausbildung schreiben oder anrufen. Buchungen schliessen Sie online auf der jeweiligen Kursseite ab.",
     "hq": "Freiburg",
-    "languages": "Wir arbeiten auf Französisch, Deutsch und Englisch."
+    "languages": "Wir arbeiten auf Französisch, Deutsch und Englisch.",
+    "formTitle": "Schreiben Sie der Schule",
+    "formIntro": "Für eine Frage, eine Zahlung oder einen Termin hinterlassen Sie Ihre Angaben. Wir antworten per E-Mail."
+  },
+  "ContactForm": {
+    "name": "Name",
+    "email": "E-Mail",
+    "phone": "Telefon (optional)",
+    "message": "Nachricht",
+    "company": "Firma",
+    "submit": "Senden",
+    "submitting": "Wird gesendet…",
+    "success": "Danke. Ihre Nachricht ist unterwegs. Wir antworten per E-Mail.",
+    "leadSuccess": "Danke. Ihre Anmelde-Anfrage ist gespeichert. Wir melden uns, um eine andere Zahlung zu vereinbaren.",
+    "errors": {
+      "name": "Bitte geben Sie Ihren Namen ein.",
+      "email": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
+      "phone": "Bitte geben Sie eine erreichbare Telefonnummer ein.",
+      "message": "Bitte schreiben Sie eine Nachricht mit ein paar Worten.",
+      "invalid": "Bitte prüfen Sie das Formular und versuchen Sie es erneut."
+    }
   },
   "Legal": {
     "imprintTitle": "Impressum",
@@ -161,7 +252,7 @@
     "copyright": "© {year} MHP Coaching. Alle Rechte vorbehalten.",
     "ctaEyebrow": "Anmeldung",
     "ctaTitle": "Bereit, Ihren Platz zu buchen?",
-    "ctaBody": "Entdecken Sie die Ausbildungen in Freiburg. Neue Termine werden veröffentlicht, sobald sie bestätigt sind.",
+    "ctaBody": "Wählen Sie eine Session in Freiburg im Kalender oder durchsuchen Sie den Ausbildungskatalog.",
     "ctaButton": "Ausbildungen ansehen",
     "navigation": "Navigation"
   },
@@ -177,7 +268,12 @@
     "status": "Status",
     "created": "Erstellt",
     "paid": "Bezahlt am",
-    "csv": "CSV herunterladen"
+    "csv": "CSV herunterladen",
+    "waitlistTitle": "Wartelisten",
+    "waitlistIntro": "Personen, die zu benachrichtigen sind, sobald ein Termin öffnet, nach Kurs.",
+    "waitlistEmpty": "Keine Einträge auf der Warteliste.",
+    "waitlistCsv": "CSV Wartelisten",
+    "phone": "Telefon"
   },
   "Email": {
     "bookingConfirmation": {
@@ -192,6 +288,38 @@
       "amountLine": "Bezahlter Betrag: {amount}",
       "referenceLine": "Referenz: {id}",
       "closing": "Wir freuen uns auf Sie."
+    },
+    "leadNotification": {
+      "subject": "Anmelde-Anfrage ohne Online-Zahlung — {course}",
+      "intro": "Eine Person hat eine andere Zahlungsart gewünscht.",
+      "nameLine": "Name: {name}",
+      "emailLine": "E-Mail: {email}",
+      "phoneLine": "Telefon: {phone}",
+      "addressLine": "Adresse: {address}",
+      "courseLine": "Ausbildung: {course}",
+      "dateLine": "Termine: {date}",
+      "dateToBeConfirmed": "Termin wird bestätigt",
+      "amountLine": "Betrag: {amount}",
+      "referenceLine": "Referenz: {id}"
+    },
+    "inquiryNotification": {
+      "subject": "Nachricht von der Website — {kind}",
+      "kindGeneral": "Kontakt",
+      "kindPayment": "Zahlung",
+      "intro": "Eine Nachricht wurde über die Website gesendet.",
+      "nameLine": "Name: {name}",
+      "emailLine": "E-Mail: {email}",
+      "phoneLine": "Telefon: {phone}",
+      "courseLine": "Ausbildung: {course}",
+      "messageLine": "Nachricht:"
+    },
+    "waitlistNotification": {
+      "subject": "Warteliste — {course}",
+      "intro": "Eine Person hat sich auf die Warteliste gesetzt.",
+      "nameLine": "Name: {name}",
+      "emailLine": "E-Mail: {email}",
+      "phoneLine": "Telefon: {phone}",
+      "courseLine": "Ausbildung: {course}"
     }
   },
   "NotFound": {

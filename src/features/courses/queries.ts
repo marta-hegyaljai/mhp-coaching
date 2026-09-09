@@ -2,36 +2,48 @@ import {routing, type AppLocale} from "@/i18n/routing";
 
 import {courses} from "./catalog";
 import {isCourseDateBookable} from "./dates";
-import type {Course, CourseDate} from "./types";
+import {isCoursePublished, type Course, type CourseDate} from "./types";
 
-export function getPublishedCourses(): Course[] {
+export function getCatalogueCourses(): Course[] {
   return courses;
 }
 
+export function getPublishedCourses(): Course[] {
+  return courses.filter(isCoursePublished);
+}
+
+function publishedOf(category: Course["category"]): Course[] {
+  return getPublishedCourses().filter((course) => course.category === category);
+}
+
 export function getFoundationCourses(): Course[] {
-  return courses.filter((course) => course.category === "foundation");
+  return publishedOf("foundation");
 }
 
 export function getAdvancedCourses(): Course[] {
-  return courses.filter((course) => course.category === "advanced");
+  return publishedOf("advanced");
 }
 
 export function getMedicalCourses(): Course[] {
-  return courses.filter((course) => course.category === "medical");
+  return publishedOf("medical");
 }
 
 export function getWorkshopCourses(): Course[] {
-  return courses.filter((course) => course.category === "workshop");
+  return publishedOf("workshop");
 }
 
 export function getCourseById(id: string): Course | undefined {
   return courses.find((course) => course.id === id);
 }
 
-export function getCourseBySlug(slug: string): Course | undefined {
-  return courses.find((course) =>
+export function getPublishedCourseBySlug(slug: string): Course | undefined {
+  return getPublishedCourses().find((course) =>
     Object.values(course.slug).includes(slug),
   );
+}
+
+export function getCourseBySlug(slug: string): Course | undefined {
+  return getPublishedCourseBySlug(slug);
 }
 
 export function getCourseStaticParams(): Array<{

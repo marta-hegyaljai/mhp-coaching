@@ -16,16 +16,18 @@ describe("structured data", () => {
     expect(String(item.url)).toContain("/de/ausbildungen/omni-hypnose-praktiker");
   });
 
-  it("emits Course markup without events while dates are pending", () => {
+  it("emits Course and Event markup for dated courses", () => {
     const course = getCourseById("omni-practitioner");
     expect(course).toBeDefined();
 
     const json = courseJsonLd(course!, "fr");
     expect(json["@type"]).toBe("Course");
     expect(json.inLanguage).toBe("fr");
+    expect((json.hasCourseInstance as unknown[]).length).toBeGreaterThan(0);
 
     const events = eventJsonLd(course!, "en");
-    expect(events).toEqual([]);
+    expect(events.length).toBeGreaterThan(0);
+    expect(events[0]?.["@type"]).toBe("Event");
   });
 
   it("publishes the MHP Coaching email and phone", () => {

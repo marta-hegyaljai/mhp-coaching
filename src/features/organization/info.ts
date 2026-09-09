@@ -2,6 +2,7 @@ export const organization = {
   brandName: "MHP Coaching",
   legalName: "MHP & Partners Sàrl",
   email: "contact@mhp-coaching.ch",
+  emailHref: "mailto:contact@mhp-coaching.ch",
   phone: "+41 79 451 44 92",
   phoneHref: "tel:+41794514492",
   founder: "Marta Hegyaljai Python",

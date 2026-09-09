@@ -29,11 +29,13 @@ source of truth and overrides generic design preferences.
 - Make each course card one full-surface link. Primary buttons are black (or
   white on black) and reveal gold only on hover; secondary buttons gain a grey
   surface and never blend into the page.
+- Multi-day calendar sessions are one continuous named bar across occupied
+  days, with the course name in small sans-serif type on the bar.
 - Keep historical course artwork as a compact square thumbnail, visually remove
   its embedded `/` or `//` mark without cropping its title, and never split a
   card into tall image/text columns.
-- Undated courses remain bookable. Label the schedule as awaiting confirmation
-  and send the primary action through the booking form to Stripe Checkout.
+- Undated courses are not sold. Label the schedule as awaiting confirmation
+  and send the primary action to a waiting-list form stored in PostgreSQL.
 - Animate only clickable encouragement: short black/white inversion, <=2px
   lift, <=4px CTA arrow movement, or pending spinner. No entrance or ambient
   animation.

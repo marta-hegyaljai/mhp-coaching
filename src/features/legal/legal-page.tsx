@@ -2,6 +2,7 @@ import {getTranslations, setRequestLocale} from "next-intl/server";
 import {notFound} from "next/navigation";
 
 import {getLegalDocument} from "@/features/legal/content";
+import {OrganizationContactText} from "@/features/organization/contact-links";
 import {BreadcrumbTrail} from "@/features/seo/breadcrumb-trail";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
@@ -69,12 +70,12 @@ function legalPage(slug: "imprint" | "privacy" | "terms") {
                 <section key={section.heading} className="mt-12">
                   <h2 className="font-serif text-subheading">{section.heading}</h2>
                   {section.paragraphs.map((paragraph) => (
-                    <p
+                    <OrganizationContactText
                       key={paragraph}
+                      text={paragraph}
                       className="mt-4 text-base leading-8 text-ink-muted"
-                    >
-                      {paragraph}
-                    </p>
+                      linkClassName="text-ink underline underline-offset-4 decoration-line transition-colors duration-200 hover:text-bronze"
+                    />
                   ))}
                 </section>
               ))}

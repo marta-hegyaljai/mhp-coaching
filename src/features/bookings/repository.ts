@@ -8,6 +8,10 @@ export type CreateBookingInput = {
   lastName: string;
   email: string;
   phone: string;
+  street: string;
+  postalCode: string;
+  city: string;
+  country: string;
   locale: string;
   courseId: string;
   courseDateId: string;
@@ -19,6 +23,7 @@ export type CreateBookingInput = {
   currency: string;
   paymentProvider: string;
   privacyAcceptedAt: Date;
+  status?: BookingStatus;
 };
 
 export async function createPendingBooking(
@@ -28,7 +33,7 @@ export async function createPendingBooking(
     .insert(bookings)
     .values({
       ...input,
-      status: "PENDING",
+      status: input.status ?? "PENDING",
     })
     .returning();
 

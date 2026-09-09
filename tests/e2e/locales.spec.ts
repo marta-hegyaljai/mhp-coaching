@@ -35,6 +35,11 @@ for (const {locale, heading, coursesPath, coursesHeading} of locales) {
       "href",
       /\/fr$/,
     );
+    await expect(
+      page.getByRole("img", {
+        name: /sculpture|skulptur|statue/i,
+      }),
+    ).toBeVisible();
   });
 
   test(`${locale} course catalogue is reachable on a localized URL`, async ({page}) => {
@@ -45,39 +50,81 @@ for (const {locale, heading, coursesPath, coursesHeading} of locales) {
   });
 }
 
-test("root redirects to French and the language switcher preserves the page", async ({
+test("root redirects to French and locale URLs still work without the picker", async ({
   page,
 }) => {
   await page.goto("/");
   await expect(page).toHaveURL(/\/fr$/);
+  await expect(page.getByRole("button", {name: /langue|sprache|language/i})).toHaveCount(0);
 
-  await page.getByRole("button", {name: "Choisir la langue"}).click();
-  await page.getByRole("menuitemradio", {name: /Deutsch/}).click();
+  await page.goto("/de");
   await expect(page).toHaveURL(/\/de$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "de");
 });
 
-test("contact details use the MHP Coaching email and phone", async ({page}) => {
-  await page.goto("/fr/contact");
-  const main = page.getByRole("main");
-  const email = main.getByRole("link", {name: "contact@mhp-coaching.ch"});
-  const phone = main.getByRole("link", {name: "+41 79 451 44 92"});
-  await expect(email).toBeVisible();
-  await expect(email).toHaveAttribute("href", "mailto:contact@mhp-coaching.ch");
-  await expect(phone).toBeVisible();
-  await expect(phone).toHaveAttribute("href", "tel:+41794514492");
-  await expect(page.getByRole("contentinfo").getByRole("link", {name: "contact@mhp-coaching.ch"})).toBeVisible();
-  await expect(page.getByText(/mhp-hypnose/i)).toHaveCount(0);
-});
+const publicContactSurfaces = [
+  "/fr/contact",
+  "/de/kontakt",
+  "/en/contact",
+  "/fr/mentions-legales",
+  "/de/rechtliches/impressum",
+  "/en/legal/imprint",
+] as const;
 
-test("language switcher maps a course to the equivalent localized slug", async ({
+for (const path of publicContactSurfaces) {
+  test(`${path} shows the MHP Coaching email and phone`, async ({page}) => {
+    await page.goto(path);
+
+    const email = page.getByRole("link", {name: "contact@mhp-coaching.ch"});
+    const phone = page.getByRole("link", {name: "+41 79 451 44 92"});
+
+    await expect(email.first()).toBeVisible();
+    await expect(email.first()).toHaveAttribute(
+      "href",
+      "mailto:contact@mhp-coaching.ch",
+    );
+    await expect(phone.first()).toBeVisible();
+    await expect(phone.first()).toHaveAttribute("href", "tel:+41794514492");
+    await expect(
+      page.getByRole("contentinfo").getByRole("link", {name: "contact@mhp-coaching.ch"}),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("contentinfo").getByRole("link", {name: "+41 79 451 44 92"}),
+    ).toBeVisible();
+    await expect(page.getByText(/admin@mhp|21 311 25 81/i)).toHaveCount(0);
+  });
+}
+
+test("homepage structured data uses the MHP Coaching email and phone", async ({
   page,
 }) => {
+  await page.goto("/fr");
+  const jsonLd = await page
+    .locator('script[type="application/ld+json"]')
+    .allTextContents();
+  const blob = jsonLd.join("\n");
+
+  expect(blob).toContain("contact@mhp-coaching.ch");
+  expect(blob).toContain("+41 79 451 44 92");
+  expect(blob).not.toMatch(/admin@mhp|21 311 25 81/i);
+});
+
+test("serves the mhp-coaching.ch favicon", async ({page, request}) => {
+  const favicon = await request.get("/favicon.ico");
+  expect(favicon.status()).toBe(200);
+  expect(favicon.headers()["content-type"]).toMatch(/icon|octet-stream|png/i);
+  expect((await favicon.body()).length).toBeGreaterThan(100);
+
+  await page.goto("/fr");
+  const icon = page.locator('link[rel="icon"]').first();
+  await expect(icon).toHaveAttribute("href", /icon/i);
+});
+
+test("equivalent localized course slugs remain reachable", async ({page}) => {
   await page.goto("/fr/formations/praticien-hypnose-omni");
   await expect(page.getByRole("heading", {level: 1})).toContainText("Praticien");
 
-  await page.getByRole("button", {name: "Choisir la langue"}).click();
-  await page.getByRole("menuitemradio", {name: /English/}).click();
+  await page.goto("/en/courses/omni-hypnosis-practitioner");
   await expect(page).toHaveURL(/\/en\/courses\/omni-hypnosis-practitioner$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
 });

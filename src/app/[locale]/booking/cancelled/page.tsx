@@ -2,6 +2,7 @@ import {getTranslations, setRequestLocale} from "next-intl/server";
 
 import {getBookingById} from "@/features/bookings/repository";
 import {getCourseById} from "@/features/courses/queries";
+import {ContactForm} from "@/features/inquiries/components/contact-form";
 import {buildPageMetadata} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
@@ -68,6 +69,22 @@ export default async function BookingCancelledPage({
             >
               {t("home")}
             </Link>
+          </div>
+        </div>
+
+        <div className="mt-14 max-w-2xl border-t border-line pt-10">
+          <h2 className="font-serif text-heading">{t("otherPaymentTitle")}</h2>
+          <p className="mt-4 text-base leading-7 text-ink-muted">
+            {t("otherPaymentIntro")}
+          </p>
+          <div className="mt-6">
+            <ContactForm
+              locale={locale}
+              kind="payment"
+              bookingId={booking?.id}
+              courseId={booking?.courseId}
+              courseTitle={booking?.courseTitle}
+            />
           </div>
         </div>
       </Section>

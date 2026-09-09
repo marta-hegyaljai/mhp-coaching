@@ -1,6 +1,7 @@
 import {getTranslations} from "next-intl/server";
 import type {ComponentProps} from "react";
 
+import {ContactLinks} from "@/features/organization/contact-links";
 import {organization} from "@/features/organization/info";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
@@ -94,15 +95,7 @@ export async function SiteFooter({
             <br />
             {address.countryName[locale]}
           </p>
-          <p className="mt-3 text-sm">
-            <a className={footerLink} href={organization.phoneHref}>
-              {organization.phone}
-            </a>
-            <br />
-            <a className={footerLink} href={`mailto:${organization.email}`}>
-              {organization.email}
-            </a>
-          </p>
+          <ContactLinks className="mt-3 text-sm" linkClassName={footerLink} />
         </div>
         <nav aria-label={t("legal")}>
           <p className="text-[0.7rem] font-bold uppercase tracking-[0.2em] text-ink">

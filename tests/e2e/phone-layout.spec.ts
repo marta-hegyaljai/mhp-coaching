@@ -3,6 +3,7 @@ import {expect, test} from "@playwright/test";
 const phonePaths = [
   "/fr",
   "/fr/formations",
+  "/fr/inscription",
   "/fr/formations/praticien-hypnose-omni",
   "/fr/formations/praticien-hypnose-omni/inscription",
   "/fr/contact",
@@ -29,41 +30,44 @@ test.describe("phone layout", () => {
     });
   }
 
-  test("phone header keeps brand, courses, contact and language on one row", async ({
-    page,
-  }) => {
-    await page.goto("/de");
+  const phoneHeaderLocales = [
+    {path: "/fr", courses: "Formations", contact: "Contact"},
+    {path: "/de", courses: "Ausbildungen", contact: "Kontakt"},
+    {path: "/en", courses: "Courses", contact: "Contact"},
+  ] as const;
 
-    const header = page.locator("header").first();
-    const brand = header.getByRole("link", {name: "MHP Coaching"});
-    const courses = header.getByRole("link", {name: "Ausbildungen"});
-    const contact = header.getByRole("link", {name: "Kontakt"});
-    const language = header.getByRole("button", {name: "Sprache wählen"});
+  for (const {path, courses: coursesLabel, contact: contactLabel} of phoneHeaderLocales) {
+    test(`phone header is a single navbar row on ${path}`, async ({page}) => {
+      await page.goto(path);
 
-    await expect(brand).toBeVisible();
-    await expect(courses).toBeVisible();
-    await expect(contact).toBeVisible();
-    await expect(language).toBeVisible();
+      const header = page.locator("header").first();
+      const brand = header.getByRole("link", {name: "MHP Coaching"});
+      const courses = header.getByRole("link", {name: coursesLabel});
+      const contact = header.getByRole("link", {name: contactLabel});
 
-    const [headerBox, brandBox, coursesBox, contactBox, languageBox] =
-      await Promise.all([
+      await expect(brand).toBeVisible();
+      await expect(courses).toBeVisible();
+      await expect(contact).toBeVisible();
+      await expect(header.locator("nav")).toHaveCount(1);
+      await expect(header.getByRole("button", {name: /langue|sprache|language/i})).toHaveCount(0);
+
+      const [headerBox, brandBox, coursesBox, contactBox] = await Promise.all([
         header.boundingBox(),
         brand.boundingBox(),
         courses.boundingBox(),
         contact.boundingBox(),
-        language.boundingBox(),
       ]);
 
-    expect(headerBox?.height ?? 999).toBeLessThanOrEqual(72);
+      expect(headerBox?.height ?? 999).toBeLessThanOrEqual(58);
 
-    const midY = (box: {y: number; height: number} | null) =>
-      (box?.y ?? 0) + (box?.height ?? 0) / 2;
+      const midY = (box: {y: number; height: number} | null) =>
+        (box?.y ?? 0) + (box?.height ?? 0) / 2;
 
-    const brandMid = midY(brandBox);
-    expect(Math.abs(midY(coursesBox) - brandMid)).toBeLessThanOrEqual(8);
-    expect(Math.abs(midY(contactBox) - brandMid)).toBeLessThanOrEqual(8);
-    expect(Math.abs(midY(languageBox) - brandMid)).toBeLessThanOrEqual(8);
-  });
+      const brandMid = midY(brandBox);
+      expect(Math.abs(midY(coursesBox) - brandMid)).toBeLessThanOrEqual(4);
+      expect(Math.abs(midY(contactBox) - brandMid)).toBeLessThanOrEqual(4);
+    });
+  }
 
   test("course price uses the functional sans-serif", async ({page}) => {
     await page.goto("/fr/formations/praticien-hypnose-omni");
@@ -77,25 +81,6 @@ test.describe("phone layout", () => {
 
     expect(fontFamily.toLowerCase()).not.toContain("cormorant");
     expect(fontFamily.toLowerCase()).toMatch(/source sans|sans-serif/);
-  });
-
-  test("language dropdown stays stable and thumb-sized", async ({page}) => {
-    await page.goto("/fr");
-
-    const switcher = page.getByRole("button", {name: "Choisir la langue"});
-    const before = await switcher.boundingBox();
-    expect(before?.height ?? 0).toBeGreaterThanOrEqual(44);
-    expect(before?.width ?? 0).toBeGreaterThanOrEqual(44);
-
-    await switcher.click();
-    await page.getByRole("menuitemradio", {name: /Deutsch/}).click();
-    await expect(page).toHaveURL(/\/de$/);
-    const after = await page
-      .getByRole("button", {name: "Sprache wählen"})
-      .boundingBox();
-
-    expect(after?.width).toBe(before?.width);
-    expect(after?.x).toBe(before?.x);
   });
 
   test("course page keeps its booking action and footer reachable", async ({page}) => {

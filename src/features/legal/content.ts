@@ -57,7 +57,7 @@ export const legalDocuments: LegalDoc[] = [
         {
           heading: "Données collectées",
           paragraphs: [
-            "Lorsque vous réservez une formation, nous enregistrons prénom, nom, e-mail, téléphone, langue, formation et date choisies, le montant, l’état du paiement et les horodatages associés. Nous ne créons pas de compte élève.",
+            "Lorsque vous réservez une formation, nous enregistrons prénom, nom, e-mail, téléphone, adresse postale, langue, formation et date choisies, le montant, l’état du paiement et les horodatages associés. Une inscription est enregistrée dès l’envoi du formulaire, y compris si le paiement en ligne n’est pas mené à terme. Les messages envoyés depuis le formulaire de contact sont également conservés. Nous ne créons pas de compte élève.",
           ],
         },
         {
@@ -85,7 +85,7 @@ export const legalDocuments: LegalDoc[] = [
         {
           heading: "Erhobene Daten",
           paragraphs: [
-            "Bei einer Buchung speichern wir Vorname, Nachname, E-Mail, Telefon, Sprache, Kurs und Termin, Betrag, Zahlungsstatus und zugehörige Zeitstempel. Es gibt kein Schülerkonto.",
+            "Bei einer Buchung speichern wir Vorname, Nachname, E-Mail, Telefon, Postadresse, Sprache, Kurs und Termin, Betrag, Zahlungsstatus und zugehörige Zeitstempel. Die Anmeldung wird beim Absenden des Formulars gespeichert, auch wenn die Online-Zahlung nicht abgeschlossen wird. Kontaktformular-Nachrichten werden ebenfalls aufbewahrt. Es gibt kein Schülerkonto.",
           ],
         },
         {
@@ -113,7 +113,7 @@ export const legalDocuments: LegalDoc[] = [
         {
           heading: "Data we collect",
           paragraphs: [
-            "When you book a course we store first name, last name, email, phone, language, selected course and date, amount, payment status and related timestamps. We do not create a student account.",
+            "When you book a course we store first name, last name, email, phone, postal address, language, selected course and date, amount, payment status and related timestamps. The booking is stored when the form is submitted, including if online payment is not completed. Contact-form messages are also kept. We do not create a student account.",
           ],
         },
         {

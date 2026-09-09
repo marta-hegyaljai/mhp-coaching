@@ -9,4 +9,5 @@ export type PathnameHref =
   | {
       pathname: "/courses/[slug]/book";
       params: {slug: string};
+      query?: {date?: string};
     };

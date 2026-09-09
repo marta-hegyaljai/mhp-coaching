@@ -1,6 +1,6 @@
 import {describe, expect, it} from "vitest";
 
-import {formatDateRange} from "./dates";
+import {formatDateRange, eachIsoDateInRange} from "./dates";
 
 describe("formatDateRange", () => {
   it("collapses a range inside one month", () => {
@@ -26,5 +26,16 @@ describe("formatDateRange", () => {
     expect(formatDateRange("2026-10-18", "2026-10-08", "fr")).toBe(
       "18 octobre 2026 – 8 octobre 2026",
     );
+  });
+});
+
+describe("eachIsoDateInRange", () => {
+  it("lists every calendar day in a course range", () => {
+    expect(eachIsoDateInRange("2026-10-30", "2026-11-01")).toEqual([
+      "2026-10-30",
+      "2026-10-31",
+      "2026-11-01",
+    ]);
+    expect(eachIsoDateInRange("2026-12-05")).toEqual(["2026-12-05"]);
   });
 });
