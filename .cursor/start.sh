@@ -34,6 +34,7 @@ fi
 
 echo "==> Applying pending database migrations"
 pnpm db:migrate || echo "WARN: db:migrate failed (is PostgreSQL running?)" >&2
+pnpm db:seed || echo "WARN: db:seed failed (is PostgreSQL running?)" >&2
 
 echo "==> Starting Mailpit"
 if command -v mailpit >/dev/null 2>&1; then

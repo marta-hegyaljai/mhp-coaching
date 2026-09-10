@@ -9,7 +9,11 @@
     "courses": "Courses",
     "contact": "Contact",
     "cta": "Book a place",
-    "breadcrumb": "Breadcrumb"
+    "breadcrumb": "Breadcrumb",
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "admin": "Admin",
+    "rooms": "Rooms"
   },
   "LanguageSwitcher": {
     "label": "Choose language"
@@ -299,7 +303,115 @@
     "waitlistIntro": "People to contact when a date opens, grouped by course.",
     "waitlistEmpty": "No waiting-list entries yet.",
     "waitlistCsv": "Waiting-list CSV",
-    "phone": "Phone"
+    "phone": "Phone",
+    "usersLink": "Manage users"
+  },
+  "Auth": {
+    "eyebrow": "Account",
+    "signInTitle": "Sign in",
+    "signInIntro": "Use the email address from your invitation.",
+    "email": "Email",
+    "password": "Password",
+    "passwordConfirm": "Confirm password",
+    "submit": "Sign in",
+    "submitting": "Signing in",
+    "inviteTitle": "Set your password",
+    "inviteIntro": "Choose a password of at least 12 characters to finish creating your account.",
+    "inviteSubmit": "Save password and sign in",
+    "inviteSubmitting": "Saving",
+    "errors": {
+      "invalid": "The email or password is incorrect.",
+      "disabled": "This account is disabled. Contact an administrator.",
+      "rateLimited": "Too many attempts. Please wait a few minutes and try again.",
+      "inviteInvalid": "This invitation is invalid or has expired. Ask an administrator to send a new one.",
+      "passwordTooShort": "Use at least 12 characters.",
+      "passwordMismatch": "The passwords do not match.",
+      "passwordSameAsEmail": "Do not use your email address as the password."
+    }
+  },
+  "Admin": {
+    "eyebrow": "Administration",
+    "title": "Users",
+    "intro": "Invite people, change their access, and disable or re-enable accounts. Therapists cannot register themselves.",
+    "identityNote": "Email uniquely identifies each account. Two users cannot share the same address.",
+    "invite": "Invite a user",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "email": "Email",
+    "accessLegend": "Access",
+    "grantAdmin": "Administrator",
+    "grantRooms": "Room booking",
+    "sendInvite": "Send invitation",
+    "sending": "Sending",
+    "emailHint": "This address identifies the account and must be unique.",
+    "listTitle": "Existing users",
+    "listIntro": "Search the directory, then open Manage to change access or disable an account.",
+    "search": "Search",
+    "searchPlaceholder": "Email or name",
+    "filter": "Show",
+    "clearFilters": "Clear",
+    "statusAll": "All statuses",
+    "accessAll": "All access",
+    "accessNone": "No extra access",
+    "manage": "Manage",
+    "noMatches": "No users match these filters.",
+    "resultCount": "{shown} of {total} users",
+    "previous": "Previous",
+    "next": "Next",
+    "pageStatus": "Page {page} of {pageCount}",
+    "empty": "No users yet.",
+    "name": "Name",
+    "status": "Status",
+    "role": "Role",
+    "rooms": "Rooms",
+    "statusActive": "Active",
+    "statusDisabled": "Disabled",
+    "statusPending": "Invitation pending",
+    "roleAdmin": "Admin",
+    "roleUser": "User",
+    "roomsEnabled": "Enabled",
+    "roomsDisabled": "Off",
+    "detailTitle": "Manage user",
+    "backToList": "All users",
+    "disable": "Disable account",
+    "enable": "Re-enable account",
+    "accessTitle": "Access",
+    "accessHelp": "Administrators manage users and staff lists. Room booking lets a therapist use the rooms module.",
+    "accountTitle": "Account status",
+    "disableHelp": "A disabled account cannot sign in. You can re-enable it later. The email stays reserved for this user.",
+    "enableHelp": "Re-enable this account so they can sign in again.",
+    "resendInvite": "Send a new invitation",
+    "saveAccess": "Save access",
+    "saving": "Saving",
+    "invited": "Invitation sent.",
+    "updated": "Access updated.",
+    "bookingsLink": "Course bookings and waiting lists",
+    "auditTitle": "Access history",
+    "auditEmpty": "No access changes recorded yet.",
+    "auditActor": "Actor",
+    "auditSystem": "System",
+    "auditBefore": "Before",
+    "auditAfter": "After",
+    "errors": {
+      "forbidden": "You cannot change this access.",
+      "invalidEmail": "Enter a valid email address.",
+      "invalidName": "Enter a first name and last name.",
+      "alreadyRegistered": "This email already has an account.",
+      "notFound": "This user was not found.",
+      "cannotDisableSelf": "You cannot disable your own account.",
+      "cannotDemoteLastAdmin": "The last enabled administrator cannot be removed.",
+      "sendFailed": "The invitation could not be sent. Try again."
+    }
+  },
+  "Rooms": {
+    "eyebrow": "Therapists",
+    "title": "Rooms",
+    "intro": "Room booking will open here once inventory is configured. Your access is already enabled."
+  },
+  "AccessDenied": {
+    "title": "Access denied",
+    "body": "This area is limited to authorised accounts.",
+    "home": "Home"
   },
   "Email": {
     "fields": {
@@ -316,7 +428,8 @@
       "status": "Status",
       "statusPaid": "Paid",
       "statusFailed": "Failed",
-      "dateToBeConfirmed": "Date to be confirmed"
+      "dateToBeConfirmed": "Date to be confirmed",
+      "link": "Link"
     },
     "bookingConfirmation": {
       "subject": "Booking confirmed — {course}",
@@ -389,6 +502,15 @@
       "dateToBeConfirmed": "Date to be confirmed",
       "amountLine": "Amount: {amount}",
       "referenceLine": "Reference: {id}"
+    },
+    "invitation": {
+      "subject": "Your MHP account invitation",
+      "eyebrow": "Account invitation",
+      "title": "Create your password",
+      "greeting": "Hello {name},",
+      "intro": "An administrator invited you to create your MHP account. Use the link below to set a password. It expires in 7 days.",
+      "linkLine": "Set-password link: {url}",
+      "closing": "If you were not expecting this message, you can ignore it."
     }
   },
   "NotFound": {

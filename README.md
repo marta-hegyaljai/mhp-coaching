@@ -48,23 +48,26 @@ Set `PAYMENT_PROVIDER=stripe` only with Stripe **test** keys. Never use live Str
 
 `SITE_URL` controls canonical and alternate metadata. Set it to the final absolute production origin in Vercel (for example, `https://www.example.com`). Blank or invalid values are ignored; when it is absent, deployments use Vercel's system-provided production URL and local development falls back to `http://localhost:3000`.
 
-Staff booking list: `/{locale}/staff/bookings`, protected by HTTP basic auth (`STAFF_USERNAME` / `STAFF_PASSWORD`). If `STAFF_PASSWORD` is unset, staff routes stay closed.
-
-HTTP Basic Auth is an MVP bridge. The planned PostgreSQL account system will
-replace it with roles/capabilities. Guest course checkout will remain available;
-after verified signup, existing course registrations will be linked by normalized
-email. No account or room feature exists in the current code yet.
+Staff booking list: `/{locale}/staff/bookings`, protected by an enabled `ADMIN`
+session. Create the first admin with `pnpm db:bootstrap-admin` using
+`BOOTSTRAP_ADMIN_EMAIL` and `BOOTSTRAP_ADMIN_PASSWORD` (at least 12 characters).
+The command refuses to run when an enabled admin already exists. Guest course
+checkout remains available; public self-registration and My Courses are CP-01.
 
 ## Database
 
 ```bash
 pnpm db:generate  # generate a migration after schema changes
 pnpm db:migrate   # apply committed migrations
-pnpm db:seed      # no-op: courses live in source-controlled TypeScript
-pnpm db:studio    # optional local Drizzle Studio
+pnpm db:seed              # upsert the typed course catalogue into PostgreSQL
+pnpm db:bootstrap-admin   # create the first admin from BOOTSTRAP_ADMIN_* env
+pnpm db:studio            # optional local Drizzle Studio
 ```
 
-Bookings and payment events are persisted in PostgreSQL. Courses and dates stay in `src/features/courses/catalog.ts`. Hosted Neon on Vercel may inject `NEON_DATABASE_URL` instead of `DATABASE_URL`; the app accepts that fallback. Production Vercel builds apply committed migrations (`pnpm db:migrate`) before compiling the app. Preview and local builds do not.
+Bookings, payment events, waitlist entries, accounts and the course catalogue
+are persisted in PostgreSQL. The public catalogue still reads
+`src/features/courses/catalog.ts`; `pnpm db:migrate` then `pnpm db:seed` stores
+the same rows so go-live data is not only in git. Hosted Neon on Vercel may inject `NEON_DATABASE_URL` instead of `DATABASE_URL`; the app accepts that fallback. Production Vercel builds apply committed migrations (`pnpm db:migrate`) and re-seed the catalogue before compiling the app. Preview and local builds do not.
 
 ## Quality checks
 

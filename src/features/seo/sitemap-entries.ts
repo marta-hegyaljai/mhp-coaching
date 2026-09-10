@@ -11,6 +11,13 @@ type StaticPath = Exclude<
   | "/courses/[slug]/book"
   | "/booking/fake-checkout"
   | "/staff/bookings"
+  | "/sign-in"
+  | "/invite/[token]"
+  | "/admin"
+  | "/admin/users"
+  | "/admin/users/[id]"
+  | "/rooms"
+  | "/access-denied"
 >;
 
 const publicStaticPaths: Array<{

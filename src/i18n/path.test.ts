@@ -9,6 +9,10 @@ describe("localizedPathname", () => {
     expect(localizedPathname("de", "/courses")).toBe("/de/ausbildungen");
     expect(localizedPathname("en", "/courses")).toBe("/en/courses");
     expect(localizedPathname("de", "/contact")).toBe("/de/kontakt");
+    expect(localizedPathname("fr", "/sign-in")).toBe("/fr/connexion");
+    expect(localizedPathname("de", "/sign-in")).toBe("/de/anmelden");
+    expect(localizedPathname("en", "/rooms")).toBe("/en/rooms");
+    expect(localizedPathname("fr", "/rooms")).toBe("/fr/salles");
     expect(localizedPathname("fr", "/book")).toBe("/fr/inscription");
     expect(localizedPathname("en", "/book")).toBe("/en/book");
     expect(localizedPathname("fr", "/legal/imprint")).toBe("/fr/mentions-legales");
@@ -19,11 +23,11 @@ describe("localizedPathname", () => {
       "/de/rechtliches/urheberrecht",
     );
     expect(
-      localizedPathname("fr", {
-        pathname: "/courses",
-        query: {view: "calendar"},
+      localizedPathname("en", {
+        pathname: "/admin/users",
+        query: {q: "ada", status: "disabled", page: "2"},
       }),
-    ).toBe("/fr/formations?view=calendar");
+    ).toBe("/en/admin/users?q=ada&status=disabled&page=2");
   });
 
   it("fills localized dynamic course slugs", () => {

@@ -1,12 +1,14 @@
 import {getTranslations, setRequestLocale} from "next-intl/server";
 
 import {listBookings} from "@/features/bookings/repository";
+import {requireAdmin} from "@/features/auth/require";
 import {StaffBookingsTable} from "@/features/staff/bookings-table";
 import {StaffWaitlistTable} from "@/features/staff/waitlist-table";
 import {listWaitlistEntries} from "@/features/waitlist/repository";
-import {buildPageMetadata} from "@/features/seo/metadata";
+import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
+import {Link} from "@/i18n/navigation";
 import {buttonStyles} from "@/shared/ui/button";
 import {Section} from "@/shared/ui/layout";
 
@@ -32,6 +34,7 @@ export async function generateMetadata({params}: StaffPageProps) {
 export default async function StaffBookingsPage({params}: StaffPageProps) {
   const {locale} = await params;
   setRequestLocale(locale);
+  await requireAdmin(locale, localizedPath(locale, "/staff/bookings"));
   const t = await getTranslations("Staff");
   const bookings = await listBookings();
   const waitlist = await listWaitlistEntries();
@@ -44,6 +47,11 @@ export default async function StaffBookingsPage({params}: StaffPageProps) {
             <h1 className="font-serif text-heading">{t("title")}</h1>
             <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-muted">
               {t("intro")}
+            </p>
+            <p className="mt-3 text-sm">
+              <Link href="/admin/users" className="underline-offset-4 hover:underline">
+                {t("usersLink")}
+              </Link>
             </p>
           </div>
           <a

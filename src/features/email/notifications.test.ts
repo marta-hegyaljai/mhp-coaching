@@ -24,6 +24,7 @@ import {sendInquiryNotification} from "./inquiry-notification";
 import {sendLeadNotification} from "./lead-notification";
 import {sendPurchaseNotification} from "./purchase-notification";
 import {sendWaitlistNotification} from "./waitlist-notification";
+import {sendAccountInvitation} from "./invitation";
 import {sendMail} from "./transport";
 
 const getTranslationsMock = vi.mocked(getTranslations);
@@ -262,6 +263,42 @@ describe("staff email destinations", () => {
     expect(html).toContain("Booking confirmed");
     expect(html).toContain(organization.courseVenueAddress);
     expect(html).not.toContain(booking().id);
+    expect(sendMailMock.mock.calls[0]?.[0].to).not.toBe(organization.email);
+    expectSharedChrome(html);
+  });
+
+  it("sends the invitation to the invited user, not staff", async () => {
+    await sendAccountInvitation({
+      locale: "en",
+      rawToken: "invite-token-example",
+      user: {
+        id: "66666666-6666-6666-6666-666666666666",
+        createdAt: new Date("2026-01-01T00:00:00.000Z"),
+        updatedAt: new Date("2026-01-01T00:00:00.000Z"),
+        email: "theo@example.com",
+        emailNormalized: "theo@example.com",
+        emailVerifiedAt: null,
+        passwordHash: null,
+        firstName: "Theo",
+        lastName: "Therapist",
+        locale: "en",
+        isAdmin: false,
+        roomBookingEnabled: true,
+        disabledAt: null,
+      },
+    });
+
+    expect(sendMailMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        to: "theo@example.com",
+        subject: "Your MHP account invitation",
+      }),
+    );
+    const html = sendMailMock.mock.calls[0]?.[0].html ?? "";
+    const text = sendMailMock.mock.calls[0]?.[0].text ?? "";
+    expect(html).toContain("Create your password");
+    expect(html).toContain("invite-token-example");
+    expect(text).toContain("invite-token-example");
     expect(sendMailMock.mock.calls[0]?.[0].to).not.toBe(organization.email);
     expectSharedChrome(html);
   });

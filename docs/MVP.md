@@ -12,11 +12,12 @@ Implementation progress and the next deliverable are tracked only in
 Implemented today:
 
 - localized public pages and SEO routes for French, German and English;
-- source-controlled course catalogue, sessions, calendar and waitlists;
+- source-controlled course catalogue, sessions, calendar and waitlists, with the
+  same catalogue persisted in PostgreSQL for go-live durability;
 - guest course registration with postal address persisted before payment;
 - fake and Stripe Checkout providers, signed webhook processing and email;
 - alternative-payment inquiries; and
-- Basic-Auth staff booking/waitlist lists with CSV export.
+- admin-authenticated booking and waitlist lists with CSV export.
 
 Not implemented today: user accounts, verified-email booking reconciliation,
 roles/capabilities, student dashboard/history/certificates, a full admin product,
@@ -74,7 +75,10 @@ Minimum:
 Do not delay launch for secondary content.
 
 ## Course data
-For MVP, courses and dates live in source-controlled typed TypeScript config.
+The public catalogue still reads the typed TypeScript seed. The same 20 rows and
+their sessions are also stored in PostgreSQL (`courses`, `course_sessions`) with
+stable ids matching existing bookings. A later course-admin slice can switch
+public reads to the database without renaming ids.
 
 The public catalogue covers the 20 published formations, grouped as foundation, advanced,
 medical hypnosis, and practical workshops. Workshops and the M.I.A. transgenerational
@@ -169,11 +173,10 @@ At least:
 
 ## Staff view
 
-The implemented MVP has a small Basic-Auth-protected booking and waitlist view
-with CSV export. This is a temporary operational bridge. The platform account
-phase replaces it with PostgreSQL-backed admin authentication and authorization.
+The implemented MVP now protects the booking and waitlist view with the shared
+`ADMIN` role. HTTP Basic Auth has been removed.
 
-Do not build a broad admin product.
+Do not build a broad course-admin CMS in this phase.
 
 ## Email
 Required:

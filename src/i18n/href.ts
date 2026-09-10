@@ -1,7 +1,13 @@
 import type {AppPathname} from "@/i18n/routing";
 
 export type PathnameHref =
-  | Exclude<AppPathname, "/courses/[slug]" | "/courses/[slug]/book">
+  | Exclude<
+      AppPathname,
+      | "/courses/[slug]"
+      | "/courses/[slug]/book"
+      | "/invite/[token]"
+      | "/admin/users/[id]"
+    >
   | {
       pathname: "/courses";
       query?: {view?: string};
@@ -14,7 +20,20 @@ export type PathnameHref =
       pathname: "/courses/[slug]/book";
       params: {slug: string};
       query?: {date?: string; waitlist?: string};
+    }
+  | {
+      pathname: "/invite/[token]";
+      params: {token: string};
+    }
+  | {
+      pathname: "/admin/users";
+      query?: {q?: string; status?: string; access?: string; page?: string};
+    }
+  | {
+      pathname: "/admin/users/[id]";
+      params: {id: string};
     };
+
 
 export const catalogueCalendarHref = {
   pathname: "/courses",

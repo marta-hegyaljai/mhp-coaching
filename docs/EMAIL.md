@@ -79,6 +79,7 @@ Add new mail as a function in `src/features/email/` that calls
 | Other payment method (lead) | `sendLeadNotification` | staff |
 | Contact / payment inquiry | `sendInquiryNotification` | staff |
 | Waiting list | `sendWaitlistNotification` | staff |
+| Account invitation | `sendAccountInvitation` | invited user |
 
 Buyer confirmation shows the course venue
 (`organization.courseVenueAddress`: Chem. de la Fenetta 42, 1752

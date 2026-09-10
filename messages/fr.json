@@ -9,7 +9,11 @@
     "courses": "Formations",
     "contact": "Contact",
     "cta": "Réserver une place",
-    "breadcrumb": "Fil d’Ariane"
+    "breadcrumb": "Fil d’Ariane",
+    "signIn": "Connexion",
+    "signOut": "Déconnexion",
+    "admin": "Admin",
+    "rooms": "Salles"
   },
   "LanguageSwitcher": {
     "label": "Choisir la langue"
@@ -299,7 +303,115 @@
     "waitlistIntro": "Personnes à contacter quand une date ouvre, regroupées par formation.",
     "waitlistEmpty": "Aucune inscription sur liste d’attente.",
     "waitlistCsv": "CSV listes d’attente",
-    "phone": "Téléphone"
+    "phone": "Téléphone",
+    "usersLink": "Gérer les comptes"
+  },
+  "Auth": {
+    "eyebrow": "Compte",
+    "signInTitle": "Connexion",
+    "signInIntro": "Utilisez l’adresse e-mail de votre invitation.",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "passwordConfirm": "Confirmer le mot de passe",
+    "submit": "Se connecter",
+    "submitting": "Connexion",
+    "inviteTitle": "Choisir un mot de passe",
+    "inviteIntro": "Choisissez un mot de passe d’au moins 12 caractères pour terminer la création de votre compte.",
+    "inviteSubmit": "Enregistrer et se connecter",
+    "inviteSubmitting": "Enregistrement",
+    "errors": {
+      "invalid": "L’e-mail ou le mot de passe est incorrect.",
+      "disabled": "Ce compte est désactivé. Contactez une administratrice ou un administrateur.",
+      "rateLimited": "Trop de tentatives. Réessayez dans quelques minutes.",
+      "inviteInvalid": "Cette invitation est invalide ou expirée. Demandez une nouvelle invitation.",
+      "passwordTooShort": "Utilisez au moins 12 caractères.",
+      "passwordMismatch": "Les mots de passe ne correspondent pas.",
+      "passwordSameAsEmail": "N’utilisez pas votre e-mail comme mot de passe."
+    }
+  },
+  "Admin": {
+    "eyebrow": "Administration",
+    "title": "Comptes",
+    "intro": "Invitez des personnes, modifiez leur accès, puis désactivez ou réactivez les comptes. Les thérapeutes ne peuvent pas s’inscrire seuls.",
+    "identityNote": "L’e-mail identifie chaque compte. Deux personnes ne peuvent pas partager la même adresse.",
+    "invite": "Inviter une personne",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "email": "E-mail",
+    "accessLegend": "Accès",
+    "grantAdmin": "Administrateur",
+    "grantRooms": "Réservation de salles",
+    "sendInvite": "Envoyer l’invitation",
+    "sending": "Envoi",
+    "emailHint": "Cette adresse identifie le compte et doit être unique.",
+    "listTitle": "Comptes existants",
+    "listIntro": "Cherchez dans l’annuaire, puis ouvrez Gérer pour modifier l’accès ou désactiver un compte.",
+    "search": "Recherche",
+    "searchPlaceholder": "E-mail ou nom",
+    "filter": "Afficher",
+    "clearFilters": "Effacer",
+    "statusAll": "Tous les statuts",
+    "accessAll": "Tous les accès",
+    "accessNone": "Sans accès supplémentaire",
+    "manage": "Gérer",
+    "noMatches": "Aucun compte ne correspond à ces filtres.",
+    "resultCount": "{shown} sur {total} comptes",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "pageStatus": "Page {page} sur {pageCount}",
+    "empty": "Aucun compte pour le moment.",
+    "name": "Nom",
+    "status": "Statut",
+    "role": "Rôle",
+    "rooms": "Salles",
+    "statusActive": "Actif",
+    "statusDisabled": "Désactivé",
+    "statusPending": "Invitation en attente",
+    "roleAdmin": "Admin",
+    "roleUser": "Utilisateur",
+    "roomsEnabled": "Activé",
+    "roomsDisabled": "Non",
+    "detailTitle": "Gérer le compte",
+    "backToList": "Tous les comptes",
+    "disable": "Désactiver le compte",
+    "enable": "Réactiver le compte",
+    "accessTitle": "Accès",
+    "accessHelp": "Les administrateurs gèrent les comptes et les listes du personnel. La réservation de salles permet d’utiliser le module salles.",
+    "accountTitle": "Statut du compte",
+    "disableHelp": "Un compte désactivé ne peut pas se connecter. Vous pourrez le réactiver plus tard. L’e-mail reste réservé à cette personne.",
+    "enableHelp": "Réactivez ce compte pour qu’il puisse se reconnecter.",
+    "resendInvite": "Envoyer une nouvelle invitation",
+    "saveAccess": "Enregistrer l’accès",
+    "saving": "Enregistrement",
+    "invited": "Invitation envoyée.",
+    "updated": "Accès mis à jour.",
+    "bookingsLink": "Inscriptions et listes d’attente",
+    "auditTitle": "Historique d’accès",
+    "auditEmpty": "Aucun changement d’accès enregistré.",
+    "auditActor": "Auteur",
+    "auditSystem": "Système",
+    "auditBefore": "Avant",
+    "auditAfter": "Après",
+    "errors": {
+      "forbidden": "Vous ne pouvez pas modifier cet accès.",
+      "invalidEmail": "Saisissez une adresse e-mail valide.",
+      "invalidName": "Saisissez un prénom et un nom.",
+      "alreadyRegistered": "Cette adresse a déjà un compte.",
+      "notFound": "Ce compte est introuvable.",
+      "cannotDisableSelf": "Vous ne pouvez pas désactiver votre propre compte.",
+      "cannotDemoteLastAdmin": "Le dernier administrateur actif ne peut pas être retiré.",
+      "sendFailed": "L’invitation n’a pas pu être envoyée. Réessayez."
+    }
+  },
+  "Rooms": {
+    "eyebrow": "Thérapeutes",
+    "title": "Salles",
+    "intro": "La réservation de salles s’ouvrira ici une fois l’inventaire configuré. Votre accès est déjà activé."
+  },
+  "AccessDenied": {
+    "title": "Accès refusé",
+    "body": "Cet espace est réservé aux comptes autorisés.",
+    "home": "Accueil"
   },
   "Email": {
     "fields": {
@@ -316,7 +428,8 @@
       "status": "Statut",
       "statusPaid": "Payé",
       "statusFailed": "Échec",
-      "dateToBeConfirmed": "Date à confirmer"
+      "dateToBeConfirmed": "Date à confirmer",
+      "link": "Lien"
     },
     "bookingConfirmation": {
       "subject": "Inscription confirmée — {course}",
@@ -389,6 +502,15 @@
       "dateToBeConfirmed": "Date à confirmer",
       "amountLine": "Montant : {amount}",
       "referenceLine": "Référence : {id}"
+    },
+    "invitation": {
+      "subject": "Invitation à votre compte MHP",
+      "eyebrow": "Invitation de compte",
+      "title": "Créez votre mot de passe",
+      "greeting": "Bonjour {name},",
+      "intro": "Une personne administratrice vous invite à créer votre compte MHP. Utilisez le lien ci-dessous pour choisir un mot de passe. Il expire dans 7 jours.",
+      "linkLine": "Lien pour le mot de passe : {url}",
+      "closing": "Si vous n’attendiez pas ce message, vous pouvez l’ignorer."
     }
   },
   "NotFound": {

@@ -21,12 +21,15 @@ later scope forward.
 
 | Field | Value |
 | --- | --- |
-| Plan revision | 1 |
-| Last updated | 2026-09-09 |
-| Last completed checkpoint | CP-00 |
+| Plan revision | 2 |
+| Last updated | 2026-09-10 |
+| Last completed checkpoint | CP-02 |
 | Next checkpoint | CP-01 |
 | Active checkpoint | None |
 | Room module production status | Not started |
+
+Revision 2 approved completing CP-02 before CP-01. CP-01 remains the next
+checkpoint; do not treat the skipped number as a blocker.
 
 ## Status vocabulary
 
@@ -41,7 +44,8 @@ Use exactly one of these values:
 - `PLANNED` — no implementation has started.
 
 Only one checkpoint may be `IN_PROGRESS`. A later checkpoint cannot become
-`IN_PROGRESS` or `COMPLETE` while an earlier one is incomplete. Preparatory code
+`IN_PROGRESS` or `COMPLETE` while an earlier one is incomplete, except where an
+approved plan revision records an explicit ordering exception. Preparatory code
 for a checkpoint is part of that checkpoint and is not independently complete.
 
 ## How agents must use this plan
@@ -102,7 +106,7 @@ or navigation link alone is not a deliverable checkpoint.
 | --- | --- | --- | --- |
 | CP-00 | COMPLETE | Reliable multilingual course-booking MVP | Visitor and staff |
 | CP-01 | PLANNED | Secure account and “My courses” experience | User |
-| CP-02 | PLANNED | Account-based user/access administration | Admin |
+| CP-02 | COMPLETE | Account-based user/access administration | Admin |
 | CP-03 | PLANNED | Personal certificate library | User and admin |
 | CP-04 | PLANNED | Configurable rooms and privacy-safe availability | Therapist and admin |
 | CP-05 | PLANNED | Collision-safe room reservation and “My bookings” | Therapist |
@@ -187,9 +191,12 @@ course CMS and social login.
 
 ## CP-02 — Admin user and access management
 
-**Status:** `PLANNED`
+**Status:** `COMPLETE`
 
-**Depends on:** CP-01.
+**Depends on:** CP-00. The invitation-only account, session and bootstrap
+foundation that CP-01 listed as a prerequisite is delivered here so staff can
+operate CP-00 go-live without HTTP Basic Auth. CP-01 remains public self-registration,
+profile, My Courses and historical booking reconciliation.
 
 **Admin-usable outcome:** An authenticated admin can create/invite users, disable
 or re-enable them, grant/revoke therapist access and operate the existing course
@@ -200,15 +207,20 @@ staff screens through the shared account system.
 - explicit `ADMIN` role and `ROOM_BOOKING` capability with centralized policy
   checks;
 - localized admin user list/detail, invitation, disable/enable and capability
-  controls;
+  controls, with email as the unique identifier, directory search, status/access
+  filters and server-side pagination;
 - invitation and password-setup flow for selected therapists; no public therapist
   registration;
 - audit events for user lifecycle, admin-role changes and room-access changes;
 - immediate session revocation on user disable and immediate server-side denial
   when room access is revoked;
-- capability-aware authenticated navigation; and
+- capability-aware authenticated navigation;
 - migration of staff booking/waitlist pages and CSV exports from HTTP Basic Auth
-  to the `ADMIN` role, followed by removal of the old credential path.
+  to the `ADMIN` role, followed by removal of the old credential path; and
+- PostgreSQL persistence of the current hardcoded course catalogue and sessions
+  (same ids, copy, prices, published flags and Fribourg dates) so go-live data is
+  not only in source. Public catalogue reads stay on the typed seed until a later
+  course-admin slice; this checkpoint does not add a course CMS.
 
 **Explicitly excluded:** Room inventory/availability, room bookings, broad course
 administration and permission customization beyond the two defined controls.
@@ -223,6 +235,24 @@ administration and permission customization beyond the two defined controls.
 5. Existing staff lists/exports work for admins and reject users/therapists.
 6. The old Basic-Auth secret and authorization path are no longer required.
 7. Every access-changing action records actor, target, before/after and time.
+
+**Completion evidence:** Implementation and verification on 2026-09-10.
+Invitation-only PostgreSQL accounts, hashed sessions, hashed invite tokens,
+bootstrap-admin CLI (refuses if an enabled admin already exists), admin
+user/access UI, audit events, staff-list migration off HTTP Basic Auth, and
+PostgreSQL persistence of the hardcoded course catalogue (20 courses, 14
+sessions; public pages still read the TypeScript seed). Follow-up the same day:
+admin directory search/filter/pagination, explicit Manage access/disable
+controls, and unique-email enforcement (normalized unique index plus
+application handling). `pnpm verify` passed with 34 test files and 109 tests,
+including a successful Next.js production build. Playwright: 58 passed, including
+`tests/e2e/auth-guards.spec.ts`. Browser inspection covered admin invite →
+Mailpit → password setup, therapist Rooms vs Access denied, staff bookings,
+FR/DE/EN sign-in, ~390px header, directory search/filter/pagination, Manage
+access, and disable/re-enable.
+
+**Not included:** Public self-registration, profile, My Courses, historical
+booking reconciliation (CP-01), room inventory, and a course CMS.
 
 ---
 
@@ -645,7 +675,51 @@ For an incomplete checkpoint, add this directly below its acceptance criteria:
   course cards and fake booking. No new UI was introduced by the planning update.
 - **Known next work:** CP-01 secure accounts and My Courses.
 
+### CP-02 — 2026-09-10
+
+- **Result:** Invitation-only admin access management replaces HTTP Basic Auth.
+  Admins invite/disable users, grant or revoke `ADMIN` and `ROOM_BOOKING`, and
+  open staff booking/waitlist screens through a shared account session. The
+  hardcoded course catalogue is persisted in PostgreSQL (20 courses, 14
+  sessions) without adding a course CMS.
+- **Routes/UI:** `/{locale}/sign-in` (`/fr/connexion`, `/de/anmelden`),
+  `/{locale}/invite/[token]`, `/{locale}/admin/users`,
+  `/{locale}/admin/users/[id]`, `/{locale}/rooms`, `/{locale}/access-denied`,
+  `/{locale}/staff/bookings`; CSV `/api/staff/bookings.csv` and
+  `/api/staff/waitlist.csv` require an enabled admin session. Header shows
+  Admin for admins, Rooms for `ROOM_BOOKING`, Sign in / Sign out.
+- **Migrations:** `0004_accounts.sql`, `0005_course_catalogue.sql`,
+  `0006_course_catalogue_data.sql`. Hosted migrate also seeds the catalogue.
+- **Automated evidence:** `pnpm verify` passed; 34 test files and 109 tests
+  passed, including a successful Next.js production build. Playwright: 58
+  passed, including unauthenticated redirects, FR/DE/EN sign-in, CSV 401, and
+  removal of HTTP Basic Auth. Directory search, filters, pagination and
+  unique-email coverage added in the same-day follow-up.
+- **Browser evidence:** Desktop and ~390px inspected. Admin invite → Mailpit
+  (gold eyebrow, table layout) → therapist password setup → Rooms nav without
+  Admin; therapist denied `/en/admin/users` and staff bookings; admin can open
+  staff bookings and audit history. Sign-in checked in FR/DE/EN. Public
+  catalogue still works while an admin is signed in. Phone header keeps
+  Courses, Contact and Sign in on one compact row. Admin directory search,
+  Manage access, and disable/re-enable verified on desktop and ~390px.
+- **Preview/production:** Not deployed in this task.
+- **Deviations/follow-ups:** Approved Revision 2: CP-02 completed before
+  CP-01. Catalogue persistence without a CMS; public catalogue still reads the
+  TypeScript seed.
+- **Known next work:** CP-01 secure accounts and My Courses.
+
 ## Plan revision log
+
+### Revision 2 — 2026-09-10
+
+- Approved doing CP-02 before CP-01 so staff can operate CP-00 go-live without
+  HTTP Basic Auth.
+- CP-02 now includes the invitation-only account, session, bootstrap-admin and
+  audit foundation that CP-01 listed as a prerequisite.
+- CP-01 remains public self-registration, profile, My Courses and historical
+  booking reconciliation.
+- CP-02 also persists the hardcoded course catalogue into PostgreSQL without
+  adding a course CMS.
 
 ### Revision 1 — 2026-09-09
 

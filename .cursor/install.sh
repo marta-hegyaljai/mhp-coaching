@@ -81,6 +81,7 @@ sudo -u postgres bash -c \
 
 echo "==> Applying database migrations"
 pnpm db:migrate
+pnpm db:seed
 
 # Stop PostgreSQL so an environment build's snapshot does not capture a running
 # server (a stale postmaster.pid would otherwise make the first boot start

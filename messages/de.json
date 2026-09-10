@@ -9,7 +9,11 @@
     "courses": "Ausbildungen",
     "contact": "Kontakt",
     "cta": "Platz buchen",
-    "breadcrumb": "Navigationspfad"
+    "breadcrumb": "Navigationspfad",
+    "signIn": "Anmelden",
+    "signOut": "Abmelden",
+    "admin": "Admin",
+    "rooms": "Räume"
   },
   "LanguageSwitcher": {
     "label": "Sprache wählen"
@@ -299,7 +303,115 @@
     "waitlistIntro": "Personen, die zu benachrichtigen sind, sobald ein Termin öffnet, nach Kurs.",
     "waitlistEmpty": "Keine Einträge auf der Warteliste.",
     "waitlistCsv": "CSV Wartelisten",
-    "phone": "Telefon"
+    "phone": "Telefon",
+    "usersLink": "Konten verwalten"
+  },
+  "Auth": {
+    "eyebrow": "Konto",
+    "signInTitle": "Anmelden",
+    "signInIntro": "Verwenden Sie die E-Mail-Adresse aus Ihrer Einladung.",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "passwordConfirm": "Passwort bestätigen",
+    "submit": "Anmelden",
+    "submitting": "Anmeldung",
+    "inviteTitle": "Passwort festlegen",
+    "inviteIntro": "Wählen Sie ein Passwort mit mindestens 12 Zeichen, um Ihr Konto zu erstellen.",
+    "inviteSubmit": "Speichern und anmelden",
+    "inviteSubmitting": "Speichern",
+    "errors": {
+      "invalid": "E-Mail oder Passwort ist falsch.",
+      "disabled": "Dieses Konto ist deaktiviert. Kontaktieren Sie eine Administration.",
+      "rateLimited": "Zu viele Versuche. Bitte warten Sie einige Minuten.",
+      "inviteInvalid": "Diese Einladung ist ungültig oder abgelaufen. Bitte um eine neue Einladung.",
+      "passwordTooShort": "Verwenden Sie mindestens 12 Zeichen.",
+      "passwordMismatch": "Die Passwörter stimmen nicht überein.",
+      "passwordSameAsEmail": "Verwenden Sie Ihre E-Mail-Adresse nicht als Passwort."
+    }
+  },
+  "Admin": {
+    "eyebrow": "Administration",
+    "title": "Konten",
+    "intro": "Laden Sie Personen ein, ändern Sie deren Zugang und deaktivieren oder reaktivieren Sie Konten. Therapeutinnen und Therapeuten können sich nicht selbst registrieren.",
+    "identityNote": "Die E-Mail identifiziert jedes Konto. Zwei Personen können dieselbe Adresse nicht teilen.",
+    "invite": "Person einladen",
+    "firstName": "Vorname",
+    "lastName": "Nachname",
+    "email": "E-Mail",
+    "accessLegend": "Zugang",
+    "grantAdmin": "Administration",
+    "grantRooms": "Raumbuchung",
+    "sendInvite": "Einladung senden",
+    "sending": "Senden",
+    "emailHint": "Diese Adresse identifiziert das Konto und muss eindeutig sein.",
+    "listTitle": "Bestehende Konten",
+    "listIntro": "Durchsuchen Sie das Verzeichnis und öffnen Sie Verwalten, um den Zugang zu ändern oder ein Konto zu deaktivieren.",
+    "search": "Suche",
+    "searchPlaceholder": "E-Mail oder Name",
+    "filter": "Anzeigen",
+    "clearFilters": "Zurücksetzen",
+    "statusAll": "Alle Status",
+    "accessAll": "Jeder Zugang",
+    "accessNone": "Ohne Zusatzzugang",
+    "manage": "Verwalten",
+    "noMatches": "Keine Konten entsprechen diesen Filtern.",
+    "resultCount": "{shown} von {total} Konten",
+    "previous": "Zurück",
+    "next": "Weiter",
+    "pageStatus": "Seite {page} von {pageCount}",
+    "empty": "Noch keine Konten.",
+    "name": "Name",
+    "status": "Status",
+    "role": "Rolle",
+    "rooms": "Räume",
+    "statusActive": "Aktiv",
+    "statusDisabled": "Deaktiviert",
+    "statusPending": "Einladung ausstehend",
+    "roleAdmin": "Admin",
+    "roleUser": "Benutzer",
+    "roomsEnabled": "Aktiviert",
+    "roomsDisabled": "Aus",
+    "detailTitle": "Konto verwalten",
+    "backToList": "Alle Konten",
+    "disable": "Konto deaktivieren",
+    "enable": "Konto wieder aktivieren",
+    "accessTitle": "Zugang",
+    "accessHelp": "Die Administration verwaltet Konten und Personallisten. Raumbuchung öffnet den Räume-Bereich für Therapeutinnen und Therapeuten.",
+    "accountTitle": "Kontostatus",
+    "disableHelp": "Ein deaktiviertes Konto kann sich nicht anmelden. Sie können es später wieder aktivieren. Die E-Mail bleibt für diese Person reserviert.",
+    "enableHelp": "Aktivieren Sie dieses Konto wieder, damit eine Anmeldung möglich ist.",
+    "resendInvite": "Neue Einladung senden",
+    "saveAccess": "Zugang speichern",
+    "saving": "Speichern",
+    "invited": "Einladung gesendet.",
+    "updated": "Zugang aktualisiert.",
+    "bookingsLink": "Kursbuchungen und Wartelisten",
+    "auditTitle": "Zugangsverlauf",
+    "auditEmpty": "Noch keine Zugangsänderungen erfasst.",
+    "auditActor": "Akteur",
+    "auditSystem": "System",
+    "auditBefore": "Vorher",
+    "auditAfter": "Nachher",
+    "errors": {
+      "forbidden": "Sie können diesen Zugang nicht ändern.",
+      "invalidEmail": "Geben Sie eine gültige E-Mail-Adresse ein.",
+      "invalidName": "Geben Sie Vor- und Nachname ein.",
+      "alreadyRegistered": "Diese E-Mail hat bereits ein Konto.",
+      "notFound": "Dieses Konto wurde nicht gefunden.",
+      "cannotDisableSelf": "Sie können Ihr eigenes Konto nicht deaktivieren.",
+      "cannotDemoteLastAdmin": "Die letzte aktive Administration kann nicht entfernt werden.",
+      "sendFailed": "Die Einladung konnte nicht gesendet werden. Bitte erneut versuchen."
+    }
+  },
+  "Rooms": {
+    "eyebrow": "Therapeutinnen",
+    "title": "Räume",
+    "intro": "Die Raumbuchung öffnet hier, sobald das Inventar konfiguriert ist. Ihr Zugang ist bereits aktiviert."
+  },
+  "AccessDenied": {
+    "title": "Zugriff verweigert",
+    "body": "Dieser Bereich ist autorisierten Konten vorbehalten.",
+    "home": "Startseite"
   },
   "Email": {
     "fields": {
@@ -316,7 +428,8 @@
       "status": "Status",
       "statusPaid": "Bezahlt",
       "statusFailed": "Fehlgeschlagen",
-      "dateToBeConfirmed": "Termin wird bestätigt"
+      "dateToBeConfirmed": "Termin wird bestätigt",
+      "link": "Link"
     },
     "bookingConfirmation": {
       "subject": "Buchung bestätigt — {course}",
@@ -389,6 +502,15 @@
       "dateToBeConfirmed": "Termin wird bestätigt",
       "amountLine": "Betrag: {amount}",
       "referenceLine": "Referenz: {id}"
+    },
+    "invitation": {
+      "subject": "Ihre Einladung zum MHP-Konto",
+      "eyebrow": "Kontoeinladung",
+      "title": "Passwort erstellen",
+      "greeting": "Guten Tag {name},",
+      "intro": "Eine Administration hat Sie eingeladen, Ihr MHP-Konto zu erstellen. Nutzen Sie den Link unten, um ein Passwort festzulegen. Er läuft in 7 Tagen ab.",
+      "linkLine": "Link zum Passwort: {url}",
+      "closing": "Wenn Sie diese Nachricht nicht erwartet haben, können Sie sie ignorieren."
     }
   },
   "NotFound": {

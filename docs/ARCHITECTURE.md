@@ -17,10 +17,10 @@ One Next.js App Router application handles:
 - public website
 - localized SEO pages
 - course booking UI/server logic and Stripe checkout/webhooks
-- shared account, profile, permission and email infrastructure (planned)
+- shared account, profile, permission and email infrastructure (invitation-only accounts in CP-02; public signup in CP-01)
 - authenticated course history/certificates (planned)
 - therapist room availability, booking and monthly billing (planned)
-- role-aware administration (planned; Basic Auth is the current MVP bridge)
+- role-aware administration (admin users, access and staff lists)
 
 No separate API service or microservices.
 
@@ -95,7 +95,9 @@ Initial durable concepts:
 - optional payment_events
 - waitlist_entries for published courses (undated, or dated when no session fits)
 
-Courses/course dates stay in typed source config initially.
+Courses/course dates are seeded into PostgreSQL from the typed TypeScript
+catalogue (`src/features/courses/catalog.ts`) so go-live data is durable. Public
+catalogue reads still use that typed seed until a later course-admin slice.
 A booking should snapshot commercially important values so historic bookings remain understandable if course config later changes.
 
 Planned shared concepts:
@@ -182,26 +184,32 @@ Transactional mail sent through `src/features/email`:
 - staff on contact-form and alternative-payment inquiries
 - staff when a booking is saved as `LEAD` (other payment method)
 - staff when someone joins a waiting list
+- invited user when an admin sends or resends an account invitation
 
 ## Authentication
 
-Current state: no user authentication; a tiny isolated HTTP Basic Auth guard
-protects staff booking/waitlist routes.
+Current state: invitation-only PostgreSQL accounts with scrypt password hashes,
+revocable cookie sessions, an `ADMIN` role and a `ROOM_BOOKING` capability.
+Staff booking/waitlist pages and CSV exports require an enabled admin session.
+HTTP Basic Auth has been removed. Public self-registration, password recovery
+and My Courses remain CP-01.
 
-Target state: application-owned, PostgreSQL-backed accounts with verified email,
-secure password hashing, revocable cookie sessions and recovery/invitation flows.
 Do not introduce Supabase Auth or another provider-coupled authorization system.
 
-Every account receives course-user access. `ROOM_BOOKING` is an explicit
+Every invited account receives course-user access. `ROOM_BOOKING` is an explicit
 admin-granted capability; `ADMIN` is an administrative role. Navigation reflects
 capabilities, but every query and mutation also enforces them server-side. An
 admin can manage room operations but cannot read private booking notes. Private
 notes live separately and require owner identity, not a role override.
 
-The account/auth implementation must receive a dedicated threat-model and
-security review. Rate-limit auth/recovery, protect mutations from CSRF as needed,
-use secure cookie attributes, verify emails before reconciliation, and never
-trust browser-supplied user IDs or roles.
+Rate-limit sign-in and invitation acceptance, keep session cookies HttpOnly /
+SameSite=Lax / Secure in production, hash session and invitation tokens at rest,
+verify emails when an invitation is accepted, and never trust browser-supplied
+user IDs or roles. Normalized email (`email_normalized`) is the unique account
+identifier: PostgreSQL rejects a second row for the same address, including
+case variants. The first admin is created with `pnpm db:bootstrap-admin`
+from environment variables; the command refuses to run when an enabled admin
+already exists.
 
 ## Suggested structure
 ```text
@@ -212,7 +220,7 @@ src/
     api/staff/bookings.csv/
     api/staff/waitlist.csv/
   features/
-    auth/                   # planned: credentials, sessions, invitations, recovery
+    auth/                   # credentials, sessions, invitations
     users/                  # planned: profile, capability and Stripe identity
     courses/                # catalogue, dates, course UI
     bookings/               # existing course form, validation, persistence
@@ -227,8 +235,8 @@ src/
     email/                  # composeTransactionalEmail + senders (see docs/EMAIL.md)
     seo/                    # metadata, json-ld, sitemap, legacy 301s
     site-shell/             # header, footer, language switcher
-    staff/                  # current course lists/CSV/basic auth; migrate to admin
-    admin/                  # planned: role-aware platform administration
+    staff/                  # admin-protected course lists/CSV
+    admin/                  # user invitation, disable/enable, capabilities
     legal/
     organization/
   db/

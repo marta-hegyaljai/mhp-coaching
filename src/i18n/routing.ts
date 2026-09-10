@@ -76,6 +76,29 @@ export const routing = defineRouting({
       en: "/legal/copyright",
     },
     "/staff/bookings": "/staff/bookings",
+    "/sign-in": {
+      fr: "/connexion",
+      de: "/anmelden",
+      en: "/sign-in",
+    },
+    "/invite/[token]": {
+      fr: "/invitation/[token]",
+      de: "/einladung/[token]",
+      en: "/invite/[token]",
+    },
+    "/admin": "/admin",
+    "/admin/users": "/admin/users",
+    "/admin/users/[id]": "/admin/users/[id]",
+    "/rooms": {
+      fr: "/salles",
+      de: "/raeume",
+      en: "/rooms",
+    },
+    "/access-denied": {
+      fr: "/acces-refuse",
+      de: "/zugriff-verweigert",
+      en: "/access-denied",
+    },
   },
 });
 

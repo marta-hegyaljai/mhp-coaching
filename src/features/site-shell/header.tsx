@@ -1,5 +1,7 @@
 import {getTranslations} from "next-intl/server";
 
+import {signOutAction} from "@/features/auth/actions";
+import {getViewer} from "@/features/auth/require";
 import {catalogueCalendarHref, type PathnameHref} from "@/i18n/href";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
@@ -21,6 +23,7 @@ export async function SiteHeader({
   hreflangs?: Partial<Record<AppLocale, PathnameHref>>;
 }) {
   const t = await getTranslations({locale, namespace: "Nav"});
+  const viewer = await getViewer();
 
   return (
     <header className="sticky top-0 z-40 h-14 border-b border-ink bg-ivory/95 backdrop-blur-sm sm:h-16">
@@ -49,6 +52,27 @@ export async function SiteHeader({
             <Link href="/contact" className={navLink}>
               {t("contact")}
             </Link>
+            {viewer?.isAdmin ? (
+              <Link href="/admin/users" className={navLink}>
+                {t("admin")}
+              </Link>
+            ) : null}
+            {viewer?.canAccessRooms ? (
+              <Link href="/rooms" className={navLink}>
+                {t("rooms")}
+              </Link>
+            ) : null}
+            {viewer ? (
+              <form action={signOutAction.bind(null, locale)} className="contents">
+                <button type="submit" className={navLink}>
+                  {t("signOut")}
+                </button>
+              </form>
+            ) : (
+              <Link href="/sign-in" className={navLink}>
+                {t("signIn")}
+              </Link>
+            )}
           </nav>
           {LANGUAGE_SWITCHER_ENABLED ? (
             <LanguageSwitcher hreflangs={hreflangs} />

@@ -35,9 +35,9 @@ describe("message catalogues", () => {
       "amountPaid",
       "reference",
       "status",
-      "statusPaid",
       "statusFailed",
       "dateToBeConfirmed",
+      "link",
     ];
 
     for (const key of required) {

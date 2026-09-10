@@ -1,17 +1,16 @@
 import {NextResponse} from "next/server";
 
 import {listBookings} from "@/features/bookings/repository";
+import {requireAdminApi} from "@/features/auth/require-api";
 import {bookingsToCsv} from "@/features/staff/csv";
-import {
-  isStaffAuthorized,
-  unauthorizedStaffResponse,
-} from "@/features/staff/basic-auth";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(request: Request) {
-  if (!isStaffAuthorized(request.headers.get("authorization"))) {
-    return unauthorizedStaffResponse();
+export async function GET() {
+  const access = await requireAdminApi();
+
+  if (!access.ok) {
+    return access.response;
   }
 
   const csv = bookingsToCsv(await listBookings());
