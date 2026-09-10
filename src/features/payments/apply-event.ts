@@ -1,4 +1,6 @@
+import type {Booking} from "@/db/schema";
 import {sendBookingConfirmation} from "@/features/email/booking-confirmation";
+import {sendPurchaseNotification} from "@/features/email/purchase-notification";
 import {
   getBookingById,
   markBookingPaidOnce,
@@ -37,13 +39,8 @@ export async function applyPaymentEvent(input: {
       input.bookingId,
     );
 
-    if (!alreadyPaid && !paidBooking.confirmationEmailSentAt) {
-      try {
-        await sendBookingConfirmation(paidBooking);
-        await markConfirmationEmailSent(paidBooking.id);
-      } catch (error) {
-        console.error("Failed to send booking confirmation email", error);
-      }
+    if (!alreadyPaid) {
+      await notifyPaidPurchase(paidBooking);
     }
 
     return {ok: true};
@@ -53,10 +50,40 @@ export async function applyPaymentEvent(input: {
     return {ok: true, alreadyProcessed: true};
   }
 
-  await markBookingStatus({
-    bookingId: input.bookingId,
-    status: input.type === "failed" ? "FAILED" : "CANCELLED",
-  });
+  const updatedBooking =
+    (await markBookingStatus({
+      bookingId: input.bookingId,
+      status: input.type === "failed" ? "FAILED" : "CANCELLED",
+    })) ?? booking;
+
+  if (input.type === "failed") {
+    await notifyFailedPurchase(updatedBooking);
+  }
 
   return {ok: true};
+}
+
+async function notifyPaidPurchase(booking: Booking): Promise<void> {
+  if (!booking.confirmationEmailSentAt) {
+    try {
+      await sendBookingConfirmation(booking);
+      await markConfirmationEmailSent(booking.id);
+    } catch (error) {
+      console.error("Failed to send booking confirmation email", error);
+    }
+  }
+
+  try {
+    await sendPurchaseNotification(booking, "paid");
+  } catch (error) {
+    console.error("Failed to send staff purchase notification", error);
+  }
+}
+
+async function notifyFailedPurchase(booking: Booking): Promise<void> {
+  try {
+    await sendPurchaseNotification(booking, "failed");
+  } catch (error) {
+    console.error("Failed to send staff purchase notification", error);
+  }
 }

@@ -193,6 +193,9 @@ motion, or animated background. Always honor `prefers-reduced-motion`.
 - Shell: `src/features/site-shell`; do not fork per-page headers or switchers.
   `SiteFooter` is black; inverted (white) buttons sit on it.
 - Course decisions: `CourseCard`, `CourseDates`, and `CourseBookingBar`.
+- Email: `composeTransactionalEmail()` in `src/features/email/layout.ts`.
+  Binding layout and copy: `docs/EMAIL.md`. Do not hand-roll notification
+  HTML or reuse page components in mail.
 
 ## Agent completion gate
 

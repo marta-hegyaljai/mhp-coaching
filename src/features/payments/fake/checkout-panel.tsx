@@ -9,6 +9,7 @@ export function FakeCheckoutPanel({
   token,
   locale,
   payLabel,
+  failLabel,
   cancelLabel,
   amountLabel,
 }: {
@@ -16,6 +17,7 @@ export function FakeCheckoutPanel({
   token: string;
   locale: AppLocale;
   payLabel: string;
+  failLabel: string;
   cancelLabel: string;
   amountLabel: string;
 }) {
@@ -27,13 +29,21 @@ export function FakeCheckoutPanel({
       <p className="mt-2 text-sm text-ink-muted">
         {amountLabel.replace("{amount}", amount)}
       </p>
-      <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+      <div className="mt-8 flex flex-col gap-3">
         <FakeCheckoutButton
           bookingId={booking.id}
           token={token}
           locale={locale}
           intent="pay"
           label={payLabel}
+        />
+        <FakeCheckoutButton
+          bookingId={booking.id}
+          token={token}
+          locale={locale}
+          intent="fail"
+          label={failLabel}
+          variant="secondary"
         />
         <FakeCheckoutButton
           bookingId={booking.id}
@@ -59,7 +69,7 @@ function FakeCheckoutButton({
   bookingId: string;
   token: string;
   locale: AppLocale;
-  intent: "pay" | "cancel";
+  intent: "pay" | "fail" | "cancel";
   label: string;
   variant?: "primary" | "secondary";
 }) {

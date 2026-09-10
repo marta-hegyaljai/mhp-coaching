@@ -71,6 +71,7 @@ export default async function FakeCheckoutPage({
             token={token}
             locale={locale}
             payLabel={t("pay")}
+            failLabel={t("fail")}
             cancelLabel={t("cancel")}
             amountLabel={t("amount", {
               amount: formatChf(minorUnitsToFrancs(booking.amountMinor), locale),

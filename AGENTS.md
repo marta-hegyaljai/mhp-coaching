@@ -4,9 +4,10 @@ Before non-trivial work, read:
 1. `docs/MVP.md`
 2. `docs/ARCHITECTURE.md`
 3. `docs/DESIGN.md`
-4. `docs/AGENT-WORKFLOW.md`
-5. `docs/IMPLEMENTATION-PLAN.md`
-6. `docs/ROOM-BOOKING.md` for account, authorization, room, or billing work
+4. `docs/EMAIL.md` (binding for every transactional email)
+5. `docs/AGENT-WORKFLOW.md`
+6. `docs/IMPLEMENTATION-PLAN.md`
+7. `docs/ROOM-BOOKING.md` for account, authorization, room, or billing work
 
 Read `docs/PRODUCT-VISION.md` only for long-term context.
 
@@ -32,6 +33,13 @@ option lists, or locale-dependent control shifts.
 Course/date possibilities use compact bordered card grids. The language
 switcher remains a fixed-width dropdown. These rules apply to Codex and all
 other coding agents.
+
+## Binding email direction
+Before adding or restyling any notification, read `docs/EMAIL.md`. Compose
+HTML only through `composeTransactionalEmail()` in
+`src/features/email/layout.ts`. Do not hand-roll a second template. Gold is
+limited to the uppercase eyebrow. Buyer confirmation shows the course venue
+address, never the booking UUID.
 
 ## Stack
 - Next.js App Router + TypeScript

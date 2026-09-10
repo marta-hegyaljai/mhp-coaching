@@ -17,5 +17,8 @@ describe("organization contact details", () => {
       "Chemin de la Fenetta 42",
     );
     expect(organization.addresses.headquarters.city).toBe("Villars-sur-Glâne");
+    expect(organization.courseVenueAddress).toBe(
+      "Chem. de la Fenetta 42, 1752 Villars-sur-Glâne",
+    );
   });
 });

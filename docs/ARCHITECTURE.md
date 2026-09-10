@@ -170,7 +170,18 @@ Webhook rules:
 ## Email
 Application owns template/content; provider adapter owns delivery.
 Local: SMTP to Mailpit.
-Hosted: Resend when `RESEND_API_KEY` is set.
+Hosted: Resend when `RESEND_API_KEY` is set. Do not add a second mail provider.
+
+Binding layout and copy: `docs/EMAIL.md`. HTML is composed only through
+`composeTransactionalEmail()` in `src/features/email/layout.ts` (tables and
+inline styles). Shared detail labels live in `Email.fields`.
+
+Transactional mail sent through `src/features/email`:
+- buyer confirmation after a booking becomes `PAID`
+- staff (`contact@mhp-coaching.ch`) on paid or failed purchases
+- staff on contact-form and alternative-payment inquiries
+- staff when a booking is saved as `LEAD` (other payment method)
+- staff when someone joins a waiting list
 
 ## Authentication
 
@@ -213,7 +224,7 @@ src/
     waitlist/               # waiting list for published courses
     inquiries/              # contact and alternative-payment forms
     payments/{fake,stripe}/ # PaymentProvider adapters + webhook
-    email/                  # confirmation + inquiry delivery
+    email/                  # composeTransactionalEmail + senders (see docs/EMAIL.md)
     seo/                    # metadata, json-ld, sitemap, legacy 301s
     site-shell/             # header, footer, language switcher
     staff/                  # current course lists/CSV/basic auth; migrate to admin

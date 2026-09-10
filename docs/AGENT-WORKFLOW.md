@@ -21,7 +21,9 @@ For every meaningful task:
 
 1. **Understand** — read AGENTS.md + relevant docs and inspect current code.
    Visual work must follow `docs/DESIGN.md` and, for Cursor, the mirrored
-   `.cursor/rules/mhp-ui.mdc` guardrail.
+   `.cursor/rules/mhp-ui.mdc` guardrail. Email work must follow
+   `docs/EMAIL.md` and `.cursor/rules/mhp-email.mdc`: compose HTML only
+   through `composeTransactionalEmail()`.
 2. **Plan** — resolve the requested checkpoint using `IMPLEMENTATION-PLAN.md`,
    mark only the next incomplete checkpoint `IN_PROGRESS`, and preserve the live
    course MVP and the Courses/Rooms domain boundary.
@@ -29,7 +31,7 @@ For every meaningful task:
    UI mobile/accessibility friendly. Use forward-only migrations and explicit
    authorization at every server boundary.
 4. **Verify mechanically** — run `pnpm verify` + relevant tests.
-5. **Verify behavior** — run the app and exercise the changed flow. For UI inspect desktop + ~390px mobile + FR/DE/EN where relevant.
+5. **Verify behavior** — run the app and exercise the changed flow. For UI inspect desktop + ~390px mobile + FR/DE/EN where relevant. For email inspect the HTML in Mailpit at ~560px and a narrow pane.
 6. **Iterate** — fix what tests/browser inspection reveal.
 7. **Record** — update checkpoint status/current position and append concrete
    completion evidence; if incomplete, record remaining work or the exact block.

@@ -219,6 +219,7 @@
     "intro": "Les environnements locaux et de prévisualisation utilisent un prestataire fictif. Rien n’est envoyé à Stripe.",
     "amount": "Montant à confirmer : {amount}",
     "pay": "Simuler un paiement réussi",
+    "fail": "Simuler un paiement échoué",
     "cancel": "Simuler un paiement annulé",
     "badge": "Environnement de test"
   },
@@ -301,8 +302,25 @@
     "phone": "Téléphone"
   },
   "Email": {
+    "fields": {
+      "name": "Nom",
+      "email": "E-mail",
+      "phone": "Téléphone",
+      "address": "Adresse",
+      "course": "Formation",
+      "dates": "Dates",
+      "location": "Lieu",
+      "amount": "Montant",
+      "amountPaid": "Montant payé",
+      "reference": "Référence",
+      "status": "Statut",
+      "statusPaid": "Payé",
+      "statusFailed": "Échec",
+      "dateToBeConfirmed": "Date à confirmer"
+    },
     "bookingConfirmation": {
       "subject": "Inscription confirmée — {course}",
+      "eyebrow": "Inscription confirmée",
       "greeting": "Bonjour {name},",
       "intro": "Votre paiement a bien été reçu et votre place est confirmée.",
       "detailsTitle": "Votre inscription",
@@ -311,11 +329,12 @@
       "dateToBeConfirmed": "Date à confirmer",
       "locationLine": "Lieu : {location}",
       "amountLine": "Montant payé : {amount}",
-      "referenceLine": "Référence : {id}",
+      "addressLine": "Adresse : {address}",
       "closing": "Nous avons hâte de vous accueillir."
     },
     "leadNotification": {
       "subject": "Demande d’inscription hors paiement en ligne — {course}",
+      "eyebrow": "Autre moyen de paiement",
       "intro": "Une personne a demandé un autre moyen de paiement.",
       "nameLine": "Nom : {name}",
       "emailLine": "E-mail : {email}",
@@ -329,6 +348,8 @@
     },
     "inquiryNotification": {
       "subject": "Message du site — {kind}",
+      "eyebrowGeneral": "Contact",
+      "eyebrowPayment": "Paiement",
       "kindGeneral": "contact",
       "kindPayment": "paiement",
       "intro": "Un message a été envoyé depuis le site.",
@@ -343,11 +364,31 @@
     },
     "waitlistNotification": {
       "subject": "Liste d’attente — {course}",
+      "eyebrow": "Liste d’attente",
       "intro": "Une personne a rejoint la liste d’attente.",
       "nameLine": "Nom : {name}",
       "emailLine": "E-mail : {email}",
       "phoneLine": "Téléphone : {phone}",
       "courseLine": "Formation : {course}"
+    },
+    "purchaseNotification": {
+      "subjectPaid": "Paiement reçu — {course}",
+      "subjectFailed": "Paiement échoué — {course}",
+      "eyebrowPaid": "Paiement reçu",
+      "eyebrowFailed": "Paiement échoué",
+      "introPaid": "Un paiement de formation a été confirmé.",
+      "introFailed": "Un paiement de formation a échoué.",
+      "statusPaid": "Statut : payé",
+      "statusFailed": "Statut : échec",
+      "nameLine": "Nom : {name}",
+      "emailLine": "E-mail : {email}",
+      "phoneLine": "Téléphone : {phone}",
+      "addressLine": "Adresse : {address}",
+      "courseLine": "Formation : {course}",
+      "dateLine": "Dates : {date}",
+      "dateToBeConfirmed": "Date à confirmer",
+      "amountLine": "Montant : {amount}",
+      "referenceLine": "Référence : {id}"
     }
   },
   "NotFound": {

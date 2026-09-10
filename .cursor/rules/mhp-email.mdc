@@ -1,0 +1,27 @@
+---
+description: Binding transactional email layout and copy rules
+globs:
+  - "src/features/email/**"
+  - "messages/*.json"
+alwaysApply: true
+---
+
+# MHP email contract
+
+Read `docs/EMAIL.md` before adding or restyling any email. It is the source of
+truth and overrides generic mail-design preferences.
+
+- Compose HTML only with `composeTransactionalEmail()` in
+  `src/features/email/layout.ts`. Deliver with `sendMail()`. Keep a plain-text
+  part. Do not add a second mail provider.
+- Same visual language as the site: pure white and black, gold only on the
+  small uppercase eyebrow, editorial serif title, sans body and prices, 1px
+  black rules. No beige, cream, bronze, brown, gradients, shadows, pills, or
+  decorative images.
+- Table layout and inline styles only. No Tailwind, flex, grid, or a second
+  HTML template.
+- Localize FR/DE/EN. Shared labels live in `Email.fields`.
+- Buyer confirmation shows `organization.courseVenueAddress`, never the
+  booking UUID. Staff mail may include the reference.
+- Before completion, unit-test destination plus shared chrome and inspect the
+  message in Mailpit.

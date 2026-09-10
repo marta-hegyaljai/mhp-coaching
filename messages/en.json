@@ -219,6 +219,7 @@
     "intro": "Local and preview environments use a fake payment provider. Nothing is sent to Stripe.",
     "amount": "Amount to confirm: {amount}",
     "pay": "Simulate successful payment",
+    "fail": "Simulate failed payment",
     "cancel": "Simulate cancelled payment",
     "badge": "Test environment"
   },
@@ -301,8 +302,25 @@
     "phone": "Phone"
   },
   "Email": {
+    "fields": {
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Address",
+      "course": "Course",
+      "dates": "Dates",
+      "location": "Location",
+      "amount": "Amount",
+      "amountPaid": "Amount paid",
+      "reference": "Reference",
+      "status": "Status",
+      "statusPaid": "Paid",
+      "statusFailed": "Failed",
+      "dateToBeConfirmed": "Date to be confirmed"
+    },
     "bookingConfirmation": {
       "subject": "Booking confirmed — {course}",
+      "eyebrow": "Booking confirmed",
       "greeting": "Hello {name},",
       "intro": "Your payment was received and your place is confirmed.",
       "detailsTitle": "Your booking",
@@ -311,11 +329,12 @@
       "dateToBeConfirmed": "Date to be confirmed",
       "locationLine": "Location: {location}",
       "amountLine": "Amount paid: {amount}",
-      "referenceLine": "Reference: {id}",
+      "addressLine": "Address: {address}",
       "closing": "We look forward to welcoming you."
     },
     "leadNotification": {
       "subject": "Booking request without online payment — {course}",
+      "eyebrow": "Other payment method",
       "intro": "Someone asked for another payment method.",
       "nameLine": "Name: {name}",
       "emailLine": "Email: {email}",
@@ -329,6 +348,8 @@
     },
     "inquiryNotification": {
       "subject": "Website message — {kind}",
+      "eyebrowGeneral": "Contact",
+      "eyebrowPayment": "Payment",
       "kindGeneral": "contact",
       "kindPayment": "payment",
       "intro": "A message was sent from the website.",
@@ -343,11 +364,31 @@
     },
     "waitlistNotification": {
       "subject": "Waiting list — {course}",
+      "eyebrow": "Waiting list",
       "intro": "Someone joined the waiting list.",
       "nameLine": "Name: {name}",
       "emailLine": "Email: {email}",
       "phoneLine": "Phone: {phone}",
       "courseLine": "Course: {course}"
+    },
+    "purchaseNotification": {
+      "subjectPaid": "Payment received — {course}",
+      "subjectFailed": "Payment failed — {course}",
+      "eyebrowPaid": "Payment received",
+      "eyebrowFailed": "Payment failed",
+      "introPaid": "A course payment succeeded.",
+      "introFailed": "A course payment failed.",
+      "statusPaid": "Status: paid",
+      "statusFailed": "Status: failed",
+      "nameLine": "Name: {name}",
+      "emailLine": "Email: {email}",
+      "phoneLine": "Phone: {phone}",
+      "addressLine": "Address: {address}",
+      "courseLine": "Course: {course}",
+      "dateLine": "Dates: {date}",
+      "dateToBeConfirmed": "Date to be confirmed",
+      "amountLine": "Amount: {amount}",
+      "referenceLine": "Reference: {id}"
     }
   },
   "NotFound": {

@@ -52,6 +52,7 @@ export const organization = {
       },
     },
   },
+  courseVenueAddress: "Chem. de la Fenetta 42, 1752 Villars-sur-Glâne",
 } as const;
 
 export function formatPostalAddress(address: PostalAddress): string {

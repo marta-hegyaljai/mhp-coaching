@@ -1,22 +1,21 @@
 import {getTranslations} from "next-intl/server";
-import {hasLocale} from "next-intl";
 
 import type {WaitlistEntry} from "@/db/schema";
 import {organization} from "@/features/organization/info";
-import {routing, type AppLocale} from "@/i18n/routing";
 
+import {composeTransactionalEmail} from "./layout";
+import {mailLocale} from "./locale";
 import {sendMail} from "./transport";
 
 export async function sendWaitlistNotification(
   entry: WaitlistEntry,
 ): Promise<void> {
-  const locale: AppLocale = hasLocale(routing.locales, entry.locale)
-    ? entry.locale
-    : "fr";
+  const locale = mailLocale(entry.locale);
   const t = await getTranslations({
     locale,
     namespace: "Email.waitlistNotification",
   });
+  const fields = await getTranslations({locale, namespace: "Email.fields"});
   const subject = t("subject", {course: entry.courseTitle});
   const name = `${entry.firstName} ${entry.lastName}`;
   const text = [
@@ -28,15 +27,19 @@ export async function sendWaitlistNotification(
     t("courseLine", {course: entry.courseTitle}),
   ].join("\n");
 
-  const html = `
-    <p>${escapeHtml(t("intro"))}</p>
-    <ul>
-      <li>${escapeHtml(t("nameLine", {name}))}</li>
-      <li>${escapeHtml(t("emailLine", {email: entry.email}))}</li>
-      <li>${escapeHtml(t("phoneLine", {phone: entry.phone}))}</li>
-      <li>${escapeHtml(t("courseLine", {course: entry.courseTitle}))}</li>
-    </ul>
-  `;
+  const html = composeTransactionalEmail({
+    locale,
+    preheader: t("intro"),
+    eyebrow: t("eyebrow"),
+    title: entry.courseTitle,
+    intro: t("intro"),
+    details: [
+      {label: fields("name"), value: name},
+      {label: fields("email"), value: entry.email},
+      {label: fields("phone"), value: entry.phone},
+      {label: fields("course"), value: entry.courseTitle},
+    ],
+  });
 
   await sendMail({
     to: organization.email,
@@ -45,12 +48,4 @@ export async function sendWaitlistNotification(
     text,
     html,
   });
-}
-
-function escapeHtml(value: string): string {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;");
 }

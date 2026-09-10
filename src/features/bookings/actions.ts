@@ -6,6 +6,7 @@ import {hasLocale} from "next-intl";
 
 import {getCourseById, getBookableDates} from "@/features/courses/queries";
 import {isCoursePublished} from "@/features/courses/types";
+import {sendLeadNotification} from "@/features/email/lead-notification";
 import {getPaymentProvider} from "@/features/payments/get-provider";
 import {francsToMinorUnits} from "@/features/payments/money";
 import {localizedPathname} from "@/i18n/path";
@@ -104,6 +105,12 @@ export async function createBookingAction(
     });
 
     if (isLead) {
+      try {
+        await sendLeadNotification(booking);
+      } catch (error) {
+        console.error("Failed to send lead notification", error);
+      }
+
       const cancelPath = localizedPathname(resolvedLocale, "/booking/cancelled");
       nextUrl = `${cancelPath}?bookingId=${booking.id}&source=other`;
     } else {

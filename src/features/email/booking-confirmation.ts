@@ -2,30 +2,31 @@ import {getTranslations} from "next-intl/server";
 
 import {formatDateRange} from "@/features/courses/dates";
 import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
-import {hasLocale} from "next-intl";
-import {routing, type AppLocale} from "@/i18n/routing";
 import {organization} from "@/features/organization/info";
 import type {Booking} from "@/db/schema";
 import {isDateToBeConfirmed} from "@/features/bookings/booking-date";
 
+import {composeTransactionalEmail} from "./layout";
+import {mailLocale} from "./locale";
 import {sendMail} from "./transport";
 
 export async function sendBookingConfirmation(booking: Booking): Promise<void> {
-  const locale: AppLocale = hasLocale(routing.locales, booking.locale)
-    ? booking.locale
-    : "fr";
+  const locale = mailLocale(booking.locale);
   const t = await getTranslations({locale, namespace: "Email.bookingConfirmation"});
+  const fields = await getTranslations({locale, namespace: "Email.fields"});
   const dateLabel = isDateToBeConfirmed(booking.courseDateStart)
-    ? t("dateToBeConfirmed")
+    ? fields("dateToBeConfirmed")
     : formatDateRange(
         booking.courseDateStart,
         booking.courseDateEnd,
         locale,
       );
   const amount = formatChf(minorUnitsToFrancs(booking.amountMinor), locale);
+  const venueAddress = organization.courseVenueAddress;
+  const greeting = t("greeting", {name: booking.firstName});
   const subject = t("subject", {course: booking.courseTitle});
   const text = [
-    t("greeting", {name: booking.firstName}),
+    greeting,
     "",
     t("intro"),
     "",
@@ -34,7 +35,7 @@ export async function sendBookingConfirmation(booking: Booking): Promise<void> {
     t("dateLine", {date: dateLabel}),
     t("locationLine", {location: booking.location}),
     t("amountLine", {amount}),
-    t("referenceLine", {id: booking.id}),
+    t("addressLine", {address: venueAddress}),
     "",
     t("closing"),
     organization.brandName,
@@ -42,20 +43,22 @@ export async function sendBookingConfirmation(booking: Booking): Promise<void> {
     organization.phone,
   ].join("\n");
 
-  const html = `
-    <p>${escapeHtml(t("greeting", {name: booking.firstName}))}</p>
-    <p>${escapeHtml(t("intro"))}</p>
-    <p><strong>${escapeHtml(t("detailsTitle"))}</strong></p>
-    <ul>
-      <li>${escapeHtml(t("courseLine", {course: booking.courseTitle}))}</li>
-      <li>${escapeHtml(t("dateLine", {date: dateLabel}))}</li>
-      <li>${escapeHtml(t("locationLine", {location: booking.location}))}</li>
-      <li>${escapeHtml(t("amountLine", {amount}))}</li>
-      <li>${escapeHtml(t("referenceLine", {id: booking.id}))}</li>
-    </ul>
-    <p>${escapeHtml(t("closing"))}</p>
-    <p>${escapeHtml(organization.brandName)}<br/>${escapeHtml(organization.email)}<br/>${escapeHtml(organization.phone)}</p>
-  `;
+  const html = composeTransactionalEmail({
+    locale,
+    preheader: t("intro"),
+    eyebrow: t("eyebrow"),
+    title: booking.courseTitle,
+    greeting,
+    intro: t("intro"),
+    details: [
+      {label: fields("course"), value: booking.courseTitle},
+      {label: fields("dates"), value: dateLabel},
+      {label: fields("location"), value: booking.location},
+      {label: fields("amountPaid"), value: amount},
+      {label: fields("address"), value: venueAddress},
+    ],
+    closing: t("closing"),
+  });
 
   await sendMail({
     to: booking.email,
@@ -63,12 +66,4 @@ export async function sendBookingConfirmation(booking: Booking): Promise<void> {
     text,
     html,
   });
-}
-
-function escapeHtml(value: string): string {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;");
 }

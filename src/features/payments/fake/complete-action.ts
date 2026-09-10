@@ -16,36 +16,28 @@ export async function completeFakePaymentAction(formData: FormData): Promise<voi
     ? localeValue
     : "fr";
   const intent = String(formData.get("intent") ?? "pay");
+  const type =
+    intent === "pay" ? "paid" : intent === "fail" ? "failed" : "cancelled";
 
   if (!bookingId || !isValidFakeCheckoutToken(bookingId, token)) {
     throw new Error("Invalid fake checkout token");
   }
 
-  if (intent === "pay") {
-    const result = await applyPaymentEvent({
-      bookingId,
-      provider: "fake",
-      providerEventId: `fake-pay-${bookingId}`,
-      type: "paid",
-      payload: {source: "fake-checkout"},
-    });
+  const result = await applyPaymentEvent({
+    bookingId,
+    provider: "fake",
+    providerEventId: `fake-${type}-${bookingId}`,
+    type,
+    payload: {source: "fake-checkout"},
+  });
 
-    if (!result.ok) {
-      throw new Error(result.reason);
-    }
-  } else {
-    await applyPaymentEvent({
-      bookingId,
-      provider: "fake",
-      providerEventId: `fake-cancel-${bookingId}`,
-      type: "cancelled",
-      payload: {source: "fake-checkout"},
-    });
+  if (!result.ok) {
+    throw new Error(result.reason);
   }
 
   const pathname = localizedPathname(
     locale,
-    intent === "pay" ? "/booking/success" : "/booking/cancelled",
+    type === "paid" ? "/booking/success" : "/booking/cancelled",
   );
 
   redirect(`${pathname}?bookingId=${encodeURIComponent(bookingId)}`);

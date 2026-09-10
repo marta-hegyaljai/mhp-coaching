@@ -41,5 +41,7 @@ source of truth and overrides generic design preferences.
   animation.
 - Reuse `src/shared/ui` and `src/features/site-shell`; do not make page-specific
   versions of the shell, buttons, or locale switcher.
+- Transactional email is not page HTML. Follow `docs/EMAIL.md` and compose only
+  through `composeTransactionalEmail()` in `src/features/email/layout.ts`.
 - Before completion, run `pnpm verify` and inspect desktop plus ~390px in FR,
   DE, and EN with no browser/server console errors.

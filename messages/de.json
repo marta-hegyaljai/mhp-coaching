@@ -219,6 +219,7 @@
     "intro": "Lokal- und Preview-Umgebungen nutzen einen fiktiven Zahlungsanbieter. Es wird nichts an Stripe gesendet.",
     "amount": "Zu bestätigender Betrag: {amount}",
     "pay": "Erfolgreiche Zahlung simulieren",
+    "fail": "Fehlgeschlagene Zahlung simulieren",
     "cancel": "Abgebrochene Zahlung simulieren",
     "badge": "Testumgebung"
   },
@@ -301,8 +302,25 @@
     "phone": "Telefon"
   },
   "Email": {
+    "fields": {
+      "name": "Name",
+      "email": "E-Mail",
+      "phone": "Telefon",
+      "address": "Adresse",
+      "course": "Ausbildung",
+      "dates": "Termine",
+      "location": "Ort",
+      "amount": "Betrag",
+      "amountPaid": "Bezahlter Betrag",
+      "reference": "Referenz",
+      "status": "Status",
+      "statusPaid": "Bezahlt",
+      "statusFailed": "Fehlgeschlagen",
+      "dateToBeConfirmed": "Termin wird bestätigt"
+    },
     "bookingConfirmation": {
       "subject": "Buchung bestätigt — {course}",
+      "eyebrow": "Buchung bestätigt",
       "greeting": "Guten Tag {name},",
       "intro": "Ihre Zahlung ist eingegangen und Ihr Platz ist bestätigt.",
       "detailsTitle": "Ihre Buchung",
@@ -311,11 +329,12 @@
       "dateToBeConfirmed": "Termin wird bestätigt",
       "locationLine": "Ort: {location}",
       "amountLine": "Bezahlter Betrag: {amount}",
-      "referenceLine": "Referenz: {id}",
+      "addressLine": "Adresse: {address}",
       "closing": "Wir freuen uns auf Sie."
     },
     "leadNotification": {
       "subject": "Anmelde-Anfrage ohne Online-Zahlung — {course}",
+      "eyebrow": "Andere Zahlungsart",
       "intro": "Eine Person hat eine andere Zahlungsart gewünscht.",
       "nameLine": "Name: {name}",
       "emailLine": "E-Mail: {email}",
@@ -329,6 +348,8 @@
     },
     "inquiryNotification": {
       "subject": "Nachricht von der Website — {kind}",
+      "eyebrowGeneral": "Kontakt",
+      "eyebrowPayment": "Zahlung",
       "kindGeneral": "Kontakt",
       "kindPayment": "Zahlung",
       "intro": "Eine Nachricht wurde über die Website gesendet.",
@@ -343,11 +364,31 @@
     },
     "waitlistNotification": {
       "subject": "Warteliste — {course}",
+      "eyebrow": "Warteliste",
       "intro": "Eine Person hat sich auf die Warteliste gesetzt.",
       "nameLine": "Name: {name}",
       "emailLine": "E-Mail: {email}",
       "phoneLine": "Telefon: {phone}",
       "courseLine": "Ausbildung: {course}"
+    },
+    "purchaseNotification": {
+      "subjectPaid": "Zahlung eingegangen — {course}",
+      "subjectFailed": "Zahlung fehlgeschlagen — {course}",
+      "eyebrowPaid": "Zahlung eingegangen",
+      "eyebrowFailed": "Zahlung fehlgeschlagen",
+      "introPaid": "Eine Kurszahlung wurde bestätigt.",
+      "introFailed": "Eine Kurszahlung ist fehlgeschlagen.",
+      "statusPaid": "Status: bezahlt",
+      "statusFailed": "Status: fehlgeschlagen",
+      "nameLine": "Name: {name}",
+      "emailLine": "E-Mail: {email}",
+      "phoneLine": "Telefon: {phone}",
+      "addressLine": "Adresse: {address}",
+      "courseLine": "Ausbildung: {course}",
+      "dateLine": "Termine: {date}",
+      "dateToBeConfirmed": "Termin wird bestätigt",
+      "amountLine": "Betrag: {amount}",
+      "referenceLine": "Referenz: {id}"
     }
   },
   "NotFound": {

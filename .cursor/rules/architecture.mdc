@@ -6,4 +6,6 @@ Read `docs/ARCHITECTURE.md`. Use one Next.js modular monolith, one PostgreSQL
 account system and one Stripe customer identity per person. Keep Courses and
 Rooms as separate domains with explicit shared interfaces. Use Drizzle and small
 provider adapters; keep core data portable. No microservices or provider-coupled
-DB/auth patterns. Prefer Server Components.
+DB/auth patterns. Prefer Server Components. Transactional email follows
+`docs/EMAIL.md` and `composeTransactionalEmail()`; do not add a second mail
+provider.

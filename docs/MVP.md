@@ -176,8 +176,13 @@ phase replaces it with PostgreSQL-backed admin authentication and authorization.
 Do not build a broad admin product.
 
 ## Email
-Required: successful booking/payment confirmation.
-Local development must route mail to Mailpit, never real recipients by default.
+Required:
+- confirmation to the buyer after a successful payment
+- staff copy to `contact@mhp-coaching.ch` on every paid or failed purchase
+- staff notification when someone submits the contact form
+- staff notification when someone asks for another payment method (lead booking or payment inquiry form)
+
+Application templates go through the existing email adapter (`src/features/email`). Compose HTML only with `composeTransactionalEmail()`; layout and copy rules in `docs/EMAIL.md` are binding. Local development must route mail to Mailpit, never real recipients by default. Hosted delivery uses Resend only when `RESEND_API_KEY` is already set.
 
 ## SEO — launch critical
 Public pages must:

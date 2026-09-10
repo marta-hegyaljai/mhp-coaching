@@ -22,6 +22,29 @@ describe("message catalogues", () => {
     expect(flattenKeys(en as MessageTree).sort()).toEqual(reference);
   });
 
+  it("keeps shared Email.fields labels for every notification", () => {
+    const required = [
+      "name",
+      "email",
+      "phone",
+      "address",
+      "course",
+      "dates",
+      "location",
+      "amount",
+      "amountPaid",
+      "reference",
+      "status",
+      "statusPaid",
+      "statusFailed",
+      "dateToBeConfirmed",
+    ];
+
+    for (const key of required) {
+      expect(en.Email.fields).toHaveProperty(key);
+    }
+  });
+
   it("never ship an empty string", () => {
     for (const catalogue of [fr, de, en] as MessageTree[]) {
       for (const key of flattenKeys(catalogue)) {
