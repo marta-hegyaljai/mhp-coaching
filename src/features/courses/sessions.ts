@@ -63,6 +63,11 @@ export const agendaByCourseId: Record<string, CourseDate[]> = {
   "chronic-pain-hypnosis": [
     session("chronic-pain-hypnosis-2026-12-05", "2026-12-05"),
   ],
+  "stripe-payment-test": [
+    session("stripe-payment-test-2026-09-21", "2026-09-21", undefined, {
+      capacity: 2,
+    }),
+  ],
 };
 
 export function agendaDates(courseId: string): CourseDate[] {

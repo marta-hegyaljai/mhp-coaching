@@ -30,14 +30,31 @@ describe("course catalogue", () => {
   });
 
   it("keeps paused workshops and the M.I.A. course in the catalogue but off public lists", () => {
-    expect(getCatalogueCourses()).toHaveLength(20);
-    expect(getPublishedCourses()).toHaveLength(14);
+    expect(getCatalogueCourses()).toHaveLength(21);
+    expect(getPublishedCourses()).toHaveLength(15);
     expect(getFoundationCourses()).toHaveLength(1);
     expect(getAdvancedCourses()).toHaveLength(9);
     expect(getMedicalCourses()).toHaveLength(4);
-    expect(getWorkshopCourses()).toHaveLength(0);
+    expect(getWorkshopCourses()).toHaveLength(1);
     expect(getCourseById("transgenerational-mia")?.published).toBe(false);
     expect(getCourseBySlug("hypnose-transgenerationnelle-methode-mia")).toBeUndefined();
+  });
+
+  it("publishes a dated 10 CHF Stripe payment-test course", () => {
+    const course = getCourseById("stripe-payment-test");
+
+    expect(course?.priceChf).toBe(10);
+    expect(course?.published).toBe(true);
+    expect(course?.dates).toEqual([
+      expect.objectContaining({
+        id: "stripe-payment-test-2026-09-21",
+        startDate: "2026-09-21",
+        active: true,
+      }),
+    ]);
+    expect(getCourseBySlug("test-paiement-stripe")?.id).toBe("stripe-payment-test");
+    expect(getCourseBySlug("stripe-zahlungstest")?.id).toBe("stripe-payment-test");
+    expect(getCourseBySlug("stripe-payment-test")?.id).toBe("stripe-payment-test");
   });
 
   it("static params only pair each locale with its own published slug", () => {

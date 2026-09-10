@@ -869,5 +869,17 @@
         ]
       }
     ]
+  },
+  "stripe-payment-test": {
+    "intro": "Session interne destinée uniquement à vérifier le paiement Stripe en conditions réelles. Ce n’est pas une formation. Le montant de 10 CHF sera remboursé après le test.",
+    "sections": [
+      {
+        "title": "Objectif",
+        "items": [
+          "Vérifier le checkout Stripe, le webhook et l’e-mail de confirmation avec un montant de 10 francs.",
+          "Après le paiement, le montant est remboursé. Merci de ne pas vous inscrire si vous n’effectuez pas ce test."
+        ]
+      }
+    ]
   }
 }

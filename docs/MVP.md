@@ -76,13 +76,14 @@ Minimum:
 Do not delay launch for secondary content.
 
 ## Course data
-The public catalogue still reads the typed TypeScript seed. The same 20 rows and
+The public catalogue still reads the typed TypeScript seed. The same 21 rows and
 their sessions are also stored in PostgreSQL (`courses`, `course_sessions`) with
 stable ids matching existing bookings. A later course-admin slice can switch
 public reads to the database without renaming ids.
 
-The public catalogue covers the 20 published formations, grouped as foundation, advanced,
-medical hypnosis, and practical workshops. Workshops and the M.I.A. transgenerational
+The public catalogue covers the original 20 formations, grouped as foundation, advanced,
+medical hypnosis, and practical workshops, plus a temporary internal 10 CHF Stripe
+payment-test course. Workshops and the M.I.A. transgenerational
 course can be paused in catalogue config without deleting them, so a later admin panel
 can republish rows from the same structure. All course delivery locations are
 shown as Fribourg. Dates may remain empty until confirmed; an undated course

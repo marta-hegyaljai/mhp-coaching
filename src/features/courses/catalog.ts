@@ -318,4 +318,38 @@ export const courses: Course[] = [
     published: false,
     dates: agendaDates("sensory-anchors-hypnosis"),
   },
+  {
+    id: "stripe-payment-test",
+    slug: {
+      fr: "test-paiement-stripe",
+      de: "stripe-zahlungstest",
+      en: "stripe-payment-test",
+    },
+    title: {
+      fr: "Test interne — paiement Stripe",
+      de: "Interner Test — Stripe-Zahlung",
+      en: "Internal test — Stripe payment",
+    },
+    shortDescription: {
+      fr: "Session interne à 10 CHF pour vérifier le paiement Stripe en conditions réelles. Ce n’est pas une formation; le montant sera remboursé.",
+      de: "Interner 10-CHF-Termin zur Prüfung einer echten Stripe-Zahlung. Keine Ausbildung; der Betrag wird rückerstattet.",
+      en: "Internal CHF 10 session to verify a live Stripe payment. This is not a training course; the amount will be refunded.",
+    },
+    description: {
+      fr: "Cette entrée existe uniquement pour tester le checkout Stripe, le webhook et l’e-mail de confirmation avec un montant de 10 francs. Elle ne correspond à aucune formation réelle et le paiement sera remboursé après le test.",
+      de: "Dieser Eintrag dient nur dazu, Stripe-Checkout, Webhook und Bestätigungsmail mit 10 Franken zu prüfen. Es handelt sich um keine echte Ausbildung; die Zahlung wird nach dem Test rückerstattet.",
+      en: "This entry exists only to test Stripe Checkout, the webhook and the confirmation email with a 10-franc charge. It is not a real course, and the payment will be refunded after the test.",
+    },
+    audience: {
+      fr: "Réservé à l’équipe MHP pour un test de paiement. Merci de ne pas vous inscrire.",
+      de: "Nur für das MHP-Team zum Zahlungstest. Bitte nicht buchen.",
+      en: "Reserved for the MHP team’s payment test. Please do not enrol.",
+    },
+    duration: {fr: "Test paiement", de: "Zahlungstest", en: "Payment test"},
+    location,
+    priceChf: 10,
+    category: "workshop",
+    published: true,
+    dates: agendaDates("stripe-payment-test"),
+  },
 ];
