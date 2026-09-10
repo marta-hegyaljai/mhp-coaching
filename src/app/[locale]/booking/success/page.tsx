@@ -3,6 +3,7 @@ import type {ReactNode} from "react";
 
 import {getBookingById} from "@/features/bookings/repository";
 import {isDateToBeConfirmed} from "@/features/bookings/booking-date";
+import {sendBuyerConfirmationIfNeeded} from "@/features/email/paid-booking";
 import {formatDateRange} from "@/features/courses/dates";
 import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
 import {buildPageMetadata} from "@/features/seo/metadata";
@@ -41,7 +42,11 @@ export default async function BookingSuccessPage({
   const {bookingId} = await searchParams;
   setRequestLocale(locale);
   const t = await getTranslations("BookingSuccess");
-  const booking = bookingId ? await getBookingById(bookingId) : undefined;
+  let booking = bookingId ? await getBookingById(bookingId) : undefined;
+  if (booking?.status === "PAID") {
+    await sendBuyerConfirmationIfNeeded(booking);
+    booking = (await getBookingById(booking.id)) ?? booking;
+  }
   const paid = booking?.status === "PAID";
 
   return (

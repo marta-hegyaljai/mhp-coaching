@@ -179,7 +179,7 @@ Binding layout and copy: `docs/EMAIL.md`. HTML is composed only through
 inline styles). Shared detail labels live in `Email.fields`.
 
 Transactional mail sent through `src/features/email`:
-- buyer confirmation after a booking becomes `PAID`
+- buyer confirmation after a booking becomes `PAID`, retried until recorded
 - staff (`contact@mhp-coaching.ch`) on paid or failed purchases
 - staff on contact-form and alternative-payment inquiries
 - staff when a booking is saved as `LEAD` (other payment method)

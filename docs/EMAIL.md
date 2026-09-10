@@ -87,6 +87,14 @@ Buyer confirmation shows the course venue
 (`organization.courseVenueAddress`: Chem. de la Fenetta 42, 1752
 Villars-sur-Glâne), not the booking id.
 
+Paid-course mail is sent when the booking becomes `PAID`: one message to the
+buyer, one to `contact@mhp-coaching.ch`. If the buyer send fails, the Stripe
+webhook returns 5xx so Stripe retries, later paid events retry the buyer copy
+without a second staff mail, and the success page also retries until
+`confirmationEmailSentAt` is set. Hosted delivery still requires a verified
+Resend domain; otherwise Resend can accept mail to `contact@mhp-coaching.ch`
+while rejecting the buyer address.
+
 ## New email checklist
 
 1. Read this file.

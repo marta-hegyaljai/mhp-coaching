@@ -10,33 +10,35 @@ vi.mock("@/features/bookings/repository", () => ({
   recordPaymentEvent: vi.fn(),
 }));
 
-vi.mock("@/features/email/booking-confirmation", () => ({
-  sendBookingConfirmation: vi.fn(),
-}));
-
-vi.mock("@/features/email/purchase-notification", () => ({
-  sendPurchaseNotification: vi.fn(),
+vi.mock("@/features/email/paid-booking", () => ({
+  sendBuyerConfirmationIfNeeded: vi.fn(),
+  sendStaffPaidNotification: vi.fn(),
+  sendStaffFailedNotification: vi.fn(),
 }));
 
 import {
   getBookingById,
   markBookingPaidOnce,
   markBookingStatus,
-  markConfirmationEmailSent,
   recordPaymentEvent,
 } from "@/features/bookings/repository";
-import {sendBookingConfirmation} from "@/features/email/booking-confirmation";
-import {sendPurchaseNotification} from "@/features/email/purchase-notification";
+import {
+  sendBuyerConfirmationIfNeeded,
+  sendStaffFailedNotification,
+  sendStaffPaidNotification,
+} from "@/features/email/paid-booking";
 
 import {applyPaymentEvent} from "./apply-event";
 
 const getBookingByIdMock = vi.mocked(getBookingById);
 const markBookingPaidOnceMock = vi.mocked(markBookingPaidOnce);
 const markBookingStatusMock = vi.mocked(markBookingStatus);
-const markConfirmationEmailSentMock = vi.mocked(markConfirmationEmailSent);
 const recordPaymentEventMock = vi.mocked(recordPaymentEvent);
-const sendBookingConfirmationMock = vi.mocked(sendBookingConfirmation);
-const sendPurchaseNotificationMock = vi.mocked(sendPurchaseNotification);
+const sendBuyerConfirmationIfNeededMock = vi.mocked(
+  sendBuyerConfirmationIfNeeded,
+);
+const sendStaffPaidNotificationMock = vi.mocked(sendStaffPaidNotification);
+const sendStaffFailedNotificationMock = vi.mocked(sendStaffFailedNotification);
 
 function booking(overrides: Partial<Booking> = {}): Booking {
   return {
@@ -77,11 +79,15 @@ describe("applyPaymentEvent mail", () => {
     vi.clearAllMocks();
     getBookingByIdMock.mockResolvedValue(booking());
     recordPaymentEventMock.mockResolvedValue("recorded");
+    sendBuyerConfirmationIfNeededMock.mockResolvedValue(true);
   });
 
   it("emails the buyer and staff after a newly paid booking", async () => {
     const paid = booking({status: "PAID", paidAt: new Date()});
-    markBookingPaidOnceMock.mockResolvedValue({booking: paid, alreadyPaid: false});
+    markBookingPaidOnceMock.mockResolvedValue({
+      booking: paid,
+      alreadyPaid: false,
+    });
 
     await expect(
       applyPaymentEvent({
@@ -90,11 +96,61 @@ describe("applyPaymentEvent mail", () => {
         providerEventId: "evt-paid-1",
         type: "paid",
       }),
-    ).resolves.toEqual({ok: true});
+    ).resolves.toEqual({ok: true, confirmationEmailSent: true});
 
-    expect(sendBookingConfirmationMock).toHaveBeenCalledWith(paid);
-    expect(markConfirmationEmailSentMock).toHaveBeenCalledWith(paid.id);
-    expect(sendPurchaseNotificationMock).toHaveBeenCalledWith(paid, "paid");
+    expect(sendBuyerConfirmationIfNeededMock).toHaveBeenCalledWith(paid);
+    expect(sendStaffPaidNotificationMock).toHaveBeenCalledWith(paid);
+  });
+
+  it("retries the buyer confirmation when a paid event is replayed", async () => {
+    const paid = booking({status: "PAID", paidAt: new Date()});
+    recordPaymentEventMock.mockResolvedValue("duplicate");
+    markBookingPaidOnceMock.mockResolvedValue({
+      booking: paid,
+      alreadyPaid: true,
+    });
+    sendBuyerConfirmationIfNeededMock.mockResolvedValue(true);
+
+    await expect(
+      applyPaymentEvent({
+        bookingId: paid.id,
+        provider: "stripe",
+        providerEventId: "evt-dup",
+        type: "paid",
+      }),
+    ).resolves.toEqual({
+      ok: true,
+      alreadyProcessed: true,
+      confirmationEmailSent: true,
+    });
+
+    expect(sendBuyerConfirmationIfNeededMock).toHaveBeenCalledWith(paid);
+    expect(sendStaffPaidNotificationMock).not.toHaveBeenCalled();
+  });
+
+  it("retries the buyer confirmation on a later paid event without a second staff mail", async () => {
+    const paid = booking({status: "PAID", paidAt: new Date()});
+    markBookingPaidOnceMock.mockResolvedValue({
+      booking: paid,
+      alreadyPaid: true,
+    });
+    sendBuyerConfirmationIfNeededMock.mockResolvedValue(false);
+
+    await expect(
+      applyPaymentEvent({
+        bookingId: paid.id,
+        provider: "stripe",
+        providerEventId: "evt-async-paid",
+        type: "paid",
+      }),
+    ).resolves.toEqual({
+      ok: true,
+      alreadyProcessed: true,
+      confirmationEmailSent: false,
+    });
+
+    expect(sendBuyerConfirmationIfNeededMock).toHaveBeenCalledWith(paid);
+    expect(sendStaffPaidNotificationMock).not.toHaveBeenCalled();
   });
 
   it("emails staff after a failed purchase without writing to the buyer", async () => {
@@ -110,25 +166,25 @@ describe("applyPaymentEvent mail", () => {
       }),
     ).resolves.toEqual({ok: true});
 
-    expect(sendBookingConfirmationMock).not.toHaveBeenCalled();
-    expect(sendPurchaseNotificationMock).toHaveBeenCalledWith(failed, "failed");
+    expect(sendBuyerConfirmationIfNeededMock).not.toHaveBeenCalled();
+    expect(sendStaffFailedNotificationMock).toHaveBeenCalledWith(failed);
   });
 
-  it("does not send mail for a duplicate payment event", async () => {
+  it("does not send mail for a duplicate cancelled event", async () => {
     recordPaymentEventMock.mockResolvedValue("duplicate");
 
     await expect(
       applyPaymentEvent({
         bookingId: booking().id,
         provider: "stripe",
-        providerEventId: "evt-dup",
-        type: "paid",
+        providerEventId: "evt-dup-cancel",
+        type: "cancelled",
       }),
     ).resolves.toEqual({ok: true, alreadyProcessed: true});
 
-    expect(markBookingPaidOnceMock).not.toHaveBeenCalled();
-    expect(sendBookingConfirmationMock).not.toHaveBeenCalled();
-    expect(sendPurchaseNotificationMock).not.toHaveBeenCalled();
+    expect(markBookingStatusMock).not.toHaveBeenCalled();
+    expect(sendStaffPaidNotificationMock).not.toHaveBeenCalled();
+    expect(sendStaffFailedNotificationMock).not.toHaveBeenCalled();
   });
 
   it("does not email staff when checkout is only cancelled", async () => {
@@ -144,7 +200,8 @@ describe("applyPaymentEvent mail", () => {
       }),
     ).resolves.toEqual({ok: true});
 
-    expect(sendPurchaseNotificationMock).not.toHaveBeenCalled();
-    expect(sendBookingConfirmationMock).not.toHaveBeenCalled();
+    expect(sendStaffPaidNotificationMock).not.toHaveBeenCalled();
+    expect(sendStaffFailedNotificationMock).not.toHaveBeenCalled();
+    expect(sendBuyerConfirmationIfNeededMock).not.toHaveBeenCalled();
   });
 });

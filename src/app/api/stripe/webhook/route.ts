@@ -1,6 +1,7 @@
 import {NextResponse} from "next/server";
 
 import {applyPaymentEvent} from "@/features/payments/apply-event";
+import {checkoutFulfillment} from "@/features/payments/stripe/checkout-event";
 import {
   bookingIdFromStripeEvent,
   constructStripeEvent,
@@ -21,22 +22,11 @@ export async function POST(request: Request) {
       return NextResponse.json({received: true, ignored: true});
     }
 
-    if (
-      event.type !== "checkout.session.completed" &&
-      event.type !== "checkout.session.async_payment_succeeded" &&
-      event.type !== "checkout.session.expired" &&
-      event.type !== "checkout.session.async_payment_failed"
-    ) {
-      return NextResponse.json({received: true});
-    }
+    const type = checkoutFulfillment(event);
 
-    const type =
-      event.type === "checkout.session.completed" ||
-      event.type === "checkout.session.async_payment_succeeded"
-        ? "paid"
-        : event.type === "checkout.session.async_payment_failed"
-          ? "failed"
-          : "cancelled";
+    if (type === "ignored") {
+      return NextResponse.json({received: true, pending: true});
+    }
 
     const result = await applyPaymentEvent({
       bookingId,
@@ -48,6 +38,13 @@ export async function POST(request: Request) {
 
     if (!result.ok) {
       return NextResponse.json({error: result.reason}, {status: 400});
+    }
+
+    if (type === "paid" && result.confirmationEmailSent === false) {
+      return NextResponse.json(
+        {error: "confirmation_email_failed"},
+        {status: 500},
+      );
     }
 
     return NextResponse.json({received: true});

@@ -1,13 +1,22 @@
-import type {Booking} from "@/db/schema";
-import {sendBookingConfirmation} from "@/features/email/booking-confirmation";
-import {sendPurchaseNotification} from "@/features/email/purchase-notification";
 import {
   getBookingById,
   markBookingPaidOnce,
   markBookingStatus,
-  markConfirmationEmailSent,
   recordPaymentEvent,
 } from "@/features/bookings/repository";
+import {
+  sendBuyerConfirmationIfNeeded,
+  sendStaffFailedNotification,
+  sendStaffPaidNotification,
+} from "@/features/email/paid-booking";
+
+export type ApplyPaymentEventResult =
+  | {
+      ok: true;
+      alreadyProcessed?: boolean;
+      confirmationEmailSent?: boolean;
+    }
+  | {ok: false; reason: string};
 
 export async function applyPaymentEvent(input: {
   bookingId: string;
@@ -15,7 +24,7 @@ export async function applyPaymentEvent(input: {
   providerEventId: string;
   type: "paid" | "cancelled" | "failed";
   payload?: unknown;
-}): Promise<{ok: true; alreadyProcessed?: boolean} | {ok: false; reason: string}> {
+}): Promise<ApplyPaymentEventResult> {
   const booking = await getBookingById(input.bookingId);
 
   if (!booking) {
@@ -29,21 +38,28 @@ export async function applyPaymentEvent(input: {
     type: input.type,
     payload: input.payload,
   });
-
-  if (eventResult === "duplicate") {
-    return {ok: true, alreadyProcessed: true};
-  }
+  const isDuplicate = eventResult === "duplicate";
 
   if (input.type === "paid") {
     const {booking: paidBooking, alreadyPaid} = await markBookingPaidOnce(
       input.bookingId,
     );
+    const confirmationEmailSent =
+      await sendBuyerConfirmationIfNeeded(paidBooking);
 
     if (!alreadyPaid) {
-      await notifyPaidPurchase(paidBooking);
+      await sendStaffPaidNotification(paidBooking);
     }
 
-    return {ok: true};
+    return {
+      ok: true,
+      ...(isDuplicate || alreadyPaid ? {alreadyProcessed: true} : {}),
+      confirmationEmailSent,
+    };
+  }
+
+  if (isDuplicate) {
+    return {ok: true, alreadyProcessed: true};
   }
 
   if (booking.status === "PAID") {
@@ -57,33 +73,8 @@ export async function applyPaymentEvent(input: {
     })) ?? booking;
 
   if (input.type === "failed") {
-    await notifyFailedPurchase(updatedBooking);
+    await sendStaffFailedNotification(updatedBooking);
   }
 
   return {ok: true};
-}
-
-async function notifyPaidPurchase(booking: Booking): Promise<void> {
-  if (!booking.confirmationEmailSentAt) {
-    try {
-      await sendBookingConfirmation(booking);
-      await markConfirmationEmailSent(booking.id);
-    } catch (error) {
-      console.error("Failed to send booking confirmation email", error);
-    }
-  }
-
-  try {
-    await sendPurchaseNotification(booking, "paid");
-  } catch (error) {
-    console.error("Failed to send staff purchase notification", error);
-  }
-}
-
-async function notifyFailedPurchase(booking: Booking): Promise<void> {
-  try {
-    await sendPurchaseNotification(booking, "failed");
-  } catch (error) {
-    console.error("Failed to send staff purchase notification", error);
-  }
 }
