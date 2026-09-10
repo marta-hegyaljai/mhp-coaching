@@ -19,7 +19,7 @@
     "label": "Choisir la langue"
   },
   "HomePage": {
-    "eyebrow": "OMNI Hypnosis Training Center — Suisse romande & France",
+    "eyebrow": "Centre de formation en hypnose",
     "title": "La formation en hypnose elmanienne, avec calme et précision.",
     "intro": "mhp-coaching propose à Fribourg une hypnose contemporaine, directe et orientée solution — enseignée avec précision dans un cadre professionnel.",
     "ctaCourses": "Voir les formations",
@@ -54,7 +54,7 @@
     "readMore": "Détail de la formation",
     "waitlistLabel": "Liste d’attente",
     "breadcrumbHome": "Accueil",
-    "eyebrow": "Cursus OMNI",
+    "eyebrow": "Formations",
     "seats": "{count} participant·e·s max.",
     "courseCount": "{count, plural, =1 {# formation} other {# formations}}",
     "laterDates": "{count, plural, =1 {1 autre date} other {# autres dates}}",

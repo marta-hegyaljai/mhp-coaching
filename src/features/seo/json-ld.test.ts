@@ -2,7 +2,14 @@ import {describe, expect, it} from "vitest";
 
 import {getCourseById} from "@/features/courses/queries";
 
-import {courseJsonLd, courseListJsonLd, eventJsonLd, organizationJsonLd} from "./json-ld";
+import {
+  courseJsonLd,
+  courseListJsonLd,
+  eventJsonLd,
+  homeStatueJsonLd,
+  organizationJsonLd,
+} from "./json-ld";
+import {homeStatue, homeStatueArtist, homeStatueTitle} from "./home-statue";
 
 describe("structured data", () => {
   it("lists featured courses with locale-correct URLs", () => {
@@ -40,5 +47,18 @@ describe("structured data", () => {
       "Chemin de la Fenetta 42",
     );
     expect(JSON.stringify(json)).not.toMatch(/mhp-hypnose|Partners Sàrl|CHE-459/i);
+  });
+
+  it("describes the homepage Obelisk photograph", () => {
+    const json = homeStatueJsonLd("fr");
+    const creator = json.creator as {name: string};
+
+    expect(json["@type"]).toBe("ImageObject");
+    expect(json.name).toBe(homeStatueTitle);
+    expect(String(json.contentUrl)).toContain(homeStatue.src);
+    expect(json.encodingFormat).toBe("image/webp");
+    expect(json.width).toBe(homeStatue.width);
+    expect(json.height).toBe(homeStatue.height);
+    expect(creator.name).toBe(homeStatueArtist);
   });
 });

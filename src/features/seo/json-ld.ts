@@ -4,7 +4,12 @@ import {organization} from "@/features/organization/info";
 import type {Course} from "@/features/courses/types";
 import {toIsoDateTime} from "@/features/courses/dates";
 import {getBookableDates} from "@/features/courses/queries";
-import {homeStatue, homeStatueAlt} from "./home-statue";
+import {
+  homeStatue,
+  homeStatueAlt,
+  homeStatueArtist,
+  homeStatueTitle,
+} from "./home-statue";
 import {localizedPath} from "./metadata";
 
 type JsonLd = Record<string, unknown>;
@@ -138,14 +143,19 @@ export function homeStatueJsonLd(locale: AppLocale): JsonLd {
     "@type": "ImageObject",
     contentUrl: `${site}${homeStatue.src}`,
     url: `${site}${homeStatue.src}`,
-    name: alt,
+    name: homeStatueTitle,
     description: alt,
     encodingFormat: "image/webp",
     width: homeStatue.width,
     height: homeStatue.height,
     inLanguage: locale,
     representativeOfPage: true,
-    creator: {"@id": `${site}/#organization`},
+    creditText: `${homeStatueTitle} — ${homeStatueArtist}`,
+    creator: {
+      "@type": "Person",
+      name: homeStatueArtist,
+    },
+    copyrightHolder: {"@id": `${site}/#organization`},
   };
 }
 

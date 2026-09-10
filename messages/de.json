@@ -19,7 +19,7 @@
     "label": "Sprache wählen"
   },
   "HomePage": {
-    "eyebrow": "OMNI Hypnosis Training Center — Romandie & Frankreich",
+    "eyebrow": "Hypnose-Ausbildungszentrum",
     "title": "Ausbildung in elmanischer Hypnose, ruhig und präzise.",
     "intro": "mhp-coaching bietet in Freiburg zeitgenössische, direkte und lösungsorientierte Hypnose — präzise vermittelt in einem professionellen Rahmen.",
     "ctaCourses": "Ausbildungen ansehen",
@@ -54,7 +54,7 @@
     "readMore": "Kursdetails",
     "waitlistLabel": "Warteliste",
     "breadcrumbHome": "Start",
-    "eyebrow": "OMNI-Curriculum",
+    "eyebrow": "Ausbildungen",
     "seats": "max. {count} Teilnehmende",
     "courseCount": "{count, plural, =1 {# Ausbildung} other {# Ausbildungen}}",
     "laterDates": "{count, plural, =1 {1 weiterer Termin} other {# weitere Termine}}",

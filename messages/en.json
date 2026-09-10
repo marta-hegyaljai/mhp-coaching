@@ -19,7 +19,7 @@
     "label": "Choose language"
   },
   "HomePage": {
-    "eyebrow": "OMNI Hypnosis Training Center — French-speaking Switzerland & France",
+    "eyebrow": "Hypnosis training centre",
     "title": "Elmanian hypnosis training, taught with calm precision.",
     "intro": "mhp-coaching offers contemporary, direct, solution-focused hypnosis in Fribourg — taught with precision in a professional setting.",
     "ctaCourses": "View the courses",
@@ -54,7 +54,7 @@
     "readMore": "Course details",
     "waitlistLabel": "Waiting list",
     "breadcrumbHome": "Home",
-    "eyebrow": "OMNI curriculum",
+    "eyebrow": "Courses",
     "seats": "{count} participants max",
     "courseCount": "{count, plural, =1 {# course} other {# courses}}",
     "laterDates": "{count, plural, =1 {1 more date} other {# more dates}}",

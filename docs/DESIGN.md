@@ -141,9 +141,12 @@ primary action behind an ambiguous icon.
 - Every course card and detail page uses its corresponding historical course
   image from `public/images/courses`. Images support recognition and hierarchy;
   they must not become decorative full-page backgrounds or introduce new accent
-  colors into controls. The homepage statue is cropped from the top and carries
-  a black overlay panel for the intro and booking actions, in the same register
-  as the hypnomeditation overlay on the legacy site.
+  colors into controls. The homepage banner is full-bleed and uses Jan Hegy's
+  Obelisk photograph. Desktop is a two-column split: intro and booking actions
+  on the left, the artwork unobscured on the right. On phones the copy sits
+  above the photograph in a light grey overlay panel, in the same register as
+  the hypnomeditation overlay on the legacy site. Do not cover the artwork with
+  a black scrim.
 - Course-card artwork is a compact square thumbnail beside the title. Never
   split a card into two tall columns or give artwork half the card width: that
   creates narrow text measures, oversized headings, and excessive empty height.

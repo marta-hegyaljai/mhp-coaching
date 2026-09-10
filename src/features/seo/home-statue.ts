@@ -1,13 +1,17 @@
 import type {AppLocale} from "@/i18n/routing";
 
 export const homeStatue = {
-  src: "/images/home/hypnosis-statue.webp",
-  width: 960,
-  height: 708,
+  src: "/images/home/obelisk-jan-hegy.webp",
+  width: 1600,
+  height: 2400,
 } as const;
 
+export const homeStatueTitle = "Obelisk";
+export const homeStatueArtist = "Jan Hegy";
+export const homeStatueCredit = `${homeStatueTitle} — ${homeStatueArtist}`;
+
 export const homeStatueAlt: Record<AppLocale, string> = {
-  fr: "Sculpture abstraite en pierre sombre photographiée en noir et blanc, motif visuel de l’école d’hypnose MHP Coaching à Fribourg.",
-  de: "Abstrakte dunkle Steinskulptur in Schwarz-weiss, visuelles Motiv der Hypnoseschule MHP Coaching in Freiburg.",
-  en: "Abstract dark stone sculpture in black and white, a visual motif of the MHP Coaching hypnosis school in Fribourg.",
+  fr: "Obélisque, sculpture en bronze doré de Jan Hegy photographiée en studio, motif visuel de l’école d’hypnose MHP Coaching à Fribourg.",
+  de: "Obelisk, vergoldete Bronzeskulptur von Jan Hegy im Studio fotografiert, visuelles Motiv der Hypnoseschule MHP Coaching in Freiburg.",
+  en: "Obelisk, a gilded bronze sculpture by Jan Hegy photographed in the studio, a visual motif of the MHP Coaching hypnosis school in Fribourg.",
 };

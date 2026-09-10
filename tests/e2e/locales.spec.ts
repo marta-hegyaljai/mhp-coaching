@@ -36,7 +36,7 @@ for (const {locale, heading, coursesPath, coursesHeading} of locales) {
       /\/fr$/,
     );
     const statue = page.getByRole("img", {
-      name: /sculpture|skulptur|statue/i,
+      name: /sculpture|skulptur|statue|obelisk|obélisque/i,
     });
     await expect(statue).toBeVisible();
     const statueBox = await statue.boundingBox();
@@ -87,6 +87,68 @@ test("course catalogue keeps the instructor portrait without hiding the courses"
 
   expect(phonePhoto?.height ?? 999).toBeLessThan(280);
   expect(phoneCard?.y ?? 999).toBeLessThan(844);
+});
+
+test("homepage banner is full-bleed with copy beside the artwork on desktop", async ({
+  page,
+}) => {
+  await page.setViewportSize({width: 1280, height: 800});
+  await page.goto("/fr");
+
+  const hero = page.locator("#home-hero");
+  const heading = page.getByRole("heading", {level: 1});
+  const artwork = page.getByRole("img", {name: /obélisque|obelisk|sculpture/i});
+  const [heroBox, headingBox, artworkBox] = await Promise.all([
+    hero.boundingBox(),
+    heading.boundingBox(),
+    artwork.boundingBox(),
+  ]);
+
+  expect(heroBox?.x).toBe(0);
+  expect(Math.round(heroBox?.width ?? 0)).toBe(1280);
+  expect(headingBox?.x ?? 999).toBeLessThan(artworkBox?.x ?? 0);
+  expect(artworkBox?.x ?? 0).toBeGreaterThan(500);
+  await expect
+    .poll(async () => heading.evaluate((node) => getComputedStyle(node).color))
+    .toBe("rgb(255, 255, 255)");
+  await expect(page.getByText("Obelisk — Jan Hegy")).toBeVisible();
+});
+
+test("homepage banner stacks a light copy panel above the artwork on a phone", async ({
+  page,
+}) => {
+  await page.setViewportSize({width: 390, height: 844});
+  await page.goto("/fr");
+
+  const hero = page.locator("#home-hero");
+  const heading = page.getByRole("heading", {level: 1});
+  const artwork = page.getByRole("img", {name: /obélisque|obelisk|sculpture/i});
+  const [heroBox, headingBox, artworkBox] = await Promise.all([
+    hero.boundingBox(),
+    heading.boundingBox(),
+    artwork.boundingBox(),
+  ]);
+
+  expect(heroBox?.x).toBe(0);
+  expect(Math.round(heroBox?.width ?? 0)).toBe(390);
+  expect(artworkBox?.y ?? 999).toBeLessThanOrEqual(headingBox?.y ?? 0);
+  expect(artworkBox?.height ?? 0).toBeGreaterThan(headingBox?.height ?? 999);
+  await expect
+    .poll(async () => heading.evaluate((node) => getComputedStyle(node).color))
+    .toBe("rgb(9, 9, 9)");
+  const overlayIsLight = await heading.evaluate((node) => {
+    const background = getComputedStyle(node.parentElement!).backgroundColor;
+    const oklab = background.match(/oklab\(([0-9.]+)/);
+    if (oklab) {
+      return Number(oklab[1]) > 0.85;
+    }
+    const rgb = background.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+    if (!rgb) {
+      return false;
+    }
+    return Number(rgb[1]) > 200 && Number(rgb[2]) > 200 && Number(rgb[3]) > 200;
+  });
+  expect(overlayIsLight).toBe(true);
 });
 
 test("root redirects to French and locale URLs still work without the picker", async ({
