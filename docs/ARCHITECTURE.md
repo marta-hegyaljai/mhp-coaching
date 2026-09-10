@@ -17,8 +17,8 @@ One Next.js App Router application handles:
 - public website
 - localized SEO pages
 - course booking UI/server logic and Stripe checkout/webhooks
-- shared account, profile, permission and email infrastructure (invitation-only accounts in CP-02; public signup in CP-01)
-- authenticated course history/certificates (planned)
+- shared account, profile, permission and email infrastructure
+- authenticated course certificates (planned)
 - therapist room availability, booking and monthly billing (planned)
 - role-aware administration (admin users, access and staff lists)
 
@@ -185,29 +185,33 @@ Transactional mail sent through `src/features/email`:
 - staff when a booking is saved as `LEAD` (other payment method)
 - staff when someone joins a waiting list
 - invited user when an admin sends or resends an account invitation
+- public sign-up email verification (`sendEmailVerification`)
+- password reset (`sendPasswordRecovery`)
 
 ## Authentication
 
-Current state: invitation-only PostgreSQL accounts with scrypt password hashes,
-revocable cookie sessions, an `ADMIN` role and a `ROOM_BOOKING` capability.
-Staff booking/waitlist pages and CSV exports require an enabled admin session.
-HTTP Basic Auth has been removed. Public self-registration, password recovery
-and My Courses remain CP-01.
+Current state: PostgreSQL accounts with public self-registration, email
+verification, password recovery, in-session password change, a basic profile,
+My Courses, scrypt password hashes, revocable cookie sessions, an `ADMIN` role
+and a `ROOM_BOOKING` capability. Staff booking/waitlist pages and CSV exports
+require an enabled admin session. HTTP Basic Auth has been removed. Guest
+course checkout remains available without an account.
 
 Do not introduce Supabase Auth or another provider-coupled authorization system.
 
-Every invited account receives course-user access. `ROOM_BOOKING` is an explicit
+Every self-registered or invited account receives course-user access. `ROOM_BOOKING` is an explicit
 admin-granted capability; `ADMIN` is an administrative role. Navigation reflects
 capabilities, but every query and mutation also enforces them server-side. An
 admin can manage room operations but cannot read private booking notes. Private
 notes live separately and require owner identity, not a role override.
 
-Rate-limit sign-in and invitation acceptance, keep session cookies HttpOnly /
-SameSite=Lax / Secure in production, hash session and invitation tokens at rest,
-verify emails when an invitation is accepted, and never trust browser-supplied
+Rate-limit sign-in, sign-up, password recovery and invitation acceptance, keep session cookies HttpOnly /
+SameSite=Lax / Secure in production, hash session and auth tokens at rest,
+verify emails before sign-in and before historical booking reconciliation, and never trust browser-supplied
 user IDs or roles. Normalized email (`email_normalized`) is the unique account
 identifier: PostgreSQL rejects a second row for the same address, including
-case variants. The first admin is created with `pnpm db:bootstrap-admin`
+case variants. Account email is permanent for now: users cannot change it on
+the profile page. The first admin is created with `pnpm db:bootstrap-admin`
 from environment variables; the command refuses to run when an enabled admin
 already exists.
 
@@ -220,11 +224,12 @@ src/
     api/staff/bookings.csv/
     api/staff/waitlist.csv/
   features/
-    auth/                   # credentials, sessions, invitations
-    users/                  # planned: profile, capability and Stripe identity
+    auth/                   # credentials, sessions, invitations, recovery, profile
+    account/                # My Courses and verified-email booking reconciliation
+    users/                  # planned: Stripe identity
     courses/                # catalogue, dates, course UI
     bookings/               # existing course form, validation, persistence
-    course-account/         # planned: own registrations/history/certificates
+    course-account/         # planned: certificates on top of My Courses
     rooms/                  # planned: inventory, hours, blocks, availability
     room-bookings/          # planned: booking lifecycle + private-note boundary
     room-requests/          # planned: no-availability requests
@@ -266,9 +271,10 @@ Provide a single `pnpm verify` command that runs at least lint, typecheck, unit 
 ## Deployment
 GitHub is source of truth.
 Vercel branch/PR previews are part of the development loop.
-Production Vercel builds (`VERCEL_ENV=production`, typically `main`) run
+Production and preview Vercel builds (`VERCEL_ENV=production` or `preview`) run
 `pnpm db:migrate` before `next build` so committed SQL is applied to Neon.
-Preview and local builds skip that step.
+Production builds also re-seed the course catalogue. Local `pnpm build` skips
+those steps.
 New production application domains must not be connected until their release
 acceptance and rollback plan are complete.
 

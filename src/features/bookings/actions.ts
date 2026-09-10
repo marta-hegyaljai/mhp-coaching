@@ -6,6 +6,7 @@ import {hasLocale} from "next-intl";
 
 import {getCourseById, getBookableDates} from "@/features/courses/queries";
 import {isCoursePublished} from "@/features/courses/types";
+import {getCurrentUser} from "@/features/auth/session";
 import {sendLeadNotification} from "@/features/email/lead-notification";
 import {getPaymentProvider} from "@/features/payments/get-provider";
 import {francsToMinorUnits} from "@/features/payments/money";
@@ -77,6 +78,7 @@ export async function createBookingAction(
   const origin = getSiteUrl().origin;
   const isLead = values.intent === "lead";
   const provider = isLead ? {name: "offline"} : getPaymentProvider();
+  const signedInUser = await getCurrentUser();
 
   let nextUrl: string;
 
@@ -102,6 +104,7 @@ export async function createBookingAction(
       paymentProvider: provider.name,
       privacyAcceptedAt: new Date(),
       status: isLead ? "LEAD" : "PENDING",
+      userId: signedInUser?.id ?? null,
     });
 
     if (isLead) {

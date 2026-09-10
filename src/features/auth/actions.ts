@@ -4,16 +4,26 @@ import {redirect} from "next/navigation";
 import {getTranslations} from "next-intl/server";
 import {hasLocale} from "next-intl";
 
+import {linkUnownedBookingsForVerifiedUser} from "@/features/account/link-bookings";
 import {canAuthenticate} from "@/features/auth/policy";
 import {passwordErrors, hashPassword, verifyPassword} from "@/features/auth/password";
 import {isValidEmail, normalizeEmail} from "@/features/auth/email";
+import {updateAccountProfile} from "@/features/auth/profile";
 import {
   isInviteAcceptRateLimited,
+  isRecoveryRateLimited,
   isSignInRateLimited,
+  isSignUpRateLimited,
+  isVerifyRateLimited,
   recordInviteAcceptAttempt,
+  recordRecoveryAttempt,
   recordSignInAttempt,
+  recordSignUpAttempt,
+  recordVerifyAttempt,
 } from "@/features/auth/rate-limit";
 import {safeInternalPath} from "@/features/auth/redirect-path";
+import {changeSignedInPassword, requestPasswordReset, resetPasswordWithToken} from "@/features/auth/recovery";
+import {registerAccount, verifySignupEmail} from "@/features/auth/register";
 import {
   AUDIT_ACTIONS,
   accessSnapshot,
@@ -24,15 +34,26 @@ import {
   recordAudit,
   updateUser,
 } from "@/features/auth/repository";
-import {clearSessionCookie, createSessionCookie} from "@/features/auth/session";
+import {
+  clearSessionCookie,
+  createSessionCookie,
+  readActiveSession,
+} from "@/features/auth/session";
+import {signedInHomePath} from "@/features/auth/signed-in-home";
 import {hashToken} from "@/features/auth/tokens";
+import {sendEmailVerification, sendPasswordRecovery} from "@/features/email/account";
 import {localizedPathname} from "@/i18n/path";
 import {routing, type AppLocale} from "@/i18n/routing";
 
 export type AuthFormState = {
   error?: string;
+  notice?: string;
   fieldErrors?: {
+    firstName?: string;
+    lastName?: string;
     email?: string;
+    locale?: string;
+    currentPassword?: string;
     password?: string;
     passwordConfirm?: string;
   };
@@ -46,6 +67,22 @@ async function dummyPasswordCheck(): Promise<void> {
   await verifyPassword("timing-protection", "scrypt$16384$8$1$AAAAAAAAAAAAAAAAAAAAAA$AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 }
 
+function passwordFieldErrors(
+  issues: ReturnType<typeof passwordErrors>,
+  t: (key: "passwordTooShort" | "passwordMismatch" | "passwordSameAsEmail") => string,
+): AuthFormState["fieldErrors"] {
+  const fieldErrors: AuthFormState["fieldErrors"] = {};
+  if (issues.includes("tooShort") || issues.includes("tooLong") || issues.includes("sameAsEmail")) {
+    fieldErrors.password = issues.includes("sameAsEmail")
+      ? t("passwordSameAsEmail")
+      : t("passwordTooShort");
+  }
+  if (issues.includes("mismatch")) {
+    fieldErrors.passwordConfirm = t("passwordMismatch");
+  }
+  return fieldErrors;
+}
+
 export async function signInAction(
   locale: string,
   nextPath: string,
@@ -57,41 +94,57 @@ export async function signInAction(
   const email = String(formData.get("email") ?? "");
   const password = String(formData.get("password") ?? "");
   const destination = safeInternalPath(nextPath, resolvedLocale);
+  const localeHome = `/${resolvedLocale}`;
+  let destinationHref: string | null = null;
 
-  if (!isValidEmail(email) || password.length === 0) {
-    return {error: t("invalid")};
+  try {
+    if (!isValidEmail(email) || password.length === 0) {
+      return {error: t("invalid")};
+    }
+
+    const emailNormalized = normalizeEmail(email);
+
+    if (await isSignInRateLimited(emailNormalized)) {
+      return {error: t("rateLimited")};
+    }
+
+    await recordSignInAttempt(emailNormalized);
+    const user = await findUserByNormalizedEmail(emailNormalized);
+
+    if (!user || !user.passwordHash) {
+      await dummyPasswordCheck();
+      return {error: t("invalid")};
+    }
+
+    const passwordOk = await verifyPassword(password, user.passwordHash);
+
+    if (!passwordOk) {
+      return {error: t("invalid")};
+    }
+
+    if (user.disabledAt) {
+      return {error: t("disabled")};
+    }
+
+    if (!canAuthenticate(user)) {
+      return {error: t("unverified")};
+    }
+
+    await createSessionCookie(user.id);
+    destinationHref =
+      destination === localeHome
+        ? localizedPathname(resolvedLocale, signedInHomePath(user))
+        : destination;
+  } catch (error) {
+    console.error("Sign-in failed", error);
+    return {error: t("unavailable")};
   }
 
-  const emailNormalized = normalizeEmail(email);
-
-  if (await isSignInRateLimited(emailNormalized)) {
-    return {error: t("rateLimited")};
+  if (!destinationHref) {
+    return {error: t("unavailable")};
   }
 
-  await recordSignInAttempt(emailNormalized);
-  const user = await findUserByNormalizedEmail(emailNormalized);
-
-  if (!user || !user.passwordHash) {
-    await dummyPasswordCheck();
-    return {error: t("invalid")};
-  }
-
-  const passwordOk = await verifyPassword(password, user.passwordHash);
-
-  if (!passwordOk) {
-    return {error: t("invalid")};
-  }
-
-  if (user.disabledAt) {
-    return {error: t("disabled")};
-  }
-
-  if (!canAuthenticate(user)) {
-    return {error: t("invalid")};
-  }
-
-  await createSessionCookie(user.id);
-  redirect(destination);
+  redirect(destinationHref);
 }
 
 export async function signOutAction(locale: string): Promise<void> {
@@ -132,16 +185,7 @@ export async function acceptInviteAction(
   const issues = passwordErrors(password, passwordConfirm, user.email);
 
   if (issues.length > 0) {
-    const fieldErrors: AuthFormState["fieldErrors"] = {};
-    if (issues.includes("tooShort") || issues.includes("tooLong") || issues.includes("sameAsEmail")) {
-      fieldErrors.password = issues.includes("sameAsEmail")
-        ? t("passwordSameAsEmail")
-        : t("passwordTooShort");
-    }
-    if (issues.includes("mismatch")) {
-      fieldErrors.passwordConfirm = t("passwordMismatch");
-    }
-    return {fieldErrors};
+    return {fieldErrors: passwordFieldErrors(issues, t)};
   }
 
   const passwordHash = await hashPassword(password);
@@ -151,6 +195,7 @@ export async function acceptInviteAction(
     emailVerifiedAt: new Date(),
   });
   await markInviteConsumed(invite.id);
+  await linkUnownedBookingsForVerifiedUser(updated);
   await recordAudit({
     actorUserId: user.id,
     targetUserId: user.id,
@@ -159,10 +204,228 @@ export async function acceptInviteAction(
     after: accessSnapshot(updated),
   });
   await createSessionCookie(user.id);
-  redirect(
-    localizedPathname(
-      resolvedLocale,
-      updated.isAdmin ? "/admin/users" : updated.roomBookingEnabled ? "/rooms" : "/",
-    ),
-  );
+  redirect(localizedPathname(resolvedLocale, signedInHomePath(updated)));
+}
+
+export async function signUpAction(
+  locale: string,
+  _previous: AuthFormState | null,
+  formData: FormData,
+): Promise<AuthFormState> {
+  const resolvedLocale = resolveLocale(locale);
+  const t = await getTranslations({locale: resolvedLocale, namespace: "Auth.errors"});
+  const auth = await getTranslations({locale: resolvedLocale, namespace: "Auth"});
+  const email = String(formData.get("email") ?? "");
+  const emailNormalized = isValidEmail(email) ? normalizeEmail(email) : "invalid";
+
+  if (await isSignUpRateLimited(emailNormalized)) {
+    return {error: t("rateLimited")};
+  }
+
+  await recordSignUpAttempt(emailNormalized);
+
+  const result = await registerAccount({
+    firstName: String(formData.get("firstName") ?? ""),
+    lastName: String(formData.get("lastName") ?? ""),
+    email,
+    password: String(formData.get("password") ?? ""),
+    passwordConfirm: String(formData.get("passwordConfirm") ?? ""),
+    locale: resolvedLocale,
+  });
+
+  if (!result.ok) {
+    const fieldErrors: AuthFormState["fieldErrors"] = {};
+    if (result.fieldErrors.firstName) {
+      fieldErrors.firstName = t("nameRequired");
+    }
+    if (result.fieldErrors.lastName) {
+      fieldErrors.lastName = t("nameRequired");
+    }
+    if (result.fieldErrors.email) {
+      fieldErrors.email = t("emailInvalid");
+    }
+    if (result.fieldErrors.password) {
+      fieldErrors.password = t("passwordTooShort");
+    }
+    if (result.fieldErrors.passwordConfirm) {
+      fieldErrors.passwordConfirm = t("passwordMismatch");
+    }
+    if (result.fieldErrors.password && passwordErrors(
+      String(formData.get("password") ?? ""),
+      String(formData.get("passwordConfirm") ?? ""),
+      email,
+    ).includes("sameAsEmail")) {
+      fieldErrors.password = t("passwordSameAsEmail");
+    }
+    return {fieldErrors};
+  }
+
+  if (result.rawToken && result.user) {
+    if (await isVerifyRateLimited(result.user.emailNormalized)) {
+      return {notice: auth("checkEmailNotice")};
+    }
+    await recordVerifyAttempt(result.user.emailNormalized);
+    try {
+      await sendEmailVerification({
+        to: result.user.email,
+        firstName: result.user.firstName,
+        locale: resolveLocale(result.user.locale),
+        rawToken: result.rawToken,
+      });
+    } catch (error) {
+      console.error("Failed to send verification email", error);
+    }
+  }
+
+  return {notice: auth("checkEmailNotice")};
+}
+
+export async function verifyEmailAction(
+  locale: string,
+  token: string,
+  _previous: AuthFormState | null,
+  _formData: FormData,
+): Promise<AuthFormState> {
+  const resolvedLocale = resolveLocale(locale);
+  const t = await getTranslations({locale: resolvedLocale, namespace: "Auth.errors"});
+  const result = await verifySignupEmail(token);
+
+  if (!result.ok) {
+    return {error: t("verifyInvalid")};
+  }
+
+  await createSessionCookie(result.user.id);
+  redirect(localizedPathname(resolvedLocale, "/account/courses"));
+}
+
+export async function forgotPasswordAction(
+  locale: string,
+  _previous: AuthFormState | null,
+  formData: FormData,
+): Promise<AuthFormState> {
+  const resolvedLocale = resolveLocale(locale);
+  const t = await getTranslations({locale: resolvedLocale, namespace: "Auth.errors"});
+  const auth = await getTranslations({locale: resolvedLocale, namespace: "Auth"});
+  const email = String(formData.get("email") ?? "");
+  const emailNormalized = isValidEmail(email) ? normalizeEmail(email) : "invalid";
+
+  if (await isRecoveryRateLimited(emailNormalized)) {
+    return {error: t("rateLimited")};
+  }
+
+  await recordRecoveryAttempt(emailNormalized);
+  await dummyPasswordCheck();
+
+  const result = await requestPasswordReset(email);
+  if (result.rawToken && result.user) {
+    try {
+      await sendPasswordRecovery({
+        to: result.user.email,
+        firstName: result.user.firstName,
+        locale: resolveLocale(result.user.locale),
+        rawToken: result.rawToken,
+      });
+    } catch (error) {
+      console.error("Failed to send recovery email", error);
+    }
+  }
+
+  return {notice: auth("forgotNotice")};
+}
+
+export async function resetPasswordAction(
+  locale: string,
+  token: string,
+  _previous: AuthFormState | null,
+  formData: FormData,
+): Promise<AuthFormState> {
+  const resolvedLocale = resolveLocale(locale);
+  const t = await getTranslations({locale: resolvedLocale, namespace: "Auth.errors"});
+  const result = await resetPasswordWithToken({
+    rawToken: token,
+    password: String(formData.get("password") ?? ""),
+    passwordConfirm: String(formData.get("passwordConfirm") ?? ""),
+  });
+
+  if (!result.ok && result.reason === "password") {
+    return {fieldErrors: passwordFieldErrors(result.issues, t)};
+  }
+
+  if (!result.ok) {
+    return {error: t("resetInvalid")};
+  }
+
+  await createSessionCookie(result.user.id);
+  redirect(localizedPathname(resolvedLocale, signedInHomePath(result.user)));
+}
+
+export async function changePasswordAction(
+  locale: string,
+  _previous: AuthFormState | null,
+  formData: FormData,
+): Promise<AuthFormState> {
+  const resolvedLocale = resolveLocale(locale);
+  const t = await getTranslations({locale: resolvedLocale, namespace: "Auth.errors"});
+  const auth = await getTranslations({locale: resolvedLocale, namespace: "Auth"});
+  const session = await readActiveSession();
+
+  if (!session) {
+    redirect(localizedPathname(resolvedLocale, "/sign-in"));
+  }
+
+  const result = await changeSignedInPassword({
+    user: session.user,
+    currentPassword: String(formData.get("currentPassword") ?? ""),
+    password: String(formData.get("password") ?? ""),
+    passwordConfirm: String(formData.get("passwordConfirm") ?? ""),
+    currentSessionId: session.sessionId,
+  });
+
+  if (!result.ok && result.reason === "current") {
+    return {fieldErrors: {currentPassword: t("currentPasswordInvalid")}};
+  }
+
+  if (!result.ok) {
+    return {fieldErrors: passwordFieldErrors(result.issues, t)};
+  }
+
+  return {notice: auth("passwordChangedNotice")};
+}
+
+export async function updateProfileAction(
+  locale: string,
+  _previous: AuthFormState | null,
+  formData: FormData,
+): Promise<AuthFormState> {
+  const resolvedLocale = resolveLocale(locale);
+  const t = await getTranslations({locale: resolvedLocale, namespace: "Auth.errors"});
+  const auth = await getTranslations({locale: resolvedLocale, namespace: "Auth"});
+  const session = await readActiveSession();
+
+  if (!session) {
+    redirect(localizedPathname(resolvedLocale, "/sign-in"));
+  }
+
+  const result = await updateAccountProfile({
+    user: session.user,
+    firstName: String(formData.get("firstName") ?? ""),
+    lastName: String(formData.get("lastName") ?? ""),
+    locale: String(formData.get("locale") ?? resolvedLocale),
+  });
+
+  if (!result.ok) {
+    const fieldErrors: AuthFormState["fieldErrors"] = {};
+    if (result.fieldErrors.firstName) {
+      fieldErrors.firstName = t("nameRequired");
+    }
+    if (result.fieldErrors.lastName) {
+      fieldErrors.lastName = t("nameRequired");
+    }
+    if (result.fieldErrors.locale) {
+      fieldErrors.locale = t("localeInvalid");
+    }
+    return {fieldErrors};
+  }
+
+  return {notice: auth("profileUpdatedNotice")};
 }

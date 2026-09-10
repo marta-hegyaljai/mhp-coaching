@@ -17,11 +17,13 @@ Implemented today:
 - guest course registration with postal address persisted before payment;
 - fake and Stripe Checkout providers, signed webhook processing and email;
 - alternative-payment inquiries; and
-- admin-authenticated booking and waitlist lists with CSV export.
+- admin-authenticated booking and waitlist lists with CSV export; and
+- public accounts: sign-up, email verification, password recovery, profile
+  (name and language; email is permanent), My Courses and verified-email
+  booking reconciliation, while guest checkout remains available.
 
-Not implemented today: user accounts, verified-email booking reconciliation,
-roles/capabilities, student dashboard/history/certificates, a full admin product,
-or any room-booking feature.
+Not implemented today: certificates, a full course-admin CMS, or any
+room-booking feature.
 
 ## Original objective
 
@@ -42,9 +44,8 @@ The course MVP deliberately permits guest checkout. A visitor does not have to
 create an account to register. The registration retains the submitted email as
 a durable snapshot.
 
-The planned account system adds normal users, therapists and admins. After a
-new account verifies its email, existing guest course registrations with the
-same normalized email become visible to that user. An account is not required
+After a new account verifies its email, existing guest course registrations with
+the same normalized email become visible to that user. An account is not required
 retroactively and room-booking permission is never inferred from course history.
 See [`PRODUCT-VISION.md`](./PRODUCT-VISION.md) and
 [`ROOM-BOOKING.md`](./ROOM-BOOKING.md) for the broader model.

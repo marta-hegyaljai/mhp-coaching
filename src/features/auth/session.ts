@@ -54,7 +54,10 @@ export async function clearSessionCookie(): Promise<void> {
   });
 }
 
-export async function readSessionUser(): Promise<User | null> {
+export async function readActiveSession(): Promise<{
+  sessionId: string;
+  user: User;
+} | null> {
   const jar = await cookies();
   const token = jar.get(SESSION_COOKIE_NAME)?.value;
 
@@ -69,7 +72,12 @@ export async function readSessionUser(): Promise<User | null> {
   }
 
   await touchSession(session.sessionId).catch(() => undefined);
-  return session.user;
+  return {sessionId: session.sessionId, user: session.user};
+}
+
+export async function readSessionUser(): Promise<User | null> {
+  const session = await readActiveSession();
+  return session?.user ?? null;
 }
 
 export async function getCurrentUser(): Promise<User | null> {

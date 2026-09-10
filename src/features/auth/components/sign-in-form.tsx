@@ -5,6 +5,7 @@ import {useTranslations} from "next-intl";
 
 import {signInAction} from "@/features/auth/actions";
 import {AuthAlert, AuthField} from "@/features/auth/components/auth-field";
+import {Link} from "@/i18n/navigation";
 import {Button} from "@/shared/ui/button";
 import {SpinnerIcon} from "@/shared/ui/icons";
 
@@ -48,6 +49,15 @@ export function SignInForm({
           t("submit")
         )}
       </Button>
+      <p className="text-sm leading-6 text-ink-muted">
+        <Link href="/forgot-password" className="text-ink underline-offset-4 hover:underline">
+          {t("forgotLink")}
+        </Link>
+        {" · "}
+        <Link href="/sign-up" className="text-ink underline-offset-4 hover:underline">
+          {t("signUpLink")}
+        </Link>
+      </p>
     </form>
   );
 }

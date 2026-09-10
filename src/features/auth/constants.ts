@@ -1,7 +1,16 @@
 export const SESSION_COOKIE_NAME = "mhp_session";
 export const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 export const INVITE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+export const VERIFY_TTL_MS = 48 * 60 * 60 * 1000;
+export const RECOVERY_TTL_MS = 60 * 60 * 1000;
+export const EMAIL_CHANGE_TTL_MS = 48 * 60 * 60 * 1000;
 export const SIGN_IN_WINDOW_MS = 15 * 60 * 1000;
 export const SIGN_IN_MAX_ATTEMPTS = 5;
 export const INVITE_ACCEPT_WINDOW_MS = 60 * 60 * 1000;
 export const INVITE_ACCEPT_MAX_ATTEMPTS = 10;
+export const SIGN_UP_WINDOW_MS = 15 * 60 * 1000;
+export const SIGN_UP_MAX_ATTEMPTS = 5;
+export const RECOVERY_WINDOW_MS = 15 * 60 * 1000;
+export const RECOVERY_MAX_ATTEMPTS = 5;
+export const VERIFY_WINDOW_MS = 15 * 60 * 1000;
+export const VERIFY_MAX_ATTEMPTS = 5;

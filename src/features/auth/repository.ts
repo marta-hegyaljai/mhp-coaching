@@ -9,6 +9,7 @@ import {
   sessions,
   users,
   type AuthToken,
+  type AuthTokenPurpose,
   type User,
 } from "@/db/schema";
 import {AUDIT_ACTIONS, type AuditAction} from "@/features/admin/audit-actions";
@@ -199,6 +200,10 @@ export async function updateUser(
       | "firstName"
       | "lastName"
       | "locale"
+      | "email"
+      | "emailNormalized"
+      | "pendingEmail"
+      | "pendingEmailNormalized"
     >
   >,
 ): Promise<User> {
@@ -268,6 +273,22 @@ export async function revokeAllSessionsForUser(userId: string): Promise<void> {
     .where(and(eq(sessions.userId, userId), isNull(sessions.revokedAt)));
 }
 
+export async function revokeOtherSessionsForUser(
+  userId: string,
+  keepSessionId: string,
+): Promise<void> {
+  await getDb()
+    .update(sessions)
+    .set({revokedAt: new Date()})
+    .where(
+      and(
+        eq(sessions.userId, userId),
+        isNull(sessions.revokedAt),
+        ne(sessions.id, keepSessionId),
+      ),
+    );
+}
+
 export async function touchSession(sessionId: string): Promise<void> {
   await getDb()
     .update(sessions)
@@ -276,6 +297,13 @@ export async function touchSession(sessionId: string): Promise<void> {
 }
 
 export async function findValidInviteToken(tokenHash: string): Promise<AuthToken | undefined> {
+  return findValidAuthToken(tokenHash, "invite");
+}
+
+export async function findValidAuthToken(
+  tokenHash: string,
+  purpose: AuthTokenPurpose,
+): Promise<AuthToken | undefined> {
   const now = new Date();
   const [token] = await getDb()
     .select()
@@ -283,7 +311,7 @@ export async function findValidInviteToken(tokenHash: string): Promise<AuthToken
     .where(
       and(
         eq(authTokens.tokenHash, tokenHash),
-        eq(authTokens.purpose, "invite"),
+        eq(authTokens.purpose, purpose),
         isNull(authTokens.consumedAt),
         gt(authTokens.expiresAt, now),
       ),
@@ -293,8 +321,9 @@ export async function findValidInviteToken(tokenHash: string): Promise<AuthToken
   return token;
 }
 
-export async function insertInviteToken(input: {
+export async function insertAuthToken(input: {
   userId: string;
+  purpose: AuthTokenPurpose;
   tokenHash: string;
   expiresAt: Date;
 }): Promise<void> {
@@ -304,12 +333,25 @@ export async function insertInviteToken(input: {
     .where(
       and(
         eq(authTokens.userId, input.userId),
-        eq(authTokens.purpose, "invite"),
+        eq(authTokens.purpose, input.purpose),
         isNull(authTokens.consumedAt),
       ),
     );
 
   await getDb().insert(authTokens).values({
+    userId: input.userId,
+    purpose: input.purpose,
+    tokenHash: input.tokenHash,
+    expiresAt: input.expiresAt,
+  });
+}
+
+export async function insertInviteToken(input: {
+  userId: string;
+  tokenHash: string;
+  expiresAt: Date;
+}): Promise<void> {
+  await insertAuthToken({
     userId: input.userId,
     purpose: "invite",
     tokenHash: input.tokenHash,
@@ -317,11 +359,24 @@ export async function insertInviteToken(input: {
   });
 }
 
-export async function markInviteConsumed(tokenId: string): Promise<void> {
+export async function markAuthTokenConsumed(tokenId: string): Promise<void> {
   await getDb()
     .update(authTokens)
     .set({consumedAt: new Date()})
     .where(eq(authTokens.id, tokenId));
+}
+
+export async function markInviteConsumed(tokenId: string): Promise<void> {
+  await markAuthTokenConsumed(tokenId);
+}
+
+export async function findAuthTokenByHash(tokenHash: string): Promise<AuthToken | undefined> {
+  const [token] = await getDb()
+    .select()
+    .from(authTokens)
+    .where(eq(authTokens.tokenHash, tokenHash))
+    .limit(1);
+  return token;
 }
 
 export async function recordAudit(input: {

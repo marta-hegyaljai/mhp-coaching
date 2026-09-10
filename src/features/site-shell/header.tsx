@@ -1,6 +1,5 @@
 import {getTranslations} from "next-intl/server";
 
-import {signOutAction} from "@/features/auth/actions";
 import {getViewer} from "@/features/auth/require";
 import {catalogueCalendarHref, type PathnameHref} from "@/i18n/href";
 import {Link} from "@/i18n/navigation";
@@ -63,11 +62,9 @@ export async function SiteHeader({
               </Link>
             ) : null}
             {viewer ? (
-              <form action={signOutAction.bind(null, locale)} className="contents">
-                <button type="submit" className={navLink}>
-                  {t("signOut")}
-                </button>
-              </form>
+              <Link href="/account" className={navLink}>
+                {t("account")}
+              </Link>
             ) : (
               <Link href="/sign-in" className={navLink}>
                 {t("signIn")}

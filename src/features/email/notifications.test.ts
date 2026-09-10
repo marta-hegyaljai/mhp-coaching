@@ -25,6 +25,10 @@ import {sendLeadNotification} from "./lead-notification";
 import {sendPurchaseNotification} from "./purchase-notification";
 import {sendWaitlistNotification} from "./waitlist-notification";
 import {sendAccountInvitation} from "./invitation";
+import {
+  sendEmailVerification,
+  sendPasswordRecovery,
+} from "./account";
 import {sendMail} from "./transport";
 
 const getTranslationsMock = vi.mocked(getTranslations);
@@ -110,6 +114,8 @@ function booking(overrides: Partial<Booking> = {}): Booking {
     paidAt: new Date("2026-01-01T00:00:00.000Z"),
     confirmationEmailSentAt: null,
     privacyAcceptedAt: new Date("2026-01-01T00:00:00.000Z"),
+    userId: null,
+    emailNormalized: "ada@example.com",
     ...overrides,
   };
 }
@@ -285,6 +291,8 @@ describe("staff email destinations", () => {
         isAdmin: false,
         roomBookingEnabled: true,
         disabledAt: null,
+        pendingEmail: null,
+        pendingEmailNormalized: null,
       },
     });
 
@@ -298,8 +306,40 @@ describe("staff email destinations", () => {
     const text = sendMailMock.mock.calls[0]?.[0].text ?? "";
     expect(html).toContain("Create your password");
     expect(html).toContain("invite-token-example");
+    expect(html).toContain('href="http://localhost:3000/en/invite/invite-token-example"');
     expect(text).toContain("invite-token-example");
     expect(sendMailMock.mock.calls[0]?.[0].to).not.toBe(organization.email);
     expectSharedChrome(html);
+  });
+
+  it("sends verification and recovery mail to the user", async () => {
+    await sendEmailVerification({
+      to: "ada@example.com",
+      firstName: "Ada",
+      locale: "en",
+      rawToken: "verify-token-example",
+    });
+    expect(sendMailMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        to: "ada@example.com",
+        subject: "Confirm your MHP account",
+      }),
+    );
+    const verificationHtml = sendMailMock.mock.calls.at(-1)?.[0].html ?? "";
+    expectSharedChrome(verificationHtml);
+    expect(sendMailMock.mock.calls.at(-1)?.[0].text).toContain("verify-token-example");
+    expect(verificationHtml).toContain("verify-token-example");
+    expect(verificationHtml).toContain(
+      'href="http://localhost:3000/en/verify-email/verify-token-example"',
+    );
+
+    await sendPasswordRecovery({
+      to: "ada@example.com",
+      firstName: "Ada",
+      locale: "en",
+      rawToken: "recovery-token-example",
+    });
+    expect(sendMailMock.mock.calls.at(-1)?.[0].subject).toBe("Reset your MHP password");
+    expectSharedChrome(sendMailMock.mock.calls.at(-1)?.[0].html ?? "");
   });
 });

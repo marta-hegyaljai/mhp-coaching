@@ -66,6 +66,8 @@ function booking(overrides: Partial<Booking> = {}): Booking {
     paidAt: null,
     confirmationEmailSentAt: null,
     privacyAcceptedAt: new Date("2026-01-01T00:00:00.000Z"),
+    userId: null,
+    emailNormalized: "ada@example.com",
     ...overrides,
   };
 }

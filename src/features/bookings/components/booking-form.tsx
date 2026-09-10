@@ -27,11 +27,17 @@ export function BookingForm({
   course,
   dates,
   initialDateId,
+  defaults,
 }: {
   locale: AppLocale;
   course: Course;
   dates: CourseDate[];
   initialDateId?: string;
+  defaults?: {
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+  };
 }) {
   const t = useTranslations("BookingForm");
   const [state, formAction, pending] = useActionState(
@@ -195,14 +201,14 @@ export function BookingForm({
             autoComplete="given-name"
             label={t("firstName")}
             error={errors?.firstName}
-            defaultValue={draft?.firstName}
+            defaultValue={draft?.firstName ?? defaults?.firstName}
           />
           <Field
             name="lastName"
             autoComplete="family-name"
             label={t("lastName")}
             error={errors?.lastName}
-            defaultValue={draft?.lastName}
+            defaultValue={draft?.lastName ?? defaults?.lastName}
           />
           <Field
             name="email"
@@ -211,7 +217,7 @@ export function BookingForm({
             autoComplete="email"
             label={t("email")}
             error={errors?.email}
-            defaultValue={draft?.email}
+            defaultValue={draft?.email ?? defaults?.email}
           />
           <Field
             name="phone"

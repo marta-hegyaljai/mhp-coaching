@@ -17,6 +17,7 @@ const SERIF = "Georgia, 'Times New Roman', Times, serif";
 export type EmailDetail = {
   label: string;
   value: string;
+  href?: string;
 };
 
 /** Binding layout: `docs/EMAIL.md`. Use this for every HTML notification. */
@@ -130,7 +131,11 @@ export function renderDetailTable(rows: EmailDetail[]): string {
       return `<tr>
                 <td style="padding:12px 14px;border-bottom:${border};">
                   <p style="margin:0 0 4px;font-family:${SANS};font-size:11px;line-height:14px;letter-spacing:0.14em;text-transform:uppercase;color:${SUBTLE};">${escapeHtml(row.label)}</p>
-                  <p style="margin:0;font-family:${SANS};font-size:15px;line-height:22px;color:${INK};word-break:break-word;">${escapeHtml(row.value)}</p>
+                  <p style="margin:0;font-family:${SANS};font-size:15px;line-height:22px;color:${INK};word-break:break-word;">${
+                    row.href
+                      ? `<a href="${escapeHtml(row.href)}" style="color:${INK};text-decoration:underline;word-break:break-all;">${escapeHtml(row.value)}</a>`
+                      : escapeHtml(row.value)
+                  }</p>
                 </td>
               </tr>`;
     })

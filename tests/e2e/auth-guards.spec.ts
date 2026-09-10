@@ -18,12 +18,45 @@ test("sign-in screens exist in FR, DE and EN", async ({page}) => {
   await page.goto("/fr/connexion");
   await expect(page.getByRole("heading", {name: "Connexion"})).toBeVisible();
   await expect(page.getByLabel("E-mail")).toBeVisible();
+  await expect(page.getByRole("link", {name: "Créer un compte"})).toBeVisible();
 
   await page.goto("/de/anmelden");
   await expect(page.getByRole("heading", {name: "Anmelden"})).toBeVisible();
 
   await page.goto("/en/sign-in");
   await expect(page.getByRole("heading", {name: "Sign in"})).toBeVisible();
+});
+
+test("sign-up, forgot-password and account screens exist in FR, DE and EN", async ({
+  page,
+}) => {
+  await page.goto("/fr/creer-un-compte");
+  await expect(page.getByRole("heading", {name: "Créer un compte"})).toBeVisible();
+  await expect(page.getByLabel("Prénom")).toBeVisible();
+
+  await page.goto("/de/konto-erstellen");
+  await expect(page.getByRole("heading", {name: "Konto erstellen"})).toBeVisible();
+
+  await page.goto("/en/sign-up");
+  await expect(page.getByRole("heading", {name: "Create an account"})).toBeVisible();
+
+  await page.goto("/fr/mot-de-passe-oublie");
+  await expect(page.getByRole("heading", {name: "Mot de passe oublié"})).toBeVisible();
+
+  await page.goto("/de/passwort-vergessen");
+  await expect(page.getByRole("heading", {name: "Passwort vergessen"})).toBeVisible();
+
+  await page.goto("/en/forgot-password");
+  await expect(page.getByRole("heading", {name: "Forgot password"})).toBeVisible();
+
+  await page.goto("/en/account");
+  await expect(page).toHaveURL(/\/en\/sign-in/);
+
+  await page.goto("/fr/compte/formations");
+  await expect(page).toHaveURL(/\/fr\/connexion/);
+
+  await page.goto("/de/konto");
+  await expect(page).toHaveURL(/\/de\/anmelden/);
 });
 
 test("staff CSV exports reject anonymous and basic-auth requests", async ({

@@ -67,7 +67,7 @@ pnpm db:studio            # optional local Drizzle Studio
 Bookings, payment events, waitlist entries, accounts and the course catalogue
 are persisted in PostgreSQL. The public catalogue still reads
 `src/features/courses/catalog.ts`; `pnpm db:migrate` then `pnpm db:seed` stores
-the same rows so go-live data is not only in git. Hosted Neon on Vercel may inject `NEON_DATABASE_URL` instead of `DATABASE_URL`; the app accepts that fallback. Production Vercel builds apply committed migrations (`pnpm db:migrate`) and re-seed the catalogue before compiling the app. Preview and local builds do not.
+the same rows so go-live data is not only in git. Hosted Neon on Vercel may inject `NEON_DATABASE_URL` instead of `DATABASE_URL`; the app accepts that fallback. Production and preview Vercel builds apply committed migrations (`pnpm db:migrate`) before compiling the app. Production builds also re-seed the catalogue. Local builds do not.
 
 ## Quality checks
 

@@ -80,6 +80,8 @@ Add new mail as a function in `src/features/email/` that calls
 | Contact / payment inquiry | `sendInquiryNotification` | staff |
 | Waiting list | `sendWaitlistNotification` | staff |
 | Account invitation | `sendAccountInvitation` | invited user |
+| Sign-up verification | `sendEmailVerification` | registering user |
+| Password reset | `sendPasswordRecovery` | account email |
 
 Buyer confirmation shows the course venue
 (`organization.courseVenueAddress`: Chem. de la Fenetta 42, 1752

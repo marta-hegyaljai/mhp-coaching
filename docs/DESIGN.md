@@ -76,6 +76,10 @@ primary action behind an ambiguous icon.
   surfaces, black rules, restrained gold, square geometry, no shadows and the
   same type hierarchy. Dense operational screens may use tighter functional
   sans-serif text while editorial headings retain the serif.
+- Account, profile and My Courses use the public header with one extra Account
+  link. Sign-out lives on the account screens. Profile email is read-only.
+  Present upcoming and past registrations as a compact equal-height bordered
+  card grid, not full-width rows.
 - Week is the primary room-calendar view and day view is required. On a phone,
   prioritize one navigable day or a horizontally controlled time grid rather
   than shrinking a seven-day desktop grid into illegibility. Preserve 44px

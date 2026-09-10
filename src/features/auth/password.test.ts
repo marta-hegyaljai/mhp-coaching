@@ -96,6 +96,15 @@ describe("authorization policy", () => {
   });
 });
 
+describe("signed-in home", () => {
+  it("sends course users to account, therapists to rooms, admins to the directory", async () => {
+    const {signedInHomePath} = await import("./signed-in-home");
+    expect(signedInHomePath({isAdmin: false})).toBe("/account");
+    expect(signedInHomePath({isAdmin: false, roomBookingEnabled: true})).toBe("/rooms");
+    expect(signedInHomePath({isAdmin: true})).toBe("/admin/users");
+  });
+});
+
 describe("post-login redirect safety", () => {
   it("only follows locale-prefixed internal paths", () => {
     expect(safeInternalPath("/fr/admin/users", "fr")).toBe("/fr/admin/users");

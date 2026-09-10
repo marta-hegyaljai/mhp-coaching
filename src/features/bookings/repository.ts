@@ -2,6 +2,7 @@ import {and, desc, eq, sql} from "drizzle-orm";
 
 import {getDb} from "@/db";
 import {bookings, paymentEvents, type Booking, type BookingStatus} from "@/db/schema";
+import {normalizeEmail} from "@/features/auth/email";
 
 export type CreateBookingInput = {
   firstName: string;
@@ -24,6 +25,7 @@ export type CreateBookingInput = {
   paymentProvider: string;
   privacyAcceptedAt: Date;
   status?: BookingStatus;
+  userId?: string | null;
 };
 
 export async function createPendingBooking(
@@ -33,6 +35,8 @@ export async function createPendingBooking(
     .insert(bookings)
     .values({
       ...input,
+      emailNormalized: normalizeEmail(input.email),
+      userId: input.userId ?? null,
       status: input.status ?? "PENDING",
     })
     .returning();

@@ -1,8 +1,14 @@
 import {execFileSync} from "node:child_process";
 
-import {shouldApplyHostedMigrations} from "../src/lib/hosted-migrations";
+import {getDatabaseUrl} from "../src/lib/database-url";
+import {
+  shouldApplyHostedMigrations,
+  shouldSeedHostedCatalogue,
+} from "../src/lib/hosted-migrations";
 
-if (shouldApplyHostedMigrations()) {
+if (shouldApplyHostedMigrations() && getDatabaseUrl()) {
   execFileSync("pnpm", ["db:migrate"], {stdio: "inherit"});
-  execFileSync("pnpm", ["db:seed"], {stdio: "inherit"});
+  if (shouldSeedHostedCatalogue()) {
+    execFileSync("pnpm", ["db:seed"], {stdio: "inherit"});
+  }
 }

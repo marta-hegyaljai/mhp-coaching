@@ -6,6 +6,8 @@ export type PathnameHref =
       | "/courses/[slug]"
       | "/courses/[slug]/book"
       | "/invite/[token]"
+      | "/reset-password/[token]"
+      | "/verify-email/[token]"
       | "/admin/users/[id]"
     >
   | {
@@ -32,6 +34,14 @@ export type PathnameHref =
   | {
       pathname: "/admin/users/[id]";
       params: {id: string};
+    }
+  | {
+      pathname: "/reset-password/[token]";
+      params: {token: string};
+    }
+  | {
+      pathname: "/verify-email/[token]";
+      params: {token: string};
     };
 
 

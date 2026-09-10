@@ -11,6 +11,10 @@ describe("localizedPathname", () => {
     expect(localizedPathname("de", "/contact")).toBe("/de/kontakt");
     expect(localizedPathname("fr", "/sign-in")).toBe("/fr/connexion");
     expect(localizedPathname("de", "/sign-in")).toBe("/de/anmelden");
+    expect(localizedPathname("fr", "/sign-up")).toBe("/fr/creer-un-compte");
+    expect(localizedPathname("de", "/forgot-password")).toBe("/de/passwort-vergessen");
+    expect(localizedPathname("fr", "/account")).toBe("/fr/compte");
+    expect(localizedPathname("en", "/account/courses")).toBe("/en/account/courses");
     expect(localizedPathname("en", "/rooms")).toBe("/en/rooms");
     expect(localizedPathname("fr", "/rooms")).toBe("/fr/salles");
     expect(localizedPathname("fr", "/book")).toBe("/fr/inscription");

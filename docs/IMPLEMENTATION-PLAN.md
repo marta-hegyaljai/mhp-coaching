@@ -23,13 +23,13 @@ later scope forward.
 | --- | --- |
 | Plan revision | 2 |
 | Last updated | 2026-09-10 |
-| Last completed checkpoint | CP-02 |
-| Next checkpoint | CP-01 |
-| Active checkpoint | None |
+| Last completed checkpoint | CP-01 |
+| Next checkpoint | CP-03 |
+| Active checkpoint | — |
 | Room module production status | Not started |
 
-Revision 2 approved completing CP-02 before CP-01. CP-01 remains the next
-checkpoint; do not treat the skipped number as a blocker.
+Revision 2 approved completing CP-02 before CP-01. Both are now complete; the
+next checkpoint is CP-03.
 
 ## Status vocabulary
 
@@ -105,7 +105,7 @@ or navigation link alone is not a deliverable checkpoint.
 | ID | Status | Deliverable | Primary user |
 | --- | --- | --- | --- |
 | CP-00 | COMPLETE | Reliable multilingual course-booking MVP | Visitor and staff |
-| CP-01 | PLANNED | Secure account and “My courses” experience | User |
+| CP-01 | COMPLETE | Secure account and “My courses” experience | User |
 | CP-02 | COMPLETE | Account-based user/access administration | Admin |
 | CP-03 | PLANNED | Personal certificate library | User and admin |
 | CP-04 | PLANNED | Configurable rooms and privacy-safe availability | Therapist and admin |
@@ -144,7 +144,7 @@ area/certificates and all room-domain functionality.
 
 ## CP-01 — Secure accounts and My Courses
 
-**Status:** `PLANNED`
+**Status:** `COMPLETE`
 
 **Depends on:** CP-00.
 
@@ -182,10 +182,12 @@ course CMS and social login.
 4. Upcoming and past classification is correct at Zurich date boundaries.
 5. A signed-in booking links to that user; a guest can still complete the original
    flow without being forced to register.
-6. Changing a profile email cannot claim another history without verifying and
-   reconciling that new address.
+6. Account email is permanent: the profile page displays it as read-only and
+   the server ignores attempts to change it.
 7. Session revocation, cross-user access denial, token expiry/reuse and auth rate
    limits have automated coverage.
+
+**Completion evidence:** See the 2026-09-10 CP-01 completion-log entry.
 
 ---
 
@@ -708,7 +710,56 @@ For an incomplete checkpoint, add this directly below its acceptance criteria:
   TypeScript seed.
 - **Known next work:** CP-01 secure accounts and My Courses.
 
+### CP-01 — 2026-09-10
+
+- **Result:** Public self-registration, email verification, sign-in/out, password
+  recovery, in-session password change, profile (including pending email change),
+  and My Courses. Guest course checkout remains available. Historical bookings
+  link only after the account email is verified, and only to that verified
+  identity.
+- **Routes/UI:** `/{locale}/sign-up` (`/fr/creer-un-compte`, `/de/konto-erstellen`),
+  `/{locale}/verify-email/[token]`, `/{locale}/forgot-password`,
+  `/{locale}/reset-password/[token]`, `/{locale}/verify-email-change/[token]`,
+  `/{locale}/account`, `/{locale}/account/courses`. Header shows Account when
+  signed in; Sign out lives on account pages so Courses and Contact stay on the
+  same compact phone row.
+- **Migrations:** `0007_public_accounts.sql` (`verify` / `recovery` /
+  `email_change` token purposes, `users.pending_email`, nullable
+  `bookings.user_id`, `bookings.email_normalized`).
+- **Automated evidence:** `pnpm verify` passed; 36 test files and 122 tests
+  passed, including a successful Next.js production build of the new account
+  routes. Playwright: 62 passed, including FR/DE/EN sign-in/sign-up/forgot/
+  account screens, unauthenticated redirects, guest booking, phone layout, and
+  `tests/e2e/account-lifecycle.spec.ts` (sign-up → Mailpit verify → change
+  password → sign-in → forgot/reset). Integration tests cover linking before/
+  after verify, invite/verified hijack refusal, reset session revocation, token
+  expiry/reuse, email-change history, signed-in vs guest booking, Zurich
+  upcoming/past split, and rate-limit counters.
+- **Browser evidence:** Desktop and ~390px inspected in FR/DE/EN. Sign-up,
+  verification email in Mailpit (gold eyebrow, table layout, clickable confirm
+  URL) at ~560px and a narrow pane, My Courses empty state, profile with
+  in-session password change, and guest checkout while unsigned-in. Phone header
+  keeps Courses, Contact and Sign in / Account on one compact row.
+- **Preview/production:** Not deployed in this task.
+- **Deviations/follow-ups:** In-session password change shipped with CP-01 in
+  addition to forgotten-password recovery. Local owner account created in the
+  development database only; credentials are not committed.
+- **Known next work:** CP-03 personal certificate library.
+
+### CP-01 note — 2026-09-10
+
+- Account email is permanent for now. Profile shows it read-only; the server
+  does not accept an email change. `/verify-email-change/[token]` and
+  `sendEmailChangeVerification` were removed. Migration `0007_public_accounts.sql`
+  still carries unused `pending_email` columns and the `email_change` token
+  purpose (forward-only).
+
 ## Plan revision log
+
+### Revision 3 — 2026-09-10
+
+- Account email is permanent for now. Users cannot change it on the profile
+  page. CP-01 acceptance criterion 6 was updated to match.
 
 ### Revision 2 — 2026-09-10
 

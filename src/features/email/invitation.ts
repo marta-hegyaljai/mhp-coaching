@@ -39,7 +39,7 @@ export async function sendAccountInvitation(input: {
     title: t("title"),
     greeting,
     intro: t("intro"),
-    details: [{label: fields("link"), value: setupUrl}],
+    details: [{label: fields("link"), value: setupUrl, href: setupUrl}],
     closing: t("closing"),
   });
 

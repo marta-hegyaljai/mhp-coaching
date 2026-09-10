@@ -3,6 +3,7 @@ import {notFound} from "next/navigation";
 
 import {BookingForm} from "@/features/bookings/components/booking-form";
 import {WaitlistForm} from "@/features/waitlist/components/waitlist-form";
+import {getCurrentUser} from "@/features/auth/session";
 import {courseLocaleHrefs} from "@/features/courses/locale-hrefs";
 import {
   getBookableDates,
@@ -86,6 +87,7 @@ export default async function BookCoursePage({
   const navT = await getTranslations("Nav");
   const dates = getBookableDates(course);
   const showWaitlist = dates.length === 0 || waitlist === "1";
+  const signedInUser = await getCurrentUser();
 
   return (
     <SiteShell
@@ -142,6 +144,15 @@ export default async function BookCoursePage({
               course={course}
               dates={dates}
               {...(date ? {initialDateId: date} : {})}
+              {...(signedInUser
+                ? {
+                    defaults: {
+                      firstName: signedInUser.firstName,
+                      lastName: signedInUser.lastName,
+                      email: signedInUser.email,
+                    },
+                  }
+                : {})}
             />
           )}
         </div>

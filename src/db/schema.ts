@@ -56,7 +56,14 @@ export const bookings = pgTable("bookings", {
   }),
   privacyAcceptedAt: timestamp("privacy_accepted_at", {withTimezone: true})
     .notNull(),
-});
+  userId: uuid("user_id").references(() => users.id, {onDelete: "set null"}),
+  emailNormalized: text("email_normalized").notNull(),
+},
+  (table) => [
+    index("bookings_user_id_idx").on(table.userId),
+    index("bookings_email_normalized_idx").on(table.emailNormalized),
+  ],
+);
 
 export const paymentEvents = pgTable(
   "payment_events",
@@ -138,7 +145,12 @@ export type LocalizedJson = {
   en: string;
 };
 
-export const authTokenPurposeEnum = pgEnum("auth_token_purpose", ["invite"]);
+export const authTokenPurposeEnum = pgEnum("auth_token_purpose", [
+  "invite",
+  "verify",
+  "recovery",
+  "email_change",
+]);
 
 export const courseCategoryEnum = pgEnum("course_category", [
   "foundation",
@@ -167,6 +179,8 @@ export const users = pgTable(
     isAdmin: boolean("is_admin").notNull().default(false),
     roomBookingEnabled: boolean("room_booking_enabled").notNull().default(false),
     disabledAt: timestamp("disabled_at", {withTimezone: true}),
+    pendingEmail: text("pending_email"),
+    pendingEmailNormalized: text("pending_email_normalized"),
   },
   (table) => [
     uniqueIndex("users_email_normalized_unique").on(table.emailNormalized),
@@ -310,6 +324,7 @@ export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Session = typeof sessions.$inferSelect;
 export type AuthToken = typeof authTokens.$inferSelect;
+export type AuthTokenPurpose = (typeof authTokenPurposeEnum.enumValues)[number];
 export type AuditEvent = typeof auditEvents.$inferSelect;
 export type CourseRow = typeof courses.$inferSelect;
 export type CourseSessionRow = typeof courseSessions.$inferSelect;

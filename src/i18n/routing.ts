@@ -81,6 +81,36 @@ export const routing = defineRouting({
       de: "/anmelden",
       en: "/sign-in",
     },
+    "/sign-up": {
+      fr: "/creer-un-compte",
+      de: "/konto-erstellen",
+      en: "/sign-up",
+    },
+    "/forgot-password": {
+      fr: "/mot-de-passe-oublie",
+      de: "/passwort-vergessen",
+      en: "/forgot-password",
+    },
+    "/reset-password/[token]": {
+      fr: "/reinitialiser-mot-de-passe/[token]",
+      de: "/passwort-zuruecksetzen/[token]",
+      en: "/reset-password/[token]",
+    },
+    "/verify-email/[token]": {
+      fr: "/confirmer-email/[token]",
+      de: "/e-mail-bestaetigen/[token]",
+      en: "/verify-email/[token]",
+    },
+    "/account": {
+      fr: "/compte",
+      de: "/konto",
+      en: "/account",
+    },
+    "/account/courses": {
+      fr: "/compte/formations",
+      de: "/konto/ausbildungen",
+      en: "/account/courses",
+    },
     "/invite/[token]": {
       fr: "/invitation/[token]",
       de: "/einladung/[token]",

@@ -3,6 +3,7 @@ import {getTranslations, setRequestLocale} from "next-intl/server";
 import {SignInForm} from "@/features/auth/components/sign-in-form";
 import {getViewer} from "@/features/auth/require";
 import {safeInternalPath} from "@/features/auth/redirect-path";
+import {signedInHomePath} from "@/features/auth/signed-in-home";
 import {buildPageMetadata} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import {redirect} from "@/i18n/navigation";
@@ -39,7 +40,7 @@ export default async function SignInPage({params, searchParams}: SignInPageProps
 
   if (viewer) {
     redirect({
-      href: viewer.isAdmin ? "/admin/users" : viewer.canAccessRooms ? "/rooms" : "/",
+      href: signedInHomePath(viewer),
       locale,
     });
   }
