@@ -7,11 +7,13 @@ import {chargeableAmountMinor} from "@/features/rooms/billing";
 import {bookingLabelKeys} from "@/features/rooms/booking-labels";
 import {AmountSummary} from "@/features/rooms/components/booking/amount-summary";
 import {BookingFacts} from "@/features/rooms/components/booking/booking-facts";
+import {PrivateNoteForm} from "@/features/rooms/components/private-note-form";
 import {RoomsNav} from "@/features/rooms/components/rooms-nav";
 import {RoomError} from "@/features/rooms/errors";
 import {bookingWhen} from "@/features/rooms/format";
 import {ownerCanMutateBooking} from "@/features/rooms/lifecycle";
 import {assertOwnBookingPrivacy, getMyRoomBooking} from "@/features/rooms/my-bookings";
+import {getOwnPrivateNote} from "@/features/rooms/private-notes";
 import {utcToZurich} from "@/features/rooms/timezone";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
@@ -63,6 +65,24 @@ export default async function RoomBookingDetailPage({params, searchParams}: Book
     throw error;
   }
   assertOwnBookingPrivacy(booking);
+
+  let noteText = "";
+  let noteError: string | null = null;
+  try {
+    noteText = (await getOwnPrivateNote(user, booking.id))?.text ?? "";
+  } catch (error) {
+    if (
+      error instanceof RoomError &&
+      (error.code === "noteKeyMissing" ||
+        error.code === "noteKeyInvalid" ||
+        error.code === "noteDecryptFailed")
+    ) {
+      const errors = await getTranslations("Rooms.errors");
+      noteError = errors(error.code);
+    } else {
+      throw error;
+    }
+  }
 
   const keys = bookingLabelKeys(booking);
   const when = bookingWhen(booking.startsAt, booking.endsAt, locale);
@@ -140,6 +160,14 @@ export default async function RoomBookingDetailPage({params, searchParams}: Book
               </p>
             ) : null}
           </Panel>
+
+          {noteError ? (
+            <Panel>
+              <p className="text-sm leading-7 text-ink">{noteError}</p>
+            </Panel>
+          ) : (
+            <PrivateNoteForm locale={locale} bookingId={booking.id} initialText={noteText} />
+          )}
 
           {canMutate ? (
             <div className="flex flex-wrap gap-3">

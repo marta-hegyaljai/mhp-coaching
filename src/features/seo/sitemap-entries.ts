@@ -28,12 +28,17 @@ type StaticPath = Exclude<
   | "/admin/bookings"
   | "/admin/bookings/new"
   | "/admin/bookings/[id]"
+  | "/admin/requests"
+  | "/admin/requests/[id]"
   | "/rooms"
   | "/rooms/book"
   | "/rooms/bookings"
   | "/rooms/bookings/[id]"
   | "/rooms/bookings/[id]/change"
   | "/rooms/bookings/[id]/cancel"
+  | "/rooms/requests"
+  | "/rooms/requests/new"
+  | "/rooms/requests/[id]"
   | "/access-denied"
 >;
 

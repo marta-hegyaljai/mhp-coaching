@@ -25,7 +25,16 @@ export type RoomErrorCode =
   | "tooLateToChange"
   | "notCancellable"
   | "notWaivable"
-  | "invalidUser";
+  | "invalidUser"
+  | "noteKeyMissing"
+  | "noteKeyInvalid"
+  | "noteDecryptFailed"
+  | "invalidNote"
+  | "invalidMessage"
+  | "invalidAdminNote"
+  | "slotAvailable"
+  | "alreadyResolved"
+  | "notOpen";
 
 export type RoomBookingConflict = {
   bookingId: string;

@@ -12,6 +12,8 @@ export function SubmitButton({
   variant,
   disabled = false,
   block = false,
+  name,
+  value,
 }: {
   pending: boolean;
   label: string;
@@ -19,9 +21,18 @@ export function SubmitButton({
   variant?: ButtonVariant;
   disabled?: boolean;
   block?: boolean;
+  name?: string;
+  value?: string;
 }) {
   return (
-    <Button type="submit" variant={variant} block={block} disabled={pending || disabled}>
+    <Button
+      type="submit"
+      variant={variant}
+      block={block}
+      disabled={pending || disabled}
+      name={name}
+      value={value}
+    >
       {pending ? (
         <>
           <SpinnerIcon />

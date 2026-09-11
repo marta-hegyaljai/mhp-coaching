@@ -399,6 +399,9 @@ describe("staff email destinations", () => {
     expect(createdHtml).toContain("Salon Lavaux");
     expect(createdHtml).not.toContain(booking.id);
     expect(createdText).not.toContain(booking.id);
+    expect(createdHtml.toLowerCase()).not.toContain("private note");
+    expect(createdText.toLowerCase()).not.toContain("private note");
+    expect(createdHtml).not.toContain("ciphertext");
     expect(sendMailMock.mock.calls.at(-1)?.[0].to).not.toBe(organization.email);
     expectSharedChrome(createdHtml);
 

@@ -2,6 +2,7 @@ import {getTranslations, setRequestLocale} from "next-intl/server";
 
 import {requireRoomBooking} from "@/features/auth/require";
 import {parseBookQuery} from "@/features/rooms/book-query";
+import {requestHref} from "@/features/rooms/request-query";
 import {RoomBookForm} from "@/features/rooms/components/book-form";
 import {RoomsNav} from "@/features/rooms/components/rooms-nav";
 import {RoomError} from "@/features/rooms/errors";
@@ -96,9 +97,23 @@ export default async function RoomBookPage({params, searchParams}: BookPageProps
           ) : (
             <Panel>
               <p className="text-sm leading-7 text-ink-muted">{error}</p>
-              <Link href="/rooms" className={`${buttonStyles()} mt-6`}>
-                {t("viewCalendar")}
-              </Link>
+              <p className="mt-4 text-sm leading-7 text-ink-muted">{t("requestDoesNotReserve")}</p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Link
+                  href={requestHref({
+                    roomId: query.roomId,
+                    date: query.date,
+                    start: query.start,
+                    end: query.end,
+                  })}
+                  className={buttonStyles()}
+                >
+                  {t("requestThisSlot")}
+                </Link>
+                <Link href="/rooms" className={buttonStyles({variant: "secondary"})}>
+                  {t("viewCalendar")}
+                </Link>
+              </div>
             </Panel>
           )}
         </div>

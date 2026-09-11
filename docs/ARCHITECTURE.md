@@ -241,9 +241,10 @@ src/
     courses/                # catalogue, dates, course UI
     bookings/               # existing course form, validation, persistence
     certificates/           # personal certificate library on My Courses
-    rooms/                  # inventory, hours, blocks, privacy-safe availability
-    room-bookings/          # planned: booking lifecycle + private-note boundary
-    room-requests/          # planned: no-availability requests
+    rooms/                  # inventory, hours, blocks, privacy-safe availability,
+                            # reservations, owner-only notes, no-availability requests
+    room-bookings/          # booking lifecycle lives in features/rooms
+    room-requests/          # request inbox lives in features/rooms
     room-billing/           # planned: usage, statements, adjustments, payments
     waitlist/               # waiting list for published courses
     inquiries/              # contact and alternative-payment forms

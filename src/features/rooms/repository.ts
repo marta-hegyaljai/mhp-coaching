@@ -5,6 +5,7 @@ import {getDb, type Database} from "@/db";
 import {
   roomBlocks,
   roomBookingEvents,
+  roomBookingPrivateNotes,
   roomBookingSettings,
   roomBookings,
   roomOpeningIntervals,
@@ -20,6 +21,7 @@ import {
 } from "@/db/schema";
 import type {BookingEventAction} from "@/features/rooms/billing";
 import {bookingHistorySnapshot} from "@/features/rooms/billing";
+import type {EncryptedNote} from "@/features/rooms/note-crypto";
 
 type RoomTx = Parameters<Parameters<Database["transaction"]>[0]>[0];
 
@@ -399,6 +401,7 @@ export async function insertConfirmedBookingUnlessOccupied(input: {
   actorUserId?: string;
   eventAction?: Extract<BookingEventAction, "CREATED" | "ADMIN_CREATED">;
   exceptBookingId?: string;
+  privateNote?: EncryptedNote & {ownerUserId: string};
 }): Promise<
   | {ok: true; booking: RoomBooking}
   | {ok: false; reason: "missing"}
@@ -444,6 +447,15 @@ export async function insertConfirmedBookingUnlessOccupied(input: {
           action: input.eventAction,
           before: null,
           after: bookingHistorySnapshot(booking),
+        });
+      }
+      if (input.privateNote) {
+        await tx.insert(roomBookingPrivateNotes).values({
+          bookingId: booking.id,
+          ownerUserId: input.privateNote.ownerUserId,
+          ciphertext: input.privateNote.ciphertext,
+          nonce: input.privateNote.nonce,
+          keyVersion: input.privateNote.keyVersion,
         });
       }
       return {ok: true as const, booking};
@@ -946,6 +958,10 @@ export async function replaceConfirmedBookingUnlessOccupied(input: {
         before: null,
         after: bookingHistorySnapshot(booking),
       });
+      await tx
+        .update(roomBookingPrivateNotes)
+        .set({bookingId: booking.id, ownerUserId: input.userId, updatedAt: input.now})
+        .where(eq(roomBookingPrivateNotes.bookingId, linked.id));
       return {ok: true as const, original: linked, booking};
     } catch (error) {
       if (isExclusionViolation(error)) {

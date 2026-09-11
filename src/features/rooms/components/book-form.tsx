@@ -12,8 +12,10 @@ import {useSlotSelection} from "@/features/rooms/components/booking/use-slot-sel
 import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
 import type {ReservationPreview} from "@/features/rooms/reservations";
 import type {AppLocale} from "@/i18n/routing";
+import {NoticePanel} from "@/features/rooms/components/booking/notice-panel";
+import {PRIVATE_NOTE_MAX_LENGTH} from "@/features/rooms/limits";
 import {Panel, PanelDivider} from "@/shared/ui/panel";
-import {SelectField} from "@/shared/ui/field";
+import {SelectField, TextareaField} from "@/shared/ui/field";
 import {SubmitButton} from "@/shared/ui/submit-button";
 
 export function RoomBookForm({
@@ -85,6 +87,19 @@ export function RoomBookForm({
             showBillingNote
           />
         </div>
+      </Panel>
+
+      <NoticePanel label={t("privateNote")} message={t("privateNoteWarning")} />
+      <Panel>
+        <TextareaField
+          id="booking-note"
+          name="note"
+          label={t("privateNote")}
+          help={t("privateNoteHelp")}
+          maxLength={PRIVATE_NOTE_MAX_LENGTH}
+          autoComplete="off"
+          spellCheck={false}
+        />
       </Panel>
 
       <SubmitButton

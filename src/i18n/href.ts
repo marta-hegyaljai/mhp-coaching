@@ -11,9 +11,11 @@ export type PathnameHref =
       | "/admin/users/[id]"
       | "/admin/rooms/[id]"
       | "/admin/bookings/[id]"
+      | "/admin/requests/[id]"
       | "/rooms/bookings/[id]"
       | "/rooms/bookings/[id]/change"
       | "/rooms/bookings/[id]/cancel"
+      | "/rooms/requests/[id]"
     >
   | {
       pathname: "/courses";
@@ -88,6 +90,27 @@ export type PathnameHref =
   | {
       pathname: "/rooms/bookings/[id]/cancel";
       params: {id: string};
+    }
+  | {
+      pathname: "/rooms/requests";
+      query?: {submitted?: string; withdrawn?: string};
+    }
+  | {
+      pathname: "/rooms/requests/new";
+      query?: {room?: string; date?: string; start?: string; end?: string};
+    }
+  | {
+      pathname: "/rooms/requests/[id]";
+      params: {id: string};
+    }
+  | {
+      pathname: "/admin/requests";
+      query?: {q?: string; status?: string; page?: string};
+    }
+  | {
+      pathname: "/admin/requests/[id]";
+      params: {id: string};
+      query?: {resolved?: string; declined?: string};
     }
   | {
       pathname: "/reset-password/[token]";

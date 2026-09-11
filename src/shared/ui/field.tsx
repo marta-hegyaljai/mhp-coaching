@@ -2,6 +2,7 @@ import type {
   InputHTMLAttributes,
   ReactNode,
   SelectHTMLAttributes,
+  TextareaHTMLAttributes,
 } from "react";
 
 export type FieldSize = "sm" | "md";
@@ -144,6 +145,42 @@ export function InputField({
           aria-describedby={describedBy}
           aria-invalid={error ? true : undefined}
           className={fieldStyles({size, numeric, invalid: Boolean(error)})}
+        />
+      )}
+    </FieldFrame>
+  );
+}
+
+type TextareaFieldProps = Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "id" | "className"> &
+  StyleOptions & {
+    id: string;
+    label: string;
+    help?: ReactNode;
+    error?: string;
+    fieldClassName?: string;
+  };
+
+export function TextareaField({
+  id,
+  label,
+  help,
+  error,
+  size,
+  numeric,
+  fieldClassName,
+  rows = 4,
+  ...textarea
+}: TextareaFieldProps) {
+  return (
+    <FieldFrame id={id} label={label} help={help} error={error} className={fieldClassName}>
+      {(describedBy) => (
+        <textarea
+          {...textarea}
+          id={id}
+          rows={rows}
+          aria-describedby={describedBy}
+          aria-invalid={error ? true : undefined}
+          className={`${fieldStyles({size, numeric, invalid: Boolean(error)})} min-h-24 py-3`}
         />
       )}
     </FieldFrame>

@@ -3,8 +3,9 @@ import {getTranslations} from "next-intl/server";
 import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
 import type {AvailabilityRoom, TherapistAvailability} from "@/features/rooms/availability";
 import {bookHref} from "@/features/rooms/book-query";
+import {requestHref} from "@/features/rooms/request-query";
 import {availabilityHref, type AvailabilityQuery} from "@/features/rooms/query";
-import {addLocalDays, todayInZurich} from "@/features/rooms/timezone";
+import {addLocalDays, minutesToTime, timeToMinutes, todayInZurich} from "@/features/rooms/timezone";
 import type {PathnameHref} from "@/i18n/href";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
@@ -99,6 +100,7 @@ export async function AvailabilityCalendar({
   const aggregateLabels = {
     roomsAvailable: (count: number) => t("roomsAvailable", {count}),
     bookAt: (time: string, count: number) => t("bookAtTime", {time, count}),
+    requestAt: (time: string) => t("requestAtTime", {time}),
   };
   const columnsForDate = (date: string) =>
     selectedRoom
@@ -145,6 +147,13 @@ export async function AvailabilityCalendar({
         steps={[t("bookingGuideRoom"), t("bookingGuideTime"), t("bookingGuideConfirm")]}
         help={t("calendarAvailabilityHelp")}
       />
+
+      <p className="max-w-2xl text-sm leading-7 text-ink-muted">
+        {t("requestDoesNotReserve")}{" "}
+        <Link href={requestHref({})} className="underline-offset-4 hover:underline">
+          {t("requestUnavailable")}
+        </Link>
+      </p>
 
       <section id="availability-calendar" className="space-y-3 scroll-mt-36">
         <AvailabilityLegend labels={labels} />
@@ -376,6 +385,7 @@ function aggregateDayColumns({
   labels: {
     roomsAvailable: (count: number) => string;
     bookAt: (time: string, count: number) => string;
+    requestAt: (time: string) => string;
   };
   heading?: string;
 }): GridColumn[] {
@@ -434,12 +444,20 @@ function aggregateDayColumns({
           return undefined;
         }
 
+        const state = slots.some((slot) => slot.state === "booked")
+          ? ("booked" as const)
+          : ("unavailable" as const);
+        const end = requestEnd(time, requiredSlots, intervalMinutes);
         return {
           ...representative,
-          state: slots.some((slot) => slot.state === "booked")
-            ? ("booked" as const)
-            : ("unavailable" as const),
+          state,
           ownBookingId: undefined,
+          ...(state === "unavailable"
+            ? {
+                href: requestHref({date, start: time, end}),
+                ariaLabel: labels.requestAt(time),
+              }
+            : {}),
         };
       }),
     };
@@ -489,6 +507,17 @@ function withSlotHref(
   if (slot.state === "available") {
     return {...slot, state: "unavailable" as const};
   }
+  if (slot.state === "unavailable") {
+    return {
+      ...slot,
+      href: requestHref({
+        roomId,
+        date,
+        start: slot.localStart,
+        end: slot.localEnd,
+      }),
+    };
+  }
   if (slot.state === "my-booking" && slot.ownBookingId) {
     return {
       ...slot,
@@ -499,6 +528,19 @@ function withSlotHref(
     };
   }
   return slot;
+}
+
+function requestEnd(
+  start: string,
+  requiredSlots: number,
+  intervalMinutes: number,
+): string | undefined {
+  try {
+    const endMinute = timeToMinutes(start) + requiredSlots * intervalMinutes;
+    return endMinute <= 1440 ? minutesToTime(endMinute) : undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 /** A single room fits a phone; more rooms need room to breathe and may scroll. */

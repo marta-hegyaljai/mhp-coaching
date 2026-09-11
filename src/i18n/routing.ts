@@ -125,6 +125,8 @@ export const routing = defineRouting({
     "/admin/bookings": "/admin/bookings",
     "/admin/bookings/new": "/admin/bookings/new",
     "/admin/bookings/[id]": "/admin/bookings/[id]",
+    "/admin/requests": "/admin/requests",
+    "/admin/requests/[id]": "/admin/requests/[id]",
     "/rooms": {
       fr: "/salles",
       de: "/raeume",
@@ -154,6 +156,21 @@ export const routing = defineRouting({
       fr: "/salles/reservations/[id]/annuler",
       de: "/raeume/buchungen/[id]/stornieren",
       en: "/rooms/bookings/[id]/cancel",
+    },
+    "/rooms/requests": {
+      fr: "/salles/demandes",
+      de: "/raeume/anfragen",
+      en: "/rooms/requests",
+    },
+    "/rooms/requests/new": {
+      fr: "/salles/demandes/nouvelle",
+      de: "/raeume/anfragen/neu",
+      en: "/rooms/requests/new",
+    },
+    "/rooms/requests/[id]": {
+      fr: "/salles/demandes/[id]",
+      de: "/raeume/anfragen/[id]",
+      en: "/rooms/requests/[id]",
     },
     "/access-denied": {
       fr: "/acces-refuse",
