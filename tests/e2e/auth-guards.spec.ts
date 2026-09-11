@@ -15,7 +15,17 @@ test("unauthenticated visitors are sent to sign-in instead of admin or rooms", a
   await expect(page).toHaveURL(/\/en\/sign-in/);
   await page.goto("/en/rooms/bookings");
   await expect(page).toHaveURL(/\/en\/sign-in/);
+  await page.goto("/en/rooms/requests");
+  await expect(page).toHaveURL(/\/en\/sign-in/);
+  await page.goto("/en/rooms/requests/new");
+  await expect(page).toHaveURL(/\/en\/sign-in/);
+  await page.goto("/fr/salles/demandes");
+  await expect(page).toHaveURL(/\/fr\/connexion/);
+  await page.goto("/de/raeume/anfragen");
+  await expect(page).toHaveURL(/\/de\/anmelden/);
   await page.goto("/en/admin/bookings");
+  await expect(page).toHaveURL(/\/en\/sign-in/);
+  await page.goto("/en/admin/requests");
   await expect(page).toHaveURL(/\/en\/sign-in/);
 
   await page.goto("/en/account/courses");

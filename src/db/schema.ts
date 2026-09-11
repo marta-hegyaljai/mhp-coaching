@@ -545,6 +545,70 @@ export const roomBookingEvents = pgTable(
   ],
 );
 
+export const roomBookingPrivateNotes = pgTable(
+  "room_booking_private_notes",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    createdAt: timestamp("created_at", {withTimezone: true})
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", {withTimezone: true})
+      .defaultNow()
+      .notNull(),
+    bookingId: uuid("booking_id")
+      .notNull()
+      .references(() => roomBookings.id, {onDelete: "cascade"}),
+    ownerUserId: uuid("owner_user_id")
+      .notNull()
+      .references(() => users.id, {onDelete: "cascade"}),
+    ciphertext: bytea("ciphertext").notNull(),
+    nonce: bytea("nonce").notNull(),
+    keyVersion: smallint("key_version").notNull(),
+  },
+  (table) => [
+    uniqueIndex("room_booking_private_notes_booking_id_uidx").on(table.bookingId),
+    index("room_booking_private_notes_owner_user_id_idx").on(table.ownerUserId),
+  ],
+);
+
+export const roomAvailabilityRequestStatusEnum = pgEnum(
+  "room_availability_request_status",
+  ["OPEN", "RESOLVED", "DECLINED"],
+);
+
+export const roomAvailabilityRequests = pgTable(
+  "room_availability_requests",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    createdAt: timestamp("created_at", {withTimezone: true})
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", {withTimezone: true})
+      .defaultNow()
+      .notNull(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, {onDelete: "restrict"}),
+    preferredRoomId: uuid("preferred_room_id").references(() => rooms.id, {
+      onDelete: "set null",
+    }),
+    startsAt: timestamp("starts_at", {withTimezone: true}).notNull(),
+    endsAt: timestamp("ends_at", {withTimezone: true}).notNull(),
+    message: text("message"),
+    status: roomAvailabilityRequestStatusEnum("status").notNull().default("OPEN"),
+    adminNote: text("admin_note"),
+    resolvedAt: timestamp("resolved_at", {withTimezone: true}),
+    resolvedByUserId: uuid("resolved_by_user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+  },
+  (table) => [
+    index("room_availability_requests_user_id_idx").on(table.userId),
+    index("room_availability_requests_status_idx").on(table.status),
+    index("room_availability_requests_starts_at_idx").on(table.startsAt),
+  ],
+);
+
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Session = typeof sessions.$inferSelect;
@@ -566,3 +630,7 @@ export type RoomBookingStatus = (typeof roomBookingStatusEnum.enumValues)[number
 export type RoomBookingBillingOutcome =
   (typeof roomBookingBillingOutcomeEnum.enumValues)[number];
 export type RoomBookingEvent = typeof roomBookingEvents.$inferSelect;
+export type RoomBookingPrivateNote = typeof roomBookingPrivateNotes.$inferSelect;
+export type RoomAvailabilityRequest = typeof roomAvailabilityRequests.$inferSelect;
+export type RoomAvailabilityRequestStatus =
+  (typeof roomAvailabilityRequestStatusEnum.enumValues)[number];

@@ -165,3 +165,18 @@ export function rangesOverlap(
 export function todayInZurich(now = new Date()): string {
   return utcToZurich(now).date;
 }
+
+export function sameZurichDay(start: Date, end: Date): boolean {
+  const startLocal = utcToZurich(start);
+  const endLocal = utcToZurich(end);
+  return startLocal.date === endLocal.date || endLocal.time === "00:00";
+}
+
+export function listingTimes(intervalMinutes: number): string[] {
+  const step = intervalMinutes > 0 ? intervalMinutes : 30;
+  const times: string[] = [];
+  for (let minute = 0; minute <= 1440; minute += step) {
+    times.push(minutesToTime(minute));
+  }
+  return times;
+}

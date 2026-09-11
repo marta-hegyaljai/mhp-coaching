@@ -9,6 +9,12 @@ import {readSessionUser} from "@/features/auth/session";
 import {sendAdminCreatedRoomBooking, sendAdminMovedRoomBooking} from "@/features/email/room-booking";
 import {RoomError} from "@/features/rooms/errors";
 import {createRoomBlock, removeRoomBlock} from "@/features/rooms/blocks";
+import {
+  createAvailabilityRequest,
+  resolveAvailabilityRequest,
+  withdrawAvailabilityRequest,
+} from "@/features/rooms/availability-requests";
+import {deleteOwnPrivateNote, saveOwnPrivateNote} from "@/features/rooms/private-notes";
 import {reserveRoom} from "@/features/rooms/reservations";
 import {
   cancelRoomBooking,
@@ -236,6 +242,8 @@ function revalidateRoomSurfaces(roomId?: string, bookingId?: string): void {
   revalidateLocalized("/rooms");
   revalidateLocalized("/rooms/book");
   revalidateLocalized("/rooms/bookings");
+  revalidateLocalized("/rooms/requests");
+  revalidateLocalized("/admin/requests");
   if (roomId) {
     revalidateLocalized({pathname: "/admin/rooms/[id]", params: {id: roomId}});
   }
@@ -267,6 +275,7 @@ export async function reserveRoomAction(
       date: String(formData.get("date") ?? ""),
       start: String(formData.get("start") ?? ""),
       end: String(formData.get("end") ?? ""),
+      note: String(formData.get("note") ?? ""),
     });
     bookingId = booking.id;
     roomId = booking.roomId;
@@ -438,6 +447,110 @@ export async function adminWaiveRoomBookingAction(
       pathname: "/admin/bookings/[id]",
       params: {id: booking.id},
     })}?waived=1`;
+  } catch (error) {
+    return localizeRoomError(error, resolvedLocale);
+  }
+  redirect(nextPath);
+}
+
+function revalidateRequestSurfaces(requestId?: string): void {
+  revalidateLocalized("/rooms/requests");
+  revalidateLocalized("/rooms/requests/new");
+  revalidateLocalized("/admin/requests");
+  if (requestId) {
+    revalidateLocalized({pathname: "/rooms/requests/[id]", params: {id: requestId}});
+    revalidateLocalized({pathname: "/admin/requests/[id]", params: {id: requestId}});
+  }
+}
+
+export async function savePrivateNoteAction(
+  locale: string,
+  bookingId: string,
+  _previous: RoomFormState | null,
+  formData: FormData,
+): Promise<RoomFormState> {
+  const resolvedLocale = resolveLocale(locale);
+  try {
+    const actor = await requireRoomActor();
+    const intent = String(formData.get("intent") ?? "save");
+    if (intent === "delete") {
+      await deleteOwnPrivateNote(actor, bookingId);
+    } else {
+      await saveOwnPrivateNote(actor, bookingId, String(formData.get("note") ?? ""));
+    }
+    revalidateRoomSurfaces(undefined, bookingId);
+    return {ok: true};
+  } catch (error) {
+    return localizeRoomError(error, resolvedLocale);
+  }
+}
+
+export async function createAvailabilityRequestAction(
+  locale: string,
+  _previous: RoomFormState | null,
+  formData: FormData,
+): Promise<RoomFormState> {
+  const resolvedLocale = resolveLocale(locale);
+  let requestId: string;
+  try {
+    const actor = await requireRoomActor();
+    const preferredRoom = String(formData.get("preferredRoomId") ?? "").trim();
+    const request = await createAvailabilityRequest({
+      actor,
+      date: String(formData.get("date") ?? ""),
+      start: String(formData.get("start") ?? ""),
+      end: String(formData.get("end") ?? ""),
+      preferredRoomId: preferredRoom && preferredRoom !== "any" ? preferredRoom : undefined,
+      message: String(formData.get("message") ?? ""),
+    });
+    requestId = request.id;
+  } catch (error) {
+    return localizeRoomError(error, resolvedLocale);
+  }
+  revalidateRequestSurfaces(requestId);
+  redirect(`${localizedPathname(resolvedLocale, "/rooms/requests")}?submitted=1`);
+}
+
+export async function withdrawAvailabilityRequestAction(
+  locale: string,
+  requestId: string,
+): Promise<RoomFormState> {
+  const resolvedLocale = resolveLocale(locale);
+  try {
+    const actor = await requireRoomActor();
+    await withdrawAvailabilityRequest(actor, requestId);
+    revalidateRequestSurfaces(requestId);
+  } catch (error) {
+    return localizeRoomError(error, resolvedLocale);
+  }
+  redirect(`${localizedPathname(resolvedLocale, "/rooms/requests")}?withdrawn=1`);
+}
+
+export async function resolveAvailabilityRequestAction(
+  locale: string,
+  requestId: string,
+  _previous: RoomFormState | null,
+  formData: FormData,
+): Promise<RoomFormState> {
+  const resolvedLocale = resolveLocale(locale);
+  const decisionRaw = String(formData.get("decision") ?? "");
+  if (decisionRaw !== "RESOLVED" && decisionRaw !== "DECLINED") {
+    return localizeRoomError(new RoomError("invalidRules"), resolvedLocale);
+  }
+  let nextPath: string;
+  try {
+    const actor = await requireAdminActor();
+    const request = await resolveAvailabilityRequest({
+      actor,
+      requestId,
+      decision: decisionRaw,
+      adminNote: String(formData.get("adminNote") ?? ""),
+    });
+    revalidateRequestSurfaces(request.id);
+    nextPath = `${localizedPathname(resolvedLocale, {
+      pathname: "/admin/requests/[id]",
+      params: {id: request.id},
+    })}?${request.status === "RESOLVED" ? "resolved=1" : "declined=1"}`;
   } catch (error) {
     return localizeRoomError(error, resolvedLocale);
   }

@@ -4,6 +4,8 @@ import {canAccessRooms} from "@/features/auth/policy";
 import {recordAudit} from "@/features/auth/repository";
 import {RoomError} from "@/features/rooms/errors";
 import {requireRoom} from "@/features/rooms/inventory";
+import {encryptNote} from "@/features/rooms/note-crypto";
+import {parsePrivateNoteInput} from "@/features/rooms/private-notes";
 import {
   durationMinutesBetween,
   quoteRoomBooking,
@@ -25,6 +27,7 @@ import {
   timeToMinutes,
   todayInZurich,
   utcToZurich,
+  sameZurichDay,
   zurichLocalToUtc,
 } from "@/features/rooms/timezone";
 
@@ -83,12 +86,6 @@ function instantFor(date: string, time: string): Date {
     throw new RoomError(converted.reason === "ambiguous" ? "ambiguousTime" : "invalidTime");
   }
   return converted.instant;
-}
-
-function sameZurichDay(start: Date, end: Date): boolean {
-  const startLocal = utcToZurich(start);
-  const endLocal = utcToZurich(end);
-  return startLocal.date === endLocal.date || endLocal.time === "00:00";
 }
 
 function occupancyOverlaps(
@@ -486,8 +483,14 @@ export async function reserveRoom(input: {
   start: string;
   end: string;
   now?: Date;
+  note?: string;
 }): Promise<RoomBooking> {
   requireTherapist(input.actor);
+  const noteText = input.note === undefined ? "" : parsePrivateNoteInput(input.note);
+  if (noteText) {
+    // Fail closed before insert so a missing key cannot drop the note.
+    encryptNote(noteText);
+  }
   const room = await requireRoom(input.roomId);
   const now = input.now ?? new Date();
   const context = await loadBookableContext(room.id, input.date, now);
@@ -520,6 +523,9 @@ export async function reserveRoom(input: {
     amountMinor: validated.quote.amountMinor,
     actorUserId: input.actor.id,
     eventAction: "CREATED",
+    privateNote: noteText
+      ? {...encryptNote(noteText), ownerUserId: input.actor.id}
+      : undefined,
   });
 
   if (!inserted.ok) {

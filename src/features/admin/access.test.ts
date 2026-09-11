@@ -172,9 +172,24 @@ describe.skipIf(!hasDatabase)("admin access control", () => {
     }
 
     try {
-      await expect(
-        setUserAdmin({actor, targetUserId: actor.id, isAdmin: false}),
-      ).rejects.toMatchObject({code: "cannotDemoteLastAdmin"});
+      let lastError: unknown;
+      for (let attempt = 0; attempt < 5; attempt += 1) {
+        // Parallel room tests may mint another admin after the first snapshot.
+        const raced = await getDb()
+          .update(users)
+          .set({disabledAt: new Date()})
+          .where(and(eq(users.isAdmin, true), isNull(users.disabledAt), ne(users.id, actor.id)))
+          .returning({id: users.id});
+        otherIds.push(...raced.map((row) => row.id));
+        try {
+          await setUserAdmin({actor, targetUserId: actor.id, isAdmin: false});
+          lastError = undefined;
+        } catch (error) {
+          lastError = error;
+          break;
+        }
+      }
+      expect(lastError).toMatchObject({code: "cannotDemoteLastAdmin"});
     } finally {
       if (otherIds.length > 0) {
         await getDb()

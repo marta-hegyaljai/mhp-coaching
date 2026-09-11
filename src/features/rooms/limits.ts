@@ -1,0 +1,2 @@
+export const PRIVATE_NOTE_MAX_LENGTH = 2000;
+export const REQUEST_MESSAGE_MAX_LENGTH = 1000;

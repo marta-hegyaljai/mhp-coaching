@@ -23,14 +23,14 @@ later scope forward.
 | --- | --- |
 | Plan revision | 3 |
 | Last updated | 2026-09-11 |
-| Last completed checkpoint | CP-06 |
-| Next checkpoint | CP-07 |
-| Active checkpoint | None |
-| Room module production status | Inventory, hours, blocks, privacy-safe availability, therapist reservations, My Bookings, change/cancel and admin intervention shipped |
+| Last completed checkpoint | CP-07 |
+| Next checkpoint | CP-08 |
+| Active checkpoint | — |
+| Room module production status | Inventory, hours, blocks, privacy-safe availability, therapist reservations, My Bookings, change/cancel, owner-only notes and no-availability requests shipped |
 
 Revision 3 completed CP-03 and CP-04 before CP-01 on this branch. CP-01 has now
-landed on main and is merged here. CP-00 through CP-06 are complete. The next
-checkpoint is CP-07.
+landed on main and is merged here. CP-00 through CP-07 are complete. The next
+checkpoint is CP-08.
 
 ## Status vocabulary
 
@@ -112,7 +112,7 @@ or navigation link alone is not a deliverable checkpoint.
 | CP-04 | COMPLETE | Configurable rooms and privacy-safe availability | Therapist and admin |
 | CP-05 | COMPLETE | Collision-safe room reservation and “My bookings” | Therapist |
 | CP-06 | COMPLETE | Booking changes, cancellation and admin intervention | Therapist and admin |
-| CP-07 | PLANNED | Owner-only notes and unavailable-time requests | Therapist and admin |
+| CP-07 | COMPLETE | Owner-only notes and unavailable-time requests | Therapist and admin |
 | CP-08 | PLANNED | Discounts and transparent current-month usage | Therapist and admin |
 | CP-09 | PLANNED | Stable monthly statements and saved payment method | Therapist and admin |
 | CP-10 | PLANNED | Automated monthly charging and operational email | Therapist and admin |
@@ -476,7 +476,7 @@ and automatic reminders.
 
 ## CP-07 — Private notes and no-availability requests
 
-**Status:** `PLANNED`
+**Status:** `COMPLETE`
 
 **Depends on:** CP-06.
 
@@ -971,6 +971,42 @@ For an incomplete checkpoint, add this directly below its acceptance criteria:
 - **Deviations/follow-ups:** Therapist self-cancel/self-move mail stays in
   CP-10. Discount snapshots remain 0 until CP-08.
 - **Known next work:** CP-07 private notes and no-availability requests.
+
+### CP-07 — 2026-09-11
+
+- **Result:** Therapists can keep an owner-only encrypted reminder on a booking
+  and request an unavailable interval without reserving it. Admins can
+  resolve or decline requests and never see private notes.
+- **Routes/UI:** Therapist `/rooms/requests`, `/rooms/requests/new`,
+  `/rooms/requests/[id]` (`/fr/salles/demandes`, `/de/raeume/anfragen`);
+  booking detail private-note form; calendar unavailable cells and book form
+  optional note. Admin `/admin/requests` and `/admin/requests/[id]`.
+- **Migrations:** `0012_room_notes_and_requests.sql` (encrypted
+  `room_booking_private_notes`, `room_availability_requests` with OPEN unique
+  slot index, range/resolution checks).
+- **Automated evidence:** `pnpm verify` passed; 61 test files and 259 tests,
+  including AES-256-GCM key missing/invalid/rotation, owner-only note CRUD,
+  fail-closed reserve when the key is missing, note move on late replace,
+  calendar/admin/billing/export/log exclusion, request reject when a room is
+  still bookable, concurrent OPEN dedup, admin RESOLVED/DECLINED without
+  leaking `adminNote`, and Playwright auth guards for EN/FR/DE request
+  routes. Production build includes the new request routes.
+- **Browser evidence:** Therapist signed in, booked Cabinet Ouchy
+  2026-09-14 10:00–11:00 with note “Bring extra chair”, saw the note only on
+  the booking detail (not My Bookings list). Submitted a Sunday 07:00–08:00
+  any-room request; notice confirmed the slot stayed unreserved. FR/DE
+  request list copy and compact rooms nav checked, including ~390px DE.
+  Therapist hitting `/admin/requests` received Access denied. Admin inbox
+  showed the request and owner, declined it, and the admin booking list and
+  detail for the same booking contained no private-note field or plaintext.
+- **Preview/production:** Not deployed in this task.
+- **Deviations/follow-ups:** Request create/resolve emails stay in CP-10.
+  Withdrawing an OPEN request deletes the row (no `WITHDRAWN` status).
+  Requests may target closed or beyond-horizon intervals by design. Hosted
+  deploys must set `ROOM_NOTE_ENCRYPTION_KEY`. A Next.js hydration overlay
+  appeared on shared chrome during calendar QA; it is not specific to the
+  note/request forms.
+- **Known next work:** CP-08 discounts and current-month usage.
 
 ### CP-03 to CP-06 UI polish pass — 2026-09-11
 
