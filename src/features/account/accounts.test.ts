@@ -199,6 +199,36 @@ describe.skipIf(!hasDatabase)("CP-01 public accounts", () => {
     expect(reused.ok).toBe(false);
   });
 
+  it("uses recovery to activate a pre-provisioned passwordless account", async () => {
+    const email = uniqueEmail("passwordless-reset");
+    const user = await insertUser({
+      email,
+      emailNormalized: normalizeEmail(email),
+      firstName: "Pre-provisioned",
+      lastName: "User",
+      locale: "en",
+    });
+
+    expect(user.passwordHash).toBeNull();
+    expect(user.emailVerifiedAt).toBeNull();
+
+    const requested = await requestPasswordReset(email);
+    expect(requested.rawToken).toBeTruthy();
+
+    const reset = await resetPasswordWithToken({
+      rawToken: requested.rawToken!,
+      password: "new-password-12",
+      passwordConfirm: "new-password-12",
+    });
+    expect(reset.ok).toBe(true);
+    if (!reset.ok) {
+      throw new Error("expected passwordless account activation");
+    }
+    expect(reset.user.passwordHash).toBeTruthy();
+    expect(reset.user.emailVerifiedAt).not.toBeNull();
+    expect(canAuthenticate(reset.user)).toBe(true);
+  });
+
   it("changes a signed-in password and keeps the current session", async () => {
     const email = uniqueEmail("change");
     const user = await insertUser({

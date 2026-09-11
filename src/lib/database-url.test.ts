@@ -32,6 +32,28 @@ describe("getDatabaseUrl", () => {
   it("returns undefined when no connection string is configured", () => {
     expect(getDatabaseUrl({})).toBeUndefined();
   });
+
+  it("makes Neon SSL certificate verification explicit", () => {
+    expect(
+      getDatabaseUrl({
+        NEON_DATABASE_URL:
+          "postgresql://neon.example/neondb?sslmode=require&channel_binding=require",
+      }),
+    ).toBe(
+      "postgresql://neon.example/neondb?sslmode=verify-full&channel_binding=require",
+    );
+  });
+
+  it("does not change local URLs or an already explicit SSL mode", () => {
+    expect(
+      getDatabaseUrl({DATABASE_URL: "postgresql://mhp:mhp@localhost:5432/mhp"}),
+    ).toBe("postgresql://mhp:mhp@localhost:5432/mhp");
+    expect(
+      getDatabaseUrl({
+        DATABASE_URL: "postgresql://neon.example/neondb?sslmode=verify-full",
+      }),
+    ).toBe("postgresql://neon.example/neondb?sslmode=verify-full");
+  });
 });
 
 describe("getMigrationDatabaseUrl", () => {
@@ -42,6 +64,15 @@ describe("getMigrationDatabaseUrl", () => {
         NEON_DATABASE_URL_UNPOOLED: "postgresql://neon.example/direct",
       }),
     ).toBe("postgresql://neon.example/direct");
+  });
+
+  it("makes migration URL SSL certificate verification explicit", () => {
+    expect(
+      getMigrationDatabaseUrl({
+        NEON_DATABASE_URL_UNPOOLED:
+          "postgresql://neon.example/direct?sslmode=verify-ca",
+      }),
+    ).toBe("postgresql://neon.example/direct?sslmode=verify-full");
   });
 
   it("accepts the Vercel Postgres non-pooling alias", () => {

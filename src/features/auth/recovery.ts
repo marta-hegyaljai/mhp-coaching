@@ -1,9 +1,10 @@
 import type {User} from "@/db/schema";
+import {linkUnownedBookingsForVerifiedUser} from "@/features/account/link-bookings";
 import {AUDIT_ACTIONS} from "@/features/admin/audit-actions";
 import {isValidEmail, normalizeEmail} from "@/features/auth/email";
 import {issueAuthToken} from "@/features/auth/issue-token";
 import {hashPassword, passwordErrors, verifyPassword} from "@/features/auth/password";
-import {canAuthenticate} from "@/features/auth/policy";
+import {isEnabledAccount} from "@/features/auth/policy";
 import {
   findUserById,
   findUserByNormalizedEmail,
@@ -27,7 +28,7 @@ export async function requestPasswordReset(email: string): Promise<RecoveryReque
   }
 
   const user = await findUserByNormalizedEmail(normalizeEmail(email));
-  if (!user || !canAuthenticate(user) || !user.passwordHash) {
+  if (!user || !isEnabledAccount(user)) {
     return {};
   }
 
@@ -54,7 +55,7 @@ export async function resetPasswordWithToken(input: {
   }
 
   const user = await findUserById(token.userId);
-  if (!user || user.disabledAt || !user.emailVerifiedAt) {
+  if (!user || !isEnabledAccount(user)) {
     return {ok: false, reason: "invalid"};
   }
 
@@ -65,8 +66,21 @@ export async function resetPasswordWithToken(input: {
 
   const passwordHash = await hashPassword(input.password);
   await markAuthTokenConsumed(token.id);
-  const updated = await updateUser(user.id, {passwordHash});
+  const wasUnverified = !user.emailVerifiedAt;
+  const updated = await updateUser(user.id, {
+    passwordHash,
+    ...(wasUnverified ? {emailVerifiedAt: new Date()} : {}),
+  });
   await revokeAllSessionsForUser(user.id);
+  if (wasUnverified) {
+    await linkUnownedBookingsForVerifiedUser(updated);
+    await recordAudit({
+      actorUserId: user.id,
+      targetUserId: user.id,
+      action: AUDIT_ACTIONS.EMAIL_VERIFIED,
+      after: {emailNormalized: updated.emailNormalized},
+    });
+  }
   await recordAudit({
     actorUserId: user.id,
     targetUserId: user.id,

@@ -219,7 +219,9 @@ verify emails before sign-in and before historical booking reconciliation, and n
 user IDs or roles. Normalized email (`email_normalized`) is the unique account
 identifier: PostgreSQL rejects a second row for the same address, including
 case variants. Account email is permanent for now: users cannot change it on
-the profile page. The first admin is created with `pnpm db:bootstrap-admin`
+the profile page. A successfully consumed password-recovery link also verifies
+the recipient's email and can initialize a password for a pre-provisioned
+passwordless account. The first admin is created with `pnpm db:bootstrap-admin`
 from environment variables; the command refuses to run when an enabled admin
 already exists.
 
