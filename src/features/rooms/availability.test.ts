@@ -254,6 +254,17 @@ describe.skipIf(!hasDatabase)("rooms inventory and availability", () => {
     });
     expect(sunday.slots.every((slot) => slot.state === "unavailable")).toBe(true);
 
+    const pastWednesday = await therapistAvailability({
+      actor: therapist,
+      view: "day",
+      date: "2026-09-09",
+      roomId,
+      now: frozenMorning,
+    });
+    expect(pastWednesday.slots.find((slot) => slot.localStart === "10:00")?.state).toBe(
+      "available",
+    );
+
     const thursday = await therapistAvailability({
       actor: therapist,
       view: "day",

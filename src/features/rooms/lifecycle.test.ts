@@ -95,6 +95,18 @@ describe.skipIf(!hasDatabase)("room booking lifecycle", () => {
       now: farNow,
     });
 
+    await expect(
+      moveRoomBooking({
+        actor: therapist,
+        bookingId: booking.id,
+        roomId,
+        date: "2026-09-10",
+        start: "14:00",
+        end: "15:00",
+        now: farNow,
+      }),
+    ).rejects.toMatchObject({code: "tooSoon"});
+
     const moved = await moveRoomBooking({
       actor: therapist,
       bookingId: booking.id,
@@ -255,6 +267,18 @@ describe.skipIf(!hasDatabase)("room booking lifecycle", () => {
     expect(created.createdByUserId).toBe(admin.id);
     const lists = await listMyRoomBookings(therapist, farNow);
     expect(lists.upcoming.map((item) => item.id)).toContain(created.id);
+
+    const retroactive = await createRoomBookingForUser({
+      actor: admin,
+      userId: therapist.id,
+      roomId: firstRoom.id,
+      date: "2026-09-10",
+      start: "12:00",
+      end: "13:00",
+      now: farNow,
+    });
+    const withRetroactive = await listMyRoomBookings(therapist, farNow);
+    expect(withRetroactive.history.map((item) => item.id)).toContain(retroactive.id);
 
     const moved = await moveRoomBooking({
       actor: admin,

@@ -15,8 +15,8 @@ export const slotSurface: Record<AvailabilityState, string> = {
 };
 
 export const slotMetaText: Record<AvailabilityState, string> = {
-  available: "text-ink-muted",
+  available: "text-ink-muted group-hover:text-parchment",
   booked: "text-ink-muted",
   unavailable: "text-ink-subtle",
-  "my-booking": "text-parchment",
+  "my-booking": "text-parchment group-hover:text-ink",
 };

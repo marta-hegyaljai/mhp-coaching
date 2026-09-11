@@ -120,7 +120,7 @@ export function AvailabilityGrid({
                     {run.href ? (
                       <Link
                         href={run.href}
-                        className={`block h-full min-h-11 cursor-pointer px-2 py-1 transition-colors duration-150 ease-standard focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-ink ${
+                        className={`group block h-full min-h-11 cursor-pointer px-2 py-1 transition-colors duration-150 ease-standard focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-ink ${
                           run.state === "my-booking"
                             ? "hover:bg-white hover:text-ink"
                             : "hover:bg-ink hover:text-parchment"

@@ -95,6 +95,7 @@ async function validateSlotForUser(input: {
   end: string;
   now: Date;
   exceptBookingId?: string;
+  allowPast?: boolean;
 }) {
   return validateBookableInterval({
     roomId: input.roomId,
@@ -103,6 +104,7 @@ async function validateSlotForUser(input: {
     end: input.end,
     now: input.now,
     exceptBookingId: input.exceptBookingId,
+    allowPast: input.allowPast,
     discountPercent: therapistDiscountPercent(input.user),
   });
 }
@@ -275,6 +277,7 @@ export async function createRoomBookingForUser(input: {
     start: input.start,
     end: input.end,
     now,
+    allowPast: true,
   });
 
   const inserted = await insertConfirmedBookingUnlessOccupied({

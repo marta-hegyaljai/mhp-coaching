@@ -10,7 +10,7 @@ import {therapistAvailability} from "@/features/rooms/availability";
 import {createRoomBlock} from "@/features/rooms/blocks";
 import {createRoom, setRoomActive} from "@/features/rooms/inventory";
 import {getMyRoomBooking, listMyRoomBookings} from "@/features/rooms/my-bookings";
-import {reserveRoom} from "@/features/rooms/reservations";
+import {previewReservation, reserveRoom} from "@/features/rooms/reservations";
 import {overlappingConfirmedBookings} from "@/features/rooms/repository";
 import {saveRoomSettings} from "@/features/rooms/settings";
 import {getDatabaseUrl} from "@/lib/database-url";
@@ -114,7 +114,7 @@ describe.skipIf(!hasDatabase)("room reservations", () => {
     );
   });
 
-  it("rejects invalid duration, increment, past, advance, closed, blocked and disabled rooms", async () => {
+  it("allows retroactive entry while rejecting invalid duration, increment, advance, closed, blocked and disabled rooms", async () => {
     const admin = await createAdmin();
     const therapist = await createTherapist("rules");
     const {id: roomId} = await seedRoom(admin, `Rules ${Date.now()}`);
@@ -147,16 +147,27 @@ describe.skipIf(!hasDatabase)("room reservations", () => {
       await expect(
         reserveRoom({actor: therapist, roomId, date, start: "10:10", end: "11:10", now}),
       ).rejects.toMatchObject({code: "invalidIncrement"});
-      await expect(
-        reserveRoom({
-          actor: therapist,
-          roomId,
-          date: "2026-09-10",
-          start: "10:00",
-          end: "11:00",
-          now,
-        }),
-      ).rejects.toMatchObject({code: "tooSoon"});
+      const retroactivePreview = await previewReservation({
+        actor: therapist,
+        roomId,
+        date: "2026-09-10",
+        start: "10:00",
+        end: "11:00",
+        now,
+      });
+      expect(retroactivePreview.start).toBe("10:00");
+
+      const retroactive = await reserveRoom({
+        actor: therapist,
+        roomId,
+        date: "2026-09-10",
+        start: "10:00",
+        end: "11:00",
+        now,
+      });
+      expect(retroactive.startsAt.getTime()).toBeLessThan(now.getTime());
+      const ownBookings = await listMyRoomBookings(therapist, now);
+      expect(ownBookings.history.map((booking) => booking.id)).toContain(retroactive.id);
       await expect(
         reserveRoom({
           actor: therapist,

@@ -77,6 +77,7 @@ export default async function AdminNewBookingPage({params, searchParams}: NewBoo
         date,
         start: query.start,
         end: query.end,
+        allowPast: true,
       });
     } catch (error) {
       previewError = error instanceof RoomError ? errors(error.code) : errors("saveFailed");

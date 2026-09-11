@@ -135,7 +135,9 @@ booking duration at each start time. Choosing a start automatically carries one
 valid room into the confirmation step; a therapist may still filter by room when
 needed. Every valid interval is its own calendar-sized click target. Phone week
 days switch from the already-loaded week without a server round trip, and a date
-picker provides direct month/date jumps.
+picker provides direct month/date jumps. Past available intervals remain
+bookable so a therapist can record room use they forgot to enter at the time;
+opening hours, blocks, collisions, duration and pricing rules still apply.
 
 For another person's reservation, return and render only `Booked`. Do not send
 the owner identity, note, billing, or other private fields and then merely hide
@@ -173,6 +175,8 @@ Users may change room, start and end while eligible. Apply the same availability
 checks atomically. Inside the cancellation window, do not let modification evade
 the late-cancellation charge; initially treat a material change conservatively
 as cancel-and-rebook and surface its billing consequence before confirmation.
+Retroactive entry applies to new reservations only: an existing future booking
+cannot be moved into the past.
 
 Admins can create a booking for a user and reschedule an existing booking to a
 different room/time. Record the acting admin and before/after values, include it

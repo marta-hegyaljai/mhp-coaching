@@ -226,14 +226,12 @@ function classifySlot(input: {
   endMinute: number;
   openings: Array<{startMinute: number; endMinute: number}>;
   blocked: boolean;
-  startsInPast: boolean;
   ownBookingId?: string;
   otherBooking: boolean;
 }): AvailabilityState {
   if (
     !input.roomActive ||
     input.blocked ||
-    input.startsInPast ||
     !fullyWithinOpening(input.startMinute, input.endMinute, input.openings)
   ) {
     if (input.ownBookingId) {
@@ -287,7 +285,6 @@ export async function therapistAvailability(input: {
     throw new RoomError("notFound");
   }
 
-  const now = input.now ?? new Date();
   const grid = await loadGrid({
     view: input.view,
     date: input.date,
@@ -350,7 +347,6 @@ export async function therapistAvailability(input: {
             endMinute,
             openings: dayOpenings,
             blocked,
-            startsInPast: start.instant.getTime() <= now.getTime(),
             ownBookingId: own?.id,
             otherBooking: other,
           }),

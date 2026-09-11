@@ -148,6 +148,7 @@ function validateInterval(input: {
   blocks: Array<{startsAt: Date; endsAt: Date}>;
   bookings: Array<{startsAt: Date; endsAt: Date}>;
   now: Date;
+  allowPast?: boolean;
   discountPercent: number;
 }): {startsAt: Date; endsAt: Date; quote: RoomBookingQuote} {
   requireActiveRoom(input.room);
@@ -196,7 +197,7 @@ function validateInterval(input: {
     throw new RoomError("invalidDuration");
   }
 
-  if (startsAt.getTime() <= input.now.getTime()) {
+  if (!input.allowPast && startsAt.getTime() <= input.now.getTime()) {
     throw new RoomError("tooSoon");
   }
 
@@ -341,6 +342,7 @@ export async function previewReservation(input: {
     end: input.end,
     now: input.now,
     exceptBookingId: input.exceptBookingId,
+    allowPast: input.exceptBookingId === undefined,
     discountPercent: therapistDiscountPercent(input.discountActor ?? input.actor),
   });
 }
@@ -352,6 +354,7 @@ export async function previewBookableSlot(input: {
   end?: string;
   now?: Date;
   exceptBookingId?: string;
+  allowPast?: boolean;
   discountPercent?: number;
 }): Promise<ReservationPreview> {
   const room = await requireRoom(input.roomId);
@@ -366,6 +369,7 @@ export async function previewBookableSlot(input: {
     blocks: context.blocks,
     bookings: context.bookings,
     now,
+    allowPast: input.allowPast,
     discountPercent,
   };
   const starts = listStarts(shared);
@@ -411,6 +415,7 @@ export async function validateBookableInterval(input: {
   end: string;
   now?: Date;
   exceptBookingId?: string;
+  allowPast?: boolean;
   discountPercent?: number;
 }): Promise<{room: Room; startsAt: Date; endsAt: Date; quote: RoomBookingQuote}> {
   const room = await requireRoom(input.roomId);
@@ -427,6 +432,7 @@ export async function validateBookableInterval(input: {
     blocks: context.blocks,
     bookings: context.bookings,
     now,
+    allowPast: input.allowPast,
     discountPercent,
   });
   return {room: context.room, ...validated};
@@ -455,6 +461,7 @@ export async function reserveRoom(input: {
     blocks: context.blocks,
     bookings: context.bookings,
     now,
+    allowPast: true,
     discountPercent,
   });
 
