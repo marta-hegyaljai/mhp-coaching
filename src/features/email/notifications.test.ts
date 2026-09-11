@@ -25,6 +25,7 @@ import {sendLeadNotification} from "./lead-notification";
 import {sendPurchaseNotification} from "./purchase-notification";
 import {sendWaitlistNotification} from "./waitlist-notification";
 import {sendAccountInvitation} from "./invitation";
+import {sendAdminCreatedRoomBooking, sendAdminMovedRoomBooking} from "./room-booking";
 import {
   sendEmailVerification,
   sendPasswordRecovery,
@@ -341,5 +342,75 @@ describe("staff email destinations", () => {
     });
     expect(sendMailMock.mock.calls.at(-1)?.[0].subject).toBe("Reset your MHP password");
     expectSharedChrome(sendMailMock.mock.calls.at(-1)?.[0].html ?? "");
+  });
+
+  it("sends admin-created and admin-moved room mail to the user, not staff", async () => {
+    const user = {
+      id: "77777777-7777-4777-8777-777777777777",
+      createdAt: new Date("2026-01-01T00:00:00.000Z"),
+      updatedAt: new Date("2026-01-01T00:00:00.000Z"),
+      email: "theo@example.com",
+      emailNormalized: "theo@example.com",
+      emailVerifiedAt: new Date("2026-01-01T00:00:00.000Z"),
+      passwordHash: "hash",
+      firstName: "Theo",
+      lastName: "Therapist",
+      locale: "en",
+      isAdmin: false,
+      roomBookingEnabled: true,
+      disabledAt: null,
+      pendingEmail: null,
+      pendingEmailNormalized: null,
+    };
+    const booking = {
+      id: "88888888-8888-4888-8888-888888888888",
+      createdAt: new Date("2026-09-11T08:00:00.000Z"),
+      updatedAt: new Date("2026-09-11T08:00:00.000Z"),
+      roomId: "99999999-9999-4999-8999-999999999999",
+      userId: user.id,
+      createdByUserId: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      startsAt: new Date("2026-09-21T08:00:00.000Z"),
+      endsAt: new Date("2026-09-21T09:00:00.000Z"),
+      status: "CONFIRMED" as const,
+      billingOutcome: "USAGE" as const,
+      cancelledAt: null,
+      cancelledByUserId: null,
+      waivedAt: null,
+      waivedByUserId: null,
+      successorBookingId: null,
+      roomName: "Salon Lavaux",
+      baseHourlyRateMinor: 4500,
+      discountPercent: 0,
+      effectiveHourlyRateMinor: 4500,
+      durationMinutes: 60,
+      amountMinor: 4500,
+      currency: "CHF",
+    };
+
+    await sendAdminCreatedRoomBooking({user, booking});
+    expect(sendMailMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        to: "theo@example.com",
+        subject: "Room booking created — Salon Lavaux",
+      }),
+    );
+    const createdHtml = sendMailMock.mock.calls.at(-1)?.[0].html ?? "";
+    const createdText = sendMailMock.mock.calls.at(-1)?.[0].text ?? "";
+    expect(createdHtml).toContain("Salon Lavaux");
+    expect(createdHtml).not.toContain(booking.id);
+    expect(createdText).not.toContain(booking.id);
+    expect(sendMailMock.mock.calls.at(-1)?.[0].to).not.toBe(organization.email);
+    expectSharedChrome(createdHtml);
+
+    await sendAdminMovedRoomBooking({user, booking});
+    expect(sendMailMock.mock.calls.at(-1)?.[0]).toEqual(
+      expect.objectContaining({
+        to: "theo@example.com",
+        subject: "Room booking updated — Salon Lavaux",
+      }),
+    );
+    const movedHtml = sendMailMock.mock.calls.at(-1)?.[0].html ?? "";
+    expect(movedHtml).not.toContain(booking.id);
+    expectSharedChrome(movedHtml);
   });
 });

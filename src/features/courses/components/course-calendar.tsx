@@ -13,6 +13,7 @@ import {
   sessionRangeEnd,
 } from "@/features/courses/calendar-layout";
 import {todayIsoInZurich} from "@/features/courses/dates";
+import {intlLocale} from "@/i18n/intl-locale";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {buttonStyles} from "@/shared/ui/button";
@@ -323,14 +324,4 @@ function parseYearMonth(isoDate: string): {year: number; month: number} {
     year: Number(isoDate.slice(0, 4)),
     month: Number(isoDate.slice(5, 7)) - 1,
   };
-}
-
-function intlLocale(locale: AppLocale): string {
-  if (locale === "en") {
-    return "en-GB";
-  }
-  if (locale === "de") {
-    return "de-CH";
-  }
-  return "fr-CH";
 }

@@ -3,6 +3,7 @@ import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
 import type {Booking} from "@/db/schema";
 import type {AppLocale} from "@/i18n/routing";
 import {Price} from "@/shared/ui/price";
+import {StatusLabel} from "@/shared/ui/status-label";
 
 export function MyCourseCard({
   booking,
@@ -14,10 +15,10 @@ export function MyCourseCard({
   statusLabel: string;
 }) {
   return (
-    <article className="flex h-full flex-col border border-ink bg-white p-5">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold-deep">
+    <article className="flex h-full flex-col rounded-panel border border-ink bg-white p-5">
+      <StatusLabel tone={booking.status === "PAID" ? "strong" : "muted"}>
         {statusLabel}
-      </p>
+      </StatusLabel>
       <h3 className="mt-3 font-serif text-[clamp(1.35rem,1.6vw,1.65rem)] leading-[1.1]">
         {booking.courseTitle}
       </h3>

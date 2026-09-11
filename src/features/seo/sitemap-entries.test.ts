@@ -31,6 +31,7 @@ describe("SEO launch surfaces", () => {
     expect(urls.every((url) => !url.includes("/account"))).toBe(true);
     expect(urls.every((url) => !url.includes("/forgot-password"))).toBe(true);
     expect(urls.every((url) => !url.includes("/rooms"))).toBe(true);
+    expect(urls.every((url) => !url.includes("/compte"))).toBe(true);
     expect(urls.some((url) => url.endsWith("/fr/mentions-legales"))).toBe(true);
     expect(urls.some((url) => url.endsWith("/fr/mentions-legales/cgu"))).toBe(true);
     expect(urls.some((url) => url.endsWith("/de/rechtliches/agb"))).toBe(true);

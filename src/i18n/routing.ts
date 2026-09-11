@@ -119,10 +119,41 @@ export const routing = defineRouting({
     "/admin": "/admin",
     "/admin/users": "/admin/users",
     "/admin/users/[id]": "/admin/users/[id]",
+    "/admin/rooms": "/admin/rooms",
+    "/admin/rooms/[id]": "/admin/rooms/[id]",
+    "/admin/settings": "/admin/settings",
+    "/admin/bookings": "/admin/bookings",
+    "/admin/bookings/new": "/admin/bookings/new",
+    "/admin/bookings/[id]": "/admin/bookings/[id]",
     "/rooms": {
       fr: "/salles",
       de: "/raeume",
       en: "/rooms",
+    },
+    "/rooms/book": {
+      fr: "/salles/reserver",
+      de: "/raeume/buchen",
+      en: "/rooms/book",
+    },
+    "/rooms/bookings": {
+      fr: "/salles/reservations",
+      de: "/raeume/buchungen",
+      en: "/rooms/bookings",
+    },
+    "/rooms/bookings/[id]": {
+      fr: "/salles/reservations/[id]",
+      de: "/raeume/buchungen/[id]",
+      en: "/rooms/bookings/[id]",
+    },
+    "/rooms/bookings/[id]/change": {
+      fr: "/salles/reservations/[id]/modifier",
+      de: "/raeume/buchungen/[id]/aendern",
+      en: "/rooms/bookings/[id]/change",
+    },
+    "/rooms/bookings/[id]/cancel": {
+      fr: "/salles/reservations/[id]/annuler",
+      de: "/raeume/buchungen/[id]/stornieren",
+      en: "/rooms/bookings/[id]/cancel",
     },
     "/access-denied": {
       fr: "/acces-refuse",

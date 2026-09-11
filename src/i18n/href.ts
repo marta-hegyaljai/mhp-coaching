@@ -9,6 +9,11 @@ export type PathnameHref =
       | "/reset-password/[token]"
       | "/verify-email/[token]"
       | "/admin/users/[id]"
+      | "/admin/rooms/[id]"
+      | "/admin/bookings/[id]"
+      | "/rooms/bookings/[id]"
+      | "/rooms/bookings/[id]/change"
+      | "/rooms/bookings/[id]/cancel"
     >
   | {
       pathname: "/courses";
@@ -36,6 +41,55 @@ export type PathnameHref =
       params: {id: string};
     }
   | {
+      pathname: "/admin/rooms/[id]";
+      params: {id: string};
+    }
+  | {
+      pathname: "/rooms";
+      query?: {view?: string; date?: string; room?: string};
+    }
+  | {
+      pathname: "/rooms/book";
+      query?: {room?: string; date?: string; start?: string; end?: string};
+    }
+  | {
+      pathname: "/admin/bookings";
+      query?: {q?: string; status?: string; page?: string};
+    }
+  | {
+      pathname: "/admin/bookings/new";
+      query?: {user?: string; room?: string; date?: string; start?: string; end?: string};
+    }
+  | {
+      pathname: "/admin/bookings/[id]";
+      params: {id: string};
+      query?: {
+        action?: string;
+        created?: string;
+        moved?: string;
+        cancelled?: string;
+        waived?: string;
+      };
+    }
+  | {
+      pathname: "/rooms/bookings";
+      query?: {reserved?: string; cancelled?: string};
+    }
+  | {
+      pathname: "/rooms/bookings/[id]";
+      params: {id: string};
+      query?: {moved?: string; replaced?: string};
+    }
+  | {
+      pathname: "/rooms/bookings/[id]/change";
+      params: {id: string};
+      query?: {room?: string; date?: string; start?: string; end?: string};
+    }
+  | {
+      pathname: "/rooms/bookings/[id]/cancel";
+      params: {id: string};
+    }
+  | {
       pathname: "/reset-password/[token]";
       params: {token: string};
     }
@@ -43,7 +97,6 @@ export type PathnameHref =
       pathname: "/verify-email/[token]";
       params: {token: string};
     };
-
 
 export const catalogueCalendarHref = {
   pathname: "/courses",

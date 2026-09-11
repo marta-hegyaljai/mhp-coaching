@@ -21,15 +21,16 @@ later scope forward.
 
 | Field | Value |
 | --- | --- |
-| Plan revision | 2 |
-| Last updated | 2026-09-10 |
-| Last completed checkpoint | CP-01 |
-| Next checkpoint | CP-03 |
-| Active checkpoint | — |
-| Room module production status | Not started |
+| Plan revision | 3 |
+| Last updated | 2026-09-11 |
+| Last completed checkpoint | CP-06 |
+| Next checkpoint | CP-07 |
+| Active checkpoint | None |
+| Room module production status | Inventory, hours, blocks, privacy-safe availability, therapist reservations, My Bookings, change/cancel and admin intervention shipped |
 
-Revision 2 approved completing CP-02 before CP-01. Both are now complete; the
-next checkpoint is CP-03.
+Revision 3 completed CP-03 and CP-04 before CP-01 on this branch. CP-01 has now
+landed on main and is merged here. CP-00 through CP-06 are complete. The next
+checkpoint is CP-07.
 
 ## Status vocabulary
 
@@ -107,10 +108,10 @@ or navigation link alone is not a deliverable checkpoint.
 | CP-00 | COMPLETE | Reliable multilingual course-booking MVP | Visitor and staff |
 | CP-01 | COMPLETE | Secure account and “My courses” experience | User |
 | CP-02 | COMPLETE | Account-based user/access administration | Admin |
-| CP-03 | PLANNED | Personal certificate library | User and admin |
-| CP-04 | PLANNED | Configurable rooms and privacy-safe availability | Therapist and admin |
-| CP-05 | PLANNED | Collision-safe room reservation and “My bookings” | Therapist |
-| CP-06 | PLANNED | Booking changes, cancellation and admin intervention | Therapist and admin |
+| CP-03 | COMPLETE | Personal certificate library | User and admin |
+| CP-04 | COMPLETE | Configurable rooms and privacy-safe availability | Therapist and admin |
+| CP-05 | COMPLETE | Collision-safe room reservation and “My bookings” | Therapist |
+| CP-06 | COMPLETE | Booking changes, cancellation and admin intervention | Therapist and admin |
 | CP-07 | PLANNED | Owner-only notes and unavailable-time requests | Therapist and admin |
 | CP-08 | PLANNED | Discounts and transparent current-month usage | Therapist and admin |
 | CP-09 | PLANNED | Stable monthly statements and saved payment method | Therapist and admin |
@@ -260,7 +261,7 @@ booking reconciliation (CP-01), room inventory, and a course CMS.
 
 ## CP-03 — Personal certificate library
 
-**Status:** `PLANNED`
+**Status:** `COMPLETE`
 
 **Depends on:** CP-02.
 
@@ -294,11 +295,24 @@ exams, evaluations, qualification progress and public verification.
    URLs, indexed pages, email attachments or stored in git.
 5. Missing files fail safely and visibly without exposing storage internals.
 
+**Completion evidence:** Implementation and verification on 2026-09-10.
+PostgreSQL `course_certificates` and `course_certificate_documents` (PDF
+`bytea`, 10 MiB cap), document-store interface, owner-only My Courses list and
+authenticated download, admin attach/replace/revoke with audit events, and a
+visible unavailable/revoked state. `pnpm verify` passed with 38 test files and
+130 tests, including a successful Next.js production build. Playwright: 60
+passed, including `/account/courses` and certificate download 401. Browser:
+desktop and ~390px in FR, DE, and EN for My courses and admin attach.
+
+**Not included:** Diploma eligibility, automatic generation, templates, exams,
+evaluations, qualification progress, public verification, and CP-01 course
+registration history on My Courses.
+
 ---
 
 ## CP-04 — Rooms, rules and availability
 
-**Status:** `PLANNED`
+**Status:** `COMPLETE`
 
 **Depends on:** CP-03.
 
@@ -341,11 +355,24 @@ discounts and private notes.
 7. Creating a block over an existing reservation reports the conflict and does
    not silently invalidate it.
 
+**Completion evidence:** Implementation and verification on 2026-09-10.
+Rooms, opening intervals, booking-settings singleton (timezone locked to
+`Europe/Zurich`), temporary blocks, and confirmed-booking occupancy with a
+PostgreSQL exclusion constraint. Admin `/admin/rooms` and `/admin/settings`;
+therapist day/week calendar at `/{locale}/rooms` (`/fr/salles`, `/de/raeume`)
+with Available / Booked / Unavailable / My booking states. `pnpm verify` passed
+with 38 test files and 130 tests. Playwright: 60 passed, including `/rooms`,
+`/admin/rooms`, and `/admin/settings` auth gates. Browser: desktop and ~390px
+in FR, DE, and EN.
+
+**Not included:** Therapist-created reservations, My bookings, monthly billing,
+discounts, private notes, and public room signup.
+
 ---
 
 ## CP-05 — Reserve a room and My Bookings
 
-**Status:** `PLANNED`
+**Status:** `COMPLETE`
 
 **Depends on:** CP-04.
 
@@ -384,11 +411,29 @@ bookings, private notes, availability requests and payment collection.
 6. Other therapists see only `Booked`; the owner sees the management-safe details.
 7. No Stripe checkout/payment is created during reservation.
 
+**Completion evidence:** Implementation and verification on 2026-09-11.
+Forward migration `0010_room_booking_snapshots.sql` adds creator, room-name and
+immutable rate/discount/duration/amount snapshots. Therapist reserve flow at
+`/{locale}/rooms/book` (`/fr/salles/reserver`, `/de/raeume/buchen`) quotes on
+the server and inserts `CONFIRMED` rows inside a room-row lock; the existing
+`room_bookings_no_overlap` exclusion constraint remains the last line of
+defence. My Bookings at `/{locale}/rooms/bookings` splits upcoming/history.
+Available calendar bars open the book page; own bars open management-safe
+details. Discount snapshots stay 0 until CP-08. No Stripe objects are created.
+`pnpm verify` passed with 49 test files and 183 tests, including quote math,
+rule failures, adjacent vs overlap, concurrent same-slot conflict, and privacy.
+Browser: signed-in reserve of Cabinet Ouchy 2026-09-14 16:00–17:30 (90 min ×
+CHF 35/h = CHF 52.50) visible on the calendar and in upcoming, desktop and
+~390px, FR/DE/EN.
+
+**Not included:** Change/cancel UI, admin-created bookings, private notes,
+availability requests, payment collection and discount admin.
+
 ---
 
 ## CP-06 — Changes, cancellations and admin intervention
 
-**Status:** `PLANNED`
+**Status:** `COMPLETE`
 
 **Depends on:** CP-05.
 
@@ -424,6 +469,8 @@ and automatic reminders.
 5. Normal users, other therapists and browser-supplied actor IDs cannot perform
    these operations.
 6. No booking is deleted, and audit history accurately reconstructs every change.
+
+**Completion evidence:** See the 2026-09-11 CP-06 completion-log entry.
 
 ---
 
@@ -754,12 +801,229 @@ For an incomplete checkpoint, add this directly below its acceptance criteria:
   still carries unused `pending_email` columns and the `email_change` token
   purpose (forward-only).
 
+### CP-03 — 2026-09-10
+
+- **Result:** Users can open My courses and download their own active
+  certificate PDFs. Admins attach, replace or revoke certificates on a user
+  record. Revocation keeps history and immediately blocks owner download.
+- **Routes/UI:** `/{locale}/account/courses` (`/fr/compte/formations`,
+  `/de/konto/ausbildungen`), admin panel on `/{locale}/admin/users/[id]`,
+  download `GET /api/certificates/[id]/document`. Header shows Account when
+  signed in; Sign out lives on account pages. Course-only default after
+  sign-in is `/account` (CP-01); certificates share the My Courses page with
+  upcoming/past registrations.
+- **Migrations:** `0008_certificates.sql` (renumbered after CP-01's
+  `0007_public_accounts.sql`).
+- **Automated evidence:** `pnpm verify` passed; 38 test files and 130 tests
+  passed, including a successful Next.js 16.3.4 production build. Certificate
+  Vitest coverage for owner download, stranger/guessed-id 404, revoke 403,
+  replace, missing blob unavailable, PDF magic/size, and non-admin attach
+  denial. Playwright: 60 passed, including unauthenticated `/account/courses`
+  and certificate download 401.
+- **Browser evidence:** Desktop and ~390px inspected in FR, DE, and EN for My
+  courses, PDF download, and admin attach. Phone header keeps Courses and
+  Contact on the same compact row as Account and the language control.
+- **Preview/production:** Not deployed in this task.
+- **Deviations/follow-ups:** Approved Revision 3: CP-03 completed before CP-01
+  on this branch. After merging main, My Courses also lists CP-01
+  registrations.
+- **Known next work:** CP-04 rooms, rules and privacy-safe availability.
+
+### CP-04 — 2026-09-10
+
+- **Result:** Admins configure room inventory, CHF hourly rates, opening hours,
+  booking rules and temporary blocks. Therapists see a privacy-safe day/week
+  calendar. Other people's reservations appear only as Booked.
+- **Routes/UI:** `/{locale}/admin/rooms`, `/{locale}/admin/rooms/[id]`,
+  `/{locale}/admin/settings`, `/{locale}/rooms` (`/fr/salles`, `/de/raeume`).
+  Admin subnav: Users | Rooms | Settings. No reservation control in production
+  UI.
+- **Migrations:** `0009_rooms.sql` (renumbered after CP-01 and CP-03).
+- **Automated evidence:** `pnpm verify` as above (38 files / 130 tests,
+  production build). Vitest covers create/price/disable/reorder, course-only
+  denial, privacy-safe payloads, closed/disabled/block boundaries, block
+  conflict without invalidating the booking, and Zurich DST gap/ambiguous
+  rejection. Playwright: 60 passed, including unauthenticated `/rooms`,
+  `/admin/rooms`, and `/admin/settings`.
+- **Browser evidence:** Desktop and ~390px inspected in FR, DE, and EN for
+  therapist day/week calendars (Booked vs My booking vs Available), admin rooms
+  list/detail, and opening-hours settings. Course-only users are denied `/rooms`.
+- **Preview/production:** Not deployed in this task.
+- **Deviations/follow-ups:** Approved Revision 3: CP-04 completed before CP-01
+  on this branch. Occupancy for privacy tests uses fixture/admin-created
+  confirmed bookings, not a therapist booking UI.
+- **Known next work:** CP-05 reserve a room and My Bookings.
+
+### Merge note — 2026-09-10
+
+- Merged `main` (CP-01 public accounts, My Courses registrations, 10 CHF Stripe
+  test course, buyer-confirmation retry) into this CP-03/CP-04 branch.
+- My Courses now lists upcoming/past registrations and the certificate library.
+- Migrations on this branch: `0007_public_accounts.sql`,
+  `0008_certificates.sql`, `0009_rooms.sql`.
+- **Automated evidence:** `pnpm verify` passed; 42 test files and 151 tests,
+  including a successful Next.js 16.3.4 production build. Playwright: 62 passed,
+  including `tests/e2e/account-lifecycle.spec.ts` (empty registrations plus
+  Certificates heading) and guest booking/phone layout.
+- **Known next work:** CP-05 reserve a room and My Bookings.
+
+### UI refinement note — 2026-09-10
+
+- No scope change. CP-03 and CP-04 surfaces were reviewed against
+  `docs/DESIGN.md` and refined; acceptance criteria are unchanged.
+- Status styling is monochrome everywhere (`src/shared/ui/status-label.tsx`);
+  the certificate, registration and room-inventory cards no longer use gold as
+  a semantic state colour.
+- Certificate issue dates are localized through
+  `src/shared/format/calendar-date.ts` instead of printing the raw ISO day.
+- The therapist availability calendar moved to
+  `src/features/rooms/components/availability/` and now merges consecutive
+  same-state slots into one continuous bar, shows the visible Zurich date
+  range, and adds a Today jump next to the Day/Week control. Week columns are
+  days for one room; day columns are rooms, with an explicit "All rooms" chip.
+- Room admin forms were split into `src/features/rooms/components/admin/`;
+  opening hours are a stacked bordered list that dims and disables the time
+  selects on a closed weekday, and reordering is one grouped secondary control.
+- **Automated evidence:** `pnpm verify` passed; 44 test files and 163 tests,
+  including a successful production build.
+- **Manual evidence:** Signed-in walkthrough of `/rooms` (week, day, room
+  filter, Today) at desktop and 390px in FR/DE/EN, plus admin rooms, room
+  settings and `/account/courses`, with no browser console errors.
+- **Pre-existing failure, not caused by this work:** six Playwright course-card
+  and five booking assertions hard-code the three 2026 course sessions. The
+  10–20 September 2026 session stopped being upcoming once the Zurich date
+  rolled to 11 September 2026, so they now expect three dates and see two. The
+  same failures reproduce with the pre-refinement course files.
+
+### Edge-case hardening — 2026-09-10
+
+- No scope change. Concurrent-use and bad-input holes found in review were
+  closed; acceptance criteria are unchanged.
+- Week availability now generates slots for the displayed room only, while the
+  room list still includes the full inventory. Occupancy is indexed per request
+  instead of scanning every booking/block for every slot.
+- Block creation locks the room row, rejects overlapping bookings and
+  overlapping blocks in one transaction, and takes Zurich date + time fields
+  rather than the browser's `datetime-local` timezone.
+- Room create and reorder serialize on `SELECT … FOR UPDATE` so two admins
+  cannot mint the same `displayOrder`.
+- Certificate attach rolls back the row if audit fails after insert. Replace
+  and revoke update only `ACTIVE` rows, so a concurrent revoke cannot swap a
+  revoked document. A failed replace no longer deletes the newly committed PDF.
+- Opening-hours selects stay submitted when a day is closed, snap to the
+  chosen booking interval, and remount after a successful save.
+- Calendar hrefs omit `room` unless a UUID is selected, so links no longer
+  serialize `room=undefined`.
+- **Automated evidence:** `pnpm verify` passed; 45 test files and 168 tests,
+  including week-slot scoping, overlapping-block rejection, replace-after-revoke,
+  and availability query serialization.
+
+### CP-05 — 2026-09-11
+
+- **Result:** An enabled therapist can reserve an available room and time, see
+  the server-calculated CHF amount, confirm an immediately reserved booking, and
+  find it on the calendar and in upcoming/history. No payment is taken now.
+- **Routes/UI:** `/{locale}/rooms/book` (`/fr/salles/reserver`,
+  `/de/raeume/buchen`), `/{locale}/rooms/bookings`,
+  `/{locale}/rooms/bookings/[id]`. Therapist subnav: Calendar | My bookings.
+- **Migrations:** `0010_room_booking_snapshots.sql`.
+- **Automated evidence:** `pnpm verify` passed; 49 test files and 183 tests,
+  including quote math, duration/increment/advance/opening/block/disabled
+  failures, adjacent vs overlap, concurrent same-slot conflict, ignored
+  browser-supplied amounts, and other-therapist Booked-only privacy. Production
+  build includes the new routes. Playwright auth guards cover `/rooms/book` and
+  `/rooms/bookings`.
+- **Browser evidence:** Signed-in reserve of Cabinet Ouchy on 2026-09-14
+  16:00–17:30 (90 min × CHF 35/h = CHF 52.50) on desktop and ~390px, in FR, DE
+  and EN. Calendar shows My booking; upcoming list and detail show the snapshot
+  amount and monthly-billing copy.
+- **Preview/production:** Not deployed in this task.
+- **Deviations/follow-ups:** Discount snapshots are stored as 0 until CP-08.
+  Past starts are unavailable on the calendar as well as rejected at reserve
+  time.
+- **Known next work:** CP-06 changes, cancellations and admin intervention.
+
+### CP-06 — 2026-09-11
+
+- **Result:** Therapists can change or cancel upcoming room bookings with a
+  clear free vs late outcome. Admins can create, move or cancel a booking for a
+  room-enabled user and waive a late charge. No booking is deleted.
+- **Routes/UI:** `/{locale}/rooms/bookings/[id]/change` and `/cancel`
+  (`/fr/salles/reservations/[id]/modifier|annuler`,
+  `/de/raeume/buchungen/[id]/aendern|stornieren`); admin `/admin/bookings`,
+  `/admin/bookings/new`, `/admin/bookings/[id]`.
+- **Migrations:** `0011_room_booking_lifecycle.sql` (billing outcome, cancel and
+  waiver columns, append-only `room_booking_events`).
+- **Automated evidence:** `pnpm verify` passed; 51 test files and 197 tests,
+  including notice-window math, in-place owner move outside the window,
+  cancel-and-rebook inside the window, free vs late chargeable amounts, admin
+  create/move/cancel/waive, forbidden course-only and other-therapist actors,
+  and admin-created/moved mail chrome without the booking UUID. Production build
+  includes the new routes. Playwright auth guards cover `/admin/bookings`.
+- **Browser evidence:** Therapist in-place change of Cabinet Ouchy 2026-09-14
+  16:00–17:30 to 11:00–12:00 (CHF 35.00) with a success notice. Same-day Salon
+  Lavaux 15:00–18:00 late-cancelled at CHF 135.00, then admin-waived to CHF 0.
+  Admin created and moved Atelier Flon on 2026-09-23 for Camille Rochat; Mailpit
+  delivered FR created/moved mail with room, Zurich time and amount and without
+  the booking UUID. Desktop and ~390px in FR, DE and EN. No browser console
+  errors.
+- **Preview/production:** Not deployed in this task.
+- **Deviations/follow-ups:** Therapist self-cancel/self-move mail stays in
+  CP-10. Discount snapshots remain 0 until CP-08.
+- **Known next work:** CP-07 private notes and no-availability requests.
+
+### CP-03 to CP-06 UI polish pass — 2026-09-11
+
+Not a checkpoint. A consistency review of everything CP-03 through CP-06 added,
+against `docs/DESIGN.md`.
+
+- **Result:** The booking surfaces share one control geometry, one bordered
+  panel, one filter bar, one pagination and one destructive confirmation
+  instead of per-page variants. The admin booking detail presents one decision
+  at a time through `?action=`, so it no longer stacks competing primary
+  actions.
+- **Defects fixed:** `buttonStyles()` set `border-transparent` on its shared
+  base, which overrode every variant border colour because equal-specificity
+  utilities resolve by stylesheet order; all 23 secondary actions rendered as
+  bare text and blended into the page. Secondary now also carries the
+  neutral-grey resting surface DESIGN.md requires. The change screen rendered
+  its room/date navigator inside the confirm form, so choosing a closed day
+  removed the controls needed to leave it. The slot form kept its first
+  preview's start in component state, so a later navigation could submit a
+  start the new day no longer offered. The admin status filter was labelled
+  with `Rooms.statusConfirmed`. Admin list, admin history and cross-midnight
+  ranges printed raw ISO instants. Tamper-probe hidden inputs from CP-05 were
+  still present in six production forms.
+- **Automated evidence:** `pnpm verify` passed; 55 test files and 220 tests.
+  New units cover `src/features/rooms/format.ts`,
+  `src/features/rooms/slot-selection.ts`,
+  `src/features/rooms/admin-booking-action.ts` and the button variant
+  contract. `tests/e2e/polish-review.spec.ts` covers the six German phone
+  screens, the bordered 44px secondary action, the no-dead-end navigator, the
+  cancel confirmation and all three locales at 390px and 1280px; it reads its
+  booking ids from the UI and skips without `E2E_ROOM_EMAIL` and
+  `E2E_ROOM_PASSWORD`.
+- **Browser evidence:** FR, DE and EN at 390px and desktop with no horizontal
+  overflow, no raw ISO instants, no missing message keys and no browser or
+  server console errors.
+- **Deviations/follow-ups:** The public language control stays behind
+  `LANGUAGE_SWITCHER_ENABLED`, so locale equivalence is verified by route.
+  Native `<input type="date">` still renders in the browser's locale, not the
+  page's; replacing it needs a custom picker and is out of scope.
+
 ## Plan revision log
 
 ### Revision 3 — 2026-09-10
 
+- Approved completing CP-03 and CP-04 before CP-01 at an explicit product
+  request.
+- Certificate library and privacy-safe room availability now exist.
+- CP-01 subsequently landed on main (public self-registration, profile, My
+  Courses registrations and historical booking reconciliation) and is merged
+  here.
 - Account email is permanent for now. Users cannot change it on the profile
   page. CP-01 acceptance criterion 6 was updated to match.
+- CP-05 (reserve a room) stays after CP-04 and is now complete.
 
 ### Revision 2 — 2026-09-10
 

@@ -107,6 +107,12 @@ primary action behind an ambiguous icon.
   admin corrections are separate labeled adjustments.
 - Status styles remain monochrome and textual. Gold does not become a semantic
   success/warning/error color.
+- Collapse consecutive slots that share a state into one continuous labelled
+  bar with its start–end time, the same way a multi-day course session renders
+  as one bar. Never repeat the same state label in every interval row.
+- Keep the Zurich-local range the calendar is showing, the Day/Week control and
+  a Today jump together above the grid, and mark exactly the room or day the
+  grid is actually rendering.
 
 ## Cards and actions
 
@@ -194,12 +200,38 @@ motion, or animated background. Always honor `prefers-reduced-motion`.
 - Tokens: `src/app/globals.css` (`ivory` and `parchment` are pure-white
   compatibility names; `shell`, `hover`, `ink`, muted greys, `gold`, lines,
   type scale, 2px `rounded-panel`, `ease-standard`).
-- Actions: `buttonStyles()` / `<Button>` in `src/shared/ui/button.tsx`.
+- Actions: `buttonStyles()` / `<Button>` in `src/shared/ui/button.tsx`. Each
+  variant owns its border colour; never set one on the shared base, because
+  equal-specificity utilities resolve by stylesheet order, not class order.
+  `<SubmitButton>` in `src/shared/ui/submit-button.tsx` carries the pending
+  spinner and label swap for every server action.
 - Rhythm: `Section`, `Container`, `Eyebrow` in `src/shared/ui/layout.tsx`.
-- Prices: `<Price>` in `src/shared/ui/price.tsx`.
+- Form controls: `fieldStyles()`, `fieldLabelClass`, `<InputField>` and
+  `<SelectField>` in `src/shared/ui/field.tsx`. One geometry for the product;
+  `size="sm"` is the compact operational filter bar. Both clear 44px.
+- Bordered surfaces: `<Panel>` and `<PanelDivider>` in
+  `src/shared/ui/panel.tsx`.
+- Operational lists: `<FilterBar>` in `src/shared/ui/filter-bar.tsx` and
+  `<Pagination>` in `src/shared/ui/pagination.tsx`. Unavailable page
+  directions stay inert in place so the row never reflows.
+- Prices: `<Price>` in `src/shared/ui/price.tsx`. `tone="muted"` keeps a
+  non-chargeable amount aligned in a column of figures.
+- States and labels: `<StatusLabel>` in `src/shared/ui/status-label.tsx` and
+  `<SectionLabel>` in `src/shared/ui/section-label.tsx`. Both render a
+  paragraph because the global stylesheet forces `h1`–`h3` into the serif, so a
+  heading cannot carry this functional micro-type.
+- Mutually exclusive views: `<SegmentedLinks>` in
+  `src/shared/ui/segmented-links.tsx`.
+- Wall-clock day formatting: `src/shared/format/calendar-date.ts`. Never print
+  a raw ISO date in the UI.
 - Shell: `src/features/site-shell`; do not fork per-page headers or switchers.
   `SiteFooter` is black; inverted (white) buttons sit on it.
 - Course decisions: `CourseCard`, `CourseDates`, and `CourseBookingBar`.
+- Room booking decisions: `src/features/rooms/components/booking`. `SlotNavigator`
+  (room and date; always rendered outside the confirm form so a day with no
+  free slot is not a dead end), `SlotFields`, `AmountSummary`, `BookingFacts`,
+  `BookingSummaryCard`, `RoomHeader`, `NoticePanel`, and `DestructiveConfirm`
+  for cancellations. Booking wall-clock copy: `src/features/rooms/format.ts`.
 - Email: `composeTransactionalEmail()` in `src/features/email/layout.ts`.
   Binding layout and copy: `docs/EMAIL.md`. Do not hand-roll notification
   HTML or reuse page components in mail.

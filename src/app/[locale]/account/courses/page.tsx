@@ -5,6 +5,9 @@ import {listMyCourses} from "@/features/account/my-courses";
 import {registrationStatusMessageKey} from "@/features/account/status-label";
 import {AccountNav} from "@/features/auth/components/account-nav";
 import {requireSignedInUser} from "@/features/auth/require";
+import {CertificateLibrary} from "@/features/certificates/components/certificate-library";
+import {listOwnCertificates} from "@/features/certificates/service";
+import {toCertificateCardView} from "@/features/certificates/views";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
@@ -40,7 +43,12 @@ export default async function MyCoursesPage({params}: MyCoursesPageProps) {
   );
   const t = await getTranslations("Auth");
   const navT = await getTranslations("Nav");
+  const certificatesT = await getTranslations("Certificates");
   const {upcoming, past} = await listMyCourses(user.id);
+  const certificates = (await listOwnCertificates(user.id)).map((certificate) =>
+    toCertificateCardView(certificate, locale),
+  );
+  const hasRegistrations = upcoming.length > 0 || past.length > 0;
 
   return (
     <SiteShell locale={locale} footerCta={null}>
@@ -59,14 +67,7 @@ export default async function MyCoursesPage({params}: MyCoursesPageProps) {
           }}
         />
 
-        {upcoming.length === 0 && past.length === 0 ? (
-          <div className="mt-10 max-w-xl">
-            <p className="text-sm leading-7 text-ink-muted">{t("myCoursesEmpty")}</p>
-            <Link href="/courses" className={`${buttonStyles()} mt-6`}>
-              {t("browseCourses")}
-            </Link>
-          </div>
-        ) : (
+        {hasRegistrations ? (
           <>
             <section className="mt-10">
               <h2 className="font-serif text-subheading">{t("upcomingTitle")}</h2>
@@ -103,7 +104,22 @@ export default async function MyCoursesPage({params}: MyCoursesPageProps) {
               )}
             </section>
           </>
+        ) : (
+          <div className="mt-10 max-w-xl rounded-panel border border-ink bg-white p-5 sm:p-6">
+            <p className="text-sm leading-7 text-ink-muted">{t("myCoursesEmpty")}</p>
+            <Link href="/courses" className={`${buttonStyles()} mt-6`}>
+              {t("browseCourses")}
+            </Link>
+          </div>
         )}
+
+        <section className="mt-16 border-t border-ink pt-10">
+          <h2 className="font-serif text-subheading">{certificatesT("sectionTitle")}</h2>
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-muted">
+            {certificatesT("intro")}
+          </p>
+          <CertificateLibrary certificates={certificates} />
+        </section>
       </Section>
     </SiteShell>
   );

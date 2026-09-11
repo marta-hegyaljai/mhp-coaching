@@ -18,9 +18,9 @@ One Next.js App Router application handles:
 - localized SEO pages
 - course booking UI/server logic and Stripe checkout/webhooks
 - shared account, profile, permission and email infrastructure
-- authenticated course certificates (planned)
-- therapist room availability, booking and monthly billing (planned)
-- role-aware administration (admin users, access and staff lists)
+- authenticated course history and certificates (My Courses registrations and certificate library)
+- therapist room availability (inventory, hours, blocks and privacy-safe calendar); booking and monthly billing (later checkpoints)
+- role-aware administration (admin users, access, rooms, hours and staff lists)
 
 No separate API service or microservices.
 
@@ -223,14 +223,15 @@ src/
     api/stripe/webhook/
     api/staff/bookings.csv/
     api/staff/waitlist.csv/
+    api/certificates/[id]/document/
   features/
     auth/                   # credentials, sessions, invitations, recovery, profile
     account/                # My Courses and verified-email booking reconciliation
     users/                  # planned: Stripe identity
     courses/                # catalogue, dates, course UI
     bookings/               # existing course form, validation, persistence
-    course-account/         # planned: certificates on top of My Courses
-    rooms/                  # planned: inventory, hours, blocks, availability
+    certificates/           # personal certificate library on My Courses
+    rooms/                  # inventory, hours, blocks, privacy-safe availability
     room-bookings/          # planned: booking lifecycle + private-note boundary
     room-requests/          # planned: no-availability requests
     room-billing/           # planned: usage, statements, adjustments, payments

@@ -1,10 +1,15 @@
 import {getTranslations, setRequestLocale} from "next-intl/server";
 import {notFound} from "next/navigation";
 
+import {AdminSubnav, adminSectionLabels} from "@/features/admin/components/admin-subnav";
 import {UserAccessForm} from "@/features/admin/components/user-access-form";
 import {toAdminUserView} from "@/features/admin/user-view";
 import {findUserById, listAuditForUser} from "@/features/auth/repository";
 import {requireAdmin} from "@/features/auth/require";
+import {AdminCertificatePanel} from "@/features/certificates/components/admin/panel";
+import {listCertificatesForUser} from "@/features/certificates/repository";
+import {toCertificateCardView} from "@/features/certificates/views";
+import {getCatalogueCourses} from "@/features/courses/queries";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
@@ -46,11 +51,23 @@ export default async function AdminUserDetailPage({params}: AdminUserDetailPageP
 
   const view = toAdminUserView(user);
   const audit = await listAuditForUser(user.id);
+  const certificates = (await listCertificatesForUser(user.id)).map((certificate) =>
+    toCertificateCardView(certificate, locale),
+  );
+  const courses = getCatalogueCourses().map((course) => ({
+    id: course.id,
+    title: course.title[locale],
+  }));
 
   return (
     <SiteShell locale={locale} footerCta={null}>
       <Section size="sm" className="pt-10 pb-16">
         <Eyebrow>{t("eyebrow")}</Eyebrow>
+        <AdminSubnav
+          current="users"
+          label={t("sectionsNav")}
+          labels={adminSectionLabels(t)}
+        />
         <p className="mt-4 text-sm">
           <Link href="/admin/users" className="underline-offset-4 hover:underline">
             {t("backToList")}
@@ -70,6 +87,14 @@ export default async function AdminUserDetailPage({params}: AdminUserDetailPageP
         <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-muted">{t("identityNote")}</p>
         <div className="mt-10">
           <UserAccessForm locale={locale} user={view} />
+        </div>
+        <div className="mt-16">
+          <AdminCertificatePanel
+            locale={locale}
+            userId={user.id}
+            certificates={certificates}
+            courses={courses}
+          />
         </div>
         <div className="mt-16">
           <h2 className="font-serif text-subheading">{t("auditTitle")}</h2>

@@ -56,6 +56,7 @@ test("a new user can verify, change password and reset access", async ({page}) =
   await expect(page).toHaveURL(/\/en\/account\/courses/);
   await expect(page.getByRole("heading", {name: "My courses"})).toBeVisible();
   await expect(page.getByText("No course registrations are linked")).toBeVisible();
+  await expect(page.getByRole("heading", {name: "Certificates"})).toBeVisible();
 
   await page.getByRole("navigation", {name: "Profile"}).getByRole("link", {name: "Profile"}).click();
   await expect(page.getByRole("heading", {name: "Profile"})).toBeVisible();

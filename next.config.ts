@@ -8,6 +8,11 @@ export default withNextIntl({
   allowedDevOrigins: ["127.0.0.1"],
   reactStrictMode: true,
   serverExternalPackages: ["pg", "nodemailer", "stripe"],
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "12mb",
+    },
+  },
   async redirects() {
     return [...legacyRedirects];
   },

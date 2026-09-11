@@ -1,17 +1,38 @@
 import {
+  type AnyPgColumn,
   boolean,
+  customType,
   date,
   index,
   integer,
   jsonb,
   pgEnum,
   pgTable,
+  smallint,
   text,
   timestamp,
   unique,
   uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
+
+const bytea = customType<{data: Buffer; driverData: Buffer}>({
+  dataType() {
+    return "bytea";
+  },
+  toDriver(value) {
+    return value;
+  },
+  fromDriver(value: unknown) {
+    if (Buffer.isBuffer(value)) {
+      return value;
+    }
+    if (value instanceof Uint8Array) {
+      return Buffer.from(value);
+    }
+    throw new Error("Unexpected bytea driver value");
+  },
+});
 
 export const bookingStatusEnum = pgEnum("booking_status", [
   "LEAD",
@@ -320,6 +341,210 @@ export const courseSessions = pgTable(
   (table) => [index("course_sessions_course_id_idx").on(table.courseId)],
 );
 
+export const courseCertificateStatusEnum = pgEnum("course_certificate_status", [
+  "ACTIVE",
+  "REVOKED",
+]);
+
+export const courseCertificateDocuments = pgTable("course_certificate_documents", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  createdAt: timestamp("created_at", {withTimezone: true})
+    .defaultNow()
+    .notNull(),
+  bytes: bytea("bytes").notNull(),
+  byteSize: integer("byte_size").notNull(),
+  contentType: text("content_type").notNull(),
+});
+
+export const courseCertificates = pgTable(
+  "course_certificates",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    createdAt: timestamp("created_at", {withTimezone: true})
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", {withTimezone: true})
+      .defaultNow()
+      .notNull(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, {onDelete: "cascade"}),
+    courseId: text("course_id").notNull(),
+    courseTitle: jsonb("course_title").$type<LocalizedJson>().notNull(),
+    issuedOn: date("issued_on", {mode: "string"}).notNull(),
+    status: courseCertificateStatusEnum("status").notNull().default("ACTIVE"),
+    documentId: uuid("document_id").references(() => courseCertificateDocuments.id, {
+      onDelete: "set null",
+    }),
+    revokedAt: timestamp("revoked_at", {withTimezone: true}),
+    revokedByUserId: uuid("revoked_by_user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+  },
+  (table) => [
+    index("course_certificates_user_id_idx").on(table.userId),
+    index("course_certificates_issued_on_idx").on(table.issuedOn),
+    index("course_certificates_status_idx").on(table.status),
+  ],
+);
+
+export const rooms = pgTable(
+  "rooms",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    createdAt: timestamp("created_at", {withTimezone: true})
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", {withTimezone: true})
+      .defaultNow()
+      .notNull(),
+    name: text("name").notNull(),
+    description: text("description").notNull().default(""),
+    hourlyRateMinor: integer("hourly_rate_minor").notNull(),
+    currency: text("currency").notNull().default("CHF"),
+    active: boolean("active").notNull().default(true),
+    displayOrder: integer("display_order").notNull(),
+  },
+  (table) => [
+    index("rooms_display_order_idx").on(table.displayOrder),
+    index("rooms_active_idx").on(table.active),
+  ],
+);
+
+export const roomBookingSettings = pgTable("room_booking_settings", {
+  id: smallint("id").primaryKey().default(1),
+  timezone: text("timezone").notNull().default("Europe/Zurich"),
+  cancellationNoticeHours: integer("cancellation_notice_hours").notNull().default(48),
+  bookingIntervalMinutes: integer("booking_interval_minutes").notNull().default(30),
+  minimumBookingMinutes: integer("minimum_booking_minutes").notNull().default(60),
+  maximumBookingMinutes: integer("maximum_booking_minutes"),
+  maximumAdvanceBookingDays: integer("maximum_advance_booking_days"),
+  reminderNoticeHours: integer("reminder_notice_hours").notNull().default(24),
+  updatedAt: timestamp("updated_at", {withTimezone: true}).defaultNow().notNull(),
+});
+
+export const roomOpeningIntervals = pgTable(
+  "room_opening_intervals",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    weekday: smallint("weekday").notNull(),
+    startMinute: integer("start_minute").notNull(),
+    endMinute: integer("end_minute").notNull(),
+  },
+  (table) => [index("room_opening_intervals_weekday_idx").on(table.weekday)],
+);
+
+export const roomBlocks = pgTable(
+  "room_blocks",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    createdAt: timestamp("created_at", {withTimezone: true})
+      .defaultNow()
+      .notNull(),
+    roomId: uuid("room_id")
+      .notNull()
+      .references(() => rooms.id, {onDelete: "cascade"}),
+    startsAt: timestamp("starts_at", {withTimezone: true}).notNull(),
+    endsAt: timestamp("ends_at", {withTimezone: true}).notNull(),
+    reason: text("reason").notNull(),
+    createdByUserId: uuid("created_by_user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+  },
+  (table) => [
+    index("room_blocks_room_id_idx").on(table.roomId),
+    index("room_blocks_range_idx").on(table.startsAt, table.endsAt),
+  ],
+);
+
+export const roomBookingStatusEnum = pgEnum("room_booking_status", [
+  "CONFIRMED",
+  "CANCELLED",
+]);
+
+export const roomBookingBillingOutcomeEnum = pgEnum("room_booking_billing_outcome", [
+  "USAGE",
+  "FREE_CANCELLATION",
+  "LATE_CANCELLATION",
+  "WAIVED",
+]);
+
+export const roomBookings = pgTable(
+  "room_bookings",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    createdAt: timestamp("created_at", {withTimezone: true})
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", {withTimezone: true})
+      .defaultNow()
+      .notNull(),
+    roomId: uuid("room_id")
+      .notNull()
+      .references(() => rooms.id, {onDelete: "restrict"}),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, {onDelete: "restrict"}),
+    createdByUserId: uuid("created_by_user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    startsAt: timestamp("starts_at", {withTimezone: true}).notNull(),
+    endsAt: timestamp("ends_at", {withTimezone: true}).notNull(),
+    status: roomBookingStatusEnum("status").notNull().default("CONFIRMED"),
+    billingOutcome: roomBookingBillingOutcomeEnum("billing_outcome")
+      .notNull()
+      .default("USAGE"),
+    cancelledAt: timestamp("cancelled_at", {withTimezone: true}),
+    cancelledByUserId: uuid("cancelled_by_user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    waivedAt: timestamp("waived_at", {withTimezone: true}),
+    waivedByUserId: uuid("waived_by_user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    successorBookingId: uuid("successor_booking_id").references(
+      (): AnyPgColumn => roomBookings.id,
+      {onDelete: "set null"},
+    ),
+    roomName: text("room_name").notNull(),
+    baseHourlyRateMinor: integer("base_hourly_rate_minor").notNull(),
+    discountPercent: integer("discount_percent").notNull(),
+    effectiveHourlyRateMinor: integer("effective_hourly_rate_minor").notNull(),
+    durationMinutes: integer("duration_minutes").notNull(),
+    amountMinor: integer("amount_minor").notNull(),
+    currency: text("currency").notNull().default("CHF"),
+  },
+  (table) => [
+    index("room_bookings_room_id_idx").on(table.roomId),
+    index("room_bookings_user_id_idx").on(table.userId),
+    index("room_bookings_range_idx").on(table.startsAt, table.endsAt),
+    index("room_bookings_status_idx").on(table.status),
+  ],
+);
+
+export const roomBookingEvents = pgTable(
+  "room_booking_events",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    createdAt: timestamp("created_at", {withTimezone: true})
+      .defaultNow()
+      .notNull(),
+    bookingId: uuid("booking_id")
+      .notNull()
+      .references(() => roomBookings.id, {onDelete: "cascade"}),
+    actorUserId: uuid("actor_user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    action: text("action").notNull(),
+    before: jsonb("before").$type<Record<string, unknown>>(),
+    after: jsonb("after").$type<Record<string, unknown>>(),
+  },
+  (table) => [
+    index("room_booking_events_booking_id_idx").on(table.bookingId),
+    index("room_booking_events_created_at_idx").on(table.createdAt),
+  ],
+);
+
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Session = typeof sessions.$inferSelect;
@@ -328,3 +553,16 @@ export type AuthTokenPurpose = (typeof authTokenPurposeEnum.enumValues)[number];
 export type AuditEvent = typeof auditEvents.$inferSelect;
 export type CourseRow = typeof courses.$inferSelect;
 export type CourseSessionRow = typeof courseSessions.$inferSelect;
+export type CourseCertificate = typeof courseCertificates.$inferSelect;
+export type CourseCertificateDocument = typeof courseCertificateDocuments.$inferSelect;
+export type CourseCertificateStatus =
+  (typeof courseCertificateStatusEnum.enumValues)[number];
+export type Room = typeof rooms.$inferSelect;
+export type RoomBookingSettings = typeof roomBookingSettings.$inferSelect;
+export type RoomOpeningInterval = typeof roomOpeningIntervals.$inferSelect;
+export type RoomBlock = typeof roomBlocks.$inferSelect;
+export type RoomBooking = typeof roomBookings.$inferSelect;
+export type RoomBookingStatus = (typeof roomBookingStatusEnum.enumValues)[number];
+export type RoomBookingBillingOutcome =
+  (typeof roomBookingBillingOutcomeEnum.enumValues)[number];
+export type RoomBookingEvent = typeof roomBookingEvents.$inferSelect;

@@ -1,0 +1,445 @@
+"use server";
+
+import {hasLocale} from "next-intl";
+import {getTranslations} from "next-intl/server";
+
+import {canAccessRooms, canAdminister} from "@/features/auth/policy";
+import {findUserById} from "@/features/auth/repository";
+import {readSessionUser} from "@/features/auth/session";
+import {sendAdminCreatedRoomBooking, sendAdminMovedRoomBooking} from "@/features/email/room-booking";
+import {RoomError} from "@/features/rooms/errors";
+import {createRoomBlock, removeRoomBlock} from "@/features/rooms/blocks";
+import {reserveRoom} from "@/features/rooms/reservations";
+import {
+  cancelRoomBooking,
+  createRoomBookingForUser,
+  moveRoomBooking,
+  waiveRoomBooking,
+} from "@/features/rooms/lifecycle";
+import {
+  createRoom,
+  editRoom,
+  moveRoom,
+  parseHourlyRateInput,
+  setRoomActive,
+} from "@/features/rooms/inventory";
+import {saveRoomSettings, type OpeningHourInput} from "@/features/rooms/settings";
+import {utcToZurich} from "@/features/rooms/timezone";
+import {localizedPathname} from "@/i18n/path";
+import {revalidateLocalized} from "@/i18n/revalidate";
+import {routing, type AppLocale} from "@/i18n/routing";
+import {redirect} from "next/navigation";
+
+export type RoomFormState = {
+  ok?: boolean;
+  error?: string;
+  conflicts?: string[];
+};
+
+function resolveLocale(locale: string): AppLocale {
+  return hasLocale(routing.locales, locale) ? locale : routing.defaultLocale;
+}
+
+async function requireAdminActor() {
+  const actor = await readSessionUser();
+  if (!actor || !canAdminister(actor)) {
+    throw new RoomError("forbidden");
+  }
+  return actor;
+}
+
+function optionalInteger(value: string): number | null {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return null;
+  }
+  const parsed = Number(trimmed);
+  if (!Number.isInteger(parsed)) {
+    throw new RoomError("invalidRules");
+  }
+  return parsed;
+}
+
+function requiredInteger(value: string): number {
+  const parsed = optionalInteger(value);
+  if (parsed === null) {
+    throw new RoomError("invalidRules");
+  }
+  return parsed;
+}
+
+async function localizeRoomError(
+  error: unknown,
+  locale: AppLocale,
+): Promise<RoomFormState> {
+  const t = await getTranslations({locale, namespace: "Rooms.errors"});
+  if (error instanceof RoomError) {
+    if (error.code === "blockConflict") {
+      return {
+        error: t("blockConflict"),
+        conflicts: error.conflicts.map((conflict) => {
+          const start = utcToZurich(new Date(conflict.startsAt));
+          const end = utcToZurich(new Date(conflict.endsAt));
+          return `${start.date} ${start.time} – ${end.date} ${end.time}`;
+        }),
+      };
+    }
+    return {error: t(error.code)};
+  }
+  console.error(error);
+  return {error: t("saveFailed")};
+}
+
+export async function createRoomAction(
+  locale: string,
+  _previous: RoomFormState | null,
+  formData: FormData,
+): Promise<RoomFormState> {
+  const resolvedLocale = resolveLocale(locale);
+  try {
+    const actor = await requireAdminActor();
+    await createRoom({
+      actor,
+      name: String(formData.get("name") ?? ""),
+      description: String(formData.get("description") ?? ""),
+      hourlyRateMinor: parseHourlyRateInput(String(formData.get("hourlyRate") ?? "")),
+    });
+    revalidateRoomSurfaces();
+    return {ok: true};
+  } catch (error) {
+    return localizeRoomError(error, resolvedLocale);
+  }
+}
+
+export async function updateRoomAction(
+  locale: string,
+  roomId: string,
+  _previous: RoomFormState | null,
+  formData: FormData,
+): Promise<RoomFormState> {
+  const resolvedLocale = resolveLocale(locale);
+  try {
+    const actor = await requireAdminActor();
+    const intent = String(formData.get("intent") ?? "save");
+    if (intent === "disable") {
+      await setRoomActive({actor, roomId, active: false});
+    } else if (intent === "enable") {
+      await setRoomActive({actor, roomId, active: true});
+    } else if (intent === "up" || intent === "down") {
+      await moveRoom({actor, roomId, direction: intent});
+    } else {
+      await editRoom({
+        actor,
+        roomId,
+        name: String(formData.get("name") ?? ""),
+        description: String(formData.get("description") ?? ""),
+        hourlyRateMinor: parseHourlyRateInput(String(formData.get("hourlyRate") ?? "")),
+      });
+    }
+    revalidateRoomSurfaces(roomId);
+    return {ok: true};
+  } catch (error) {
+    return localizeRoomError(error, resolvedLocale);
+  }
+}
+
+export async function saveRoomSettingsAction(
+  locale: string,
+  _previous: RoomFormState | null,
+  formData: FormData,
+): Promise<RoomFormState> {
+  const resolvedLocale = resolveLocale(locale);
+  try {
+    const actor = await requireAdminActor();
+    const hours: OpeningHourInput[] = [1, 2, 3, 4, 5, 6, 7].map((weekday) => ({
+      weekday,
+      closed: formData.get(`closed-${weekday}`) === "on",
+      startMinute: Number(formData.get(`start-${weekday}`) ?? 0),
+      endMinute: Number(formData.get(`end-${weekday}`) ?? 0),
+    }));
+    await saveRoomSettings({
+      actor,
+      cancellationNoticeHours: requiredInteger(
+        String(formData.get("cancellationNoticeHours") ?? ""),
+      ),
+      bookingIntervalMinutes: requiredInteger(
+        String(formData.get("bookingIntervalMinutes") ?? ""),
+      ),
+      minimumBookingMinutes: requiredInteger(
+        String(formData.get("minimumBookingMinutes") ?? ""),
+      ),
+      maximumBookingMinutes: optionalInteger(
+        String(formData.get("maximumBookingMinutes") ?? ""),
+      ),
+      maximumAdvanceBookingDays: optionalInteger(
+        String(formData.get("maximumAdvanceBookingDays") ?? ""),
+      ),
+      reminderNoticeHours: requiredInteger(String(formData.get("reminderNoticeHours") ?? "")),
+      hours,
+    });
+    revalidateRoomSurfaces();
+    return {ok: true};
+  } catch (error) {
+    return localizeRoomError(error, resolvedLocale);
+  }
+}
+
+export async function createBlockAction(
+  locale: string,
+  roomId: string,
+  _previous: RoomFormState | null,
+  formData: FormData,
+): Promise<RoomFormState> {
+  const resolvedLocale = resolveLocale(locale);
+  try {
+    const actor = await requireAdminActor();
+    await createRoomBlock({
+      actor,
+      roomId,
+      startLocal: readZurichLocal(formData, "start"),
+      endLocal: readZurichLocal(formData, "end"),
+      reason: String(formData.get("reason") ?? ""),
+    });
+    revalidateRoomSurfaces(roomId);
+    return {ok: true};
+  } catch (error) {
+    return localizeRoomError(error, resolvedLocale);
+  }
+}
+
+export async function removeBlockAction(
+  locale: string,
+  roomId: string,
+  blockId: string,
+): Promise<void> {
+  void resolveLocale(locale);
+  const actor = await requireAdminActor();
+  await removeRoomBlock({actor, blockId});
+  revalidateRoomSurfaces(roomId);
+}
+
+function readZurichLocal(formData: FormData, prefix: "start" | "end"): string {
+  const combined = String(formData.get(`${prefix}Local`) ?? "").trim();
+  if (combined) {
+    return combined;
+  }
+
+  const date = String(formData.get(`${prefix}Date`) ?? "").trim();
+  const time = String(formData.get(`${prefix}Time`) ?? "").trim();
+  return date && time ? `${date}T${time}` : "";
+}
+
+function revalidateRoomSurfaces(roomId?: string, bookingId?: string): void {
+  revalidateLocalized("/admin/rooms");
+  revalidateLocalized("/admin/settings");
+  revalidateLocalized("/admin/bookings");
+  revalidateLocalized("/rooms");
+  revalidateLocalized("/rooms/book");
+  revalidateLocalized("/rooms/bookings");
+  if (roomId) {
+    revalidateLocalized({pathname: "/admin/rooms/[id]", params: {id: roomId}});
+  }
+  if (bookingId) {
+    revalidateLocalized({pathname: "/rooms/bookings/[id]", params: {id: bookingId}});
+    revalidateLocalized({pathname: "/admin/bookings/[id]", params: {id: bookingId}});
+    revalidateLocalized({pathname: "/rooms/bookings/[id]/change", params: {id: bookingId}});
+    revalidateLocalized({pathname: "/rooms/bookings/[id]/cancel", params: {id: bookingId}});
+  }
+}
+
+export async function reserveRoomAction(
+  locale: string,
+  _previous: RoomFormState | null,
+  formData: FormData,
+): Promise<RoomFormState> {
+  const resolvedLocale = resolveLocale(locale);
+  let bookingId: string;
+  let roomId: string;
+  try {
+    const actor = await readSessionUser();
+    if (!actor || !canAccessRooms(actor)) {
+      throw new RoomError("forbidden");
+    }
+
+    const booking = await reserveRoom({
+      actor,
+      roomId: String(formData.get("roomId") ?? ""),
+      date: String(formData.get("date") ?? ""),
+      start: String(formData.get("start") ?? ""),
+      end: String(formData.get("end") ?? ""),
+    });
+    bookingId = booking.id;
+    roomId = booking.roomId;
+  } catch (error) {
+    return localizeRoomError(error, resolvedLocale);
+  }
+
+  revalidateRoomSurfaces(roomId, bookingId);
+  redirect(`${localizedPathname(resolvedLocale, "/rooms/bookings")}?reserved=1`);
+}
+
+async function requireRoomActor() {
+  const actor = await readSessionUser();
+  if (!actor || !canAccessRooms(actor)) {
+    throw new RoomError("forbidden");
+  }
+  return actor;
+}
+
+export async function cancelRoomBookingAction(
+  locale: string,
+  bookingId: string,
+  _previous: RoomFormState | null,
+  _formData: FormData,
+): Promise<RoomFormState> {
+  const resolvedLocale = resolveLocale(locale);
+  try {
+    const actor = await requireRoomActor();
+    const booking = await cancelRoomBooking({actor, bookingId});
+    revalidateRoomSurfaces(booking.roomId, booking.id);
+  } catch (error) {
+    return localizeRoomError(error, resolvedLocale);
+  }
+  redirect(`${localizedPathname(resolvedLocale, "/rooms/bookings")}?cancelled=1`);
+}
+
+export async function moveRoomBookingAction(
+  locale: string,
+  bookingId: string,
+  _previous: RoomFormState | null,
+  formData: FormData,
+): Promise<RoomFormState> {
+  const resolvedLocale = resolveLocale(locale);
+  let nextPath: string;
+  try {
+    const actor = await requireRoomActor();
+    const result = await moveRoomBooking({
+      actor,
+      bookingId,
+      roomId: String(formData.get("roomId") ?? ""),
+      date: String(formData.get("date") ?? ""),
+      start: String(formData.get("start") ?? ""),
+      end: String(formData.get("end") ?? ""),
+    });
+    revalidateRoomSurfaces(result.booking.roomId, result.booking.id);
+    if (result.kind === "replaced") {
+      revalidateRoomSurfaces(result.original.roomId, result.original.id);
+    }
+    nextPath = `${localizedPathname(resolvedLocale, {
+      pathname: "/rooms/bookings/[id]",
+      params: {id: result.booking.id},
+    })}?${result.kind === "replaced" ? "replaced=1" : "moved=1"}`;
+  } catch (error) {
+    return localizeRoomError(error, resolvedLocale);
+  }
+  redirect(nextPath);
+}
+
+export async function adminCreateRoomBookingAction(
+  locale: string,
+  _previous: RoomFormState | null,
+  formData: FormData,
+): Promise<RoomFormState> {
+  const resolvedLocale = resolveLocale(locale);
+  let nextPath: string;
+  try {
+    const actor = await requireAdminActor();
+    const booking = await createRoomBookingForUser({
+      actor,
+      userId: String(formData.get("userId") ?? ""),
+      roomId: String(formData.get("roomId") ?? ""),
+      date: String(formData.get("date") ?? ""),
+      start: String(formData.get("start") ?? ""),
+      end: String(formData.get("end") ?? ""),
+    });
+    const user = await findUserById(booking.userId);
+    if (user) {
+      await sendAdminCreatedRoomBooking({user, booking});
+    }
+    revalidateRoomSurfaces(booking.roomId, booking.id);
+    nextPath = `${localizedPathname(resolvedLocale, {
+      pathname: "/admin/bookings/[id]",
+      params: {id: booking.id},
+    })}?created=1`;
+  } catch (error) {
+    return localizeRoomError(error, resolvedLocale);
+  }
+  redirect(nextPath);
+}
+
+export async function adminMoveRoomBookingAction(
+  locale: string,
+  bookingId: string,
+  _previous: RoomFormState | null,
+  formData: FormData,
+): Promise<RoomFormState> {
+  const resolvedLocale = resolveLocale(locale);
+  let nextPath: string;
+  try {
+    const actor = await requireAdminActor();
+    const result = await moveRoomBooking({
+      actor,
+      bookingId,
+      roomId: String(formData.get("roomId") ?? ""),
+      date: String(formData.get("date") ?? ""),
+      start: String(formData.get("start") ?? ""),
+      end: String(formData.get("end") ?? ""),
+    });
+    const user = await findUserById(result.booking.userId);
+    if (user) {
+      await sendAdminMovedRoomBooking({user, booking: result.booking});
+    }
+    revalidateRoomSurfaces(result.booking.roomId, result.booking.id);
+    nextPath = `${localizedPathname(resolvedLocale, {
+      pathname: "/admin/bookings/[id]",
+      params: {id: result.booking.id},
+    })}?moved=1`;
+  } catch (error) {
+    return localizeRoomError(error, resolvedLocale);
+  }
+  redirect(nextPath);
+}
+
+export async function adminCancelRoomBookingAction(
+  locale: string,
+  bookingId: string,
+  _previous: RoomFormState | null,
+  _formData: FormData,
+): Promise<RoomFormState> {
+  const resolvedLocale = resolveLocale(locale);
+  let nextPath: string;
+  try {
+    const actor = await requireAdminActor();
+    const booking = await cancelRoomBooking({actor, bookingId});
+    revalidateRoomSurfaces(booking.roomId, booking.id);
+    nextPath = `${localizedPathname(resolvedLocale, {
+      pathname: "/admin/bookings/[id]",
+      params: {id: booking.id},
+    })}?cancelled=1`;
+  } catch (error) {
+    return localizeRoomError(error, resolvedLocale);
+  }
+  redirect(nextPath);
+}
+
+export async function adminWaiveRoomBookingAction(
+  locale: string,
+  bookingId: string,
+  _previous: RoomFormState | null,
+  _formData: FormData,
+): Promise<RoomFormState> {
+  const resolvedLocale = resolveLocale(locale);
+  let nextPath: string;
+  try {
+    const actor = await requireAdminActor();
+    const booking = await waiveRoomBooking({actor, bookingId});
+    revalidateRoomSurfaces(booking.roomId, booking.id);
+    nextPath = `${localizedPathname(resolvedLocale, {
+      pathname: "/admin/bookings/[id]",
+      params: {id: booking.id},
+    })}?waived=1`;
+  } catch (error) {
+    return localizeRoomError(error, resolvedLocale);
+  }
+  redirect(nextPath);
+}

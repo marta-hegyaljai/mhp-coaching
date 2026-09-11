@@ -1,3 +1,4 @@
+import {intlLocale} from "@/i18n/intl-locale";
 import type {AppLocale} from "@/i18n/routing";
 
 import type {CourseDate} from "./types";
@@ -160,16 +161,4 @@ export function toIsoDateTime(date: string): string {
 
 function parseZurichDate(isoDate: string): Date {
   return new Date(`${isoDate}T12:00:00+01:00`);
-}
-
-function intlLocale(locale: AppLocale): string {
-  if (locale === "en") {
-    return "en-GB";
-  }
-
-  if (locale === "de") {
-    return "de-CH";
-  }
-
-  return "fr-CH";
 }

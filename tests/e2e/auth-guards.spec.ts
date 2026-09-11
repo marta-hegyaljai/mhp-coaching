@@ -3,11 +3,22 @@ import {expect, test} from "@playwright/test";
 test("unauthenticated visitors are sent to sign-in instead of admin or rooms", async ({
   page,
 }) => {
-  await page.goto("/en/admin/users");
+  await page.goto("/en/admin/rooms");
+  await expect(page).toHaveURL(/\/en\/sign-in/);
+  await page.goto("/en/admin/settings");
   await expect(page).toHaveURL(/\/en\/sign-in/);
   await expect(page.getByRole("heading", {name: "Sign in"})).toBeVisible();
 
   await page.goto("/en/rooms");
+  await expect(page).toHaveURL(/\/en\/sign-in/);
+  await page.goto("/en/rooms/book");
+  await expect(page).toHaveURL(/\/en\/sign-in/);
+  await page.goto("/en/rooms/bookings");
+  await expect(page).toHaveURL(/\/en\/sign-in/);
+  await page.goto("/en/admin/bookings");
+  await expect(page).toHaveURL(/\/en\/sign-in/);
+
+  await page.goto("/en/account/courses");
   await expect(page).toHaveURL(/\/en\/sign-in/);
 
   await page.goto("/en/staff/bookings");
@@ -65,6 +76,12 @@ test("staff CSV exports reject anonymous and basic-auth requests", async ({
   const anonymous = await request.get("/api/staff/bookings.csv");
   expect(anonymous.status()).toBe(401);
   expect(anonymous.headers()["www-authenticate"]).toBeUndefined();
+
+  const certificate = await request.get(
+    "/api/certificates/11111111-1111-4111-8111-111111111111/document",
+  );
+  expect(certificate.status()).toBe(401);
+  expect(certificate.headers()["cache-control"]).toContain("no-store");
 
   const basic = await request.get("/api/staff/waitlist.csv", {
     headers: {

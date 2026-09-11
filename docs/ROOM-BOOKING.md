@@ -3,9 +3,11 @@
 ## Status and purpose
 
 This document is the product source of truth for the room-booking module. The
-module is the next major expansion of the existing course-booking MVP; it is not
-implemented yet. Build it inside the same application as Courses, in small
-vertical slices, without regressing anonymous course booking.
+module is the next major expansion of the existing course-booking MVP. CP-04
+delivers configurable room inventory, opening hours, temporary blocks and a
+privacy-safe therapist availability calendar. Therapist-created reservations
+and monthly billing arrive in later checkpoints. Build remaining slices inside
+the same application as Courses, without regressing anonymous course booking.
 
 The product becomes the **MHP Platform**:
 

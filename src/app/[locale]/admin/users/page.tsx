@@ -1,5 +1,6 @@
 import {getTranslations, setRequestLocale} from "next-intl/server";
 
+import {AdminSubnav, adminSectionLabels} from "@/features/admin/components/admin-subnav";
 import {InviteUserForm} from "@/features/admin/components/invite-form";
 import {UserListFilters} from "@/features/admin/components/user-filters";
 import {UserListPagination} from "@/features/admin/components/user-pagination";
@@ -53,6 +54,11 @@ export default async function AdminUsersPage({params, searchParams}: AdminUsersP
     <SiteShell locale={locale} footerCta={null}>
       <Section size="sm" className="pt-10 pb-16">
         <Eyebrow>{t("eyebrow")}</Eyebrow>
+        <AdminSubnav
+          current="users"
+          label={t("sectionsNav")}
+          labels={adminSectionLabels(t)}
+        />
         <h1 className="mt-3 font-serif text-heading">{t("title")}</h1>
         <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-muted">{t("intro")}</p>
         <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-muted">{t("identityNote")}</p>

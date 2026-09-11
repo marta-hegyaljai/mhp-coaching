@@ -1,5 +1,7 @@
 import type {ReactNode} from "react";
 
+import {fieldLabelClass, fieldStyles} from "@/shared/ui/field";
+
 export function AuthField({
   name,
   label,
@@ -28,7 +30,7 @@ export function AuthField({
 
   return (
     <div>
-      <label htmlFor={name} className="block text-sm font-medium text-ink">
+      <label htmlFor={name} className={fieldLabelClass}>
         {label}
       </label>
       <input
@@ -42,12 +44,12 @@ export function AuthField({
         aria-readonly={readOnly ? true : undefined}
         aria-invalid={error ? true : undefined}
         aria-describedby={describedByIds}
-        className={`mt-2 block min-h-12 w-full rounded-panel border bg-white px-3.5 text-base text-ink focus:border-ink focus:outline-none ${
-          error ? "border-bronze" : "border-line"
-        } ${readOnly ? "cursor-default" : ""}`}
+        className={`mt-2 ${fieldStyles({invalid: Boolean(error)})} ${
+          readOnly ? "cursor-default" : ""
+        }`}
       />
       {error ? (
-        <p id={errorId} role="alert" className="mt-2 text-sm text-bronze">
+        <p id={errorId} role="alert" className="mt-2 text-sm text-ink">
           {error}
         </p>
       ) : null}
@@ -55,9 +57,16 @@ export function AuthField({
   );
 }
 
+/**
+ * Failures and confirmations stay monochrome and textual; the `role` and the
+ * wording carry the meaning, never a semantic colour.
+ */
 export function AuthAlert({children}: {children: ReactNode}) {
   return (
-    <p role="alert" className="border border-bronze/45 px-4 py-3 text-sm text-bronze">
+    <p
+      role="alert"
+      className="rounded-panel border-l-2 border-ink bg-shell px-4 py-3 text-sm leading-6 text-ink"
+    >
       {children}
     </p>
   );
@@ -65,7 +74,10 @@ export function AuthAlert({children}: {children: ReactNode}) {
 
 export function AuthNotice({children}: {children: ReactNode}) {
   return (
-    <p role="status" className="border border-ink bg-white px-4 py-3 text-sm text-ink">
+    <p
+      role="status"
+      className="rounded-panel border border-ink bg-white px-4 py-3 text-sm leading-6 text-ink"
+    >
       {children}
     </p>
   );
@@ -88,7 +100,7 @@ export function AuthSelect({
 
   return (
     <div>
-      <label htmlFor={name} className="block text-sm font-medium text-ink">
+      <label htmlFor={name} className={fieldLabelClass}>
         {label}
       </label>
       <select
@@ -98,9 +110,7 @@ export function AuthSelect({
         required
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? errorId : undefined}
-        className={`mt-2 block min-h-12 w-full rounded-panel border bg-white px-3.5 text-base text-ink focus:border-ink focus:outline-none ${
-          error ? "border-bronze" : "border-line"
-        }`}
+        className={`mt-2 ${fieldStyles({invalid: Boolean(error)})}`}
       >
         {options.map((option) => (
           <option key={option.value} value={option.value}>
@@ -109,7 +119,7 @@ export function AuthSelect({
         ))}
       </select>
       {error ? (
-        <p id={errorId} role="alert" className="mt-2 text-sm text-bronze">
+        <p id={errorId} role="alert" className="mt-2 text-sm text-ink">
           {error}
         </p>
       ) : null}

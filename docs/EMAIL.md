@@ -80,6 +80,8 @@ Add new mail as a function in `src/features/email/` that calls
 | Contact / payment inquiry | `sendInquiryNotification` | staff |
 | Waiting list | `sendWaitlistNotification` | staff |
 | Account invitation | `sendAccountInvitation` | invited user |
+| Admin-created room booking | `sendAdminCreatedRoomBooking` | booking owner |
+| Admin-moved room booking | `sendAdminMovedRoomBooking` | booking owner |
 | Sign-up verification | `sendEmailVerification` | registering user |
 | Password reset | `sendPasswordRecovery` | account email |
 

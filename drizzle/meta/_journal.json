@@ -57,6 +57,34 @@
       "when": 1789110000000,
       "tag": "0007_public_accounts",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1789111000000,
+      "tag": "0008_certificates",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1789112000000,
+      "tag": "0009_rooms",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1789113000000,
+      "tag": "0010_room_booking_snapshots",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1789114000000,
+      "tag": "0011_room_booking_lifecycle",
+      "breakpoints": true
     }
   ]
 }

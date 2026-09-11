@@ -111,6 +111,91 @@ export function SearchIcon({className = ""}: IconProps) {
   );
 }
 
+export function ChevronLeftIcon({className = ""}: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={`${base} ${className}`}
+    >
+      <path d="M10 3.5L5.5 8l4.5 4.5" />
+    </svg>
+  );
+}
+
+export function ChevronRightIcon({className = ""}: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={`${base} ${className}`}
+    >
+      <path d="M6 3.5L10.5 8 6 12.5" />
+    </svg>
+  );
+}
+
+export function ChevronUpIcon({className = ""}: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={`${base} ${className}`}
+    >
+      <path d="M3.5 10L8 5.5l4.5 4.5" />
+    </svg>
+  );
+}
+
+export function ChevronDownIcon({className = ""}: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={`${base} ${className}`}
+    >
+      <path d="M3.5 6L8 10.5 12.5 6" />
+    </svg>
+  );
+}
+
+export function DownloadIcon({className = ""}: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={`${base} ${className}`}
+    >
+      <path d="M8 2.5v7.5M4.75 7.25L8 10.5l3.25-3.25M3 13h10" />
+    </svg>
+  );
+}
+
 export function SpinnerIcon({className = ""}: IconProps) {
   return (
     <svg
