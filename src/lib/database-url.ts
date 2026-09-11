@@ -2,6 +2,21 @@ type DatabaseUrlEnvironment = Readonly<
   Record<string, string | undefined>
 >;
 
+function runtimeDatabaseEnvironment(): DatabaseUrlEnvironment {
+  // Keep these reads explicit. Next/Vercel's server bundler cannot reliably
+  // discover environment variables that are only accessed as process.env[key].
+  return {
+    DATABASE_URL: process.env.DATABASE_URL,
+    NEON_DATABASE_URL: process.env.NEON_DATABASE_URL,
+    NEON_POSTGRES_URL: process.env.NEON_POSTGRES_URL,
+    POSTGRES_URL: process.env.POSTGRES_URL,
+    DATABASE_URL_UNPOOLED: process.env.DATABASE_URL_UNPOOLED,
+    NEON_DATABASE_URL_UNPOOLED: process.env.NEON_DATABASE_URL_UNPOOLED,
+    NEON_POSTGRES_URL_NON_POOLING: process.env.NEON_POSTGRES_URL_NON_POOLING,
+    POSTGRES_URL_NON_POOLING: process.env.POSTGRES_URL_NON_POOLING,
+  };
+}
+
 function firstNonEmpty(
   environment: DatabaseUrlEnvironment,
   keys: readonly string[],
@@ -34,7 +49,7 @@ function withExplicitSslVerification(url: string | undefined): string | undefine
  * aliases the Neon Vercel integration injects when that standard name is absent.
  */
 export function getDatabaseUrl(
-  environment: DatabaseUrlEnvironment = process.env,
+  environment: DatabaseUrlEnvironment = runtimeDatabaseEnvironment(),
 ): string | undefined {
   return withExplicitSslVerification(
     firstNonEmpty(environment, [
@@ -51,7 +66,7 @@ export function getDatabaseUrl(
  * Fall back to the runtime URL for providers that expose only one connection.
  */
 export function getMigrationDatabaseUrl(
-  environment: DatabaseUrlEnvironment = process.env,
+  environment: DatabaseUrlEnvironment = runtimeDatabaseEnvironment(),
 ): string | undefined {
   return withExplicitSslVerification(
     firstNonEmpty(environment, [
