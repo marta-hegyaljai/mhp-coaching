@@ -1,4 +1,5 @@
 export const SESSION_COOKIE_NAME = "mhp_session";
+export const PASSWORD_MIN_LENGTH = 12;
 export const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 export const INVITE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 export const VERIFY_TTL_MS = 48 * 60 * 60 * 1000;

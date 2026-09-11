@@ -329,6 +329,8 @@
     "resetIntro": "Wählen Sie ein Passwort mit mindestens 12 Zeichen. Andere Geräte werden abgemeldet.",
     "resetSubmit": "Speichern und anmelden",
     "resetSubmitting": "Speichern",
+    "passwordRequirement": "Mindestens 12 Zeichen.",
+    "passwordNotSaved": "Das Passwort wurde nicht gespeichert. Korrigieren Sie die markierten Felder.",
     "verifyTitle": "E-Mail bestätigen",
     "verifyIntro": "Bestätigen Sie diese E-Mail-Adresse, um Ihr Konto zu aktivieren und passende Kursanmeldungen zu sehen.",
     "verifySubmit": "E-Mail bestätigen",

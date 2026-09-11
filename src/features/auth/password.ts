@@ -1,6 +1,7 @@
 import {randomBytes, scrypt as scryptCallback, timingSafeEqual, type ScryptOptions} from "node:crypto";
 
-const MIN_LENGTH = 12;
+import {PASSWORD_MIN_LENGTH} from "@/features/auth/constants";
+
 const MAX_LENGTH = 1024;
 const KEYLEN = 64;
 const N = 16_384;
@@ -39,7 +40,7 @@ export function passwordErrors(
 ): PasswordError[] {
   const errors: PasswordError[] = [];
 
-  if (password.length < MIN_LENGTH) {
+  if (password.length < PASSWORD_MIN_LENGTH) {
     errors.push("tooShort");
   }
   if (password.length > MAX_LENGTH) {
@@ -56,7 +57,7 @@ export function passwordErrors(
 }
 
 export async function hashPassword(password: string): Promise<string> {
-  if (password.length < MIN_LENGTH || password.length > MAX_LENGTH) {
+  if (password.length < PASSWORD_MIN_LENGTH || password.length > MAX_LENGTH) {
     throw new Error("Password does not meet length requirements");
   }
 

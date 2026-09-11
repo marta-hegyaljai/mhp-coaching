@@ -329,6 +329,8 @@
     "resetIntro": "Choisissez un mot de passe d’au moins 12 caractères. Cela déconnecte les autres appareils.",
     "resetSubmit": "Enregistrer et se connecter",
     "resetSubmitting": "Enregistrement",
+    "passwordRequirement": "Au moins 12 caractères.",
+    "passwordNotSaved": "Le mot de passe n’a pas été enregistré. Corrigez les champs indiqués.",
     "verifyTitle": "Confirmer votre e-mail",
     "verifyIntro": "Confirmez cette adresse e-mail pour activer votre compte et voir les inscriptions correspondantes.",
     "verifySubmit": "Confirmer l’e-mail",

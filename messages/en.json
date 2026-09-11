@@ -329,6 +329,8 @@
     "resetIntro": "Choose a password of at least 12 characters. This signs you out of other devices.",
     "resetSubmit": "Save password and sign in",
     "resetSubmitting": "Saving",
+    "passwordRequirement": "At least 12 characters.",
+    "passwordNotSaved": "The password was not saved. Correct the fields shown below.",
     "verifyTitle": "Confirm your email",
     "verifyIntro": "Confirm this email address to finish creating your account and see matching course registrations.",
     "verifySubmit": "Confirm email",

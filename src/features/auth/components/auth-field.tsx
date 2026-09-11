@@ -12,6 +12,8 @@ export function AuthField({
   required = true,
   readOnly = false,
   describedBy,
+  hint,
+  minLength,
 }: {
   name: string;
   label: string;
@@ -22,9 +24,12 @@ export function AuthField({
   required?: boolean;
   readOnly?: boolean;
   describedBy?: string;
+  hint?: string;
+  minLength?: number;
 }) {
   const errorId = `${name}-error`;
-  const describedByIds = [describedBy, error ? errorId : undefined]
+  const hintId = `${name}-hint`;
+  const describedByIds = [describedBy, hint ? hintId : undefined, error ? errorId : undefined]
     .filter(Boolean)
     .join(" ") || undefined;
 
@@ -40,6 +45,7 @@ export function AuthField({
         autoComplete={autoComplete}
         defaultValue={defaultValue}
         required={readOnly ? undefined : required}
+        minLength={minLength}
         readOnly={readOnly}
         aria-readonly={readOnly ? true : undefined}
         aria-invalid={error ? true : undefined}
@@ -48,6 +54,11 @@ export function AuthField({
           readOnly ? "cursor-default" : ""
         }`}
       />
+      {hint ? (
+        <p id={hintId} className="mt-2 text-sm text-muted">
+          {hint}
+        </p>
+      ) : null}
       {error ? (
         <p id={errorId} role="alert" className="mt-2 text-sm text-ink">
           {error}
