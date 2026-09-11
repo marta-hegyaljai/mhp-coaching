@@ -13,6 +13,8 @@ import {
   formatDayRange,
   formatWeekdayDate,
 } from "@/shared/format/calendar-date";
+import {ArrowRightIcon} from "@/shared/ui/icons";
+import {SectionLabel} from "@/shared/ui/section-label";
 
 import {DayStrip} from "./day-strip";
 import {AvailabilityGrid, type GridColumn} from "./grid";
@@ -77,10 +79,10 @@ export async function AvailabilityCalendar({
   }
 
   // Week columns are days, so a week can only ever show one room.
-  const weekRoom =
-    availability.rooms.find((room) => room.id === query.roomId) ?? availability.rooms[0];
+  const selectedRoom = availability.rooms.find((room) => room.id === query.roomId);
+  const weekRoom = selectedRoom ?? availability.rooms[0];
   const dayDate = days.includes(query.date) ? query.date : days[0];
-  const dayRooms = isWeek ? [weekRoom] : availability.rooms;
+  const dayRooms = selectedRoom ? [selectedRoom] : isWeek ? [weekRoom] : availability.rooms;
 
   const rangeLabel = isWeek
     ? formatDayRange(availability.startDate, availability.endDate, locale)
@@ -117,6 +119,12 @@ export async function AvailabilityCalendar({
         allowAllRooms={!isWeek}
       />
 
+      <BookingGuide
+        label={t("bookingGuideLabel")}
+        steps={[t("bookingGuideRoom"), t("bookingGuideTime"), t("bookingGuideConfirm")]}
+        help={t("availabilityHelp")}
+      />
+
       <AvailabilityLegend labels={labels} />
 
       {isWeek ? (
@@ -136,6 +144,8 @@ export async function AvailabilityCalendar({
               times={index.times}
               columns={singleDayColumns}
               labels={labels}
+              availableAction={t("availableAction")}
+              bookingAction={t("bookingAction")}
               minWidthClass={dayMinWidth}
             />
           </div>
@@ -153,6 +163,8 @@ export async function AvailabilityCalendar({
                 intervalMinutes: availability.intervalMinutes,
               })}
               labels={labels}
+              availableAction={t("availableAction")}
+              bookingAction={t("bookingAction")}
               minWidthClass="min-w-[48rem]"
             />
           </div>
@@ -163,10 +175,42 @@ export async function AvailabilityCalendar({
           times={index.times}
           columns={singleDayColumns}
           labels={labels}
+          availableAction={t("availableAction")}
+          bookingAction={t("bookingAction")}
           minWidthClass={dayMinWidth}
         />
       )}
     </div>
+  );
+}
+
+function BookingGuide({
+  label,
+  steps,
+  help,
+}: {
+  label: string;
+  steps: string[];
+  help: string;
+}) {
+  return (
+    <section
+      className="rounded-panel border border-ink bg-shell px-4 py-4 sm:px-5"
+      aria-label={label}
+    >
+      <SectionLabel>{label}</SectionLabel>
+      <ol className="mt-3 grid gap-2 text-sm font-semibold text-ink sm:grid-cols-3 sm:gap-4">
+        {steps.map((step) => (
+          <li key={step} className="flex items-center gap-2">
+            <ArrowRightIcon className="h-3.5 w-3.5" />
+            {step}
+          </li>
+        ))}
+      </ol>
+      <p className="mt-3 border-t border-line-soft pt-3 text-xs leading-5 text-ink-muted">
+        {help}
+      </p>
+    </section>
   );
 }
 

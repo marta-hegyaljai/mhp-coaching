@@ -6,6 +6,7 @@ import {useEffect, useRef, useState, useTransition} from "react";
 import type {PathnameHref} from "@/i18n/href";
 import {usePathname, useRouter} from "@/i18n/navigation";
 import {routing, type AppLocale} from "@/i18n/routing";
+import {SpinnerIcon} from "@/shared/ui/icons";
 
 const languageNames: Record<AppLocale, string> = {
   fr: "Français",
@@ -80,12 +81,16 @@ export function LanguageSwitcher({
         }`}
       >
         <span>{locale}</span>
-        <span
-          aria-hidden="true"
-          className={`h-2 w-2 border-r border-b border-ink transition-transform duration-150 ${
-            isOpen ? "-translate-y-0.5 rotate-[225deg]" : "-translate-y-0.5 rotate-45"
-          }`}
-        />
+        {isPending ? (
+          <SpinnerIcon />
+        ) : (
+          <span
+            aria-hidden="true"
+            className={`h-2 w-2 border-r border-b border-ink transition-transform duration-150 ${
+              isOpen ? "-translate-y-0.5 rotate-[225deg]" : "-translate-y-0.5 rotate-45"
+            }`}
+          />
+        )}
       </button>
 
       {isOpen ? (

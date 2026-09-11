@@ -301,7 +301,7 @@ describe.skipIf(!hasDatabase)("rooms inventory and availability", () => {
       roomId,
       now: frozenMorning,
     });
-    expect(disabledGrid.rooms).toHaveLength(1);
+    expect(disabledGrid.rooms.map((room) => room.id)).toContain(roomId);
     expect(disabledGrid.slots.every((slot) => slot.state === "unavailable")).toBe(true);
   });
 
@@ -378,6 +378,20 @@ describe.skipIf(!hasDatabase)("rooms inventory and availability", () => {
     const slotted = new Set(week.slots.map((slot) => slot.roomId));
     expect(slotted.size).toBe(1);
     expect(week.rooms.some((room) => slotted.has(room.id))).toBe(true);
+
+    const selected = await therapistAvailability({
+      actor: therapist,
+      view: "week",
+      date: "2026-09-14",
+      roomId: second.id,
+    });
+
+    expect(selected.rooms.map((room) => room.id)).toEqual(
+      expect.arrayContaining([first.id, second.id]),
+    );
+    expect(new Set(selected.slots.map((slot) => slot.roomId))).toEqual(
+      new Set([second.id]),
+    );
   });
 
   it("rejects a second block that overlaps an existing one", async () => {

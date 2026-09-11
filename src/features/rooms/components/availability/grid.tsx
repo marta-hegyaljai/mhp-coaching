@@ -1,6 +1,7 @@
 import type {ReactNode} from "react";
 
 import {Link} from "@/i18n/navigation";
+import {ArrowRightIcon} from "@/shared/ui/icons";
 
 import {mergeSlotRuns, type RunCell} from "./runs";
 import {slotMetaText, slotSurface, type SlotLabels} from "./slot-styles";
@@ -21,12 +22,16 @@ export function AvailabilityGrid({
   times,
   columns,
   labels,
+  availableAction,
+  bookingAction,
   minWidthClass = "min-w-[22rem]",
 }: {
   caption: string;
   times: string[];
   columns: GridColumn[];
   labels: SlotLabels;
+  availableAction: string;
+  bookingAction: string;
   minWidthClass?: string;
 }) {
   const plans = columns.map((column) => {
@@ -104,6 +109,12 @@ export function AvailabilityGrid({
                         {run.startTime}–{run.endTime}
                       </span>
                     ) : null}
+                    {run.href ? (
+                      <span className="mt-2 flex items-center gap-1 border-t border-current/25 pt-1.5 font-sans text-[0.65rem] font-bold uppercase tracking-[0.08em]">
+                        {run.state === "available" ? availableAction : bookingAction}
+                        <ArrowRightIcon className="h-3 w-3" />
+                      </span>
+                    ) : null}
                   </>
                 );
 
@@ -118,7 +129,7 @@ export function AvailabilityGrid({
                     {run.href ? (
                       <Link
                         href={run.href}
-                        className={`block h-full px-2 py-1 transition-colors duration-150 ease-standard ${
+                        className={`block h-full min-h-11 cursor-pointer px-2 py-1 transition-colors duration-150 ease-standard focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-ink ${
                           run.state === "my-booking"
                             ? "hover:bg-white hover:text-ink"
                             : "hover:bg-ink hover:text-parchment"

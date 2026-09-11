@@ -186,17 +186,23 @@ async function loadGrid(input: {
   const settings = await getBookingSettings();
   const openings = await listOpeningIntervals();
   const catalog = await listRooms();
-  const listed = catalog.filter((room) => {
-    if (input.roomId) {
-      return room.id === input.roomId;
-    }
-    return room.active;
-  });
+  // Keep the complete active inventory in the response even when one room is
+  // selected. The room filter is navigation, not a destructive payload filter:
+  // removing siblings left users stranded with no way to switch back.
+  // A selected inactive room is retained only so a stale URL can explain why
+  // it is unavailable instead of silently changing the user's selection.
+  const listed = catalog.filter((room) => room.active || room.id === input.roomId);
 
-  // Week columns are days of one room. Generating every room would scale with
-  // inventory on every therapist refresh while the UI still shows one column.
-  const slotRooms =
-    input.view === "week" && !input.roomId && listed.length > 0
+  // Generate slots only for the room(s) the grid displays. Week columns are
+  // days of one room; day view may compare all rooms when no filter is active.
+  const selectedRoom = input.roomId
+    ? listed.find((room) => room.id === input.roomId)
+    : undefined;
+  const slotRooms = input.roomId
+    ? selectedRoom
+      ? [selectedRoom]
+      : []
+    : input.view === "week" && listed.length > 0
       ? [listed[0]]
       : listed;
 
