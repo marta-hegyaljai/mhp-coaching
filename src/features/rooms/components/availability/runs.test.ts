@@ -3,18 +3,32 @@ import {describe, expect, it} from "vitest";
 import {buildColumnCells, mergeSlotRuns} from "./runs";
 
 describe("mergeSlotRuns", () => {
-  it("collapses contiguous slots that share a state", () => {
+  it("keeps actionable available starts separate while collapsing status runs", () => {
     const runs = mergeSlotRuns([
-      {startTime: "09:00", endTime: "09:30", state: "available"},
-      {startTime: "09:30", endTime: "10:00", state: "available"},
+      {startTime: "09:00", endTime: "09:30", state: "available", href: "/rooms"},
+      {startTime: "09:30", endTime: "10:00", state: "available", href: "/rooms"},
       {startTime: "10:00", endTime: "10:30", state: "booked"},
-      {startTime: "10:30", endTime: "11:00", state: "available"},
+      {startTime: "10:30", endTime: "11:00", state: "booked"},
     ]);
 
     expect(runs).toEqual([
-      {startTime: "09:00", endTime: "10:00", state: "available", startIndex: 0, span: 2},
-      {startTime: "10:00", endTime: "10:30", state: "booked", startIndex: 2, span: 1},
-      {startTime: "10:30", endTime: "11:00", state: "available", startIndex: 3, span: 1},
+      {
+        startTime: "09:00",
+        endTime: "09:30",
+        state: "available",
+        href: "/rooms",
+        startIndex: 0,
+        span: 1,
+      },
+      {
+        startTime: "09:30",
+        endTime: "10:00",
+        state: "available",
+        href: "/rooms",
+        startIndex: 1,
+        span: 1,
+      },
+      {startTime: "10:00", endTime: "11:00", state: "booked", startIndex: 2, span: 2},
     ]);
   });
 

@@ -16,9 +16,9 @@ import {
 import {ArrowRightIcon} from "@/shared/ui/icons";
 import {SectionLabel} from "@/shared/ui/section-label";
 
-import {DayStrip} from "./day-strip";
 import {AvailabilityGrid, type GridColumn} from "./grid";
 import {AvailabilityLegend} from "./legend";
+import {MobileWeekCalendar} from "./mobile-week-calendar";
 import {RoomFilter} from "./room-filter";
 import {buildColumnCells} from "./runs";
 import {indexSlots, type SlotIndex} from "./slot-index";
@@ -78,45 +78,55 @@ export async function AvailabilityCalendar({
     );
   }
 
-  // Week columns are days, so a week can only ever show one room.
   const selectedRoom = availability.rooms.find((room) => room.id === query.roomId);
-  const weekRoom = selectedRoom ?? availability.rooms[0];
   const dayDate = days.includes(query.date) ? query.date : days[0];
-  const dayRooms = selectedRoom ? [selectedRoom] : isWeek ? [weekRoom] : availability.rooms;
+  const requiredSlots = Math.ceil(
+    availability.minimumBookingMinutes / availability.intervalMinutes,
+  );
 
   const rangeLabel = isWeek
     ? formatDayRange(availability.startDate, availability.endDate, locale)
     : formatWeekdayDate(query.date, locale);
   const dayLabel = formatWeekdayDate(dayDate, locale);
-  const singleDayColumns = roomColumns({
-    rooms: dayRooms,
-    date: dayDate,
-    index,
-    locale,
-    perHour: t("perHour"),
-    intervalMinutes: availability.intervalMinutes,
-  });
-  const dayMinWidth = roomGridMinWidth(singleDayColumns.length);
-  const navigationQuery: AvailabilityQuery = {
-    ...query,
-    roomId: isWeek ? weekRoom.id : query.roomId,
+  const aggregateLabels = {
+    roomsAvailable: (count: number) => t("roomsAvailable", {count}),
+    bookAt: (time: string, count: number) => t("bookAtTime", {time, count}),
   };
+  const columnsForDate = (date: string) =>
+    selectedRoom
+      ? roomColumns({
+          rooms: [selectedRoom],
+          date,
+          index,
+          locale,
+          perHour: t("perHour"),
+          intervalMinutes: availability.intervalMinutes,
+          requiredSlots,
+          bookAt: (room, time) => t("bookRoomAtTime", {room, time}),
+        })
+      : aggregateDayColumns({
+          days: [date],
+          rooms: availability.rooms,
+          today,
+          index,
+          locale,
+          intervalMinutes: availability.intervalMinutes,
+          requiredSlots,
+          labels: aggregateLabels,
+          heading: t("allRooms"),
+        });
+  const singleDayColumns = columnsForDate(dayDate);
+  const dayMinWidth = roomGridMinWidth(singleDayColumns.length);
+  const navigationQuery: AvailabilityQuery = query;
 
   return (
     <div className="space-y-8">
-      <AvailabilityToolbar
-        locale={locale}
-        query={navigationQuery}
-        range={{startDate: availability.startDate, endDate: availability.endDate}}
-        today={today}
-      />
-
       <RoomFilter
         locale={locale}
         query={navigationQuery}
         rooms={availability.rooms}
-        selectedRoomId={isWeek ? weekRoom.id : query.roomId}
-        allowAllRooms={!isWeek}
+        selectedRoomId={query.roomId}
+        allowAllRooms
       />
 
       <BookingGuide
@@ -125,61 +135,86 @@ export async function AvailabilityCalendar({
         help={t("calendarAvailabilityHelp")}
       />
 
-      <AvailabilityLegend labels={labels} />
+      <section id="availability-calendar" className="space-y-3 scroll-mt-36">
+        <AvailabilityLegend labels={labels} />
+        <div className="sticky top-14 z-30 -mx-3 space-y-3 border-b border-ink bg-white px-3 pb-3 sm:top-16 sm:mx-0 sm:px-0">
+          <AvailabilityToolbar
+            locale={locale}
+            query={navigationQuery}
+            range={{startDate: availability.startDate, endDate: availability.endDate}}
+            today={today}
+          />
+        </div>
 
-      {isWeek ? (
-        <>
-          <div className="space-y-3 lg:hidden">
-            <DayStrip
-              locale={locale}
-              query={navigationQuery}
-              days={days}
-              selectedDate={dayDate}
-              today={today}
-              todayLabel={t("today")}
-            />
-            <GridHeading label={dayLabel} />
+        {isWeek ? (
+          <>
+            <div className="lg:hidden">
+              <MobileWeekCalendar
+                locale={locale}
+                days={days}
+                initialDate={dayDate}
+                today={today}
+                todayLabel={t("today")}
+                panels={days.map((date) => ({
+                  date,
+                  content: (
+                    <div className="space-y-3">
+                      <GridHeading label={selectedRoom?.name ?? t("allRooms")} />
+                      <AvailabilityGrid
+                        caption={`${selectedRoom?.name ?? t("allRooms")} — ${formatWeekdayDate(date, locale)}`}
+                        times={index.times}
+                        columns={columnsForDate(date)}
+                        labels={labels}
+                        minWidthClass={dayMinWidth}
+                      />
+                    </div>
+                  ),
+                }))}
+              />
+            </div>
+            <div className="hidden space-y-3 lg:block">
+            <GridHeading label={selectedRoom?.name ?? t("allRooms")} />
             <AvailabilityGrid
-              caption={`${weekRoom.name} — ${dayLabel}`}
+              caption={`${selectedRoom?.name ?? t("allRooms")} — ${rangeLabel}`}
               times={index.times}
-              columns={singleDayColumns}
+              columns={
+                selectedRoom
+                  ? dayColumns({
+                      days,
+                      room: selectedRoom,
+                      today,
+                      index,
+                      locale,
+                      intervalMinutes: availability.intervalMinutes,
+                      requiredSlots,
+                      bookAt: (room, time) => t("bookRoomAtTime", {room, time}),
+                    })
+                  : aggregateDayColumns({
+                      days,
+                      rooms: availability.rooms,
+                      today,
+                      index,
+                      locale,
+                      intervalMinutes: availability.intervalMinutes,
+                      requiredSlots,
+                      labels: aggregateLabels,
+                    })
+              }
               labels={labels}
-              availableAction={t("availableAction")}
-              bookingAction={t("bookingAction")}
-              minWidthClass={dayMinWidth}
-            />
-          </div>
-          <div className="hidden space-y-3 lg:block">
-            <GridHeading label={weekRoom.name} />
-            <AvailabilityGrid
-              caption={`${weekRoom.name} — ${rangeLabel}`}
-              times={index.times}
-              columns={dayColumns({
-                days,
-                room: weekRoom,
-                today,
-                index,
-                locale,
-                intervalMinutes: availability.intervalMinutes,
-              })}
-              labels={labels}
-              availableAction={t("availableAction")}
-              bookingAction={t("bookingAction")}
               minWidthClass="min-w-[48rem]"
             />
-          </div>
-        </>
-      ) : (
-        <AvailabilityGrid
-          caption={dayLabel}
-          times={index.times}
-          columns={singleDayColumns}
-          labels={labels}
-          availableAction={t("availableAction")}
-          bookingAction={t("bookingAction")}
-          minWidthClass={dayMinWidth}
-        />
-      )}
+            </div>
+          </>
+        ) : (
+          <AvailabilityGrid
+            caption={dayLabel}
+            times={index.times}
+            columns={singleDayColumns}
+            labels={labels}
+            minWidthClass={dayMinWidth}
+          />
+        )}
+      </section>
     </div>
   );
 }
@@ -222,6 +257,8 @@ function roomColumns({
   locale,
   perHour,
   intervalMinutes,
+  requiredSlots,
+  bookAt,
 }: {
   rooms: AvailabilityRoom[];
   date: string;
@@ -229,6 +266,8 @@ function roomColumns({
   locale: AppLocale;
   perHour: string;
   intervalMinutes: number;
+  requiredSlots: number;
+  bookAt: (room: string, time: string) => string;
 }): GridColumn[] {
   return rooms.map((room) => ({
     key: room.id,
@@ -241,9 +280,16 @@ function roomColumns({
         </span>
       </span>
     ),
-    cells: buildColumnCells(index.times, intervalMinutes, (time) =>
-      withSlotHref(index.slotAt(room.id, date, time), room.id, date),
-    ),
+    cells: buildColumnCells(index.times, intervalMinutes, (time) => {
+      const slot = index.slotAt(room.id, date, time);
+      return withSlotHref(
+        slot,
+        room.id,
+        date,
+        isBookableStart({roomId: room.id, date, time, index, requiredSlots}),
+        slot?.state === "available" ? bookAt(room.name, time) : undefined,
+      );
+    }),
   }));
 }
 
@@ -255,6 +301,8 @@ function dayColumns({
   index,
   locale,
   intervalMinutes,
+  requiredSlots,
+  bookAt,
 }: {
   days: string[];
   room: AvailabilityRoom;
@@ -262,6 +310,8 @@ function dayColumns({
   index: SlotIndex;
   locale: AppLocale;
   intervalMinutes: number;
+  requiredSlots: number;
+  bookAt: (room: string, time: string) => string;
 }): GridColumn[] {
   return days.map((date) => {
     const heading = formatDayHeading(date, locale);
@@ -279,26 +329,149 @@ function dayColumns({
           </span>
         </span>
       ),
-      cells: buildColumnCells(index.times, intervalMinutes, (time) =>
-        withSlotHref(index.slotAt(room.id, date, time), room.id, date),
-      ),
+      cells: buildColumnCells(index.times, intervalMinutes, (time) => {
+        const slot = index.slotAt(room.id, date, time);
+        return withSlotHref(
+          slot,
+          room.id,
+          date,
+          isBookableStart({roomId: room.id, date, time, index, requiredSlots}),
+          slot?.state === "available" ? bookAt(room.name, time) : undefined,
+        );
+      }),
     };
   });
+}
+
+/** One time-first column per day, combining every room into one decision. */
+function aggregateDayColumns({
+  days,
+  rooms,
+  today,
+  index,
+  locale,
+  intervalMinutes,
+  requiredSlots,
+  labels,
+  heading,
+}: {
+  days: string[];
+  rooms: AvailabilityRoom[];
+  today: string;
+  index: SlotIndex;
+  locale: AppLocale;
+  intervalMinutes: number;
+  requiredSlots: number;
+  labels: {
+    roomsAvailable: (count: number) => string;
+    bookAt: (time: string, count: number) => string;
+  };
+  heading?: string;
+}): GridColumn[] {
+  return days.map((date) => {
+    const dateHeading = formatDayHeading(date, locale);
+
+    return {
+      key: `all-${date}`,
+      current: date === today,
+      heading: heading ? (
+        <span className="block leading-tight">{heading}</span>
+      ) : (
+        <span className="block leading-tight">
+          <span className="block text-[0.65rem] uppercase tracking-[0.12em]">
+            {dateHeading.weekday}
+          </span>
+          <span className="mt-0.5 block font-sans text-base font-semibold tabular-nums">
+            {dateHeading.day}
+          </span>
+        </span>
+      ),
+      cells: buildColumnCells(index.times, intervalMinutes, (time) => {
+        const slots = rooms
+          .map((room) => index.slotAt(room.id, date, time))
+          .filter((slot) => slot !== undefined);
+        const own = slots.find((slot) => slot.state === "my-booking");
+        if (own) {
+          return withSlotHref(own, own.roomId, date, false);
+        }
+
+        const bookableRooms = rooms.filter((room) =>
+          isBookableStart({roomId: room.id, date, time, index, requiredSlots}),
+        );
+        const chosen = bookableRooms[0];
+        if (chosen) {
+          const slot = index.slotAt(chosen.id, date, time);
+          if (!slot) {
+            return undefined;
+          }
+          return {
+            ...slot,
+            state: "available" as const,
+            href: bookHref({roomId: chosen.id, date, start: time}),
+            meta: labels.roomsAvailable(bookableRooms.length),
+            ariaLabel: labels.bookAt(time, bookableRooms.length),
+          };
+        }
+
+        const representative = slots[0];
+        if (!representative) {
+          return undefined;
+        }
+
+        return {
+          ...representative,
+          state: slots.some((slot) => slot.state === "booked")
+            ? ("booked" as const)
+            : ("unavailable" as const),
+          ownBookingId: undefined,
+        };
+      }),
+    };
+  });
+}
+
+function isBookableStart({
+  roomId,
+  date,
+  time,
+  index,
+  requiredSlots,
+}: {
+  roomId: string;
+  date: string;
+  time: string;
+  index: SlotIndex;
+  requiredSlots: number;
+}): boolean {
+  const startIndex = index.times.indexOf(time);
+  if (startIndex < 0 || startIndex + requiredSlots > index.times.length) {
+    return false;
+  }
+
+  return index.times
+    .slice(startIndex, startIndex + requiredSlots)
+    .every((candidate) => index.slotAt(roomId, date, candidate)?.state === "available");
 }
 
 function withSlotHref(
   slot: ReturnType<SlotIndex["slotAt"]>,
   roomId: string,
   date: string,
+  bookable: boolean,
+  ariaLabel?: string,
 ) {
   if (!slot) {
     return undefined;
   }
-  if (slot.state === "available") {
+  if (slot.state === "available" && bookable) {
     return {
       ...slot,
       href: bookHref({roomId, date, start: slot.localStart}),
+      ...(ariaLabel ? {ariaLabel} : {}),
     };
+  }
+  if (slot.state === "available") {
+    return {...slot, state: "unavailable" as const};
   }
   if (slot.state === "my-booking" && slot.ownBookingId) {
     return {

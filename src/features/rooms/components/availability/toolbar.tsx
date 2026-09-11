@@ -7,7 +7,9 @@ import type {AppLocale} from "@/i18n/routing";
 import {formatDayRange, formatWeekdayDate} from "@/shared/format/calendar-date";
 import {ChevronLeftIcon, ChevronRightIcon} from "@/shared/ui/icons";
 import {SectionLabel} from "@/shared/ui/section-label";
-import {SegmentedLinks} from "@/shared/ui/segmented-links";
+
+import {DateJump} from "./date-jump";
+import {AvailabilityViewSwitch} from "./view-switch";
 
 const stepClass =
   "inline-flex min-h-11 items-center justify-center px-3 text-xs font-semibold uppercase tracking-[0.1em] text-ink transition-colors duration-150 ease-standard hover:bg-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink";
@@ -33,7 +35,7 @@ export async function AvailabilityToolbar({
   const showsToday = today >= range.startDate && today <= range.endDate;
 
   return (
-    <div className="flex flex-col gap-5 border-b border-ink pb-6 lg:flex-row lg:items-end lg:justify-between">
+    <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
       <div>
         <SectionLabel>{t("timezoneLabel")}</SectionLabel>
         <p className="mt-2 font-sans text-lg font-semibold leading-tight tabular-nums text-ink sm:text-xl">
@@ -46,24 +48,15 @@ export async function AvailabilityToolbar({
         ) : null}
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
-        <SegmentedLinks
+      <div className="flex flex-wrap items-center gap-2">
+        <AvailabilityViewSwitch
+          query={query}
           label={t("viewLabel")}
-          items={[
-            {
-              key: "day",
-              href: availabilityHref({...query, view: "day"}),
-              label: t("viewDay"),
-              current: query.view === "day",
-            },
-            {
-              key: "week",
-              href: availabilityHref({...query, view: "week"}),
-              label: t("viewWeek"),
-              current: isWeek,
-            },
-          ]}
+          dayLabel={t("viewDay")}
+          weekLabel={t("viewWeek")}
         />
+
+        <DateJump query={query} label={t("jumpToDate")} />
 
         <div className="inline-flex rounded-panel border border-ink bg-white">
           <Link

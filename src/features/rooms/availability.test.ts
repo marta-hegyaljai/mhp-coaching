@@ -360,7 +360,7 @@ describe.skipIf(!hasDatabase)("rooms inventory and availability", () => {
     );
   });
 
-  it("builds week slots for one room while still listing the inventory", async () => {
+  it("builds all-room week slots and scopes slots only when a room is selected", async () => {
     const admin = await createAdmin();
     const therapist = await createTherapist("week-scope");
     const first = await seedRoom(admin, `Week first ${Date.now()}`);
@@ -376,8 +376,8 @@ describe.skipIf(!hasDatabase)("rooms inventory and availability", () => {
       expect.arrayContaining([first.id, second.id]),
     );
     const slotted = new Set(week.slots.map((slot) => slot.roomId));
-    expect(slotted.size).toBe(1);
-    expect(week.rooms.some((room) => slotted.has(room.id))).toBe(true);
+    expect([...slotted]).toEqual(expect.arrayContaining([first.id, second.id]));
+    expect(week.minimumBookingMinutes).toBeGreaterThanOrEqual(week.intervalMinutes);
 
     const selected = await therapistAvailability({
       actor: therapist,

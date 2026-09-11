@@ -8,6 +8,8 @@ export type RunCell = {
   state: AvailabilityState;
   ownBookingId?: string;
   href?: PathnameHref;
+  meta?: string;
+  ariaLabel?: string;
 };
 
 export type SlotRun = RunCell & {
@@ -29,9 +31,13 @@ export function mergeSlotRuns(cells: readonly RunCell[]): SlotRun[] {
 
     if (
       open &&
+      // Every available start is an independent calendar action. Merging them
+      // made a long free period link only to its first time.
+      !(cell.state === "available" && cell.href) &&
       open.state === cell.state &&
       open.endTime === cell.startTime &&
-      open.ownBookingId === cell.ownBookingId
+      open.ownBookingId === cell.ownBookingId &&
+      open.meta === cell.meta
     ) {
       open.endTime = cell.endTime;
       open.span += 1;
@@ -44,6 +50,8 @@ export function mergeSlotRuns(cells: readonly RunCell[]): SlotRun[] {
       endTime: cell.endTime,
       ...(cell.ownBookingId ? {ownBookingId: cell.ownBookingId} : {}),
       ...(cell.href ? {href: cell.href} : {}),
+      ...(cell.meta ? {meta: cell.meta} : {}),
+      ...(cell.ariaLabel ? {ariaLabel: cell.ariaLabel} : {}),
       startIndex: index,
       span: 1,
     });
@@ -58,6 +66,8 @@ type SlotLike = {
   state: AvailabilityState;
   ownBookingId?: string;
   href?: PathnameHref;
+  meta?: string;
+  ariaLabel?: string;
 };
 
 /**
@@ -79,6 +89,8 @@ export function buildColumnCells(
         state: slot.state,
         ...(slot.ownBookingId ? {ownBookingId: slot.ownBookingId} : {}),
         ...(slot.href ? {href: slot.href} : {}),
+        ...(slot.meta ? {meta: slot.meta} : {}),
+        ...(slot.ariaLabel ? {ariaLabel: slot.ariaLabel} : {}),
       };
     }
 

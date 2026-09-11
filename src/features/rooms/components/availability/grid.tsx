@@ -22,16 +22,12 @@ export function AvailabilityGrid({
   times,
   columns,
   labels,
-  availableAction,
-  bookingAction,
   minWidthClass = "min-w-[22rem]",
 }: {
   caption: string;
   times: string[];
   columns: GridColumn[];
   labels: SlotLabels;
-  availableAction: string;
-  bookingAction: string;
   minWidthClass?: string;
 }) {
   const plans = columns.map((column) => {
@@ -80,7 +76,7 @@ export function AvailabilityGrid({
             <tr key={time}>
               <th
                 scope="row"
-                className={`h-7 whitespace-nowrap pr-2 text-right align-top font-sans text-[0.7rem] leading-none tabular-nums ${
+                className={`h-11 whitespace-nowrap pr-2 text-right align-middle font-sans text-[0.7rem] leading-none tabular-nums ${
                   time.endsWith(":00")
                     ? "font-semibold text-ink"
                     : "font-normal text-ink-subtle"
@@ -93,26 +89,21 @@ export function AvailabilityGrid({
 
                 if (!run) {
                   return plans[columnIndex].covered.has(rowIndex) ? null : (
-                    <td key={column.key} className="h-7 border border-line bg-shell" />
+                    <td key={column.key} className="h-11 border border-line bg-shell" />
                   );
                 }
 
                 const body = (
                   <>
-                    <span className="block text-[0.62rem] font-semibold uppercase tracking-[0.08em] leading-tight">
-                      {labels[run.state]}
+                    <span className="flex items-center justify-between gap-1 text-[0.62rem] font-semibold uppercase tracking-[0.08em] leading-tight">
+                      <span>{labels[run.state]}</span>
+                      {run.href ? <ArrowRightIcon className="h-3 w-3" /> : null}
                     </span>
-                    {run.span > 1 ? (
+                    {run.meta || run.span > 1 ? (
                       <span
                         className={`mt-0.5 block font-sans text-[0.62rem] leading-tight tabular-nums ${slotMetaText[run.state]}`}
                       >
-                        {run.startTime}–{run.endTime}
-                      </span>
-                    ) : null}
-                    {run.href ? (
-                      <span className="mt-2 flex items-center gap-1 border-t border-current/25 pt-1.5 font-sans text-[0.65rem] font-bold uppercase tracking-[0.08em]">
-                        {run.state === "available" ? availableAction : bookingAction}
-                        <ArrowRightIcon className="h-3 w-3" />
+                        {run.meta ?? `${run.startTime}–${run.endTime}`}
                       </span>
                     ) : null}
                   </>
@@ -134,7 +125,10 @@ export function AvailabilityGrid({
                             ? "hover:bg-white hover:text-ink"
                             : "hover:bg-ink hover:text-parchment"
                         }`}
-                        aria-label={`${labels[run.state]} ${run.startTime}–${run.endTime}`}
+                        aria-label={
+                          run.ariaLabel ??
+                          `${labels[run.state]} ${run.startTime}–${run.endTime}`
+                        }
                       >
                         {body}
                       </Link>

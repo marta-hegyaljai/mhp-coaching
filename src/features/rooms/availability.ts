@@ -58,6 +58,7 @@ export type TherapistAvailability = {
   startDate: string;
   endDate: string;
   intervalMinutes: number;
+  minimumBookingMinutes: number;
   rooms: AvailabilityRoom[];
   slots: TherapistAvailabilitySlot[];
 };
@@ -68,6 +69,7 @@ export type AdminAvailability = {
   startDate: string;
   endDate: string;
   intervalMinutes: number;
+  minimumBookingMinutes: number;
   rooms: AvailabilityRoom[];
   slots: AdminAvailabilitySlot[];
 };
@@ -193,8 +195,8 @@ async function loadGrid(input: {
   // it is unavailable instead of silently changing the user's selection.
   const listed = catalog.filter((room) => room.active || room.id === input.roomId);
 
-  // Generate slots only for the room(s) the grid displays. Week columns are
-  // days of one room; day view may compare all rooms when no filter is active.
+  // A room filter scopes the grid. Without one, generate every active room so
+  // the therapist can search by time first and let the UI aggregate inventory.
   const selectedRoom = input.roomId
     ? listed.find((room) => room.id === input.roomId)
     : undefined;
@@ -202,9 +204,7 @@ async function loadGrid(input: {
     ? selectedRoom
       ? [selectedRoom]
       : []
-    : input.view === "week" && listed.length > 0
-      ? [listed[0]]
-      : listed;
+    : listed;
 
   const from = zurichLocalToUtc(range.startDate, "00:00");
   const to = zurichLocalToUtc(addLocalDays(range.endDate, 1), "00:00");
@@ -369,6 +369,7 @@ export async function therapistAvailability(input: {
     startDate: grid.range.startDate,
     endDate: grid.range.endDate,
     intervalMinutes: interval,
+    minimumBookingMinutes: grid.settings.minimumBookingMinutes,
     rooms: grid.rooms.map(toPublicRoom),
     slots,
   };
@@ -403,6 +404,7 @@ export async function adminAvailability(input: {
     startDate: therapistLike.startDate,
     endDate: therapistLike.endDate,
     intervalMinutes: therapistLike.intervalMinutes,
+    minimumBookingMinutes: therapistLike.minimumBookingMinutes,
     rooms: therapistLike.rooms,
     slots: therapistLike.slots.map((slot) => ({
       roomId: slot.roomId,

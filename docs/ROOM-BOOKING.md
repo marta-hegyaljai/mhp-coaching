@@ -129,6 +129,14 @@ must be usable around a 390px viewport and clearly distinguish:
 - unavailable/closed time; and
 - the current therapist's own reservations.
 
+Availability discovery is time-first. With no room filter, day and week views
+aggregate every active room and show how many rooms can support the minimum
+booking duration at each start time. Choosing a start automatically carries one
+valid room into the confirmation step; a therapist may still filter by room when
+needed. Every valid interval is its own calendar-sized click target. Phone week
+days switch from the already-loaded week without a server round trip, and a date
+picker provides direct month/date jumps.
+
 For another person's reservation, return and render only `Booked`. Do not send
 the owner identity, note, billing, or other private fields and then merely hide
 them in the browser. A therapist's own event may include the minimum details

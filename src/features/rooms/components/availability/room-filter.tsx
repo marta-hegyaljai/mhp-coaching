@@ -9,7 +9,7 @@ import {Price} from "@/shared/ui/price";
 import {SectionLabel} from "@/shared/ui/section-label";
 
 const chipClass =
-  "flex min-h-20 flex-col justify-between gap-2 rounded-panel border px-3 py-3 text-left transition-colors duration-150 ease-standard focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink";
+  "flex min-h-14 items-center justify-between gap-2 rounded-panel border px-3 py-2 text-left transition-colors duration-150 ease-standard focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink";
 
 export async function RoomFilter({
   locale,
@@ -43,9 +43,7 @@ export async function RoomFilter({
             }`}
           >
             <span className="text-sm font-semibold">{t("allRooms")}</span>
-            <span
-              className={`text-xs ${allSelected ? "text-parchment/80" : "text-ink-muted"}`}
-            >
+            <span className={`text-xs ${allSelected ? "text-parchment/80" : "text-ink-muted"}`}>
               {t("allRoomsHint", {count: rooms.length})}
             </span>
           </Link>
@@ -66,15 +64,6 @@ export async function RoomFilter({
               }`}
             >
               <span className="text-sm font-semibold leading-tight">{room.name}</span>
-              {room.description ? (
-                <span
-                  className={`line-clamp-2 text-xs leading-4 ${
-                    selected ? "text-parchment/75" : "text-ink-muted"
-                  }`}
-                >
-                  {room.description}
-                </span>
-              ) : null}
               <Price size="sm" className={selected ? "text-parchment" : ""}>
                 {formatChf(minorUnitsToFrancs(room.hourlyRateMinor), locale)}
                 {t("perHour")}
