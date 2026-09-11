@@ -15,6 +15,8 @@ import {assertLogHasNoPrivateNote, assertNoPrivateNoteMaterial} from "@/features
 import {saveOwnPrivateNote} from "@/features/rooms/private-notes";
 import {reserveRoom} from "@/features/rooms/reservations";
 import {listAdminBookingsPage, listBookingEvents} from "@/features/rooms/repository";
+import {loadOpenMonthUsage, loadOwnOpenMonthUsage} from "@/features/rooms/usage";
+import {openMonthUserTotalsToCsv} from "@/features/rooms/usage-csv";
 import {bookingsToCsv} from "@/features/staff/csv";
 import {getDatabaseUrl} from "@/lib/database-url";
 
@@ -106,8 +108,11 @@ describe.skipIf(!hasDatabase)("private-note exclusion", () => {
     const history = bookingHistorySnapshot(adminBooking);
     const audit = auditBookingSnapshot(adminBooking);
     const csv = bookingsToCsv([]);
+    const usage = await loadOwnOpenMonthUsage(owner, now);
+    const adminUsage = await loadOpenMonthUsage({actor: admin, now});
+    const usageCsv = openMonthUserTotalsToCsv(adminUsage);
 
-    for (const payload of [calendar, adminBooking, ownLists, adminList, events, history, audit, csv]) {
+    for (const payload of [calendar, adminBooking, ownLists, adminList, events, history, audit, csv, usage, adminUsage, usageCsv]) {
       assertNoPrivateNoteMaterial(payload, secret);
     }
     assertLogHasNoPrivateNote(errors, secret);

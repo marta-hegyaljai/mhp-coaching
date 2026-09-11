@@ -180,3 +180,50 @@ export function listingTimes(intervalMinutes: number): string[] {
   }
   return times;
 }
+
+export type ZurichMonth = {
+  year: number;
+  month: number;
+};
+
+export function zurichMonthOf(instant: Date): ZurichMonth {
+  const {year, month} = parseLocalDate(utcToZurich(instant).date);
+  return {year, month};
+}
+
+export function openZurichMonth(now = new Date()): ZurichMonth {
+  return zurichMonthOf(now);
+}
+
+/**
+ * Half-open Zurich calendar-month bounds as UTC instants.
+ * 1 September 2026 00:00 Zurich ≤ t < 1 October 2026 00:00 Zurich.
+ */
+export function zurichMonthRange(month: ZurichMonth): {start: Date; endExclusive: Date} {
+  if (
+    !Number.isInteger(month.year) ||
+    !Number.isInteger(month.month) ||
+    month.month < 1 ||
+    month.month > 12
+  ) {
+    throw new Error("invalidDate");
+  }
+
+  const startLocal = zurichLocalToUtc(formatLocalDate(month.year, month.month, 1), "00:00");
+  const next =
+    month.month === 12
+      ? {year: month.year + 1, month: 1}
+      : {year: month.year, month: month.month + 1};
+  const endLocal = zurichLocalToUtc(formatLocalDate(next.year, next.month, 1), "00:00");
+
+  if (!startLocal.ok || !endLocal.ok) {
+    throw new Error("invalidDate");
+  }
+
+  return {start: startLocal.instant, endExclusive: endLocal.instant};
+}
+
+export function isInZurichMonth(instant: Date, month: ZurichMonth): boolean {
+  const {start, endExclusive} = zurichMonthRange(month);
+  return instant >= start && instant < endExclusive;
+}

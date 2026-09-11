@@ -13,6 +13,8 @@ import {
 } from "@/features/admin/access";
 import {canAdminister} from "@/features/auth/policy";
 import {readSessionUser} from "@/features/auth/session";
+import {RoomError} from "@/features/rooms/errors";
+import {setUserRoomDiscount} from "@/features/rooms/discounts";
 import {routing, type AppLocale} from "@/i18n/routing";
 
 export type AdminFormState = {
@@ -36,9 +38,15 @@ async function requireAdminActor() {
 
 function localizeAccessError(
   error: unknown,
-  t: (key: "forbidden" | "invalidEmail" | "invalidName" | "alreadyRegistered" | "notFound" | "cannotDisableSelf" | "cannotDemoteLastAdmin" | "sendFailed") => string,
+  t: (key: "forbidden" | "invalidEmail" | "invalidName" | "alreadyRegistered" | "notFound" | "cannotDisableSelf" | "cannotDemoteLastAdmin" | "invalidDiscount" | "sendFailed") => string,
 ): AdminFormState {
   if (error instanceof AccessControlError) {
+    return {error: t(error.code)};
+  }
+  if (
+    error instanceof RoomError &&
+    (error.code === "forbidden" || error.code === "notFound" || error.code === "invalidDiscount")
+  ) {
     return {error: t(error.code)};
   }
   console.error(error);
@@ -118,6 +126,36 @@ export async function updateUserAccessAction(
 
     revalidatePath(`/${resolvedLocale}/admin/users`);
     revalidatePath(`/${resolvedLocale}/admin/users/${userId}`);
+    return {ok: true};
+  } catch (error) {
+    const t = await getTranslations({
+      locale: resolvedLocale,
+      namespace: "Admin.errors",
+    });
+    return localizeAccessError(error, t);
+  }
+}
+
+export async function updateUserDiscountAction(
+  locale: string,
+  userId: string,
+  _previous: AdminFormState | null,
+  formData: FormData,
+): Promise<AdminFormState> {
+  const resolvedLocale = resolveLocale(locale);
+
+  try {
+    const actor = await requireAdminActor();
+    const parsed = Number(String(formData.get("discountPercent") ?? ""));
+    await setUserRoomDiscount({
+      actor,
+      targetUserId: userId,
+      discountPercent: Number.isInteger(parsed) ? parsed : Number.NaN,
+    });
+    revalidatePath(`/${resolvedLocale}/admin/users`);
+    revalidatePath(`/${resolvedLocale}/admin/users/${userId}`);
+    revalidatePath(`/${resolvedLocale}/admin/billing`);
+    revalidatePath(`/${resolvedLocale}/admin/billing/${userId}`);
     return {ok: true};
   } catch (error) {
     const t = await getTranslations({

@@ -92,6 +92,13 @@
       "when": 1789115000000,
       "tag": "0012_room_notes_and_requests",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1789116000000,
+      "tag": "0013_room_discounts",
+      "breakpoints": true
     }
   ]
 }

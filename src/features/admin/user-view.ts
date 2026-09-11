@@ -7,6 +7,7 @@ export type AdminUserView = {
   lastName: string;
   isAdmin: boolean;
   roomBookingEnabled: boolean;
+  roomDiscountPercent: number;
   disabled: boolean;
   pendingInvite: boolean;
   createdAt: string;
@@ -20,6 +21,7 @@ export function toAdminUserView(user: User): AdminUserView {
     lastName: user.lastName,
     isAdmin: user.isAdmin,
     roomBookingEnabled: user.roomBookingEnabled,
+    roomDiscountPercent: user.roomDiscountPercent,
     disabled: user.disabledAt !== null,
     pendingInvite: user.passwordHash === null,
     createdAt: user.createdAt.toISOString(),

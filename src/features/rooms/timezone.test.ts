@@ -7,6 +7,8 @@ import {
   rangesOverlap,
   utcToZurich,
   zurichLocalToUtc,
+  zurichMonthOf,
+  zurichMonthRange,
 } from "@/features/rooms/timezone";
 
 describe("Europe/Zurich local conversion", () => {
@@ -57,5 +59,25 @@ describe("Europe/Zurich local conversion", () => {
     expect(isoWeekday("2026-09-10")).toBe(4);
     expect(mondayOf("2026-09-10")).toBe("2026-09-07");
     expect(addLocalDays("2026-09-07", 6)).toBe("2026-09-13");
+  });
+});
+
+describe("Zurich calendar months", () => {
+  it("uses half-open Zurich midnight bounds, including DST months", () => {
+    const september = zurichMonthRange({year: 2026, month: 9});
+    expect(september.start.toISOString()).toBe("2026-08-31T22:00:00.000Z");
+    expect(september.endExclusive.toISOString()).toBe("2026-09-30T22:00:00.000Z");
+    expect(zurichMonthOf(september.start)).toEqual({year: 2026, month: 9});
+
+    const lastSecond = new Date(september.endExclusive.getTime() - 1);
+    expect(zurichMonthOf(lastSecond)).toEqual({year: 2026, month: 9});
+    expect(zurichMonthOf(september.endExclusive)).toEqual({year: 2026, month: 10});
+
+    const april = zurichMonthRange({year: 2026, month: 4});
+    expect(april.start.toISOString()).toBe("2026-03-31T22:00:00.000Z");
+    expect(zurichMonthOf(new Date("2026-03-31T21:59:59.000Z"))).toEqual({
+      year: 2026,
+      month: 3,
+    });
   });
 });

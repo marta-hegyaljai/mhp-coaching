@@ -114,8 +114,8 @@ Planned shared concepts:
 
 Planned room concepts stay room-prefixed: rooms, opening hours, room blocks,
 room bookings, booking history, separately protected private notes, availability
-requests, user discounts, statement/adjustment line items, monthly statements
-and payment attempts.
+requests, user discounts, current-month usage projections, statement/adjustment
+line items, monthly statements and payment attempts.
 
 Guest course registrations remain valid without a `userId`. Once an account has
 verified its email, an idempotent reconciliation links matching registrations by
@@ -242,10 +242,10 @@ src/
     bookings/               # existing course form, validation, persistence
     certificates/           # personal certificate library on My Courses
     rooms/                  # inventory, hours, blocks, privacy-safe availability,
-                            # reservations, owner-only notes, no-availability requests
+                            # reservations, owner-only notes, requests, discounts, usage
     room-bookings/          # booking lifecycle lives in features/rooms
     room-requests/          # request inbox lives in features/rooms
-    room-billing/           # planned: usage, statements, adjustments, payments
+    room-billing/           # current-month usage; statements/payments in later checkpoints
     waitlist/               # waiting list for published courses
     inquiries/              # contact and alternative-payment forms
     payments/{fake,stripe}/ # PaymentProvider adapters + webhook

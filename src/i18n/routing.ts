@@ -127,6 +127,8 @@ export const routing = defineRouting({
     "/admin/bookings/[id]": "/admin/bookings/[id]",
     "/admin/requests": "/admin/requests",
     "/admin/requests/[id]": "/admin/requests/[id]",
+    "/admin/billing": "/admin/billing",
+    "/admin/billing/[userId]": "/admin/billing/[userId]",
     "/rooms": {
       fr: "/salles",
       de: "/raeume",
@@ -171,6 +173,11 @@ export const routing = defineRouting({
       fr: "/salles/demandes/[id]",
       de: "/raeume/anfragen/[id]",
       en: "/rooms/requests/[id]",
+    },
+    "/billing": {
+      fr: "/facturation",
+      de: "/abrechnung",
+      en: "/billing",
     },
     "/access-denied": {
       fr: "/acces-refuse",

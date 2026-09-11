@@ -23,14 +23,14 @@ later scope forward.
 | --- | --- |
 | Plan revision | 3 |
 | Last updated | 2026-09-11 |
-| Last completed checkpoint | CP-07 |
-| Next checkpoint | CP-08 |
+| Last completed checkpoint | CP-08 |
+| Next checkpoint | CP-09 |
 | Active checkpoint | — |
-| Room module production status | Inventory, hours, blocks, privacy-safe availability, therapist reservations, My Bookings, change/cancel, owner-only notes and no-availability requests shipped |
+| Room module production status | Inventory, hours, blocks, privacy-safe availability, therapist reservations, My Bookings, change/cancel, owner-only notes, no-availability requests, discounts and current-month usage shipped |
 
 Revision 3 completed CP-03 and CP-04 before CP-01 on this branch. CP-01 has now
-landed on main and is merged here. CP-00 through CP-07 are complete. The next
-checkpoint is CP-08.
+landed on main and is merged here. CP-00 through CP-08 are complete. The next
+checkpoint is CP-09.
 
 ## Status vocabulary
 
@@ -113,7 +113,7 @@ or navigation link alone is not a deliverable checkpoint.
 | CP-05 | COMPLETE | Collision-safe room reservation and “My bookings” | Therapist |
 | CP-06 | COMPLETE | Booking changes, cancellation and admin intervention | Therapist and admin |
 | CP-07 | COMPLETE | Owner-only notes and unavailable-time requests | Therapist and admin |
-| CP-08 | PLANNED | Discounts and transparent current-month usage | Therapist and admin |
+| CP-08 | COMPLETE | Discounts and transparent current-month usage | Therapist and admin |
 | CP-09 | PLANNED | Stable monthly statements and saved payment method | Therapist and admin |
 | CP-10 | PLANNED | Automated monthly charging and operational email | Therapist and admin |
 | CP-11 | PLANNED | Production-ready room module on the app domain | All actors |
@@ -514,7 +514,7 @@ without ever gaining access to private notes.
 
 ## CP-08 — Discounts and current-month usage
 
-**Status:** `PLANNED`
+**Status:** `COMPLETE`
 
 **Depends on:** CP-07.
 
@@ -1007,6 +1007,36 @@ For an incomplete checkpoint, add this directly below its acceptance criteria:
   appeared on shared chrome during calendar QA; it is not specific to the
   note/request forms.
 - **Known next work:** CP-08 discounts and current-month usage.
+
+### CP-08 — 2026-09-11
+
+- **Result:** Admins set one percentage room discount per user. New bookings
+  snapshot that discount after the room rate. Therapists and admins see
+  open-month billed minutes and amounts, explicitly labelled as not finalized.
+  Later price or discount changes do not rewrite existing snapshots.
+- **Routes/UI:** Therapist `/{locale}/billing` (`/fr/facturation`,
+  `/de/abrechnung`) with Rooms nav Usage; admin `/admin/billing`,
+  `/admin/billing/[userId]`, user-detail discount form; CSV
+  `GET /api/admin/billing.csv`.
+- **Migrations:** `0013_room_discounts.sql` (`users.room_discount_percent`
+  0–99).
+- **Automated evidence:** `pnpm lint`, `pnpm typecheck`, `pnpm test` (63 files,
+  266 tests) and `pnpm build` passed. Coverage includes half-up integer minor
+  unit rounding, discount audit, snapshot immutability after later price and
+  discount changes, free/late/waiver projection, Zurich month bounds including
+  DST, therapist isolation, CSV without private notes, and Playwright auth
+  guards plus `tests/e2e/billing.spec.ts` (therapist EN/FR usage at 390px,
+  admin discount save and billing list).
+- **Browser evidence:** Playwright signed-in therapist `/en/billing` and
+  `/fr/facturation` at 390px with open-month labelling and no overflow; admin
+  set a 10% discount on a therapist and opened current-month totals.
+- **Preview/production:** Not deployed in this task.
+- **Deviations/follow-ups:** Discount cap is 99% because a 100% rate would
+  make the effective hourly rate zero and fail quote validation. Usage lives
+  in `src/features/rooms` rather than a separate `room-billing` package.
+  Rounding: `effectiveHourlyRateMinor = round(base * (100 - discount) / 100)`,
+  then `amountMinor = round(effective * minutes / 60)`, all integer centimes.
+- **Known next work:** CP-09 monthly statements and saved payment method.
 
 ### CP-03 to CP-06 UI polish pass — 2026-09-11
 

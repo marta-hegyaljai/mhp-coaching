@@ -2,6 +2,7 @@ import {describe, expect, it} from "vitest";
 
 import {
   billingCopyKey,
+  billedMinutes,
   cancellationOutcome,
   chargeableAmountMinor,
   isFreeCancellation,
@@ -67,6 +68,39 @@ describe("chargeable amount", () => {
         status: "CANCELLED",
         billingOutcome: "WAIVED",
         amountMinor: 5250,
+      }),
+    ).toBe(0);
+  });
+});
+
+describe("billed minutes", () => {
+  it("counts duration only when the outcome is chargeable", () => {
+    expect(
+      billedMinutes({
+        status: "CONFIRMED",
+        billingOutcome: "USAGE",
+        durationMinutes: 90,
+      }),
+    ).toBe(90);
+    expect(
+      billedMinutes({
+        status: "CANCELLED",
+        billingOutcome: "LATE_CANCELLATION",
+        durationMinutes: 90,
+      }),
+    ).toBe(90);
+    expect(
+      billedMinutes({
+        status: "CANCELLED",
+        billingOutcome: "FREE_CANCELLATION",
+        durationMinutes: 90,
+      }),
+    ).toBe(0);
+    expect(
+      billedMinutes({
+        status: "CANCELLED",
+        billingOutcome: "WAIVED",
+        durationMinutes: 90,
       }),
     ).toBe(0);
   });

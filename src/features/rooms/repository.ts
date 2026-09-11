@@ -1,4 +1,4 @@
-import {and, asc, count, desc, eq, gt, inArray, isNull, lt, ne, or, sql} from "drizzle-orm";
+import {and, asc, count, desc, eq, gt, gte, inArray, isNull, lt, ne, or, sql} from "drizzle-orm";
 import type {SQL} from "drizzle-orm";
 
 import {getDb, type Database} from "@/db";
@@ -500,6 +500,50 @@ export async function listOwnBookings(userId: string): Promise<RoomBooking[]> {
     .from(roomBookings)
     .where(eq(roomBookings.userId, userId))
     .orderBy(asc(roomBookings.startsAt));
+}
+
+export type RoomBookingOwner = Pick<
+  User,
+  "id" | "firstName" | "lastName" | "email" | "roomDiscountPercent"
+>;
+
+export async function listRoomBookingsStartingInRange(input: {
+  from: Date;
+  toExclusive: Date;
+  userId?: string;
+}): Promise<Array<{booking: RoomBooking; owner: RoomBookingOwner}>> {
+  const filters: SQL[] = [
+    gte(roomBookings.startsAt, input.from),
+    lt(roomBookings.startsAt, input.toExclusive),
+  ];
+  if (input.userId) {
+    filters.push(eq(roomBookings.userId, input.userId));
+  }
+
+  const rows = await getDb()
+    .select({
+      booking: roomBookings,
+      ownerId: users.id,
+      ownerFirstName: users.firstName,
+      ownerLastName: users.lastName,
+      ownerEmail: users.email,
+      ownerDiscount: users.roomDiscountPercent,
+    })
+    .from(roomBookings)
+    .innerJoin(users, eq(roomBookings.userId, users.id))
+    .where(and(...filters))
+    .orderBy(asc(roomBookings.startsAt), asc(roomBookings.id));
+
+  return rows.map((row) => ({
+    booking: row.booking,
+    owner: {
+      id: row.ownerId,
+      firstName: row.ownerFirstName,
+      lastName: row.ownerLastName,
+      email: row.ownerEmail,
+      roomDiscountPercent: row.ownerDiscount,
+    },
+  }));
 }
 
 export async function findOwnBooking(

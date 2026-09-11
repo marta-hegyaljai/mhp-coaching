@@ -26,6 +26,7 @@ import {
 export type AccessSnapshot = {
   isAdmin: boolean;
   roomBookingEnabled: boolean;
+  roomDiscountPercent: number;
   disabled: boolean;
   pendingInvite: boolean;
 };
@@ -34,6 +35,7 @@ export function accessSnapshot(user: User): AccessSnapshot {
   return {
     isAdmin: user.isAdmin,
     roomBookingEnabled: user.roomBookingEnabled,
+    roomDiscountPercent: user.roomDiscountPercent,
     disabled: user.disabledAt !== null,
     pendingInvite: user.passwordHash === null,
   };
@@ -204,6 +206,7 @@ export async function updateUser(
       | "emailNormalized"
       | "pendingEmail"
       | "pendingEmailNormalized"
+      | "roomDiscountPercent"
     >
   >,
 ): Promise<User> {

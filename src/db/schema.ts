@@ -199,6 +199,7 @@ export const users = pgTable(
     locale: text("locale").notNull().default("fr"),
     isAdmin: boolean("is_admin").notNull().default(false),
     roomBookingEnabled: boolean("room_booking_enabled").notNull().default(false),
+    roomDiscountPercent: integer("room_discount_percent").notNull().default(0),
     disabledAt: timestamp("disabled_at", {withTimezone: true}),
     pendingEmail: text("pending_email"),
     pendingEmailNormalized: text("pending_email_normalized"),

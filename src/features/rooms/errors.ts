@@ -34,7 +34,8 @@ export type RoomErrorCode =
   | "invalidAdminNote"
   | "slotAvailable"
   | "alreadyResolved"
-  | "notOpen";
+  | "notOpen"
+  | "invalidDiscount";
 
 export type RoomBookingConflict = {
   bookingId: string;
