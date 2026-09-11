@@ -68,17 +68,25 @@ export async function AvailabilityCalendar({
   if (availability.rooms.length === 0 || index.times.length === 0) {
     return (
       <EmptyState
-        message={query.roomId ? t("filteredRoomMissing") : t("emptyInventory")}
+        message={query.roomIds.length > 0 ? t("filteredRoomMissing") : t("emptyInventory")}
         action={
-          query.roomId
-            ? {href: availabilityHref({...query, roomId: undefined}), label: t("allRooms")}
+          query.roomIds.length > 0
+            ? {href: availabilityHref({...query, roomIds: []}), label: t("allRooms")}
             : undefined
         }
       />
     );
   }
 
-  const selectedRoom = availability.rooms.find((room) => room.id === query.roomId);
+  const consideredRooms =
+    query.roomIds.length > 0
+      ? availability.rooms.filter((room) => query.roomIds.includes(room.id))
+      : availability.rooms.filter((room) => room.active);
+  const selectedRoom = consideredRooms.length === 1 ? consideredRooms[0] : undefined;
+  const consideredRoomsLabel = selectedRoom?.name ??
+    (query.roomIds.length > 0
+      ? t("selectedRoomsTitle", {count: consideredRooms.length})
+      : t("allRooms"));
   const dayDate = days.includes(query.date) ? query.date : days[0];
   const requiredSlots = Math.ceil(
     availability.minimumBookingMinutes / availability.intervalMinutes,
@@ -106,18 +114,22 @@ export async function AvailabilityCalendar({
         })
       : aggregateDayColumns({
           days: [date],
-          rooms: availability.rooms,
+          rooms: consideredRooms,
           today,
           index,
           locale,
           intervalMinutes: availability.intervalMinutes,
           requiredSlots,
           labels: aggregateLabels,
-          heading: t("allRooms"),
+          heading: consideredRoomsLabel,
         });
   const singleDayColumns = columnsForDate(dayDate);
   const dayMinWidth = roomGridMinWidth(singleDayColumns.length);
-  const navigationQuery: AvailabilityQuery = query;
+  const navigationQuery: AvailabilityQuery = {
+    ...query,
+    roomIds:
+      query.roomIds.length > 0 ? consideredRooms.map((room) => room.id) : [],
+  };
 
   return (
     <div className="space-y-8">
@@ -125,8 +137,7 @@ export async function AvailabilityCalendar({
         locale={locale}
         query={navigationQuery}
         rooms={availability.rooms}
-        selectedRoomId={query.roomId}
-        allowAllRooms
+        selectedRoomIds={navigationQuery.roomIds}
       />
 
       <BookingGuide
@@ -159,9 +170,9 @@ export async function AvailabilityCalendar({
                   date,
                   content: (
                     <div className="space-y-3">
-                      <GridHeading label={selectedRoom?.name ?? t("allRooms")} />
+                      <GridHeading label={consideredRoomsLabel} />
                       <AvailabilityGrid
-                        caption={`${selectedRoom?.name ?? t("allRooms")} — ${formatWeekdayDate(date, locale)}`}
+                        caption={`${consideredRoomsLabel} — ${formatWeekdayDate(date, locale)}`}
                         times={index.times}
                         columns={columnsForDate(date)}
                         labels={labels}
@@ -173,9 +184,9 @@ export async function AvailabilityCalendar({
               />
             </div>
             <div className="hidden space-y-3 lg:block">
-            <GridHeading label={selectedRoom?.name ?? t("allRooms")} />
+            <GridHeading label={consideredRoomsLabel} />
             <AvailabilityGrid
-              caption={`${selectedRoom?.name ?? t("allRooms")} — ${rangeLabel}`}
+              caption={`${consideredRoomsLabel} — ${rangeLabel}`}
               times={index.times}
               columns={
                 selectedRoom
@@ -189,9 +200,9 @@ export async function AvailabilityCalendar({
                       requiredSlots,
                       bookAt: (room, time) => t("bookRoomAtTime", {room, time}),
                     })
-                  : aggregateDayColumns({
+                    : aggregateDayColumns({
                       days,
-                      rooms: availability.rooms,
+                      rooms: consideredRooms,
                       today,
                       index,
                       locale,
@@ -407,7 +418,12 @@ function aggregateDayColumns({
           return {
             ...slot,
             state: "available" as const,
-            href: bookHref({roomId: chosen.id, date, start: time}),
+            href: bookHref({
+              roomId: chosen.id,
+              roomIds: bookableRooms.map((room) => room.id),
+              date,
+              start: time,
+            }),
             meta: labels.roomsAvailable(bookableRooms.length),
             ariaLabel: labels.bookAt(time, bookableRooms.length),
           };

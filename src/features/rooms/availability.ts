@@ -182,7 +182,7 @@ function overlappingSpan(
 async function loadGrid(input: {
   view: AvailabilityView;
   date: string;
-  roomId?: string;
+  roomIds?: string[];
 }) {
   const range = buildRange(input.view, input.date);
   const settings = await getBookingSettings();
@@ -193,18 +193,16 @@ async function loadGrid(input: {
   // removing siblings left users stranded with no way to switch back.
   // A selected inactive room is retained only so a stale URL can explain why
   // it is unavailable instead of silently changing the user's selection.
-  const listed = catalog.filter((room) => room.active || room.id === input.roomId);
+  const requestedRoomIds = input.roomIds ?? [];
+  const requested = new Set(requestedRoomIds);
+  const listed = catalog.filter((room) => room.active || requested.has(room.id));
 
   // A room filter scopes the grid. Without one, generate every active room so
   // the therapist can search by time first and let the UI aggregate inventory.
-  const selectedRoom = input.roomId
-    ? listed.find((room) => room.id === input.roomId)
-    : undefined;
-  const slotRooms = input.roomId
-    ? selectedRoom
-      ? [selectedRoom]
-      : []
-    : listed;
+  const slotRooms =
+    requestedRoomIds.length > 0
+      ? listed.filter((room) => requested.has(room.id))
+      : listed.filter((room) => room.active);
 
   const from = zurichLocalToUtc(range.startDate, "00:00");
   const to = zurichLocalToUtc(addLocalDays(range.endDate, 1), "00:00");
@@ -278,17 +276,19 @@ export async function therapistAvailability(input: {
   view: AvailabilityView;
   date: string;
   roomId?: string;
+  roomIds?: string[];
   now?: Date;
 }): Promise<TherapistAvailability> {
   requireTherapist(input.actor);
-  if (input.roomId && !isUuid(input.roomId)) {
+  const requestedRoomIds = input.roomIds ?? (input.roomId ? [input.roomId] : []);
+  if (requestedRoomIds.some((roomId) => !isUuid(roomId))) {
     throw new RoomError("notFound");
   }
 
   const grid = await loadGrid({
     view: input.view,
     date: input.date,
-    roomId: input.roomId,
+    roomIds: requestedRoomIds,
   });
 
   const interval = grid.settings.bookingIntervalMinutes;

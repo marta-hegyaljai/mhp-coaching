@@ -16,6 +16,7 @@ type RoomsPageProps = {
     view?: string | string[];
     date?: string | string[];
     room?: string | string[];
+    rooms?: string | string[];
   }>;
 };
 
@@ -44,7 +45,7 @@ export default async function RoomsPage({params, searchParams}: RoomsPageProps) 
     actor: user,
     view: query.view,
     date: query.date,
-    roomId: query.roomId,
+    roomIds: query.roomIds,
   });
 
   return (

@@ -10,7 +10,11 @@ import {therapistAvailability} from "@/features/rooms/availability";
 import {createRoomBlock} from "@/features/rooms/blocks";
 import {createRoom, setRoomActive} from "@/features/rooms/inventory";
 import {getMyRoomBooking, listMyRoomBookings} from "@/features/rooms/my-bookings";
-import {previewReservation, reserveRoom} from "@/features/rooms/reservations";
+import {
+  previewReservation,
+  previewReservationChoices,
+  reserveRoom,
+} from "@/features/rooms/reservations";
 import {overlappingConfirmedBookings} from "@/features/rooms/repository";
 import {saveRoomSettings} from "@/features/rooms/settings";
 import {getDatabaseUrl} from "@/lib/database-url";
@@ -259,6 +263,40 @@ describe.skipIf(!hasDatabase)("room reservations", () => {
         now,
       }),
     ).rejects.toMatchObject({code: "slotConflict"});
+  });
+
+  it("offers every room still available for the chosen start time", async () => {
+    const admin = await createAdmin();
+    const therapist = await createTherapist("room-choice");
+    const other = await createTherapist("room-choice-other");
+    const first = await seedRoom(admin, `Choice A ${Date.now()}`);
+    const second = await seedRoom(admin, `Choice B ${Date.now()}`);
+
+    const both = await previewReservationChoices({
+      actor: therapist,
+      roomIds: [first.id, second.id],
+      date,
+      start: "10:00",
+      now,
+    });
+    expect(both.map((preview) => preview.room.id)).toEqual([first.id, second.id]);
+
+    await reserveRoom({
+      actor: other,
+      roomId: second.id,
+      date,
+      start: "10:00",
+      end: "11:00",
+      now,
+    });
+    const remaining = await previewReservationChoices({
+      actor: therapist,
+      roomIds: [first.id, second.id],
+      date,
+      start: "10:00",
+      now,
+    });
+    expect(remaining.map((preview) => preview.room.id)).toEqual([first.id]);
   });
 
   it("lets only one of two concurrent same-slot attempts succeed", async () => {

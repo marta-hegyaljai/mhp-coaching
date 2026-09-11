@@ -13,6 +13,7 @@ describe("book query", () => {
       }),
     ).toEqual({
       roomId: "11111111-1111-4111-8111-111111111111",
+      roomIds: [],
       date: "2026-09-21",
       start: "10:00",
       end: "11:30",
@@ -27,10 +28,25 @@ describe("book query", () => {
       }),
     ).toEqual({
       roomId: undefined,
+      roomIds: [],
       date: undefined,
       start: undefined,
       end: undefined,
     });
+  });
+
+  it("keeps the available room choices on a calendar booking link", () => {
+    const first = "11111111-1111-4111-8111-111111111111";
+    const second = "22222222-2222-4222-8222-222222222222";
+    const href = bookHref({
+      roomId: first,
+      roomIds: [first, second],
+      date: "2026-09-21",
+      start: "10:00",
+    });
+
+    expect(href.query.rooms).toBe(`${first},${second}`);
+    expect(parseBookQuery(href.query).roomIds).toEqual([first, second]);
   });
 
   it("omits empty start and end from the book href", () => {

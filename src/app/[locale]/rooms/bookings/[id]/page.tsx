@@ -163,7 +163,7 @@ export default async function RoomBookingDetailPage({params, searchParams}: Book
               href={availabilityHref({
                 view: "day",
                 date: utcToZurich(booking.startsAt).date,
-                roomId: booking.roomId,
+                roomIds: [booking.roomId],
               })}
               className="underline-offset-4 hover:underline"
             >

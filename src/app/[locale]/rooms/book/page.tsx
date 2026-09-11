@@ -3,11 +3,12 @@ import {getTranslations, setRequestLocale} from "next-intl/server";
 import {requireRoomBooking} from "@/features/auth/require";
 import {parseBookQuery} from "@/features/rooms/book-query";
 import {RoomBookForm} from "@/features/rooms/components/book-form";
-import {RoomHeader} from "@/features/rooms/components/booking/room-header";
 import {RoomsNav} from "@/features/rooms/components/rooms-nav";
 import {RoomError} from "@/features/rooms/errors";
-import {previewReservation} from "@/features/rooms/reservations";
-import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
+import {
+  previewReservationChoices,
+  type ReservationPreview,
+} from "@/features/rooms/reservations";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
@@ -21,6 +22,7 @@ type BookPageProps = {
   params: Promise<{locale: AppLocale}>;
   searchParams: Promise<{
     room?: string | string[];
+    rooms?: string | string[];
     date?: string | string[];
     start?: string | string[];
     end?: string | string[];
@@ -50,19 +52,22 @@ export default async function RoomBookPage({params, searchParams}: BookPageProps
   const errors = await getTranslations("Rooms.errors");
   const query = parseBookQuery(await searchParams);
 
-  let preview = null;
+  let previews: ReservationPreview[] = [];
   let error: string | null = null;
   if (!query.roomId || !query.date) {
     error = t("noValidEnds");
   } else {
     try {
-      preview = await previewReservation({
+      previews = await previewReservationChoices({
         actor: user,
-        roomId: query.roomId,
+        roomIds: [...new Set([query.roomId, ...query.roomIds])],
         date: query.date,
         start: query.start,
         end: query.end,
       });
+      if (previews.length === 0) {
+        throw new RoomError("slotUnavailable");
+      }
     } catch (caught) {
       error = caught instanceof RoomError ? errors(caught.code) : errors("saveFailed");
     }
@@ -82,16 +87,12 @@ export default async function RoomBookPage({params, searchParams}: BookPageProps
         <p className="mt-8 max-w-2xl text-sm leading-7 text-ink-muted">{t("bookIntro")}</p>
 
         <div className="mt-8 max-w-xl space-y-6">
-          {preview ? (
-            <>
-              <RoomHeader
-                label={t("bookRoom")}
-                roomName={preview.room.name}
-                rateLabel={`${formatChf(minorUnitsToFrancs(preview.room.hourlyRateMinor), locale)}${t("perHour")}`}
-                dateLabel={formatWeekdayDate(preview.date, locale)}
-              />
-              <RoomBookForm locale={locale} preview={preview} />
-            </>
+          {previews.length > 0 ? (
+            <RoomBookForm
+              locale={locale}
+              previews={previews}
+              dateLabel={formatWeekdayDate(previews[0]!.date, locale)}
+            />
           ) : (
             <Panel>
               <p className="text-sm leading-7 text-ink-muted">{error}</p>

@@ -132,8 +132,11 @@ must be usable around a 390px viewport and clearly distinguish:
 Availability discovery is time-first. With no room filter, day and week views
 aggregate every active room and show how many rooms can support the minimum
 booking duration at each start time. Choosing a start automatically carries one
-valid room into the confirmation step; a therapist may still filter by room when
-needed. Every valid interval is its own calendar-sized click target. Phone week
+valid room into the confirmation step; a therapist may filter to any subset of
+acceptable rooms, and availability counts then include only that subset. When
+several considered rooms support the chosen start, the confirmation step lists
+each valid room so the therapist chooses the one they prefer. Every valid
+interval is its own calendar-sized click target. Phone week
 days switch from the already-loaded week without a server round trip, and a date
 picker provides direct month/date jumps. Past available intervals remain
 bookable so a therapist can record room use they forgot to enter at the time;

@@ -371,11 +371,12 @@ describe.skipIf(!hasDatabase)("rooms inventory and availability", () => {
     );
   });
 
-  it("builds all-room week slots and scopes slots only when a room is selected", async () => {
+  it("builds all-room week slots and scopes slots to any selected room subset", async () => {
     const admin = await createAdmin();
     const therapist = await createTherapist("week-scope");
     const first = await seedRoom(admin, `Week first ${Date.now()}`);
     const second = await seedRoom(admin, `Week second ${Date.now()}`);
+    const third = await seedRoom(admin, `Week third ${Date.now()}`);
 
     const week = await therapistAvailability({
       actor: therapist,
@@ -384,24 +385,24 @@ describe.skipIf(!hasDatabase)("rooms inventory and availability", () => {
     });
 
     expect(week.rooms.map((room) => room.id)).toEqual(
-      expect.arrayContaining([first.id, second.id]),
+      expect.arrayContaining([first.id, second.id, third.id]),
     );
     const slotted = new Set(week.slots.map((slot) => slot.roomId));
-    expect([...slotted]).toEqual(expect.arrayContaining([first.id, second.id]));
+    expect([...slotted]).toEqual(expect.arrayContaining([first.id, second.id, third.id]));
     expect(week.minimumBookingMinutes).toBeGreaterThanOrEqual(week.intervalMinutes);
 
     const selected = await therapistAvailability({
       actor: therapist,
       view: "week",
       date: "2026-09-14",
-      roomId: second.id,
+      roomIds: [first.id, third.id],
     });
 
     expect(selected.rooms.map((room) => room.id)).toEqual(
-      expect.arrayContaining([first.id, second.id]),
+      expect.arrayContaining([first.id, second.id, third.id]),
     );
     expect(new Set(selected.slots.map((slot) => slot.roomId))).toEqual(
-      new Set([second.id]),
+      new Set([first.id, third.id]),
     );
   });
 

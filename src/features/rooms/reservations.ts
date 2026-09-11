@@ -347,6 +347,47 @@ export async function previewReservation(input: {
   });
 }
 
+/**
+ * Resolves the rooms that can still support the requested calendar start.
+ * A room becoming unavailable between calendar and confirmation removes only
+ * that option; the other valid choices remain usable.
+ */
+export async function previewReservationChoices(input: {
+  actor: User;
+  roomIds: string[];
+  date: string;
+  start?: string;
+  end?: string;
+  now?: Date;
+}): Promise<ReservationPreview[]> {
+  requireTherapist(input.actor);
+  const uniqueRoomIds = [...new Set(input.roomIds)].slice(0, 50);
+  const previews = await Promise.all(
+    uniqueRoomIds.map(async (roomId) => {
+      try {
+        return await previewReservation({
+          actor: input.actor,
+          roomId,
+          date: input.date,
+          start: input.start,
+          end: input.end,
+          now: input.now,
+        });
+      } catch (error) {
+        if (error instanceof RoomError) {
+          return null;
+        }
+        throw error;
+      }
+    }),
+  );
+
+  return previews.filter(
+    (preview): preview is ReservationPreview =>
+      preview !== null && (!input.start || preview.start === input.start),
+  );
+}
+
 export async function previewBookableSlot(input: {
   roomId: string;
   date: string;
