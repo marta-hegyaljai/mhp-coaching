@@ -122,7 +122,7 @@ export async function AvailabilityCalendar({
       <BookingGuide
         label={t("bookingGuideLabel")}
         steps={[t("bookingGuideRoom"), t("bookingGuideTime"), t("bookingGuideConfirm")]}
-        help={t("availabilityHelp")}
+        help={t("calendarAvailabilityHelp")}
       />
 
       <AvailabilityLegend labels={labels} />

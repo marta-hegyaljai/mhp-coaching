@@ -579,7 +579,7 @@
     "bookingGuideRoom": "Wählen Sie einen Raum",
     "bookingGuideTime": "Klicken Sie auf eine freie Zeit",
     "bookingGuideConfirm": "Endzeit wählen und bestätigen",
-    "availabilityHelp": "Weiße Blöcke mit der Bezeichnung Frei sind anklickbar. Fremde Reservationen bleiben privat und erscheinen nur als Gebucht.",
+    "calendarAvailabilityHelp": "Weiße Blöcke mit der Bezeichnung Frei sind anklickbar. Fremde Reservationen bleiben privat und erscheinen nur als Gebucht.",
     "perHour": "/h",
     "available": "Frei",
     "booked": "Gebucht",

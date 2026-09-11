@@ -579,7 +579,7 @@
     "bookingGuideRoom": "Choisissez une salle",
     "bookingGuideTime": "Cliquez sur un créneau Libre",
     "bookingGuideConfirm": "Choisissez la fin et confirmez",
-    "availabilityHelp": "Les blocs blancs marqués Libre sont cliquables. Les réservations des autres restent anonymes et apparaissent uniquement comme Occupé.",
+    "calendarAvailabilityHelp": "Les blocs blancs marqués Libre sont cliquables. Les réservations des autres restent anonymes et apparaissent uniquement comme Occupé.",
     "perHour": "/h",
     "available": "Libre",
     "booked": "Occupé",

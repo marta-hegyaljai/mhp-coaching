@@ -579,7 +579,7 @@
     "bookingGuideRoom": "Choose a room",
     "bookingGuideTime": "Click an Available time",
     "bookingGuideConfirm": "Choose the end and confirm",
-    "availabilityHelp": "White blocks marked Available are clickable. Other people's reservations stay private and appear only as Booked.",
+    "calendarAvailabilityHelp": "White blocks marked Available are clickable. Other people's reservations stay private and appear only as Booked.",
     "perHour": "/h",
     "available": "Available",
     "booked": "Booked",
