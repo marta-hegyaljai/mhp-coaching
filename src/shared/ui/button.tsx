@@ -14,7 +14,7 @@ type StyleOptions = {
 // Each variant owns its border colour; the base must not set one, because
 // utilities of equal specificity resolve by stylesheet order, not class order.
 const base =
-  "group/button inline-flex items-center justify-center gap-2 rounded-panel border font-semibold tracking-[0.02em] transition-[background-color,color,border-color,transform] duration-150 ease-standard active:translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2 disabled:pointer-events-none disabled:opacity-55";
+  "group/button inline-flex cursor-pointer items-center justify-center gap-2 rounded-panel border font-semibold tracking-[0.02em] transition-[background-color,color,border-color,transform] duration-150 ease-standard active:translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-55";
 
 const sizes: Record<ButtonSize, string> = {
   md: "min-h-11 px-5 text-sm",

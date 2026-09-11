@@ -91,6 +91,29 @@ textarea {
   accent-color: var(--color-ink);
 }
 
+/* Tailwind's reset leaves native buttons with the default arrow cursor.
+   Make every enabled click target communicate its behavior consistently,
+   including raw operational controls that do not use the Button primitive. */
+a[href]:not([aria-disabled="true"]),
+button:not(:disabled),
+input[type="button"]:not(:disabled),
+input[type="submit"]:not(:disabled),
+input[type="reset"]:not(:disabled),
+select:not(:disabled),
+summary,
+[role="button"]:not([aria-disabled="true"]) {
+  cursor: pointer;
+}
+
+button:disabled,
+input[type="button"]:disabled,
+input[type="submit"]:disabled,
+input[type="reset"]:disabled,
+select:disabled,
+[role="button"][aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
