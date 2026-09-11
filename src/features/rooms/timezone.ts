@@ -227,3 +227,44 @@ export function isInZurichMonth(instant: Date, month: ZurichMonth): boolean {
   const {start, endExclusive} = zurichMonthRange(month);
   return instant >= start && instant < endExclusive;
 }
+
+export function zurichMonthKey(month: ZurichMonth): string {
+  return formatLocalDate(month.year, month.month, 1).slice(0, 7);
+}
+
+export function parseZurichMonthKey(value: string): ZurichMonth {
+  if (!/^\d{4}-\d{2}$/.test(value)) {
+    throw new Error("invalidDate");
+  }
+  const [year, month] = value.split("-").map(Number);
+  if (month < 1 || month > 12) {
+    throw new Error("invalidDate");
+  }
+  return {year, month};
+}
+
+export function addZurichMonths(month: ZurichMonth, delta: number): ZurichMonth {
+  const index = month.year * 12 + (month.month - 1) + delta;
+  const year = Math.floor(index / 12);
+  const monthIndex = ((index % 12) + 12) % 12;
+  return {year, month: monthIndex + 1};
+}
+
+export function previousZurichMonth(month: ZurichMonth): ZurichMonth {
+  return addZurichMonths(month, -1);
+}
+
+export function isZurichMonthClosed(month: ZurichMonth, now = new Date()): boolean {
+  const {endExclusive} = zurichMonthRange(month);
+  return endExclusive.getTime() <= now.getTime();
+}
+
+/** Current Zurich month first, then older closed months. */
+export function recentZurichMonths(now = new Date(), count = 13): ZurichMonth[] {
+  const open = openZurichMonth(now);
+  const months: ZurichMonth[] = [];
+  for (let offset = 0; offset < count; offset += 1) {
+    months.push(addZurichMonths(open, -offset));
+  }
+  return months;
+}

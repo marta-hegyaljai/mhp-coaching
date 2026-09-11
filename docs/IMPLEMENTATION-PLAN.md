@@ -23,14 +23,14 @@ later scope forward.
 | --- | --- |
 | Plan revision | 3 |
 | Last updated | 2026-09-11 |
-| Last completed checkpoint | CP-08 |
-| Next checkpoint | CP-09 |
+| Last completed checkpoint | CP-09 |
+| Next checkpoint | CP-10 |
 | Active checkpoint | — |
-| Room module production status | Inventory, hours, blocks, privacy-safe availability, therapist reservations, My Bookings, change/cancel, owner-only notes, no-availability requests, discounts and current-month usage shipped |
+| Room module production status | Inventory, hours, blocks, privacy-safe availability, therapist reservations, My Bookings, change/cancel, owner-only notes, no-availability requests, discounts, current-month usage, saved payment method and monthly statements shipped |
 
 Revision 3 completed CP-03 and CP-04 before CP-01 on this branch. CP-01 has now
-landed on main and is merged here. CP-00 through CP-08 are complete. The next
-checkpoint is CP-09.
+landed on main and is merged here. CP-00 through CP-09 are complete. The next
+checkpoint is CP-10.
 
 ## Status vocabulary
 
@@ -114,7 +114,7 @@ or navigation link alone is not a deliverable checkpoint.
 | CP-06 | COMPLETE | Booking changes, cancellation and admin intervention | Therapist and admin |
 | CP-07 | COMPLETE | Owner-only notes and unavailable-time requests | Therapist and admin |
 | CP-08 | COMPLETE | Discounts and transparent current-month usage | Therapist and admin |
-| CP-09 | PLANNED | Stable monthly statements and saved payment method | Therapist and admin |
+| CP-09 | COMPLETE | Stable monthly statements and saved payment method | Therapist and admin |
 | CP-10 | PLANNED | Automated monthly charging and operational email | Therapist and admin |
 | CP-11 | PLANNED | Production-ready room module on the app domain | All actors |
 
@@ -550,7 +550,7 @@ and inspect/export current totals across users.
 
 ## CP-09 — Monthly statements and payment method
 
-**Status:** `PLANNED`
+**Status:** `COMPLETE`
 
 **Depends on:** CP-08.
 
@@ -584,6 +584,8 @@ retries/dunning and credits.
    remain unchanged.
 5. Owner/admin authorization protects statement reads and exports, which contain
    no private notes.
+
+**Completion evidence:** Recorded in the completion log (CP-09 — 2026-09-11).
 
 ---
 
@@ -1036,7 +1038,47 @@ For an incomplete checkpoint, add this directly below its acceptance criteria:
   in `src/features/rooms` rather than a separate `room-billing` package.
   Rounding: `effectiveHourlyRateMinor = round(base * (100 - discount) / 100)`,
   then `amountMinor = round(effective * minutes / 60)`, all integer centimes.
-- **Known next work:** CP-09 monthly statements and saved payment method.
+- **Known next work:** CP-10 automated charging, reminders and email evidence.
+
+### CP-09 — 2026-09-11
+
+- **Result:** Therapists save a payment method (fake locally, Stripe Checkout
+  `mode: "setup"` when `PAYMENT_PROVIDER=stripe`) and see only brand, last four
+  digits and expiry. Admins preview and finalize a closed Zurich month
+  idempotently. Booking-derived lines and totals freeze; later price or discount
+  changes do not rewrite them. Corrections are extra reasoned adjustment lines.
+  Zero-total months can be finalized without a card. The open month cannot.
+- **Routes/UI:** Therapist `/billing` now includes payment method and statement
+  history; `/billing/setup` (fake card), `/billing/payment-method/return`,
+  `/billing/statements/[id]` (`/fr/facturation/releves/[id]`,
+  `/de/abrechnung/auszuege/[id]`). Admin month picker on `/admin/billing`,
+  per-user finalize/adjust on `/admin/billing/[userId]` and
+  `/admin/billing/[userId]/statements/[id]`; CSV
+  `GET /api/admin/statements.csv`. User detail links to billing.
+- **Migrations:** `0014_room_statements.sql` (`users` Stripe customer and
+  display-only payment-method columns; `room_statements` OPEN→FINALIZED plus
+  later payment statuses; `room_statement_line_items` USAGE,
+  LATE_CANCELLATION, ADJUSTMENT).
+- **Automated evidence:** `pnpm lint`, `pnpm typecheck`, `pnpm test` (66 files,
+  274 tests) and `pnpm build` passed. Coverage includes idempotent finalize,
+  immutable booking lines after a later price change, adjustment totals,
+  closed-month-only finalize, zero-total statements, private-note exclusion,
+  fake card display metadata, setup-event filtering that ignores course
+  Checkout, and Playwright `tests/e2e/billing.spec.ts` plus auth guards
+  (therapist fake card EN/FR 390px, admin search, open-month finalize disabled,
+  closed August finalize enabled).
+- **Browser evidence:** Therapist EN/FR/DE at 390px and desktop: current-month
+  usage, Visa •••• 4242, statements empty state, no overflow, no
+  MISSING_MESSAGE. Admin month grid with inverted selected month, closed August
+  query `?month=2026-08`, CSV links.
+- **Preview/production:** Not deployed in this task. Live Stripe setup still
+  needs test-mode keys; local/E2E use `PAYMENT_PROVIDER=fake`.
+- **Deviations/follow-ups:** EMAIL.md remains binding: CP-10 must compose room
+  mail through `composeTransactionalEmail()`, not a second React Email
+  template. Charging, webhooks-as-paid-authority and reminders stay in CP-10.
+  Payment statuses exist on the statement enum so CP-10 can advance them
+  without another migration.
+- **Known next work:** CP-10 automated charging, reminders and email evidence.
 
 ### CP-03 to CP-06 UI polish pass — 2026-09-11
 

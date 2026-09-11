@@ -19,7 +19,7 @@ One Next.js App Router application handles:
 - course booking UI/server logic and Stripe checkout/webhooks
 - shared account, profile, permission and email infrastructure
 - authenticated course history and certificates (My Courses registrations and certificate library)
-- therapist room availability (inventory, hours, blocks and privacy-safe calendar); booking and monthly billing (later checkpoints)
+- therapist room availability (inventory, hours, blocks and privacy-safe calendar); booking, current-month usage, saved payment method and monthly statements
 - role-aware administration (admin users, access, rooms, hours and staff lists)
 
 No separate API service or microservices.
@@ -161,9 +161,13 @@ Keep provider code localized behind a small interface such as:
 interface PaymentProvider {
   createCheckout(input: CreateCheckoutInput): Promise<CheckoutResult>;
 }
+
+interface BillingPaymentAdapter {
+  createSetupSession(input: CreateBillingSetupInput): Promise<BillingSetupSession>;
+}
 ```
 
-Provide `FakePaymentProvider` for deterministic local/E2E tests.
+Provide `FakePaymentProvider` and `FakeBillingPaymentAdapter` for deterministic local/E2E tests. Course checkout and room payment-method setup share `PAYMENT_PROVIDER`. Room billing stores one Stripe customer id per user and only card display metadata (brand, last4, expiry).
 
 Webhook rules:
 - verify Stripe signature
@@ -242,10 +246,11 @@ src/
     bookings/               # existing course form, validation, persistence
     certificates/           # personal certificate library on My Courses
     rooms/                  # inventory, hours, blocks, privacy-safe availability,
-                            # reservations, owner-only notes, requests, discounts, usage
+                            # reservations, owner-only notes, requests, discounts, usage,
+                            # payment method and monthly statements
     room-bookings/          # booking lifecycle lives in features/rooms
     room-requests/          # request inbox lives in features/rooms
-    room-billing/           # current-month usage; statements/payments in later checkpoints
+    room-billing/           # usage, statements and payment-method live in features/rooms
     waitlist/               # waiting list for published courses
     inquiries/              # contact and alternative-payment forms
     payments/{fake,stripe}/ # PaymentProvider adapters + webhook

@@ -1,5 +1,5 @@
 import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
-import type {OpenMonthUsage, UsageLine, UserUsage} from "@/features/rooms/usage";
+import type {MonthUsage, OpenMonthUsage, UsageLine, UserUsage} from "@/features/rooms/usage";
 
 function csvCell(value: string | number): string {
   const text = String(value);
@@ -14,6 +14,10 @@ function row(values: Array<string | number>): string {
 }
 
 export function openMonthUserTotalsToCsv(report: OpenMonthUsage): string {
+  return monthUserTotalsToCsv(report);
+}
+
+export function monthUserTotalsToCsv(report: MonthUsage): string {
   const header = [
     "year",
     "month",
@@ -34,7 +38,7 @@ export function openMonthUserTotalsToCsv(report: OpenMonthUsage): string {
     row([
       report.year,
       report.month,
-      "true",
+      report.open ? "true" : "false",
       "",
       "TOTALS",
       "",
@@ -53,7 +57,7 @@ export function openMonthUserTotalsToCsv(report: OpenMonthUsage): string {
       row([
         report.year,
         report.month,
-        "true",
+        report.open ? "true" : "false",
         user.userId,
         user.email,
         user.firstName,
@@ -72,6 +76,10 @@ export function openMonthUserTotalsToCsv(report: OpenMonthUsage): string {
 }
 
 export function openMonthUserLinesToCsv(report: OpenMonthUsage, user: UserUsage): string {
+  return monthUserLinesToCsv(report, user);
+}
+
+export function monthUserLinesToCsv(report: MonthUsage, user: UserUsage): string {
   const header = [
     "year",
     "month",
@@ -103,11 +111,11 @@ export function openMonthUserLinesToCsv(report: OpenMonthUsage, user: UserUsage)
   return `${lines.join("\n")}\n`;
 }
 
-function usageLineCsvRow(report: OpenMonthUsage, user: UserUsage, line: UsageLine): string {
+function usageLineCsvRow(report: MonthUsage, user: UserUsage, line: UsageLine): string {
   return row([
     report.year,
     report.month,
-    "true",
+    report.open ? "true" : "false",
     user.userId,
     user.email,
     line.bookingId,

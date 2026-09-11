@@ -4,8 +4,9 @@ import {billedMinutes, chargeableAmountMinor} from "@/features/rooms/billing";
 import {RoomError} from "@/features/rooms/errors";
 import {listRoomBookingsStartingInRange} from "@/features/rooms/repository";
 import {
-  formatLocalDate,
   openZurichMonth,
+  parseZurichMonthKey,
+  zurichMonthKey,
   zurichMonthRange,
   type ZurichMonth,
 } from "@/features/rooms/timezone";
@@ -50,18 +51,20 @@ export type UserUsage = {
   lines: UsageLine[];
 };
 
-export type OpenMonthUsage = {
+export type MonthUsage = {
   year: number;
   month: number;
   monthKey: string;
   start: Date;
   endExclusive: Date;
-  open: true;
+  open: boolean;
   billedMinutes: number;
   billedAmountMinor: number;
   bookingCount: number;
   users: UserUsage[];
 };
+
+export type OpenMonthUsage = MonthUsage;
 
 export function projectUsageLine(booking: RoomBooking): UsageLine {
   return {
@@ -82,6 +85,12 @@ export function projectUsageLine(booking: RoomBooking): UsageLine {
     effectiveHourlyRateMinor: booking.effectiveHourlyRateMinor,
     currency: "CHF",
   };
+}
+
+export function emptyUserUsage(
+  owner: Pick<User, "id" | "firstName" | "lastName" | "email" | "roomDiscountPercent">,
+): UserUsage {
+  return summarizeUser(owner, []);
 }
 
 function summarizeUser(
@@ -129,12 +138,41 @@ function summarizeUser(
   };
 }
 
-export async function loadOpenMonthUsage(input: {
+export function resolveUsageMonth(input: {
+  month?: ZurichMonth | string;
+  now?: Date;
+}): ZurichMonth {
+  if (!input.month) {
+    return openZurichMonth(input.now);
+  }
+  if (typeof input.month === "string") {
+    try {
+      return parseZurichMonthKey(input.month);
+    } catch {
+      throw new RoomError("invalidMonth");
+    }
+  }
+  if (
+    !Number.isInteger(input.month.year) ||
+    !Number.isInteger(input.month.month) ||
+    input.month.month < 1 ||
+    input.month.month > 12
+  ) {
+    throw new RoomError("invalidMonth");
+  }
+  return input.month;
+}
+
+export async function loadMonthUsage(input: {
   actor: User;
+  month?: ZurichMonth | string;
   now?: Date;
   userId?: string;
-}): Promise<OpenMonthUsage> {
-  const month = openZurichMonth(input.now);
+}): Promise<MonthUsage> {
+  const now = input.now ?? new Date();
+  const month = resolveUsageMonth({month: input.month, now});
+  const open = openZurichMonth(now);
+  const isOpen = month.year === open.year && month.month === open.month;
   const {start, endExclusive} = zurichMonthRange(month);
 
   if (input.userId && input.userId !== input.actor.id && !canAdminister(input.actor)) {
@@ -168,10 +206,10 @@ export async function loadOpenMonthUsage(input: {
   return {
     year: month.year,
     month: month.month,
-    monthKey: formatLocalDate(month.year, month.month, 1).slice(0, 7),
+    monthKey: zurichMonthKey(month),
     start,
     endExclusive,
-    open: true,
+    open: isOpen,
     billedMinutes: users.reduce((sum, user) => sum + user.billedMinutes, 0),
     billedAmountMinor: users.reduce((sum, user) => sum + user.billedAmountMinor, 0),
     bookingCount: users.reduce((sum, user) => sum + user.bookingCount, 0),
@@ -179,23 +217,48 @@ export async function loadOpenMonthUsage(input: {
   };
 }
 
-export async function loadOwnOpenMonthUsage(actor: User, now?: Date): Promise<UserUsage & {month: ZurichMonth; open: true; monthKey: string}> {
+export async function loadOpenMonthUsage(input: {
+  actor: User;
+  now?: Date;
+  userId?: string;
+}): Promise<OpenMonthUsage> {
+  return loadMonthUsage({
+    actor: input.actor,
+    now: input.now,
+    userId: input.userId,
+    month: openZurichMonth(input.now),
+  });
+}
+
+export async function loadOwnMonthUsage(
+  actor: User,
+  month?: ZurichMonth | string,
+  now?: Date,
+): Promise<UserUsage & {month: ZurichMonth; open: boolean; monthKey: string}> {
   if (!canAccessRooms(actor) && !canAdminister(actor)) {
     throw new RoomError("forbidden");
   }
 
-  const report = await loadOpenMonthUsage({actor, now, userId: actor.id});
-  const own = report.users[0] ?? summarizeUser(actor, []);
+  const report = await loadMonthUsage({actor, month, now, userId: actor.id});
+  const own = report.users[0] ?? emptyUserUsage(actor);
 
   return {
     ...own,
     month: {year: report.year, month: report.month},
     monthKey: report.monthKey,
-    open: true,
+    open: report.open,
   };
 }
 
-export function usageTotalsMatch(report: OpenMonthUsage): boolean {
+export async function loadOwnOpenMonthUsage(
+  actor: User,
+  now?: Date,
+): Promise<UserUsage & {month: ZurichMonth; open: true; monthKey: string}> {
+  const usage = await loadOwnMonthUsage(actor, undefined, now);
+  return {...usage, open: true};
+}
+
+export function usageTotalsMatch(report: MonthUsage): boolean {
   const fromUsers = report.users.reduce(
     (sum, user) => ({
       minutes: sum.minutes + user.billedMinutes,

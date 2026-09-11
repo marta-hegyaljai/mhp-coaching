@@ -1,13 +1,17 @@
 import {getTranslations, setRequestLocale} from "next-intl/server";
 
 import {requireRoomBooking} from "@/features/auth/require";
+import {PaymentMethodPanel} from "@/features/rooms/components/payment-method-panel";
 import {RoomsNav} from "@/features/rooms/components/rooms-nav";
+import {StatementCardGrid} from "@/features/rooms/components/statement-card-grid";
 import {
   UsageLineList,
   UsageMonthBanner,
   UsageRoomGrid,
   UsageTotals,
 } from "@/features/rooms/components/usage-panels";
+import {savedPaymentMethodFor} from "@/features/rooms/payment-method";
+import {loadOwnStatements} from "@/features/rooms/statements";
 import {loadOwnOpenMonthUsage} from "@/features/rooms/usage";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
@@ -40,6 +44,8 @@ export default async function BillingPage({params}: BillingPageProps) {
   const user = await requireRoomBooking(locale, localizedPath(locale, "/billing"));
   const t = await getTranslations("Rooms");
   const usage = await loadOwnOpenMonthUsage(user);
+  const statements = await loadOwnStatements(user);
+  const paymentMethod = savedPaymentMethodFor(user);
 
   return (
     <SiteShell locale={locale} footerCta={null}>
@@ -73,6 +79,22 @@ export default async function BillingPage({params}: BillingPageProps) {
             />
           </>
         )}
+
+        <PaymentMethodPanel method={paymentMethod} locale={locale} />
+
+        <section className="mt-12">
+          <h2 className="font-serif text-subheading">{t("statementsTitle")}</h2>
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-muted">{t("statementsHelp")}</p>
+          <StatementCardGrid
+            locale={locale}
+            statements={statements}
+            empty={t("statementsEmpty")}
+            hrefFor={(statement) => ({
+              pathname: "/billing/statements/[id]",
+              params: {id: statement.id},
+            })}
+          />
+        </section>
       </Section>
     </SiteShell>
   );

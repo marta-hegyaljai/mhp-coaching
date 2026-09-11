@@ -3,8 +3,8 @@ import {NextResponse} from "next/server";
 import {requireAdminApi} from "@/features/auth/require-api";
 import {findUserById} from "@/features/auth/repository";
 import {readSessionUser} from "@/features/auth/session";
-import {openMonthUserLinesToCsv, openMonthUserTotalsToCsv} from "@/features/rooms/usage-csv";
-import {loadOpenMonthUsage, type UserUsage} from "@/features/rooms/usage";
+import {monthUserLinesToCsv, monthUserTotalsToCsv} from "@/features/rooms/usage-csv";
+import {emptyUserUsage, loadMonthUsage} from "@/features/rooms/usage";
 import {assertNoPrivateNoteMaterial} from "@/features/rooms/privacy";
 
 export const dynamic = "force-dynamic";
@@ -23,19 +23,25 @@ export async function GET(request: Request) {
     });
   }
 
-  const requestedUserId = new URL(request.url).searchParams.get("user") ?? undefined;
-  const report = await loadOpenMonthUsage({actor, userId: requestedUserId || undefined});
+  const url = new URL(request.url);
+  const requestedUserId = url.searchParams.get("user") ?? undefined;
+  const monthKey = url.searchParams.get("month") ?? undefined;
+  const report = await loadMonthUsage({
+    actor,
+    userId: requestedUserId || undefined,
+    month: monthKey || undefined,
+  });
 
   let csv: string;
   if (requestedUserId) {
     const existing = report.users[0];
-    const owner = existing ?? (await emptyUserUsage(requestedUserId));
+    const owner = existing ?? (await usageOwner(requestedUserId));
     if (!owner) {
       return new NextResponse("Not found", {status: 404, headers: {"Cache-Control": "no-store"}});
     }
-    csv = openMonthUserLinesToCsv(report, owner);
+    csv = monthUserLinesToCsv(report, owner);
   } else {
-    csv = openMonthUserTotalsToCsv(report);
+    csv = monthUserTotalsToCsv(report);
   }
 
   assertNoPrivateNoteMaterial(csv);
@@ -53,21 +59,10 @@ export async function GET(request: Request) {
   });
 }
 
-async function emptyUserUsage(userId: string): Promise<UserUsage | undefined> {
+async function usageOwner(userId: string) {
   const user = await findUserById(userId);
   if (!user) {
     return undefined;
   }
-  return {
-    userId: user.id,
-    email: user.email,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    currentDiscountPercent: user.roomDiscountPercent,
-    billedMinutes: 0,
-    billedAmountMinor: 0,
-    bookingCount: 0,
-    rooms: [],
-    lines: [],
-  };
+  return emptyUserUsage(user);
 }

@@ -17,19 +17,25 @@ export async function UsageMonthBanner({
   locale,
   year,
   month,
+  open = true,
 }: {
   locale: AppLocale;
   year: number;
   month: number;
+  open?: boolean;
 }) {
   const t = await getTranslations("Rooms");
   const label = formatMonthYear(formatLocalDate(year, month, 1), locale);
 
   return (
     <Panel tone="shell" padding="sm" className="mt-8 max-w-2xl">
-      <StatusLabel>{t("usageOpenLabel")}</StatusLabel>
+      <StatusLabel tone={open ? "strong" : "muted"}>
+        {open ? t("usageOpenLabel") : t("usageClosedLabel")}
+      </StatusLabel>
       <p className="mt-2 font-serif text-subheading capitalize">{label}</p>
-      <p className="mt-2 text-sm leading-6 text-ink-muted">{t("usageOpenHelp")}</p>
+      <p className="mt-2 text-sm leading-6 text-ink-muted">
+        {open ? t("usageOpenHelp") : t("usageClosedHelp")}
+      </p>
     </Panel>
   );
 }

@@ -85,6 +85,14 @@ export default async function AdminUserDetailPage({params}: AdminUserDetailPageP
               ? t("statusPending")
               : t("statusActive")}
         </p>
+        <p className="mt-3">
+          <Link
+            href={{pathname: "/admin/billing/[userId]", params: {userId: user.id}}}
+            className="text-sm underline-offset-4 hover:underline"
+          >
+            {t("viewUserBilling")}
+          </Link>
+        </p>
         <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-muted">{t("identityNote")}</p>
         <div className="mt-10">
           <UserAccessForm locale={locale} user={view} />

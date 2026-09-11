@@ -207,6 +207,12 @@ export async function updateUser(
       | "pendingEmail"
       | "pendingEmailNormalized"
       | "roomDiscountPercent"
+      | "stripeCustomerId"
+      | "stripePaymentMethodId"
+      | "paymentMethodBrand"
+      | "paymentMethodLast4"
+      | "paymentMethodExpMonth"
+      | "paymentMethodExpYear"
     >
   >,
 ): Promise<User> {

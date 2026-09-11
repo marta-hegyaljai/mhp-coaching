@@ -6,6 +6,11 @@ import {
   bookingIdFromStripeEvent,
   constructStripeEvent,
 } from "@/features/payments/stripe";
+import {
+  isRoomPaymentMethodSetupEvent,
+  paymentMethodFromSetupSession,
+} from "@/features/payments/stripe/billing-setup";
+import {applyStripePaymentMethodSetup} from "@/features/rooms/payment-method";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -16,6 +21,23 @@ export async function POST(request: Request) {
 
   try {
     const event = constructStripeEvent(body, signature);
+
+    if (isRoomPaymentMethodSetupEvent(event)) {
+      const session = event.data.object as {id?: string};
+      if (!session.id) {
+        return NextResponse.json({received: true, ignored: true});
+      }
+      const setup = await paymentMethodFromSetupSession(session.id);
+      if (!setup) {
+        return NextResponse.json({received: true, ignored: true});
+      }
+      await applyStripePaymentMethodSetup({
+        userId: setup.userId,
+        method: setup.method,
+      });
+      return NextResponse.json({received: true, billingSetup: true});
+    }
+
     const bookingId = bookingIdFromStripeEvent(event);
 
     if (!bookingId) {

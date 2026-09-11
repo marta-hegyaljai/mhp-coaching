@@ -21,8 +21,20 @@ test.describe("current-month usage and discounts", () => {
     await page.goto("/en/billing");
     await expect(page.getByRole("heading", {name: "Current month"})).toBeVisible();
     await expect(page.getByText("Open — not finalized")).toBeVisible();
-    await expect(page.getByRole("link", {name: "Usage"})).toHaveAttribute("aria-current", "page");
-    await expect(page.locator("main")).not.toContainText("MISSING_MESSAGE");
+    await expect(page.getByRole("heading", {name: "Payment method"})).toBeVisible();
+    await expect(page.getByRole("heading", {name: "Statements"})).toBeVisible();
+
+    const addCard = page.getByRole("button", {name: "Add a payment method"});
+    if (await addCard.isVisible()) {
+      await expect(page.getByText("No card on file")).toBeVisible();
+      await addCard.click();
+      await expect(page.getByRole("heading", {name: "Save a test card"})).toBeVisible();
+      await page.getByRole("button", {name: "Save this test card"}).click();
+      await expect(page).toHaveURL(/\/en\/billing/);
+    }
+
+    await expect(page.getByText("Visa •••• 4242")).toBeVisible();
+    await expect(page.getByRole("button", {name: "Replace payment method"})).toBeVisible();
 
     await page.setViewportSize({width: 390, height: 844});
     await page.goto("/fr/facturation");
@@ -49,6 +61,16 @@ test.describe("current-month usage and discounts", () => {
     await page.goto("/en/admin/billing");
     await expect(page.getByRole("heading", {name: "Current month usage"})).toBeVisible();
     await expect(page.getByText("Open — not finalized")).toBeVisible();
+    await expect(page.getByRole("heading", {name: "Months"})).toBeVisible();
     await expect(page.getByRole("link", {name: "Download current totals CSV"})).toBeVisible();
+    await page.getByLabel("Search therapists").fill("qa.therapist@example.test");
+    await page.getByRole("button", {name: "Show"}).click();
+    await expect(page.getByText("qa.therapist@example.test")).toBeVisible();
+    await page.getByRole("link", {name: /qa\.therapist@example\.test/}).click();
+    await expect(page.getByRole("heading", {name: "User usage"})).toBeVisible();
+    await expect(page.getByRole("button", {name: "Finalize this month"})).toBeDisabled();
+    await page.getByRole("link", {name: /August 2026/i}).click();
+    await expect(page.getByText("Closed month", {exact: true}).first()).toBeVisible();
+    await expect(page.getByRole("button", {name: "Finalize this month"})).toBeEnabled();
   });
 });

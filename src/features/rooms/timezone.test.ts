@@ -2,11 +2,16 @@ import {describe, expect, it} from "vitest";
 
 import {
   addLocalDays,
+  addZurichMonths,
   isoWeekday,
+  isZurichMonthClosed,
   mondayOf,
+  parseZurichMonthKey,
+  previousZurichMonth,
   rangesOverlap,
   utcToZurich,
   zurichLocalToUtc,
+  zurichMonthKey,
   zurichMonthOf,
   zurichMonthRange,
 } from "@/features/rooms/timezone";
@@ -79,5 +84,18 @@ describe("Zurich calendar months", () => {
       year: 2026,
       month: 3,
     });
+  });
+
+  it("parses month keys and walks closed months", () => {
+    expect(zurichMonthKey({year: 2026, month: 8})).toBe("2026-08");
+    expect(parseZurichMonthKey("2026-08")).toEqual({year: 2026, month: 8});
+    expect(previousZurichMonth({year: 2026, month: 1})).toEqual({year: 2025, month: 12});
+    expect(addZurichMonths({year: 2026, month: 11}, 2)).toEqual({year: 2027, month: 1});
+    expect(isZurichMonthClosed({year: 2026, month: 8}, new Date("2026-09-14T06:00:00.000Z"))).toBe(
+      true,
+    );
+    expect(isZurichMonthClosed({year: 2026, month: 9}, new Date("2026-09-14T06:00:00.000Z"))).toBe(
+      false,
+    );
   });
 });

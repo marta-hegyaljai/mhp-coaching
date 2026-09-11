@@ -179,6 +179,22 @@ export const routing = defineRouting({
       de: "/abrechnung",
       en: "/billing",
     },
+    "/billing/statements/[id]": {
+      fr: "/facturation/releves/[id]",
+      de: "/abrechnung/auszuege/[id]",
+      en: "/billing/statements/[id]",
+    },
+    "/billing/setup": {
+      fr: "/facturation/moyen-de-paiement-test",
+      de: "/abrechnung/test-zahlungsmittel",
+      en: "/billing/setup",
+    },
+    "/billing/payment-method/return": {
+      fr: "/facturation/moyen-de-paiement/retour",
+      de: "/abrechnung/zahlungsmittel/rueckkehr",
+      en: "/billing/payment-method/return",
+    },
+    "/admin/billing/[userId]/statements/[id]": "/admin/billing/[userId]/statements/[id]",
     "/access-denied": {
       fr: "/acces-refuse",
       de: "/zugriff-verweigert",
