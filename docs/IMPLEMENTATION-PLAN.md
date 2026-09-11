@@ -25,7 +25,7 @@ later scope forward.
 | Last updated | 2026-09-11 |
 | Last completed checkpoint | CP-09 |
 | Next checkpoint | CP-10 |
-| Active checkpoint | — |
+| Active checkpoint | CP-10 |
 | Room module production status | Inventory, hours, blocks, privacy-safe availability, therapist reservations, My Bookings, change/cancel, owner-only notes, no-availability requests, discounts, current-month usage, saved payment method and monthly statements shipped |
 
 Revision 3 completed CP-03 and CP-04 before CP-01 on this branch. CP-01 has now
@@ -115,7 +115,7 @@ or navigation link alone is not a deliverable checkpoint.
 | CP-07 | COMPLETE | Owner-only notes and unavailable-time requests | Therapist and admin |
 | CP-08 | COMPLETE | Discounts and transparent current-month usage | Therapist and admin |
 | CP-09 | COMPLETE | Stable monthly statements and saved payment method | Therapist and admin |
-| CP-10 | PLANNED | Automated monthly charging and operational email | Therapist and admin |
+| CP-10 | IN_PROGRESS | Automated monthly charging and operational email | Therapist and admin |
 | CP-11 | PLANNED | Production-ready room module on the app domain | All actors |
 
 ---
@@ -591,7 +591,7 @@ retries/dunning and credits.
 
 ## CP-10 — Automated charging, reminders and email evidence
 
-**Status:** `PLANNED`
+**Status:** `IN_PROGRESS`
 
 **Depends on:** CP-09.
 

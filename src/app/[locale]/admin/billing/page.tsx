@@ -9,9 +9,10 @@ import {
 } from "@/features/rooms/components/usage-panels";
 import {emptyUserUsage, loadMonthUsage} from "@/features/rooms/usage";
 import {loadMonthStatements} from "@/features/rooms/statements";
-import {listRoomBillableUsers} from "@/features/rooms/statement-repository";
+import {listRoomBillableUsers, listStatementsByStatuses} from "@/features/rooms/statement-repository";
 import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
-import {openZurichMonth, recentZurichMonths, zurichMonthKey} from "@/features/rooms/timezone";
+import {openZurichMonth, recentZurichMonths, zurichMonthKey, formatLocalDate} from "@/features/rooms/timezone";
+import {formatMonthYear} from "@/shared/format/calendar-date";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
@@ -23,6 +24,7 @@ import {DownloadIcon} from "@/shared/ui/icons";
 import {Eyebrow, Section} from "@/shared/ui/layout";
 import {Panel} from "@/shared/ui/panel";
 import {Price} from "@/shared/ui/price";
+import {StatusLabel} from "@/shared/ui/status-label";
 
 type AdminBillingPageProps = {
   params: Promise<{locale: AppLocale}>;
@@ -73,6 +75,10 @@ export default async function AdminBillingPage({params, searchParams}: AdminBill
   const open = openZurichMonth();
   const selected = {year: report.year, month: report.month};
   const statements = report.open ? [] : await loadMonthStatements({actor, month: selected});
+  const failedStatements = await listStatementsByStatuses(
+    ["PAYMENT_FAILED"],
+    report.open ? undefined : selected,
+  );
   const needle = query.toLowerCase();
   let users = report.users;
   if (needle) {
@@ -105,6 +111,11 @@ export default async function AdminBillingPage({params, searchParams}: AdminBill
         <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-muted">
           {report.open ? t("billingIntro") : t("billingClosedIntro")}
         </p>
+        <p className="mt-4">
+          <Link href="/admin/notifications" className="text-sm font-semibold underline-offset-4 hover:underline">
+            {t("notificationsLink")}
+          </Link>
+        </p>
         <MonthPicker
           locale={locale}
           months={months}
@@ -132,6 +143,36 @@ export default async function AdminBillingPage({params, searchParams}: AdminBill
           billedAmountMinor={report.billedAmountMinor}
           bookingCount={report.bookingCount}
         />
+
+        {failedStatements.length > 0 ? (
+          <section className="mt-12">
+            <h2 className="font-serif text-subheading">{t("failedPaymentsTitle")}</h2>
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-muted">{t("failedPaymentsHelp")}</p>
+            <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+              {failedStatements.map((statement) => (
+                <li key={statement.id}>
+                  <Link
+                    href={{
+                      pathname: "/admin/billing/[userId]/statements/[id]",
+                      params: {userId: statement.userId, id: statement.id},
+                    }}
+                    className="block h-full rounded-panel border border-ink bg-white p-5 transition-colors duration-150 ease-standard hover:bg-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+                  >
+                    <StatusLabel>{rooms(`statementStatus.${statement.status}`)}</StatusLabel>
+                    <p className="mt-3 font-serif text-[clamp(1.15rem,1.4vw,1.35rem)] capitalize leading-[1.15]">
+                      {formatMonthYear(formatLocalDate(statement.year, statement.month, 1), locale)}
+                    </p>
+                    <p className="mt-4">
+                      <Price size="sm">
+                        {formatChf(minorUnitsToFrancs(statement.totalMinor), locale)}
+                      </Price>
+                    </p>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
 
         <div className="mt-10">
           <FilterBar

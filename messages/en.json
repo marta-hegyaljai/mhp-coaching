@@ -583,7 +583,49 @@
       "monthStillOpen": "The current month cannot be finalized until it has ended.",
       "statementLocked": "This statement can no longer be adjusted.",
       "invalidAdjustment": "Enter a non-zero CHF amount and a short reason.",
-      "sendFailed": "The invitation could not be sent. Try again."
+      "sendFailed": "The invitation could not be sent. Try again.",
+      "paymentMethodRequired": "Save a payment method before charging a non-zero statement.",
+      "statementNotChargeable": "This statement cannot be charged in its current state.",
+      "alreadyCharging": "A charge is already in progress for this statement."
+    },
+    "notificationsLink": "Notification evidence",
+    "notificationsTitle": "Notification evidence",
+    "notificationsIntro": "Attempted and delivered room messages. Private booking notes are never stored here.",
+    "notificationsEmpty": "No room notifications recorded yet.",
+    "notificationEvidenceTitle": "Notification evidence",
+    "notificationEvidenceHelp": "Whether this statement’s billing messages were attempted or delivered.",
+    "notificationEvidenceEmpty": "No messages recorded for this statement yet.",
+    "failedPaymentsTitle": "Failed payments",
+    "failedPaymentsHelp": "These statements need a card update or a retry. Access is not disabled automatically.",
+    "chargeNow": "Charge now",
+    "retryCharge": "Retry charge",
+    "charging": "Charging",
+    "chargeNowHelp": "Charge the stored statement total to the saved card. The browser return never marks it paid.",
+    "retryChargeHelp": "Retry the stored statement total. A new attempt does not disable access.",
+    "chargeStarted": "The charge was started.",
+    "chargeRetried": "The charge was retried.",
+    "paymentFailedHelp": "The charge failed. Ask the therapist to update the card, then retry.",
+    "paymentPendingHelp": "Waiting for the payment provider. Do not mark this paid by hand.",
+    "notificationStatus": {
+      "PENDING": "Pending",
+      "SENT": "Sent",
+      "FAILED": "Failed",
+      "SKIPPED": "Skipped"
+    },
+    "notificationKind": {
+      "BOOKING_CONFIRMED": "Booking confirmed",
+      "BOOKING_CHANGED": "Booking changed",
+      "BOOKING_CANCELLED": "Booking cancelled",
+      "BOOKING_REMINDER": "Booking reminder",
+      "ADMIN_CREATED": "Admin created booking",
+      "ADMIN_MOVED": "Admin moved booking",
+      "REQUEST_CREATED": "Request created",
+      "REQUEST_CREATED_STAFF": "Request alert",
+      "REQUEST_RESOLVED": "Request resolved",
+      "REQUEST_DECLINED": "Request declined",
+      "STATEMENT_FINALIZED": "Statement finalized",
+      "PAYMENT_SUCCEEDED": "Payment succeeded",
+      "PAYMENT_FAILED": "Payment failed"
     }
   },
   "Certificates": {
@@ -914,8 +956,15 @@
       "statementLocked": "This statement can no longer be adjusted.",
       "invalidAdjustment": "Enter a non-zero CHF amount and a short reason.",
       "paymentSetupFailed": "The payment method could not be started. Try again.",
-      "saveFailed": "The change could not be saved. Try again."
-    }
+      "saveFailed": "The change could not be saved. Try again.",
+      "paymentMethodRequired": "Save a payment method before charging a non-zero statement.",
+      "statementNotChargeable": "This statement cannot be charged in its current state.",
+      "alreadyCharging": "A charge is already in progress for this statement."
+    },
+    "paymentFailedHelp": "The charge failed. Update your saved card. Room access stays available.",
+    "paymentPendingHelp": "A charge is in progress. This page updates when Stripe confirms the result.",
+    "paymentPaidHelp": "This statement is paid.",
+    "paymentMethodUpdate": "Update payment method"
   },
   "AccessDenied": {
     "title": "Access denied",
@@ -940,7 +989,9 @@
       "dateToBeConfirmed": "Date to be confirmed",
       "link": "Link",
       "room": "Room",
-      "time": "Time"
+      "time": "Time",
+      "month": "Month",
+      "minutes": "Billed minutes"
     },
     "bookingConfirmation": {
       "subject": "Booking confirmed — {course}",
@@ -1064,6 +1115,136 @@
       "intro": "Use the link below to choose a new password. It expires in 60 minutes.",
       "linkLine": "Reset link: {url}",
       "closing": "If you did not ask to reset your password, you can ignore this message."
+    },
+    "bookingConfirmed": {
+      "subject": "Room booking confirmed — {room}",
+      "eyebrow": "Room booking",
+      "title": "Your room is reserved",
+      "greeting": "Hello {name},",
+      "intro": "Your room booking is confirmed. Payment is billed monthly, not now.",
+      "roomLine": "Room: {room}",
+      "timeLine": "Time: {time}",
+      "amountLine": "Amount: {amount}",
+      "linkLine": "Your bookings: {url}",
+      "closing": "If this time does not work, sign in to change or cancel it, or contact us."
+    },
+    "bookingChanged": {
+      "subject": "Room booking updated — {room}",
+      "eyebrow": "Room booking",
+      "title": "Your room booking was changed",
+      "greeting": "Hello {name},",
+      "intro": "Your room booking was moved. The new time is reserved.",
+      "roomLine": "Room: {room}",
+      "timeLine": "Time: {time}",
+      "amountLine": "Amount: {amount}",
+      "linkLine": "Your bookings: {url}",
+      "closing": "If this time does not work, sign in to change or cancel it, or contact us."
+    },
+    "bookingCancelled": {
+      "subject": "Room booking cancelled — {room}",
+      "eyebrow": "Room booking",
+      "title": "Your room booking was cancelled",
+      "greeting": "Hello {name},",
+      "intro": "This room booking has been cancelled. The room is free for someone else.",
+      "roomLine": "Room: {room}",
+      "timeLine": "Time: {time}",
+      "amountLine": "Amount: {amount}",
+      "linkLine": "Your bookings: {url}",
+      "closing": "If you still need a room, sign in to choose another time."
+    },
+    "bookingReminder": {
+      "subject": "Room booking reminder — {room}",
+      "eyebrow": "Reminder",
+      "title": "Your room booking is soon",
+      "greeting": "Hello {name},",
+      "intro": "This is a reminder of your upcoming room booking.",
+      "roomLine": "Room: {room}",
+      "timeLine": "Time: {time}",
+      "amountLine": "Amount: {amount}",
+      "linkLine": "Your bookings: {url}",
+      "closing": "We look forward to seeing you."
+    },
+    "requestCreated": {
+      "subject": "Availability request received",
+      "eyebrow": "Availability request",
+      "title": "We received your request",
+      "greeting": "Hello {name},",
+      "intro": "Your request for an unavailable time was recorded. An administrator will review it.",
+      "anyRoom": "Any room",
+      "roomLine": "Preferred room: {room}",
+      "timeLine": "Time: {time}",
+      "linkLine": "Your requests: {url}",
+      "closing": "This request does not hold a room until it is resolved."
+    },
+    "requestCreatedStaff": {
+      "subject": "New room availability request",
+      "eyebrow": "Availability request",
+      "title": "A therapist requested an unavailable time",
+      "intro": "A no-availability request was submitted.",
+      "anyRoom": "Any room",
+      "nameLine": "Name: {name}",
+      "emailLine": "Email: {email}",
+      "roomLine": "Preferred room: {room}",
+      "timeLine": "Time: {time}",
+      "linkLine": "Open requests: {url}"
+    },
+    "requestResolved": {
+      "subject": "Availability request resolved",
+      "eyebrow": "Availability request",
+      "title": "Your request was resolved",
+      "greeting": "Hello {name},",
+      "intro": "An administrator resolved your availability request. Check your bookings if a room was reserved for you.",
+      "anyRoom": "Any room",
+      "roomLine": "Preferred room: {room}",
+      "timeLine": "Time: {time}",
+      "linkLine": "Your requests: {url}",
+      "closing": "If you still need a different time, send a new request."
+    },
+    "requestDeclined": {
+      "subject": "Availability request declined",
+      "eyebrow": "Availability request",
+      "title": "Your request was declined",
+      "greeting": "Hello {name},",
+      "intro": "An administrator declined this availability request. The time was not reserved.",
+      "anyRoom": "Any room",
+      "roomLine": "Preferred room: {room}",
+      "timeLine": "Time: {time}",
+      "linkLine": "Your requests: {url}",
+      "closing": "You can request another time or contact us."
+    },
+    "statementFinalized": {
+      "subject": "Room statement ready — {month}",
+      "eyebrow": "Room statement",
+      "title": "Your monthly statement is ready",
+      "greeting": "Hello {name},",
+      "intro": "Your room statement for this month is finalized. The saved card will be charged from this total.",
+      "monthLine": "Month: {month}",
+      "minutesLine": "Billed minutes: {minutes}",
+      "amountLine": "Amount: {amount}",
+      "linkLine": "Your billing: {url}",
+      "closing": "If a line looks wrong, contact us. Do not reply with patient information."
+    },
+    "paymentSucceeded": {
+      "subject": "Room statement paid — {month}",
+      "eyebrow": "Payment received",
+      "title": "Your statement was paid",
+      "greeting": "Hello {name},",
+      "intro": "The charge for your room statement succeeded.",
+      "monthLine": "Month: {month}",
+      "amountLine": "Amount: {amount}",
+      "linkLine": "Your billing: {url}",
+      "closing": "Thank you."
+    },
+    "paymentFailed": {
+      "subject": "Room statement payment failed — {month}",
+      "eyebrow": "Payment failed",
+      "title": "Update your payment method",
+      "greeting": "Hello {name},",
+      "intro": "The charge for your room statement failed. Update your saved card. Room access is not disabled automatically.",
+      "monthLine": "Month: {month}",
+      "amountLine": "Amount: {amount}",
+      "linkLine": "Update payment method: {url}",
+      "closing": "If you already updated the card, an administrator can retry the charge."
     }
   },
   "NotFound": {

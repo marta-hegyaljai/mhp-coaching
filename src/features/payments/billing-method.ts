@@ -24,9 +24,26 @@ export type BillingSetupSession = {
   reference: string;
 };
 
+export type ChargeStatementInput = {
+  statementId: string;
+  userId: string;
+  amountMinor: number;
+  currency: string;
+  customerId: string;
+  paymentMethodId: string;
+  idempotencyKey: string;
+  paymentMethodLast4?: string | null;
+};
+
+export type ChargeResult =
+  | {status: "succeeded"; providerReference: string}
+  | {status: "pending"; providerReference: string}
+  | {status: "failed"; providerReference: string | null; failureCode: string};
+
 export interface BillingPaymentAdapter {
   readonly name: "fake" | "stripe";
   createSetupSession(input: CreateBillingSetupInput): Promise<BillingSetupSession>;
+  chargeStatement(input: ChargeStatementInput): Promise<ChargeResult>;
 }
 
 export function paymentMethodFromUser(user: {

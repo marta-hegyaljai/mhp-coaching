@@ -86,6 +86,11 @@ Add new mail as a function in `src/features/email/` that calls
 | Account invitation | `sendAccountInvitation` | invited user |
 | Admin-created room booking | `sendAdminCreatedRoomBooking` | booking owner |
 | Admin-moved room booking | `sendAdminMovedRoomBooking` | booking owner |
+| Therapist booking confirmed / changed / cancelled / reminder | `sendRoomBookingConfirmed` and siblings | booking owner |
+| Availability request created | `sendAvailabilityRequestCreated` | requester |
+| Availability request staff alert | `sendAvailabilityRequestCreatedStaff` | `contact@mhp-coaching.ch` |
+| Request resolved / declined | `sendAvailabilityRequestDecision` | requester |
+| Statement finalized / payment succeeded / payment failed | `sendStatementFinalizedMail` and siblings | statement owner |
 | Sign-up verification | `sendEmailVerification` | registering user |
 | Password reset | `sendPasswordRecovery` | account email |
 

@@ -4,9 +4,12 @@ import {notFound} from "next/navigation";
 import {AdminSubnav, adminSectionLabels} from "@/features/admin/components/admin-subnav";
 import {requireAdmin} from "@/features/auth/require";
 import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
+import {ChargeStatementForm} from "@/features/rooms/components/charge-statement-form";
+import {NotificationEvidenceList} from "@/features/rooms/components/notification-evidence-list";
 import {StatementAdjustmentForm} from "@/features/rooms/components/statement-adjustment-form";
 import {StatementLineList} from "@/features/rooms/components/statement-line-list";
 import {RoomError} from "@/features/rooms/errors";
+import {loadStatementNotifications} from "@/features/rooms/notifications";
 import {loadStatementDetail} from "@/features/rooms/statements";
 import {formatMonthYear} from "@/shared/format/calendar-date";
 import {formatLocalDate} from "@/features/rooms/timezone";
@@ -89,9 +92,18 @@ export default async function AdminStatementPage({params}: AdminStatementPagePro
         </p>
         <h1 className="mt-3 font-serif text-heading capitalize">{monthLabel}</h1>
         <p className="mt-3 font-sans text-sm break-all">{detail.owner.email}</p>
-        <StatusLabel className="mt-4">
+        <StatusLabel
+          className="mt-4"
+          tone={detail.statement.status === "OPEN" ? "muted" : "strong"}
+        >
           {rooms(`statementStatus.${detail.statement.status}`)}
         </StatusLabel>
+        {detail.statement.status === "PAYMENT_FAILED" ? (
+          <p className="mt-3 max-w-xl text-sm leading-7 text-ink-muted">{t("paymentFailedHelp")}</p>
+        ) : null}
+        {detail.statement.status === "PAYMENT_PENDING" ? (
+          <p className="mt-3 max-w-xl text-sm leading-7 text-ink-muted">{t("paymentPendingHelp")}</p>
+        ) : null}
         <p className="mt-6">
           <Price size="lg">
             {formatChf(minorUnitsToFrancs(detail.statement.totalMinor), locale)}
@@ -118,12 +130,37 @@ export default async function AdminStatementPage({params}: AdminStatementPagePro
           />
         </section>
         {detail.statement.status === "FINALIZED" ? (
-          <StatementAdjustmentForm
+          <>
+            <ChargeStatementForm
+              locale={locale}
+              statementId={detail.statement.id}
+              userId={userId}
+            />
+            <StatementAdjustmentForm
+              locale={locale}
+              statementId={detail.statement.id}
+              userId={userId}
+            />
+          </>
+        ) : null}
+        {detail.statement.status === "PAYMENT_FAILED" ? (
+          <ChargeStatementForm
             locale={locale}
             statementId={detail.statement.id}
             userId={userId}
+            retry
           />
         ) : null}
+        <section className="mt-12">
+          <h2 className="font-serif text-subheading">{t("notificationEvidenceTitle")}</h2>
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-muted">
+            {t("notificationEvidenceHelp")}
+          </p>
+          <NotificationEvidenceList
+            rows={await loadStatementNotifications({actor, statementId: detail.statement.id})}
+            empty={t("notificationEvidenceEmpty")}
+          />
+        </section>
       </Section>
     </SiteShell>
   );

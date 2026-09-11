@@ -195,6 +195,7 @@ export const routing = defineRouting({
       en: "/billing/payment-method/return",
     },
     "/admin/billing/[userId]/statements/[id]": "/admin/billing/[userId]/statements/[id]",
+    "/admin/notifications": "/admin/notifications",
     "/access-denied": {
       fr: "/acces-refuse",
       de: "/zugriff-verweigert",

@@ -8,9 +8,12 @@ import {
 } from "@/features/payments/stripe";
 import {
   isRoomPaymentMethodSetupEvent,
+  isRoomStatementPaymentEvent,
   paymentMethodFromSetupSession,
+  roomStatementChargeFromEvent,
 } from "@/features/payments/stripe/billing-setup";
 import {applyStripePaymentMethodSetup} from "@/features/rooms/payment-method";
+import {applyStatementPaymentEvent} from "@/features/rooms/charging";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -36,6 +39,21 @@ export async function POST(request: Request) {
         method: setup.method,
       });
       return NextResponse.json({received: true, billingSetup: true});
+    }
+
+    if (isRoomStatementPaymentEvent(event)) {
+      const charge = roomStatementChargeFromEvent(event);
+      if (!charge) {
+        return NextResponse.json({received: true, ignored: true});
+      }
+      await applyStatementPaymentEvent({
+        statementId: charge.statementId,
+        paymentIntentId: charge.providerReference,
+        type: charge.type,
+        providerReference: charge.providerReference,
+        failureCode: charge.failureCode,
+      });
+      return NextResponse.json({received: true, roomStatement: true});
     }
 
     const bookingId = bookingIdFromStripeEvent(event);

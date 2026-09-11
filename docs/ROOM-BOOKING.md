@@ -287,8 +287,9 @@ first failure; admins initially handle overdue accounts.
 
 ## Email and notification evidence
 
-Use the shared email infrastructure: Resend in hosted environments, React Email
-templates, and Mailpit locally. Required categories are:
+Use the shared email infrastructure: Resend in hosted environments,
+`composeTransactionalEmail()` in `src/features/email/layout.ts`, and Mailpit
+locally. Required categories are:
 
 - account invitation and password setup/reset;
 - booking confirmation, modification, cancellation, admin creation and admin move;

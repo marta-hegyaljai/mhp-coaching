@@ -6,7 +6,15 @@ import {getTranslations} from "next-intl/server";
 import {canAccessRooms, canAdminister} from "@/features/auth/policy";
 import {findUserById} from "@/features/auth/repository";
 import {readSessionUser} from "@/features/auth/session";
-import {sendAdminCreatedRoomBooking, sendAdminMovedRoomBooking} from "@/features/email/room-booking";
+import {
+  notifyAdminCreatedRoomBooking,
+  notifyAdminMovedRoomBooking,
+  notifyAvailabilityRequestCreated,
+  notifyAvailabilityRequestDecision,
+  notifyRoomBookingCancelled,
+  notifyRoomBookingChanged,
+  notifyRoomBookingConfirmed,
+} from "@/features/rooms/notifications";
 import {RoomError} from "@/features/rooms/errors";
 import {createRoomBlock, removeRoomBlock} from "@/features/rooms/blocks";
 import {
@@ -30,7 +38,7 @@ import {
   setRoomActive,
 } from "@/features/rooms/inventory";
 import {saveRoomSettings, type OpeningHourInput} from "@/features/rooms/settings";
-import {utcToZurich} from "@/features/rooms/timezone";
+import {utcToZurich, formatZurichRange} from "@/features/rooms/timezone";
 import {localizedPathname} from "@/i18n/path";
 import {revalidateLocalized} from "@/i18n/revalidate";
 import {routing, type AppLocale} from "@/i18n/routing";
@@ -279,6 +287,7 @@ export async function reserveRoomAction(
     });
     bookingId = booking.id;
     roomId = booking.roomId;
+    await notifyRoomBookingConfirmed({user: actor, booking});
   } catch (error) {
     return localizeRoomError(error, resolvedLocale);
   }
@@ -305,6 +314,7 @@ export async function cancelRoomBookingAction(
   try {
     const actor = await requireRoomActor();
     const booking = await cancelRoomBooking({actor, bookingId});
+    await notifyRoomBookingCancelled({user: actor, booking});
     revalidateRoomSurfaces(booking.roomId, booking.id);
   } catch (error) {
     return localizeRoomError(error, resolvedLocale);
@@ -330,6 +340,7 @@ export async function moveRoomBookingAction(
       start: String(formData.get("start") ?? ""),
       end: String(formData.get("end") ?? ""),
     });
+    await notifyRoomBookingChanged({user: actor, booking: result.booking});
     revalidateRoomSurfaces(result.booking.roomId, result.booking.id);
     if (result.kind === "replaced") {
       revalidateRoomSurfaces(result.original.roomId, result.original.id);
@@ -363,7 +374,7 @@ export async function adminCreateRoomBookingAction(
     });
     const user = await findUserById(booking.userId);
     if (user) {
-      await sendAdminCreatedRoomBooking({user, booking});
+      await notifyAdminCreatedRoomBooking({user, booking});
     }
     revalidateRoomSurfaces(booking.roomId, booking.id);
     nextPath = `${localizedPathname(resolvedLocale, {
@@ -396,7 +407,7 @@ export async function adminMoveRoomBookingAction(
     });
     const user = await findUserById(result.booking.userId);
     if (user) {
-      await sendAdminMovedRoomBooking({user, booking: result.booking});
+      await notifyAdminMovedRoomBooking({user, booking: result.booking});
     }
     revalidateRoomSurfaces(result.booking.roomId, result.booking.id);
     nextPath = `${localizedPathname(resolvedLocale, {
@@ -420,6 +431,10 @@ export async function adminCancelRoomBookingAction(
   try {
     const actor = await requireAdminActor();
     const booking = await cancelRoomBooking({actor, bookingId});
+    const owner = await findUserById(booking.userId);
+    if (owner) {
+      await notifyRoomBookingCancelled({user: owner, booking});
+    }
     revalidateRoomSurfaces(booking.roomId, booking.id);
     nextPath = `${localizedPathname(resolvedLocale, {
       pathname: "/admin/bookings/[id]",
@@ -504,6 +519,12 @@ export async function createAvailabilityRequestAction(
       message: String(formData.get("message") ?? ""),
     });
     requestId = request.id;
+    await notifyAvailabilityRequestCreated({
+      user: actor,
+      requestId: request.id,
+      time: formatZurichRange(new Date(request.startsAt), new Date(request.endsAt)),
+      roomName: request.preferredRoomName,
+    });
   } catch (error) {
     return localizeRoomError(error, resolvedLocale);
   }
@@ -546,6 +567,16 @@ export async function resolveAvailabilityRequestAction(
       decision: decisionRaw,
       adminNote: String(formData.get("adminNote") ?? ""),
     });
+    const owner = await findUserById(request.owner.id);
+    if (owner) {
+      await notifyAvailabilityRequestDecision({
+        user: owner,
+        requestId: request.id,
+        decision: decisionRaw,
+        time: formatZurichRange(new Date(request.startsAt), new Date(request.endsAt)),
+        roomName: request.preferredRoomName,
+      });
+    }
     revalidateRequestSurfaces(request.id);
     nextPath = `${localizedPathname(resolvedLocale, {
       pathname: "/admin/requests/[id]",

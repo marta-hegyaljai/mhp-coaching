@@ -1,5 +1,6 @@
 import Stripe from "stripe";
 
+import {assertStripeCredentialsAllowed} from "./env";
 import type {CreateCheckoutInput, CheckoutResult, PaymentProvider} from "../types";
 
 const checkoutLocales = {
@@ -9,6 +10,7 @@ const checkoutLocales = {
 } as const;
 
 function getStripe(): Stripe {
+  assertStripeCredentialsAllowed();
   const secretKey = process.env.STRIPE_SECRET_KEY;
 
   if (!secretKey || secretKey.includes("replace_me")) {

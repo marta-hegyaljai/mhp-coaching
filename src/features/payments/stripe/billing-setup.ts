@@ -3,9 +3,12 @@ import Stripe from "stripe";
 import type {
   BillingPaymentAdapter,
   BillingSetupSession,
+  ChargeResult,
+  ChargeStatementInput,
   CreateBillingSetupInput,
   SavedPaymentMethod,
 } from "../billing-method";
+import {assertStripeCredentialsAllowed} from "./env";
 
 const checkoutLocales = {
   fr: "fr",
@@ -14,6 +17,7 @@ const checkoutLocales = {
 } as const;
 
 function getStripe(): Stripe {
+  assertStripeCredentialsAllowed();
   const secretKey = process.env.STRIPE_SECRET_KEY;
 
   if (!secretKey || secretKey.includes("replace_me")) {
@@ -65,6 +69,39 @@ export class StripeBillingPaymentAdapter implements BillingPaymentAdapter {
       customerId,
       reference: session.id,
     };
+  }
+
+  async chargeStatement(input: ChargeStatementInput): Promise<ChargeResult> {
+    const stripe = getStripe();
+    try {
+      const intent = await stripe.paymentIntents.create(
+        {
+          amount: input.amountMinor,
+          currency: input.currency.toLowerCase(),
+          customer: input.customerId,
+          payment_method: input.paymentMethodId,
+          off_session: true,
+          confirm: true,
+          metadata: {
+            purpose: "room_statement",
+            statementId: input.statementId,
+            userId: input.userId,
+          },
+        },
+        {idempotencyKey: input.idempotencyKey},
+      );
+      return chargeResultFromPaymentIntent(intent);
+    } catch (error) {
+      if (error instanceof Stripe.errors.StripeCardError) {
+        const intent = error.payment_intent;
+        return {
+          status: "failed",
+          providerReference: typeof intent === "object" && intent ? intent.id : null,
+          failureCode: error.code ?? "card_declined",
+        };
+      }
+      throw error;
+    }
   }
 }
 
@@ -121,5 +158,52 @@ export async function paymentMethodFromSetupSession(
       stripeCustomerId: customerId,
       stripePaymentMethodId: paymentMethod.id,
     },
+  };
+}
+
+export function chargeResultFromPaymentIntent(intent: Stripe.PaymentIntent): ChargeResult {
+  if (intent.status === "succeeded") {
+    return {status: "succeeded", providerReference: intent.id};
+  }
+  if (intent.status === "requires_payment_method" || intent.status === "canceled") {
+    return {
+      status: "failed",
+      providerReference: intent.id,
+      failureCode: intent.last_payment_error?.code ?? "payment_failed",
+    };
+  }
+  return {status: "pending", providerReference: intent.id};
+}
+
+export function isRoomStatementPaymentEvent(event: Stripe.Event): boolean {
+  if (event.type !== "payment_intent.succeeded" && event.type !== "payment_intent.payment_failed") {
+    return false;
+  }
+  const intent = event.data.object as Stripe.PaymentIntent;
+  return intent.metadata?.purpose === "room_statement" && Boolean(intent.metadata?.statementId);
+}
+
+export function roomStatementChargeFromEvent(event: Stripe.Event): {
+  statementId: string;
+  type: "succeeded" | "failed";
+  providerReference: string;
+  failureCode: string | null;
+} | null {
+  if (!isRoomStatementPaymentEvent(event)) {
+    return null;
+  }
+  const intent = event.data.object as Stripe.PaymentIntent;
+  const statementId = intent.metadata?.statementId;
+  if (!statementId) {
+    return null;
+  }
+  return {
+    statementId,
+    type: event.type === "payment_intent.succeeded" ? "succeeded" : "failed",
+    providerReference: intent.id,
+    failureCode:
+      event.type === "payment_intent.payment_failed"
+        ? intent.last_payment_error?.code ?? "payment_failed"
+        : null,
   };
 }

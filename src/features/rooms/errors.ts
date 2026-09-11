@@ -40,7 +40,10 @@ export type RoomErrorCode =
   | "monthStillOpen"
   | "statementLocked"
   | "invalidAdjustment"
-  | "paymentSetupFailed";
+  | "paymentSetupFailed"
+  | "paymentMethodRequired"
+  | "statementNotChargeable"
+  | "alreadyCharging";
 
 export type RoomBookingConflict = {
   bookingId: string;

@@ -33,6 +33,7 @@ type StaticPath = Exclude<
   | "/admin/billing"
   | "/admin/billing/[userId]"
   | "/admin/billing/[userId]/statements/[id]"
+  | "/admin/notifications"
   | "/rooms"
   | "/rooms/book"
   | "/rooms/bookings"

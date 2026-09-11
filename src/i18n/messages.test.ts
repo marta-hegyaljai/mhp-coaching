@@ -38,6 +38,10 @@ describe("message catalogues", () => {
       "statusFailed",
       "dateToBeConfirmed",
       "link",
+      "room",
+      "time",
+      "month",
+      "minutes",
     ];
 
     for (const key of required) {

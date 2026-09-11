@@ -1,4 +1,4 @@
-import {and, asc, count, desc, eq, gt, gte, inArray, isNull, lt, ne, or, sql} from "drizzle-orm";
+import {and, asc, count, desc, eq, gt, gte, inArray, isNull, lt, lte, ne, or, sql} from "drizzle-orm";
 import type {SQL} from "drizzle-orm";
 
 import {getDb, type Database} from "@/db";
@@ -584,6 +584,28 @@ export async function overlappingConfirmedBookings(input: {
 export async function findBookingById(id: string): Promise<RoomBooking | undefined> {
   const [row] = await getDb().select().from(roomBookings).where(eq(roomBookings.id, id)).limit(1);
   return row;
+}
+
+export async function listUpcomingConfirmedBookings(input: {
+  fromExclusive: Date;
+  toInclusive: Date;
+}): Promise<Array<{booking: RoomBooking; owner: User}>> {
+  const rows = await getDb()
+    .select({
+      booking: roomBookings,
+      owner: users,
+    })
+    .from(roomBookings)
+    .innerJoin(users, eq(roomBookings.userId, users.id))
+    .where(
+      and(
+        eq(roomBookings.status, "CONFIRMED"),
+        gt(roomBookings.startsAt, input.fromExclusive),
+        lte(roomBookings.startsAt, input.toInclusive),
+      ),
+    )
+    .orderBy(asc(roomBookings.startsAt), asc(roomBookings.id));
+  return rows;
 }
 
 export async function listBookingEvents(bookingId: string): Promise<RoomBookingEvent[]> {

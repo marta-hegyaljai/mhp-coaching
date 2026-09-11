@@ -164,7 +164,8 @@ export function resolveUsageMonth(input: {
 }
 
 export async function loadMonthUsage(input: {
-  actor: User;
+  actor?: User;
+  system?: boolean;
   month?: ZurichMonth | string;
   now?: Date;
   userId?: string;
@@ -175,14 +176,23 @@ export async function loadMonthUsage(input: {
   const isOpen = month.year === open.year && month.month === open.month;
   const {start, endExclusive} = zurichMonthRange(month);
 
-  if (input.userId && input.userId !== input.actor.id && !canAdminister(input.actor)) {
-    throw new RoomError("forbidden");
-  }
-  if (!input.userId && !canAdminister(input.actor) && !canAccessRooms(input.actor)) {
-    throw new RoomError("forbidden");
+  if (!input.system) {
+    if (!input.actor) {
+      throw new RoomError("forbidden");
+    }
+    if (input.userId && input.userId !== input.actor.id && !canAdminister(input.actor)) {
+      throw new RoomError("forbidden");
+    }
+    if (!input.userId && !canAdminister(input.actor) && !canAccessRooms(input.actor)) {
+      throw new RoomError("forbidden");
+    }
   }
 
-  const userId = canAdminister(input.actor) ? input.userId : input.actor.id;
+  const userId = input.system
+    ? input.userId
+    : canAdminister(input.actor!)
+      ? input.userId
+      : input.actor!.id;
   const rows = await listRoomBookingsStartingInRange({
     from: start,
     toExclusive: endExclusive,

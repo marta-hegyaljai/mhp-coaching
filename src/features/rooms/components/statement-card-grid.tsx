@@ -44,7 +44,13 @@ export async function StatementCardGrid({
               href={hrefFor(statement)}
               className="block h-full rounded-panel border border-ink bg-white p-5 transition-colors duration-150 ease-standard hover:bg-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
             >
-              <StatusLabel tone={statement.status === "FINALIZED" ? "strong" : "muted"}>
+              <StatusLabel
+                tone={
+                  statement.status === "OPEN"
+                    ? "muted"
+                    : "strong"
+                }
+              >
                 {t(`statementStatus.${statement.status}`)}
               </StatusLabel>
               <p className="mt-3 font-serif text-[clamp(1.15rem,1.4vw,1.35rem)] capitalize leading-[1.15]">

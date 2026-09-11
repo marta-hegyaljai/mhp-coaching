@@ -1,4 +1,4 @@
-import {and, asc, desc, eq, isNull} from "drizzle-orm";
+import {and, asc, desc, eq, inArray, isNull} from "drizzle-orm";
 
 import {getDb} from "@/db";
 import {
@@ -15,6 +15,7 @@ import type {ZurichMonth} from "@/features/rooms/timezone";
 import {isUniqueViolation} from "@/features/auth/unique-email";
 
 export const ROOM_STATEMENTS_USER_MONTH_UNIQUE = "room_statements_user_month_uidx";
+export const ROOM_NOTIFICATIONS_IDEMPOTENCY_UNIQUE = "room_notifications_idempotency_uidx";
 
 export type StatementOwner = Pick<
   User,
@@ -114,7 +115,7 @@ export async function insertFinalizedStatement(input: {
   monthEndExclusive: Date;
   billedMinutes: number;
   totalMinor: number;
-  finalizedByUserId: string;
+  finalizedByUserId: string | null;
   lines: NewStatementLine[];
 }): Promise<RoomStatement> {
   return getDb().transaction(async (tx) => {
@@ -167,7 +168,7 @@ export async function finalizeExistingOpenStatement(input: {
   statement: RoomStatement;
   billedMinutes: number;
   totalMinor: number;
-  finalizedByUserId: string;
+  finalizedByUserId: string | null;
   lines: NewStatementLine[];
 }): Promise<RoomStatement> {
   return getDb().transaction(async (tx) => {
@@ -264,4 +265,138 @@ export function isFinalizedStatus(status: RoomStatementStatus): boolean {
 
 export function canAdjustStatus(status: RoomStatementStatus): boolean {
   return status === "FINALIZED";
+}
+
+export function canChargeStatus(status: RoomStatementStatus): boolean {
+  return status === "FINALIZED" || status === "PAYMENT_FAILED";
+}
+
+export async function listStatementsByStatuses(
+  statuses: RoomStatementStatus[],
+  month?: ZurichMonth,
+): Promise<RoomStatement[]> {
+  const filters = [inArray(roomStatements.status, statuses)];
+  if (month) {
+    filters.push(eq(roomStatements.year, month.year), eq(roomStatements.month, month.month));
+  }
+  return getDb()
+    .select()
+    .from(roomStatements)
+    .where(and(...filters))
+    .orderBy(desc(roomStatements.year), desc(roomStatements.month), asc(roomStatements.userId));
+}
+
+export async function findStatementByPaymentIntent(
+  paymentIntentId: string,
+): Promise<RoomStatement | undefined> {
+  const [row] = await getDb()
+    .select()
+    .from(roomStatements)
+    .where(eq(roomStatements.stripePaymentIntentId, paymentIntentId))
+    .limit(1);
+  return row;
+}
+
+export async function claimStatementForCharge(
+  statementId: string,
+): Promise<{statement: RoomStatement; claimed: boolean} | undefined> {
+  return getDb().transaction(async (tx) => {
+    const [current] = await tx
+      .select()
+      .from(roomStatements)
+      .where(eq(roomStatements.id, statementId))
+      .for("update")
+      .limit(1);
+    if (!current) {
+      return undefined;
+    }
+    if (current.status === "PAID" || current.status === "PAYMENT_PENDING") {
+      return {statement: current, claimed: false};
+    }
+    if (!canChargeStatus(current.status)) {
+      return {statement: current, claimed: false};
+    }
+
+    const nextAttempt = current.chargeAttempt + 1;
+    const [updated] = await tx
+      .update(roomStatements)
+      .set({
+        status: "PAYMENT_PENDING",
+        chargeAttempt: nextAttempt,
+        chargeIdempotencyKey: `room_statement_charge_${current.id}_${nextAttempt}`,
+        failureCode: null,
+        updatedAt: new Date(),
+      })
+      .where(
+        and(
+          eq(roomStatements.id, statementId),
+          inArray(roomStatements.status, ["FINALIZED", "PAYMENT_FAILED"]),
+        ),
+      )
+      .returning();
+
+    if (!updated) {
+      return {statement: current, claimed: false};
+    }
+    return {statement: updated, claimed: true};
+  });
+}
+
+export async function markStatementPaid(input: {
+  statementId: string;
+  providerReference?: string | null;
+}): Promise<RoomStatement | undefined> {
+  const [row] = await getDb()
+    .update(roomStatements)
+    .set({
+      status: "PAID",
+      paidAt: new Date(),
+      ...(input.providerReference ? {stripePaymentIntentId: input.providerReference} : {}),
+      failureCode: null,
+      updatedAt: new Date(),
+    })
+    .where(
+      and(
+        eq(roomStatements.id, input.statementId),
+        inArray(roomStatements.status, ["FINALIZED", "PAYMENT_PENDING", "PAYMENT_FAILED"]),
+      ),
+    )
+    .returning();
+  return row;
+}
+
+export async function markStatementPaymentFailed(input: {
+  statementId: string;
+  failureCode: string;
+  providerReference?: string | null;
+}): Promise<RoomStatement | undefined> {
+  const [row] = await getDb()
+    .update(roomStatements)
+    .set({
+      status: "PAYMENT_FAILED",
+      failureCode: input.failureCode.slice(0, 80),
+      ...(input.providerReference ? {stripePaymentIntentId: input.providerReference} : {}),
+      updatedAt: new Date(),
+    })
+    .where(
+      and(
+        eq(roomStatements.id, input.statementId),
+        inArray(roomStatements.status, ["FINALIZED", "PAYMENT_PENDING", "PAYMENT_FAILED"]),
+      ),
+    )
+    .returning();
+  return row;
+}
+
+export async function storeStatementPaymentIntent(input: {
+  statementId: string;
+  providerReference: string;
+}): Promise<void> {
+  await getDb()
+    .update(roomStatements)
+    .set({
+      stripePaymentIntentId: input.providerReference,
+      updatedAt: new Date(),
+    })
+    .where(eq(roomStatements.id, input.statementId));
 }

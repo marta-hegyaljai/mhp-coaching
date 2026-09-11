@@ -29,6 +29,8 @@ test("unauthenticated visitors are sent to sign-in instead of admin or rooms", a
   await expect(page).toHaveURL(/\/en\/sign-in/);
   await page.goto("/en/admin/billing");
   await expect(page).toHaveURL(/\/en\/sign-in/);
+  await page.goto("/en/admin/notifications");
+  await expect(page).toHaveURL(/\/en\/sign-in/);
   await page.goto("/en/billing");
   await expect(page).toHaveURL(/\/en\/sign-in/);
   await page.goto("/en/billing/setup");
@@ -112,6 +114,9 @@ test("staff CSV exports reject anonymous and basic-auth requests", async ({
   );
   expect(certificate.status()).toBe(401);
   expect(certificate.headers()["cache-control"]).toContain("no-store");
+
+  const cron = await request.get("/api/cron/rooms");
+  expect(cron.status()).toBe(401);
 
   const basic = await request.get("/api/staff/waitlist.csv", {
     headers: {

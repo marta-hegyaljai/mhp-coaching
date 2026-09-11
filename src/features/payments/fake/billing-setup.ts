@@ -6,7 +6,13 @@ import {getDatabaseUrl} from "@/lib/database-url";
 import {localizedPathname} from "@/i18n/path";
 import {routing} from "@/i18n/routing";
 
-import type {BillingPaymentAdapter, BillingSetupSession, CreateBillingSetupInput} from "../billing-method";
+import type {
+  BillingPaymentAdapter,
+  BillingSetupSession,
+  ChargeResult,
+  ChargeStatementInput,
+  CreateBillingSetupInput,
+} from "../billing-method";
 
 function signingSecret(): string {
   return (
@@ -38,6 +44,8 @@ export const FAKE_CARD: {
   expYear: 2030,
 };
 
+export const FAKE_DECLINE_LAST4 = "0002";
+
 export class FakeBillingPaymentAdapter implements BillingPaymentAdapter {
   readonly name = "fake" as const;
 
@@ -53,6 +61,23 @@ export class FakeBillingPaymentAdapter implements BillingPaymentAdapter {
       url,
       customerId: input.existingCustomerId ?? `cus_fake_${input.userId}`,
       reference: token,
+    };
+  }
+
+  async chargeStatement(input: ChargeStatementInput): Promise<ChargeResult> {
+    if (input.amountMinor <= 0) {
+      return {status: "succeeded", providerReference: `pi_fake_zero_${input.statementId}`};
+    }
+    if (input.paymentMethodLast4 === FAKE_DECLINE_LAST4) {
+      return {
+        status: "failed",
+        providerReference: `pi_fake_fail_${input.statementId}_${input.idempotencyKey.slice(-8)}`,
+        failureCode: "card_declined",
+      };
+    }
+    return {
+      status: "succeeded",
+      providerReference: `pi_fake_${input.statementId}_${input.idempotencyKey.slice(-12)}`,
     };
   }
 }

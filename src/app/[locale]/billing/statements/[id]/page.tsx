@@ -3,6 +3,7 @@ import {notFound} from "next/navigation";
 
 import {requireRoomBooking} from "@/features/auth/require";
 import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
+import {startPaymentMethodSetupAction} from "@/features/rooms/billing-actions";
 import {RoomsNav} from "@/features/rooms/components/rooms-nav";
 import {StatementLineList} from "@/features/rooms/components/statement-line-list";
 import {loadStatementDetail} from "@/features/rooms/statements";
@@ -13,6 +14,7 @@ import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
+import {Button} from "@/shared/ui/button";
 import {Eyebrow, Section} from "@/shared/ui/layout";
 import {Price} from "@/shared/ui/price";
 import {StatusLabel} from "@/shared/ui/status-label";
@@ -71,7 +73,26 @@ export default async function StatementPage({params}: StatementPageProps) {
           </Link>
         </p>
         <h1 className="mt-3 font-serif text-heading capitalize">{monthLabel}</h1>
-        <StatusLabel className="mt-4">{t(`statementStatus.${detail.statement.status}`)}</StatusLabel>
+        <StatusLabel
+          className="mt-4"
+          tone={detail.statement.status === "OPEN" ? "muted" : "strong"}
+        >
+          {t(`statementStatus.${detail.statement.status}`)}
+        </StatusLabel>
+        {detail.statement.status === "PAYMENT_FAILED" ? (
+          <div className="mt-6 max-w-xl space-y-4">
+            <p className="text-sm leading-7 text-ink-muted">{t("paymentFailedHelp")}</p>
+            <form action={startPaymentMethodSetupAction.bind(null, locale)}>
+              <Button type="submit">{t("paymentMethodUpdate")}</Button>
+            </form>
+          </div>
+        ) : null}
+        {detail.statement.status === "PAYMENT_PENDING" ? (
+          <p className="mt-3 max-w-xl text-sm leading-7 text-ink-muted">{t("paymentPendingHelp")}</p>
+        ) : null}
+        {detail.statement.status === "PAID" ? (
+          <p className="mt-3 max-w-xl text-sm leading-7 text-ink-muted">{t("paymentPaidHelp")}</p>
+        ) : null}
         <p className="mt-6">
           <Price size="lg">
             {formatChf(minorUnitsToFrancs(detail.statement.totalMinor), locale)}

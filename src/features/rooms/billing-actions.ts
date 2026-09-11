@@ -12,6 +12,8 @@ import {
   startPaymentMethodSetup,
 } from "@/features/rooms/payment-method";
 import {addStatementAdjustment, finalizeUserMonth} from "@/features/rooms/statements";
+import {chargeStatement} from "@/features/rooms/charging";
+import {notifyStatementFinalized} from "@/features/rooms/notifications";
 import {isValidFakeBillingSetupToken} from "@/features/payments/fake/billing-setup";
 import {localizedPathname} from "@/i18n/path";
 import {revalidateLocalized} from "@/i18n/revalidate";
@@ -81,6 +83,7 @@ export async function finalizeStatementAction(
       throw new RoomError("forbidden");
     }
     const detail = await finalizeUserMonth({actor, userId, month: monthKey});
+    await notifyStatementFinalized(detail);
     revalidateBillingSurfaces(userId);
     revalidateLocalized({
       pathname: "/admin/billing/[userId]/statements/[id]",
@@ -117,6 +120,35 @@ export async function addStatementAdjustmentAction(
       amountMinor,
       reason: String(formData.get("reason") ?? ""),
     });
+    revalidateBillingSurfaces(userId);
+    revalidateLocalized({
+      pathname: "/admin/billing/[userId]/statements/[id]",
+      params: {userId, id: statementId},
+    });
+    revalidateLocalized({
+      pathname: "/billing/statements/[id]",
+      params: {id: statementId},
+    });
+    return {ok: true};
+  } catch (error) {
+    return localizeBillingError(error, resolvedLocale);
+  }
+}
+
+export async function chargeStatementAction(
+  locale: string,
+  statementId: string,
+  userId: string,
+  _previous: BillingFormState | null,
+  _formData: FormData,
+): Promise<BillingFormState> {
+  const resolvedLocale = resolveLocale(locale);
+  try {
+    const actor = await readSessionUser();
+    if (!actor || !canAdminister(actor)) {
+      throw new RoomError("forbidden");
+    }
+    await chargeStatement({actor, statementId});
     revalidateBillingSurfaces(userId);
     revalidateLocalized({
       pathname: "/admin/billing/[userId]/statements/[id]",

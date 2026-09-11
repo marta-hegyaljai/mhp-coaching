@@ -182,12 +182,13 @@ export async function previewFinalize(input: {
 }
 
 export async function finalizeUserMonth(input: {
-  actor: User;
+  actor?: User;
+  system?: boolean;
   userId: string;
   month?: ZurichMonth | string;
   now?: Date;
 }): Promise<StatementDetail> {
-  if (!canAdminister(input.actor)) {
+  if (!input.system && (!input.actor || !canAdminister(input.actor))) {
     throw new RoomError("forbidden");
   }
 
@@ -199,11 +200,12 @@ export async function finalizeUserMonth(input: {
 
   const existing = await findStatementForUserMonth(input.userId, month);
   if (existing && isFinalizedStatus(existing.status)) {
-    return loadStatementDetail({actor: input.actor, statementId: existing.id});
+    return loadStatementDetail({actor: input.actor, system: input.system, statementId: existing.id});
   }
 
   const report = await loadMonthUsage({
     actor: input.actor,
+    system: input.system,
     month,
     now,
     userId: input.userId,
@@ -224,7 +226,7 @@ export async function finalizeUserMonth(input: {
         statement: existing,
         billedMinutes: totals.billedMinutes,
         totalMinor: totals.totalMinor,
-        finalizedByUserId: input.actor.id,
+        finalizedByUserId: input.actor?.id ?? null,
         lines,
       });
     } else {
@@ -235,7 +237,7 @@ export async function finalizeUserMonth(input: {
         monthEndExclusive: range.endExclusive,
         billedMinutes: totals.billedMinutes,
         totalMinor: totals.totalMinor,
-        finalizedByUserId: input.actor.id,
+        finalizedByUserId: input.actor?.id ?? null,
         lines,
       });
     }
@@ -243,14 +245,18 @@ export async function finalizeUserMonth(input: {
     if (isStatementUserMonthConflict(error)) {
       const raced = await findStatementForUserMonth(input.userId, month);
       if (raced && isFinalizedStatus(raced.status)) {
-        return loadStatementDetail({actor: input.actor, statementId: raced.id});
+        return loadStatementDetail({
+          actor: input.actor,
+          system: input.system,
+          statementId: raced.id,
+        });
       }
     }
     throw error;
   }
 
   await recordAudit({
-    actorUserId: input.actor.id,
+    actorUserId: input.actor?.id ?? null,
     targetUserId: input.userId,
     action: AUDIT_ACTIONS.ROOM_STATEMENT_FINALIZED,
     before: existing
@@ -267,7 +273,11 @@ export async function finalizeUserMonth(input: {
     },
   });
 
-  const detail = await loadStatementDetail({actor: input.actor, statementId: statement.id});
+  const detail = await loadStatementDetail({
+    actor: input.actor,
+    system: input.system,
+    statementId: statement.id,
+  });
   assertNoPrivateNoteMaterial({
     statement: {
       id: detail.statement.id,
@@ -340,14 +350,20 @@ export async function addStatementAdjustment(input: {
 }
 
 export async function loadStatementDetail(input: {
-  actor: User;
+  actor?: User;
+  system?: boolean;
   statementId: string;
 }): Promise<StatementDetail> {
   const statement = await findStatementById(input.statementId);
   if (!statement) {
     throw new RoomError("notFound");
   }
-  assertCanRead(input.actor, statement.userId);
+  if (!input.system) {
+    if (!input.actor) {
+      throw new RoomError("forbidden");
+    }
+    assertCanRead(input.actor, statement.userId);
+  }
 
   const owner = await findStatementOwner(statement.userId);
   if (!owner) {
