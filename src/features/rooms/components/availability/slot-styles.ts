@@ -15,8 +15,14 @@ export const slotSurface: Record<AvailabilityState, string> = {
 };
 
 export const slotMetaText: Record<AvailabilityState, string> = {
-  available: "text-ink-muted group-hover:text-parchment",
+  available: "text-ink-muted",
   booked: "text-ink-muted",
   unavailable: "text-ink-subtle",
-  "my-booking": "text-parchment group-hover:text-ink",
+  "my-booking": "text-parchment",
 };
+
+export function slotMetaClass(state: AvailabilityState, actionable: boolean): string {
+  // Actionable cells invert their foreground on hover, so secondary text must
+  // inherit that foreground instead of pinning a colour that can lose contrast.
+  return actionable ? "text-current opacity-70" : slotMetaText[state];
+}

@@ -4,7 +4,7 @@ import {Link} from "@/i18n/navigation";
 import {ArrowRightIcon} from "@/shared/ui/icons";
 
 import {mergeSlotRuns, type RunCell} from "./runs";
-import {slotMetaText, slotSurface, type SlotLabels} from "./slot-styles";
+import {slotMetaClass, slotSurface, type SlotLabels} from "./slot-styles";
 
 export type GridColumn = {
   key: string;
@@ -101,7 +101,7 @@ export function AvailabilityGrid({
                     </span>
                     {run.meta || run.span > 1 ? (
                       <span
-                        className={`mt-0.5 block font-sans text-[0.62rem] leading-tight tabular-nums ${slotMetaText[run.state]}`}
+                        className={`mt-0.5 block font-sans text-[0.62rem] leading-tight tabular-nums ${slotMetaClass(run.state, Boolean(run.href))}`}
                       >
                         {run.meta ?? `${run.startTime}–${run.endTime}`}
                       </span>
@@ -120,7 +120,7 @@ export function AvailabilityGrid({
                     {run.href ? (
                       <Link
                         href={run.href}
-                        className={`group block h-full min-h-11 cursor-pointer px-2 py-1 transition-colors duration-150 ease-standard focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-ink ${
+                        className={`block h-full min-h-11 cursor-pointer px-2 py-1 transition-colors duration-150 ease-standard focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-ink ${
                           run.state === "my-booking"
                             ? "hover:bg-white hover:text-ink"
                             : "hover:bg-ink hover:text-parchment"

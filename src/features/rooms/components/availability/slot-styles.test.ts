@@ -1,10 +1,11 @@
 import {describe, expect, it} from "vitest";
 
-import {slotMetaText} from "./slot-styles";
+import {slotMetaClass, slotMetaText} from "./slot-styles";
 
 describe("availability slot styles", () => {
-  it("keeps secondary text legible when actionable slots invert on hover", () => {
-    expect(slotMetaText.available).toContain("group-hover:text-parchment");
-    expect(slotMetaText["my-booking"]).toContain("group-hover:text-ink");
+  it("lets secondary text inherit the inverted foreground in actionable slots", () => {
+    expect(slotMetaClass("available", true)).toBe("text-current opacity-70");
+    expect(slotMetaClass("my-booking", true)).toBe("text-current opacity-70");
+    expect(slotMetaClass("available", false)).toBe(slotMetaText.available);
   });
 });
