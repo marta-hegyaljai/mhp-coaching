@@ -187,7 +187,7 @@ Required:
 - staff notification when someone submits the contact form
 - staff notification when someone asks for another payment method (lead booking or payment inquiry form)
 
-Application templates go through the existing email adapter (`src/features/email`). Compose HTML only with `composeTransactionalEmail()`; layout and copy rules in `docs/EMAIL.md` are binding. Local development must route mail to Mailpit, never real recipients by default. Hosted delivery uses Resend only when `RESEND_API_KEY` is already set.
+Application templates go through the existing email adapter (`src/features/email`). Compose HTML only with `composeTransactionalEmail()`; layout and copy rules in `docs/EMAIL.md` are binding. Local development must route mail to Mailpit, never real recipients by default. Hosted delivery uses Resend when `RESEND_API_KEY` is set, or when the Vercel Resend marketplace resource injects a prefixed alias such as `EMAILS_RESEND_RESEND_API_KEY`.
 
 ## SEO — launch critical
 Public pages must:

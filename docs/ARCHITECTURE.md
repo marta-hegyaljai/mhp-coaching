@@ -89,6 +89,10 @@ Hosted provider initially Neon; local provider official PostgreSQL Docker image.
 Avoid Neon-specific application APIs where a standard PostgreSQL connection works.
 Read `DATABASE_URL` first, then the connection-string aliases the Neon Vercel
 integration may inject (`NEON_DATABASE_URL`, `NEON_POSTGRES_URL`, `POSTGRES_URL`).
+Hosted schema migrations prefer the matching direct connection
+(`DATABASE_URL_UNPOOLED`, `NEON_DATABASE_URL_UNPOOLED`,
+`NEON_POSTGRES_URL_NON_POOLING` or `POSTGRES_URL_NON_POOLING`) and fall back to
+the runtime URL when a provider exposes only one connection string.
 
 Initial durable concepts:
 - course bookings (the current table is named `bookings`)
@@ -172,7 +176,11 @@ Webhook rules:
 ## Email
 Application owns template/content; provider adapter owns delivery.
 Local: SMTP to Mailpit.
-Hosted: Resend when `RESEND_API_KEY` is set. Do not add a second mail provider.
+Hosted: Resend when `RESEND_API_KEY` is set, or when the Vercel Resend
+marketplace resource injects a prefixed alias (`EMAILS_RESEND_RESEND_API_KEY`
+and `EMAILS_RESEND_RESEND_EMAIL_DOMAIN`). Prefer the connected marketplace API
+key, while keeping the portable names as provider-independent fallbacks. Do not
+add a second mail provider.
 
 Binding layout and copy: `docs/EMAIL.md`. HTML is composed only through
 `composeTransactionalEmail()` in `src/features/email/layout.ts` (tables and

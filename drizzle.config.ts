@@ -1,12 +1,12 @@
 import {config} from "dotenv";
 import {defineConfig} from "drizzle-kit";
 
-import {getDatabaseUrl} from "./src/lib/database-url";
+import {getMigrationDatabaseUrl} from "./src/lib/database-url";
 
 config({path: ".env.local"});
 config();
 
-const databaseUrl = getDatabaseUrl();
+const databaseUrl = getMigrationDatabaseUrl();
 
 if (!databaseUrl) {
   throw new Error("DATABASE_URL is required. Copy .env.example to .env.local first.");

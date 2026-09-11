@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import type {Transporter} from "nodemailer";
 
-import {organization} from "@/features/organization/info";
+import {getResendApiKey, getResendFromAddress} from "@/features/email/credentials";
 
 type MailInput = {
   to: string;
@@ -27,15 +27,11 @@ function getTransporter(): Transporter {
   return transporter;
 }
 
-function fromAddress(): string {
-  return process.env.RESEND_FROM ?? process.env.SMTP_FROM ?? `${organization.brandName} <no-reply@mhp.local>`;
-}
-
 async function sendViaResend(input: MailInput): Promise<void> {
-  const apiKey = process.env.RESEND_API_KEY;
+  const apiKey = getResendApiKey();
 
   if (!apiKey) {
-    throw new Error("RESEND_API_KEY is not configured");
+    throw new Error("Resend API key is not configured");
   }
 
   const response = await fetch("https://api.resend.com/emails", {
@@ -45,7 +41,7 @@ async function sendViaResend(input: MailInput): Promise<void> {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: fromAddress(),
+      from: getResendFromAddress(),
       to: [input.to],
       reply_to: input.replyTo,
       subject: input.subject,
@@ -61,13 +57,13 @@ async function sendViaResend(input: MailInput): Promise<void> {
 }
 
 export async function sendMail(input: MailInput): Promise<void> {
-  if (process.env.RESEND_API_KEY) {
+  if (getResendApiKey()) {
     await sendViaResend(input);
     return;
   }
 
   await getTransporter().sendMail({
-    from: fromAddress(),
+    from: getResendFromAddress(),
     to: input.to,
     replyTo: input.replyTo,
     subject: input.subject,

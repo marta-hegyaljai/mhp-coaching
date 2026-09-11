@@ -1,6 +1,6 @@
 import {describe, expect, it} from "vitest";
 
-import {getDatabaseUrl} from "./database-url";
+import {getDatabaseUrl, getMigrationDatabaseUrl} from "./database-url";
 
 describe("getDatabaseUrl", () => {
   it("prefers the portable DATABASE_URL", () => {
@@ -31,5 +31,33 @@ describe("getDatabaseUrl", () => {
 
   it("returns undefined when no connection string is configured", () => {
     expect(getDatabaseUrl({})).toBeUndefined();
+  });
+});
+
+describe("getMigrationDatabaseUrl", () => {
+  it("prefers the unpooled Neon marketplace alias", () => {
+    expect(
+      getMigrationDatabaseUrl({
+        NEON_DATABASE_URL: "postgresql://neon.example/pooled",
+        NEON_DATABASE_URL_UNPOOLED: "postgresql://neon.example/direct",
+      }),
+    ).toBe("postgresql://neon.example/direct");
+  });
+
+  it("accepts the Vercel Postgres non-pooling alias", () => {
+    expect(
+      getMigrationDatabaseUrl({
+        POSTGRES_URL: "postgresql://neon.example/pooled",
+        POSTGRES_URL_NON_POOLING: "postgresql://neon.example/direct",
+      }),
+    ).toBe("postgresql://neon.example/direct");
+  });
+
+  it("falls back to the runtime connection", () => {
+    expect(
+      getMigrationDatabaseUrl({
+        DATABASE_URL: "postgresql://mhp:mhp@localhost:5432/mhp",
+      }),
+    ).toBe("postgresql://mhp:mhp@localhost:5432/mhp");
   });
 });

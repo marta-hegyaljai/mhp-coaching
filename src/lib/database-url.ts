@@ -31,3 +31,20 @@ export function getDatabaseUrl(
     "POSTGRES_URL",
   ]);
 }
+
+/**
+ * Schema migrations should prefer a direct connection instead of PgBouncer.
+ * Fall back to the runtime URL for providers that expose only one connection.
+ */
+export function getMigrationDatabaseUrl(
+  environment: DatabaseUrlEnvironment = process.env,
+): string | undefined {
+  return (
+    firstNonEmpty(environment, [
+      "DATABASE_URL_UNPOOLED",
+      "NEON_DATABASE_URL_UNPOOLED",
+      "NEON_POSTGRES_URL_NON_POOLING",
+      "POSTGRES_URL_NON_POOLING",
+    ]) ?? getDatabaseUrl(environment)
+  );
+}

@@ -20,7 +20,11 @@ Tailwind, flex, or React.
 - Localize FR/DE/EN. Shared field labels live in `Email.fields`. Per-message
   copy stays under `Email.<template>` in `messages/{fr,de,en}.json`.
 - Do not add a second mail provider. Local: SMTP to Mailpit. Hosted: Resend
-  only when `RESEND_API_KEY` is set.
+  when `RESEND_API_KEY` is set, or when the Vercel Resend marketplace resource
+  injects a prefixed alias such as `EMAILS_RESEND_RESEND_API_KEY`. The from
+  address is `RESEND_FROM`, else a mailbox built from `RESEND_EMAIL_DOMAIN` or
+  `*_RESEND_EMAIL_DOMAIN`. When both API-key names exist, use the connected
+  `EMAILS_RESEND_RESEND_API_KEY` before the portable fallback.
 
 Do **not**:
 
