@@ -29,6 +29,8 @@ test("unauthenticated visitors are sent to sign-in instead of admin or rooms", a
   await expect(page).toHaveURL(/\/en\/sign-in/);
   await page.goto("/en/admin/billing");
   await expect(page).toHaveURL(/\/en\/sign-in/);
+  await page.goto("/en/admin/courses");
+  await expect(page).toHaveURL(/\/en\/sign-in/);
   await page.goto("/en/admin/notifications");
   await expect(page).toHaveURL(/\/en\/sign-in/);
   await page.goto("/en/billing");
