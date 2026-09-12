@@ -6,6 +6,7 @@
   },
   "Nav": {
     "label": "Hauptnavigation",
+    "skipToContent": "Zum Inhalt springen",
     "courses": "Ausbildungen",
     "contact": "Kontakt",
     "cta": "Platz buchen",
@@ -629,7 +630,12 @@
       "STATEMENT_FINALIZED": "Abrechnung abgeschlossen",
       "PAYMENT_SUCCEEDED": "Zahlung erfolgreich",
       "PAYMENT_FAILED": "Zahlung fehlgeschlagen"
-    }
+    },
+    "opsTitle": "Job-Pulse",
+    "opsHelp": "Ergebnisse des stündlichen Raum-Crons. Fehlschläge mailen OPS_ALERT_EMAIL, wenn gesetzt. Private Notizen stehen nie hier.",
+    "opsEmpty": "Noch keine Job-Läufe. Lokal GET /api/cron/rooms mit dem Cron-Secret auslösen.",
+    "opsOk": "Erfolgreich",
+    "opsFailed": "Fehlgeschlagen"
   },
   "Certificates": {
     "eyebrow": "Konto",
@@ -1248,6 +1254,13 @@
       "amountLine": "Betrag: {amount}",
       "linkLine": "Zahlungsmittel aktualisieren: {url}",
       "closing": "Wenn Sie die Karte bereits aktualisiert haben, kann eine Administration die Belastung erneut versuchen."
+    },
+    "opsAlert": {
+      "subject": "MHP-Job fehlgeschlagen — {job}",
+      "eyebrow": "Betrieb",
+      "title": "Ein geplanter Job ist fehlgeschlagen",
+      "intro": "Die Raumwartung ist nicht durchgelaufen. Prüfen Sie Vercel-Cron, Stripe und Mailpit/Resend, dann erneut versuchen.",
+      "closing": "Diese Meldung enthält keine privaten Buchungsnotizen."
     }
   },
   "NotFound": {

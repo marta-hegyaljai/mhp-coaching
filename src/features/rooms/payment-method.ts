@@ -12,7 +12,7 @@ import {
 import {getConfiguredPaymentProviderName} from "@/features/payments/types";
 import {FAKE_CARD} from "@/features/payments/fake/billing-setup";
 import {RoomError} from "@/features/rooms/errors";
-import {getSiteUrl} from "@/lib/site-url";
+import {getAppUrl} from "@/lib/site-url";
 import {localizedPathname} from "@/i18n/path";
 import type {AppLocale} from "@/i18n/routing";
 
@@ -83,7 +83,7 @@ export async function startPaymentMethodSetup(input: {
     throw new RoomError("forbidden");
   }
 
-  const origin = getSiteUrl().origin;
+  const origin = getAppUrl().origin;
   const successPath = localizedPathname(input.locale, "/billing/payment-method/return");
   const cancelPath = localizedPathname(input.locale, "/billing");
   const adapter = getBillingPaymentAdapter();

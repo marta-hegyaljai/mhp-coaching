@@ -5,7 +5,7 @@ import {mailLocale} from "@/features/email/locale";
 import {sendMail} from "@/features/email/transport";
 import {localizedPathname} from "@/i18n/path";
 import type {AppLocale} from "@/i18n/routing";
-import {getSiteUrl} from "@/lib/site-url";
+import {getAppUrl} from "@/lib/site-url";
 
 async function sendTokenEmail(input: {
   to: string;
@@ -22,7 +22,7 @@ async function sendTokenEmail(input: {
     pathname: input.pathname,
     params: {token: input.rawToken},
   });
-  const url = new URL(path, getSiteUrl()).toString();
+  const url = new URL(path, getAppUrl()).toString();
   const greeting = t("greeting", {name: input.name});
   const text = [
     greeting,

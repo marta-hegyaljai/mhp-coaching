@@ -6,6 +6,7 @@
   },
   "Nav": {
     "label": "Main navigation",
+    "skipToContent": "Skip to content",
     "courses": "Courses",
     "contact": "Contact",
     "cta": "Book a place",
@@ -629,7 +630,12 @@
       "STATEMENT_FINALIZED": "Statement finalized",
       "PAYMENT_SUCCEEDED": "Payment succeeded",
       "PAYMENT_FAILED": "Payment failed"
-    }
+    },
+    "opsTitle": "Job heartbeats",
+    "opsHelp": "Hourly room cron results. Failed runs also email OPS_ALERT_EMAIL when it is set. Private notes are never stored here.",
+    "opsEmpty": "No job runs recorded yet. Trigger GET /api/cron/rooms with the cron secret locally.",
+    "opsOk": "Succeeded",
+    "opsFailed": "Failed"
   },
   "Certificates": {
     "eyebrow": "Account",
@@ -1248,6 +1254,13 @@
       "amountLine": "Amount: {amount}",
       "linkLine": "Update payment method: {url}",
       "closing": "If you already updated the card, an administrator can retry the charge."
+    },
+    "opsAlert": {
+      "subject": "MHP job failed — {job}",
+      "eyebrow": "Operations",
+      "title": "A scheduled job failed",
+      "intro": "The room maintenance job did not finish. Check Vercel cron, Stripe and Mailpit/Resend, then retry.",
+      "closing": "This alert does not contain private booking notes."
     }
   },
   "NotFound": {

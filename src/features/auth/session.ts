@@ -17,6 +17,11 @@ function cookieSecure(): boolean {
   return process.env.NODE_ENV === "production" || process.env.VERCEL === "1";
 }
 
+function cookieDomain(): string | undefined {
+  const domain = process.env.SESSION_COOKIE_DOMAIN?.trim();
+  return domain || undefined;
+}
+
 export async function createSessionCookie(userId: string): Promise<void> {
   const token = randomToken();
   const expiresAt = new Date(Date.now() + SESSION_TTL_MS);
@@ -33,6 +38,7 @@ export async function createSessionCookie(userId: string): Promise<void> {
     secure: cookieSecure(),
     sameSite: "lax",
     path: "/",
+    domain: cookieDomain(),
     expires: expiresAt,
   });
 }
@@ -50,6 +56,7 @@ export async function clearSessionCookie(): Promise<void> {
     secure: cookieSecure(),
     sameSite: "lax",
     path: "/",
+    domain: cookieDomain(),
     expires: new Date(0),
   });
 }

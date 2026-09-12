@@ -23,14 +23,15 @@ later scope forward.
 | --- | --- |
 | Plan revision | 3 |
 | Last updated | 2026-09-11 |
-| Last completed checkpoint | CP-10 |
-| Next checkpoint | CP-11 |
+| Last completed checkpoint | CP-11 |
+| Next checkpoint | — |
 | Active checkpoint | — |
-| Room module production status | Inventory, hours, blocks, privacy-safe availability, therapist reservations, My Bookings, change/cancel, owner-only notes, no-availability requests, discounts, current-month usage, saved payment method, monthly statements, automated charging, reminders and notification evidence shipped |
+| Room module production status | Complete through CP-11. Production domain attach, live Stripe first charge and Neon restore rehearsal remain operator steps in docs/LAUNCH.md |
 
 Revision 3 completed CP-03 and CP-04 before CP-01 on this branch. CP-01 has now
-landed on main and is merged here. CP-00 through CP-10 are complete. The next
-checkpoint is CP-11.
+landed on main and is merged here. CP-00 through CP-11 are complete. Remaining
+work is production credential attach (Neon restore rehearsal, live Stripe first
+charge, DNS) documented in LAUNCH.md — not a new checkpoint.
 
 ## Status vocabulary
 
@@ -116,7 +117,7 @@ or navigation link alone is not a deliverable checkpoint.
 | CP-08 | COMPLETE | Discounts and transparent current-month usage | Therapist and admin |
 | CP-09 | COMPLETE | Stable monthly statements and saved payment method | Therapist and admin |
 | CP-10 | COMPLETE | Automated monthly charging and operational email | Therapist and admin |
-| CP-11 | PLANNED | Production-ready room module on the app domain | All actors |
+| CP-11 | COMPLETE | Production-ready room module on the app domain | All actors |
 
 ---
 
@@ -634,7 +635,7 @@ integration and SMS/push notifications.
 
 ## CP-11 — Production launch and operational handoff
 
-**Status:** `PLANNED`
+**Status:** `COMPLETE`
 
 **Depends on:** CP-10.
 
@@ -1151,6 +1152,32 @@ against `docs/DESIGN.md`.
   `composeTransactionalEmail()` only. Reminder timing is the first hourly cron
   tick inside the configured notice window, not an exact T−24h scheduler.
 - **Known next work:** CP-11 production launch and operational handoff.
+
+### CP-11 — 2026-09-12
+
+- **Result:** Dual-origin routing (`mhp-coaching.ch` marketing vs
+  `app.mhp-coaching.ch` app), capability-aware absolute nav, app-origin
+  noindex, skip-to-content, hourly cron heartbeats with optional ops-alert
+  mail, and launch/ops/admin/privacy/security/accessibility handoff docs.
+- **Routes/UI:** Same public and app routes; host 308 redirects when
+  `APP_ORIGIN` is set. Admin Settings shows Job heartbeats. Header Courses and
+  Contact stay on the compact row at ~390px.
+- **Migrations:** `0016_ops_heartbeats.sql`.
+- **Automated evidence:** `pnpm verify` passed: lint 0 errors, typecheck,
+  Vitest 74 files / 297 tests (including origin classification and ops alert
+  chrome), production build. Playwright auth-guards + billing 6 passed.
+- **Browser evidence:** EN home desktop; admin Settings heartbeats SUCCEEDED
+  for `rooms`; 390px admin header keeps Courses+Contact on the same row; FR/DE
+  home without MISSING_MESSAGE.
+- **Preview/production:** Not deployed in this task. Production DNS, live
+  Stripe first charge and Neon restore rehearsal are operator steps in
+  `docs/LAUNCH.md` / `docs/OPERATIONS.md`.
+- **Deviations/follow-ups:** Live Neon PITR restore was not executed (no
+  production Neon in this environment). Live Stripe keys are forbidden outside
+  `VERCEL_ENV=production` and were not used. Attach `app.mhp-coaching.ch` only
+  after those rehearsals.
+- **Known next work:** Post-launch backlog only (credits, recurring bookings,
+  calendar sync — not checkpoints).
 
 ## Plan revision log
 

@@ -1,9 +1,24 @@
 import type {MetadataRoute} from "next";
+import {headers} from "next/headers";
 
+import {classifyRequestHost, getSplitOrigins, requestHost} from "@/lib/origins";
 import {getSiteUrl} from "@/lib/site-url";
 
-export default function robots(): MetadataRoute.Robots {
+export default async function robots(): Promise<MetadataRoute.Robots> {
   const origin = getSiteUrl().origin;
+  const split = getSplitOrigins();
+  let host = "";
+  try {
+    host = requestHost(await headers());
+  } catch {
+    host = "";
+  }
+  if (split && classifyRequestHost(host, split) === "app") {
+    return {
+      rules: [{userAgent: "*", disallow: "/"}],
+      host: split.app.host,
+    };
+  }
 
   return {
     rules: [

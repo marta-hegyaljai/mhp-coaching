@@ -7,7 +7,7 @@ import {organization} from "@/features/organization/info";
 import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
 import {formatZurichRange} from "@/features/rooms/timezone";
 import {localizedPathname} from "@/i18n/path";
-import {getSiteUrl} from "@/lib/site-url";
+import {getAppUrl} from "@/lib/site-url";
 import type {PathnameHref} from "@/i18n/href";
 
 type RoomMailCopy =
@@ -20,7 +20,7 @@ type RoomMailCopy =
 
 async function absoluteUrl(locale: ReturnType<typeof mailLocale>, href: PathnameHref): Promise<string> {
   const path = localizedPathname(locale, href);
-  return new URL(path, getSiteUrl()).toString();
+  return new URL(path, getAppUrl()).toString();
 }
 
 async function sendUserRoomMail(input: {

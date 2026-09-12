@@ -2,7 +2,6 @@ import {getTranslations} from "next-intl/server";
 
 import {getViewer} from "@/features/auth/require";
 import {catalogueCalendarHref, type PathnameHref} from "@/i18n/href";
-import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {buttonStyles} from "@/shared/ui/button";
 import {ArrowRightIcon} from "@/shared/ui/icons";
@@ -10,6 +9,7 @@ import {Container} from "@/shared/ui/layout";
 
 import {LANGUAGE_SWITCHER_ENABLED} from "./locale-ui";
 import {LanguageSwitcher} from "./language-switcher";
+import {OriginLink} from "./origin-link";
 
 const navLink =
   "inline-flex h-14 shrink-0 items-center px-2 text-[0.7rem] font-semibold uppercase tracking-[0.06em] text-ink whitespace-nowrap transition-opacity duration-150 hover:opacity-60 sm:h-16 sm:px-2.5 sm:text-xs sm:tracking-[0.1em]";
@@ -27,7 +27,9 @@ export async function SiteHeader({
   return (
     <header className="sticky top-0 z-40 h-14 border-b border-ink bg-ivory/95 backdrop-blur-sm sm:h-16">
       <Container className="flex h-full flex-nowrap items-center justify-between gap-2 overflow-x-clip sm:gap-4">
-        <Link
+        <OriginLink
+          locale={locale}
+          origin="marketing"
           href="/"
           aria-label="MHP Coaching"
           className="flex h-full min-w-0 shrink-0 items-center whitespace-nowrap font-sans text-ink transition-opacity duration-150 hover:opacity-60"
@@ -42,43 +44,48 @@ export async function SiteHeader({
           <span className="hidden text-lg font-normal tracking-[-0.035em] md:inline md:text-xl">
             Coaching
           </span>
-        </Link>
+        </OriginLink>
         <div className="flex h-full min-w-0 shrink-0 items-center justify-end">
           <nav aria-label={t("label")} className="flex h-full items-center">
-            <Link href="/courses" className={navLink}>
+            <OriginLink locale={locale} origin="marketing" href="/courses" className={navLink}>
               {t("courses")}
-            </Link>
-            <Link href="/contact" className={navLink}>
+            </OriginLink>
+            <OriginLink locale={locale} origin="marketing" href="/contact" className={navLink}>
               {t("contact")}
-            </Link>
+            </OriginLink>
             {viewer?.isAdmin ? (
-              <Link href="/admin/users" className={navLink}>
+              <OriginLink locale={locale} origin="app" href="/admin/users" className={navLink}>
                 {t("admin")}
-              </Link>
+              </OriginLink>
             ) : null}
             {viewer?.canAccessRooms ? (
-              <Link href="/rooms" className={navLink}>
+              <OriginLink locale={locale} origin="app" href="/rooms" className={navLink}>
                 {t("rooms")}
-              </Link>
+              </OriginLink>
             ) : null}
             {viewer ? (
-              <Link href="/account" className={navLink}>
+              <OriginLink locale={locale} origin="app" href="/account" className={navLink}>
                 {t("account")}
-              </Link>
+              </OriginLink>
             ) : (
-              <Link href="/sign-in" className={navLink}>
+              <OriginLink locale={locale} origin="app" href="/sign-in" className={navLink}>
                 {t("signIn")}
-              </Link>
+              </OriginLink>
             )}
           </nav>
           {LANGUAGE_SWITCHER_ENABLED ? (
             <LanguageSwitcher hreflangs={hreflangs} />
           ) : null}
           <div className="ml-3 hidden lg:block">
-            <Link href={catalogueCalendarHref} className={`${buttonStyles()} min-w-40`}>
+            <OriginLink
+              locale={locale}
+              origin="marketing"
+              href={catalogueCalendarHref}
+              className={`${buttonStyles()} min-w-40`}
+            >
               {t("cta")}
               <ArrowRightIcon className="transition-transform duration-150 ease-standard group-hover/button:translate-x-1" />
-            </Link>
+            </OriginLink>
           </div>
         </div>
       </Container>

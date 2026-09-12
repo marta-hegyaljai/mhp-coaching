@@ -55,8 +55,9 @@ Keep Vercel compute near Neon in Central Europe/Frankfurt.
 Public marketing/course pages should be static/cached when practical;
 authentication, booking, payment, account and admin operations are dynamic. The
 public marketing origin remains `mhp-coaching.ch`; the authenticated application
-is intended for `app.mhp-coaching.ch`. Both are served by this application unless
-a later deployment decision says otherwise.
+is `app.mhp-coaching.ch`. Both are served by this application. Set `APP_ORIGIN`
+and `MARKETING_ORIGIN` for 308 host redirects; unset, local and preview stay
+single-origin. See [`LAUNCH.md`](./LAUNCH.md).
 
 ## Local
 ```text
@@ -293,7 +294,8 @@ Production and preview Vercel builds (`VERCEL_ENV=production` or `preview`) run
 Production builds also re-seed the course catalogue. Local `pnpm build` skips
 those steps.
 New production application domains must not be connected until their release
-acceptance and rollback plan are complete.
+acceptance and rollback plan are complete. Follow [`LAUNCH.md`](./LAUNCH.md)
+and [`OPERATIONS.md`](./OPERATIONS.md).
 
 The course MVP has passed this stage. For platform expansion, preserve public
 course availability during forward-only migrations. Scheduling for reminders and

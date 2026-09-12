@@ -796,3 +796,22 @@ export const roomNotifications = pgTable(
 export type RoomNotification = typeof roomNotifications.$inferSelect;
 export type RoomNotificationKind = (typeof roomNotificationKindEnum.enumValues)[number];
 export type RoomNotificationStatus = (typeof roomNotificationStatusEnum.enumValues)[number];
+
+export const opsHeartbeats = pgTable(
+  "ops_heartbeats",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    createdAt: timestamp("created_at", {withTimezone: true})
+      .defaultNow()
+      .notNull(),
+    job: text("job").notNull(),
+    ok: boolean("ok").notNull(),
+    payload: jsonb("payload").$type<Record<string, unknown>>().notNull(),
+    error: text("error"),
+  },
+  (table) => [
+    index("ops_heartbeats_job_created_at_idx").on(table.job, table.createdAt),
+  ],
+);
+
+export type OpsHeartbeat = typeof opsHeartbeats.$inferSelect;

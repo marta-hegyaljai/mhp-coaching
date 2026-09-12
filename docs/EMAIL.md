@@ -34,7 +34,8 @@ Do **not**:
 - use gold except on the small uppercase eyebrow
 - put pills, rounded cards, or decorative images in mail
 - send the internal booking UUID to the buyer; staff mail may keep it
-- call real recipients from local or preview environments
+- call real recipients from local or preview environments. `sendMail()` throws
+  on `VERCEL_ENV=preview`.
 
 ## Anatomy
 
@@ -91,6 +92,7 @@ Add new mail as a function in `src/features/email/` that calls
 | Availability request staff alert | `sendAvailabilityRequestCreatedStaff` | `contact@mhp-coaching.ch` |
 | Request resolved / declined | `sendAvailabilityRequestDecision` | requester |
 | Statement finalized / payment succeeded / payment failed | `sendStatementFinalizedMail` and siblings | statement owner |
+| Scheduled job failure | `sendOpsAlert` | `OPS_ALERT_EMAIL` |
 | Sign-up verification | `sendEmailVerification` | registering user |
 | Password reset | `sendPasswordRecovery` | account email |
 

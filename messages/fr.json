@@ -6,6 +6,7 @@
   },
   "Nav": {
     "label": "Navigation principale",
+    "skipToContent": "Aller au contenu",
     "courses": "Formations",
     "contact": "Contact",
     "cta": "Réserver une place",
@@ -629,7 +630,12 @@
       "STATEMENT_FINALIZED": "Relevé finalisé",
       "PAYMENT_SUCCEEDED": "Paiement réussi",
       "PAYMENT_FAILED": "Paiement échoué"
-    }
+    },
+    "opsTitle": "Pulses des tâches",
+    "opsHelp": "Résultat du cron horaire des salles. Les échecs e-mailent OPS_ALERT_EMAIL s’il est défini. Les notes privées n’y figurent jamais.",
+    "opsEmpty": "Aucune tâche enregistrée. Déclenchez GET /api/cron/rooms avec le secret cron en local.",
+    "opsOk": "Réussi",
+    "opsFailed": "Échoué"
   },
   "Certificates": {
     "eyebrow": "Compte",
@@ -1248,6 +1254,13 @@
       "amountLine": "Montant : {amount}",
       "linkLine": "Mettre à jour le moyen de paiement : {url}",
       "closing": "Si vous avez déjà mis à jour la carte, un administrateur peut relancer le débit."
+    },
+    "opsAlert": {
+      "subject": "Tâche MHP en échec — {job}",
+      "eyebrow": "Exploitation",
+      "title": "Une tâche planifiée a échoué",
+      "intro": "La maintenance des salles ne s’est pas terminée. Vérifiez le cron Vercel, Stripe et Mailpit/Resend, puis relancez.",
+      "closing": "Cette alerte ne contient aucune note de réservation privée."
     }
   },
   "NotFound": {
