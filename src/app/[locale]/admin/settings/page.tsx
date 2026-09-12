@@ -2,6 +2,8 @@ import {getTranslations, setRequestLocale} from "next-intl/server";
 
 import {AdminSubnav, adminSectionLabels} from "@/features/admin/components/admin-subnav";
 import {requireAdmin} from "@/features/auth/require";
+import {HeartbeatList} from "@/features/ops/components/heartbeat-list";
+import {listRecentHeartbeats} from "@/features/ops/heartbeats";
 import {RoomSettingsForm} from "@/features/rooms/components/admin/settings-form";
 import {getBookingSettings, listOpeningIntervals} from "@/features/rooms/settings";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
@@ -34,9 +36,10 @@ export default async function AdminSettingsPage({params}: AdminSettingsPageProps
   await requireAdmin(locale, localizedPath(locale, "/admin/settings"));
   const t = await getTranslations("Rooms");
   const admin = await getTranslations("Admin");
-  const [settings, hours] = await Promise.all([
+  const [settings, hours, heartbeats] = await Promise.all([
     getBookingSettings(),
     listOpeningIntervals(),
+    listRecentHeartbeats(),
   ]);
 
   return (
@@ -53,6 +56,16 @@ export default async function AdminSettingsPage({params}: AdminSettingsPageProps
         <div className="mt-10">
           <RoomSettingsForm locale={locale} settings={settings} hours={hours} />
         </div>
+        <section className="mt-16">
+          <h2 className="font-serif text-subheading">{admin("opsTitle")}</h2>
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-muted">{admin("opsHelp")}</p>
+          <HeartbeatList
+            rows={heartbeats}
+            empty={admin("opsEmpty")}
+            okLabel={admin("opsOk")}
+            failedLabel={admin("opsFailed")}
+          />
+        </section>
       </Section>
     </SiteShell>
   );

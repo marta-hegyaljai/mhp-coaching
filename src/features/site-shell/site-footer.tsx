@@ -1,13 +1,14 @@
 import {getTranslations} from "next-intl/server";
-import type {ComponentProps} from "react";
 
 import {ContactLinks} from "@/features/organization/contact-links";
 import {organization} from "@/features/organization/info";
-import {Link} from "@/i18n/navigation";
+import type {PathnameHref} from "@/i18n/href";
 import type {AppLocale} from "@/i18n/routing";
 import {buttonStyles} from "@/shared/ui/button";
 import {ArrowRightIcon} from "@/shared/ui/icons";
 import {Container} from "@/shared/ui/layout";
+
+import {OriginLink} from "./origin-link";
 
 const footerLink =
   "inline-flex min-h-9 items-center text-sm text-parchment/70 underline-offset-4 transition-colors duration-150 hover:text-parchment hover:underline";
@@ -17,7 +18,7 @@ const footerEyebrow =
 
 /** Closing call to action; pass `null` on pages that already are the offer. */
 export type FooterCta = {
-  href: ComponentProps<typeof Link>["href"];
+  href: PathnameHref;
   label: string;
 };
 
@@ -48,13 +49,15 @@ export async function SiteFooter({
                 {t("ctaBody")}
               </p>
             </div>
-            <Link
+            <OriginLink
+              locale={locale}
+              origin="marketing"
               href={band.href}
               className={`${buttonStyles({variant: "invert", size: "lg"})} w-full shrink-0 sm:w-auto`}
             >
               {band.label}
               <ArrowRightIcon className="transition-transform duration-200 ease-standard group-hover/button:translate-x-0.5" />
-            </Link>
+            </OriginLink>
           </Container>
         </section>
       ) : null}
@@ -71,14 +74,14 @@ export async function SiteFooter({
             <p className={footerEyebrow}>{t("navigation")}</p>
             <ul className="mt-3 space-y-1">
               <li>
-                <Link href="/courses" className={footerLink}>
+                <OriginLink locale={locale} origin="marketing" href="/courses" className={footerLink}>
                   {nav("courses")}
-                </Link>
+                </OriginLink>
               </li>
               <li>
-                <Link href="/contact" className={footerLink}>
+                <OriginLink locale={locale} origin="marketing" href="/contact" className={footerLink}>
                   {nav("contact")}
-                </Link>
+                </OriginLink>
               </li>
             </ul>
           </nav>
@@ -99,29 +102,29 @@ export async function SiteFooter({
             <p className={footerEyebrow}>{t("legal")}</p>
             <ul className="mt-3 space-y-1">
               <li>
-                <Link href="/legal/imprint" className={footerLink}>
+                <OriginLink locale={locale} origin="marketing" href="/legal/imprint" className={footerLink}>
                   {t("imprint")}
-                </Link>
+                </OriginLink>
               </li>
               <li>
-                <Link href="/legal/terms-of-use" className={footerLink}>
+                <OriginLink locale={locale} origin="marketing" href="/legal/terms-of-use" className={footerLink}>
                   {t("termsOfUse")}
-                </Link>
+                </OriginLink>
               </li>
               <li>
-                <Link href="/legal/terms" className={footerLink}>
+                <OriginLink locale={locale} origin="marketing" href="/legal/terms" className={footerLink}>
                   {t("terms")}
-                </Link>
+                </OriginLink>
               </li>
               <li>
-                <Link href="/legal/privacy" className={footerLink}>
+                <OriginLink locale={locale} origin="marketing" href="/legal/privacy" className={footerLink}>
                   {t("privacy")}
-                </Link>
+                </OriginLink>
               </li>
               <li>
-                <Link href="/legal/copyright" className={footerLink}>
+                <OriginLink locale={locale} origin="marketing" href="/legal/copyright" className={footerLink}>
                   {t("copyrightNotice")}
-                </Link>
+                </OriginLink>
               </li>
             </ul>
           </nav>

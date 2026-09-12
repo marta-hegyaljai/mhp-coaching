@@ -25,7 +25,7 @@ import {sendLeadNotification} from "./lead-notification";
 import {sendPurchaseNotification} from "./purchase-notification";
 import {sendWaitlistNotification} from "./waitlist-notification";
 import {sendAccountInvitation} from "./invitation";
-import {sendAdminCreatedRoomBooking, sendAdminMovedRoomBooking} from "./room-booking";
+import {sendAdminCreatedRoomBooking, sendAdminMovedRoomBooking, sendRoomBookingConfirmed, sendRoomBookingReminder, sendStatementPaymentFailedMail} from "./room-booking";
 import {
   sendEmailVerification,
   sendPasswordRecovery,
@@ -124,7 +124,7 @@ function booking(overrides: Partial<Booking> = {}): Booking {
 describe("staff email destinations", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    sendMailMock.mockResolvedValue(undefined);
+    sendMailMock.mockResolvedValue({provider: "smtp", messageId: "test-message-id"});
     mockEmailCatalogues();
   });
 
@@ -291,6 +291,13 @@ describe("staff email destinations", () => {
         locale: "en",
         isAdmin: false,
         roomBookingEnabled: true,
+        roomDiscountPercent: 0,
+        stripeCustomerId: null,
+        stripePaymentMethodId: null,
+        paymentMethodBrand: null,
+        paymentMethodLast4: null,
+        paymentMethodExpMonth: null,
+        paymentMethodExpYear: null,
         disabledAt: null,
         pendingEmail: null,
         pendingEmailNormalized: null,
@@ -358,6 +365,13 @@ describe("staff email destinations", () => {
       locale: "en",
       isAdmin: false,
       roomBookingEnabled: true,
+      roomDiscountPercent: 0,
+      stripeCustomerId: null,
+      stripePaymentMethodId: null,
+      paymentMethodBrand: null,
+      paymentMethodLast4: null,
+      paymentMethodExpMonth: null,
+      paymentMethodExpYear: null,
       disabledAt: null,
       pendingEmail: null,
       pendingEmailNormalized: null,
@@ -415,5 +429,25 @@ describe("staff email destinations", () => {
     const movedHtml = sendMailMock.mock.calls.at(-1)?.[0].html ?? "";
     expect(movedHtml).not.toContain(booking.id);
     expectSharedChrome(movedHtml);
+
+    await sendRoomBookingConfirmed({user, booking});
+    expect(sendMailMock.mock.calls.at(-1)?.[0].subject).toBe("Room booking confirmed — Salon Lavaux");
+    expectSharedChrome(sendMailMock.mock.calls.at(-1)?.[0].html ?? "");
+
+    await sendRoomBookingReminder({user, booking});
+    expect(sendMailMock.mock.calls.at(-1)?.[0].subject).toBe("Room booking reminder — Salon Lavaux");
+    expect(sendMailMock.mock.calls.at(-1)?.[0].html).toContain("Reminder");
+
+    await sendStatementPaymentFailedMail({
+      user,
+      monthLabel: "August 2026",
+      amount: "CHF 40.00",
+    });
+    const failedHtml = sendMailMock.mock.calls.at(-1)?.[0].html ?? "";
+    expect(sendMailMock.mock.calls.at(-1)?.[0].to).toBe("theo@example.com");
+    expect(failedHtml).toContain("Update your payment method");
+    expect(failedHtml).toContain("August 2026");
+    expect(failedHtml).not.toContain(booking.id);
+    expectSharedChrome(failedHtml);
   });
 });

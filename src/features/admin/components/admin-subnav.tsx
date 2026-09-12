@@ -1,29 +1,31 @@
 import type {PathnameHref} from "@/i18n/href";
 import {Link} from "@/i18n/navigation";
 
-export type AdminSection = "users" | "bookings" | "requests" | "rooms" | "settings";
+export type AdminSection = "users" | "bookings" | "requests" | "rooms" | "billing" | "settings";
 
 const hrefs: Record<AdminSection, PathnameHref> = {
   users: "/admin/users",
   bookings: "/admin/bookings",
   requests: "/admin/requests",
   rooms: "/admin/rooms",
+  billing: "/admin/billing",
   settings: "/admin/settings",
 };
 
-const order: AdminSection[] = ["users", "bookings", "requests", "rooms", "settings"];
+const order: AdminSection[] = ["users", "bookings", "requests", "rooms", "billing", "settings"];
 
 const itemClass =
   "inline-flex min-h-11 items-center border-b-2 px-1 text-sm font-semibold tracking-[0.02em] transition-colors duration-150 ease-standard";
 
 export function adminSectionLabels(admin: {
-  (key: "title" | "bookingsNav" | "requestsNav" | "roomsNav" | "settingsNav"): string;
+  (key: "title" | "bookingsNav" | "requestsNav" | "roomsNav" | "billingNav" | "settingsNav"): string;
 }): Record<AdminSection, string> {
   return {
     users: admin("title"),
     bookings: admin("bookingsNav"),
     requests: admin("requestsNav"),
     rooms: admin("roomsNav"),
+    billing: admin("billingNav"),
     settings: admin("settingsNav"),
   };
 }

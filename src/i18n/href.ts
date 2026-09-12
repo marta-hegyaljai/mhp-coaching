@@ -12,6 +12,9 @@ export type PathnameHref =
       | "/admin/rooms/[id]"
       | "/admin/bookings/[id]"
       | "/admin/requests/[id]"
+      | "/admin/billing/[userId]"
+      | "/admin/billing/[userId]/statements/[id]"
+      | "/billing/statements/[id]"
       | "/rooms/bookings/[id]"
       | "/rooms/bookings/[id]/change"
       | "/rooms/bookings/[id]/cancel"
@@ -111,6 +114,23 @@ export type PathnameHref =
       pathname: "/admin/requests/[id]";
       params: {id: string};
       query?: {resolved?: string; declined?: string};
+    }
+  | {
+      pathname: "/admin/billing";
+      query?: {q?: string; month?: string};
+    }
+  | {
+      pathname: "/admin/billing/[userId]";
+      params: {userId: string};
+      query?: {month?: string};
+    }
+  | {
+      pathname: "/admin/billing/[userId]/statements/[id]";
+      params: {userId: string; id: string};
+    }
+  | {
+      pathname: "/billing/statements/[id]";
+      params: {id: string};
     }
   | {
       pathname: "/reset-password/[token]";

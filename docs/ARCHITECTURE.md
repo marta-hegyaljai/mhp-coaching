@@ -19,7 +19,7 @@ One Next.js App Router application handles:
 - course booking UI/server logic and Stripe checkout/webhooks
 - shared account, profile, permission and email infrastructure
 - authenticated course history and certificates (My Courses registrations and certificate library)
-- therapist room availability (inventory, hours, blocks and privacy-safe calendar); booking and monthly billing (later checkpoints)
+- therapist room availability (inventory, hours, blocks and privacy-safe calendar); booking, current-month usage, saved payment method and monthly statements
 - role-aware administration (admin users, access, rooms, hours and staff lists)
 
 No separate API service or microservices.
@@ -55,8 +55,9 @@ Keep Vercel compute near Neon in Central Europe/Frankfurt.
 Public marketing/course pages should be static/cached when practical;
 authentication, booking, payment, account and admin operations are dynamic. The
 public marketing origin remains `mhp-coaching.ch`; the authenticated application
-is intended for `app.mhp-coaching.ch`. Both are served by this application unless
-a later deployment decision says otherwise.
+is `app.mhp-coaching.ch`. Both are served by this application. Set `APP_ORIGIN`
+and `MARKETING_ORIGIN` for 308 host redirects; unset, local and preview stay
+single-origin. See [`LAUNCH.md`](./LAUNCH.md).
 
 ## Local
 ```text
@@ -114,8 +115,8 @@ Planned shared concepts:
 
 Planned room concepts stay room-prefixed: rooms, opening hours, room blocks,
 room bookings, booking history, separately protected private notes, availability
-requests, user discounts, statement/adjustment line items, monthly statements
-and payment attempts.
+requests, user discounts, current-month usage projections, statement/adjustment
+line items, monthly statements and payment attempts.
 
 Guest course registrations remain valid without a `userId`. Once an account has
 verified its email, an idempotent reconciliation links matching registrations by
@@ -161,9 +162,13 @@ Keep provider code localized behind a small interface such as:
 interface PaymentProvider {
   createCheckout(input: CreateCheckoutInput): Promise<CheckoutResult>;
 }
+
+interface BillingPaymentAdapter {
+  createSetupSession(input: CreateBillingSetupInput): Promise<BillingSetupSession>;
+}
 ```
 
-Provide `FakePaymentProvider` for deterministic local/E2E tests.
+Provide `FakePaymentProvider` and `FakeBillingPaymentAdapter` for deterministic local/E2E tests. Course checkout and room payment-method setup share `PAYMENT_PROVIDER`. Room billing stores one Stripe customer id per user and only card display metadata (brand, last4, expiry).
 
 Webhook rules:
 - verify Stripe signature
@@ -242,10 +247,11 @@ src/
     bookings/               # existing course form, validation, persistence
     certificates/           # personal certificate library on My Courses
     rooms/                  # inventory, hours, blocks, privacy-safe availability,
-                            # reservations, owner-only notes, no-availability requests
+                            # reservations, owner-only notes, requests, discounts, usage,
+                            # payment method and monthly statements
     room-bookings/          # booking lifecycle lives in features/rooms
     room-requests/          # request inbox lives in features/rooms
-    room-billing/           # planned: usage, statements, adjustments, payments
+    room-billing/           # usage, statements and payment-method live in features/rooms
     waitlist/               # waiting list for published courses
     inquiries/              # contact and alternative-payment forms
     payments/{fake,stripe}/ # PaymentProvider adapters + webhook
@@ -288,7 +294,8 @@ Production and preview Vercel builds (`VERCEL_ENV=production` or `preview`) run
 Production builds also re-seed the course catalogue. Local `pnpm build` skips
 those steps.
 New production application domains must not be connected until their release
-acceptance and rollback plan are complete.
+acceptance and rollback plan are complete. Follow [`LAUNCH.md`](./LAUNCH.md)
+and [`OPERATIONS.md`](./OPERATIONS.md).
 
 The course MVP has passed this stage. For platform expansion, preserve public
 course availability during forward-only migrations. Scheduling for reminders and

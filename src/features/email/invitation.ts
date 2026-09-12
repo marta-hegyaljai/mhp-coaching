@@ -6,7 +6,7 @@ import {mailLocale} from "@/features/email/locale";
 import {sendMail} from "@/features/email/transport";
 import {localizedPathname} from "@/i18n/path";
 import type {AppLocale} from "@/i18n/routing";
-import {getSiteUrl} from "@/lib/site-url";
+import {getAppUrl} from "@/lib/site-url";
 
 export async function sendAccountInvitation(input: {
   user: User;
@@ -20,7 +20,7 @@ export async function sendAccountInvitation(input: {
     pathname: "/invite/[token]",
     params: {token: input.rawToken},
   });
-  const setupUrl = new URL(setupPath, getSiteUrl()).toString();
+  const setupUrl = new URL(setupPath, getAppUrl()).toString();
   const greeting = t("greeting", {name: input.user.firstName});
   const text = [
     greeting,

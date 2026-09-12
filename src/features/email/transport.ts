@@ -2,6 +2,14 @@ import nodemailer from "nodemailer";
 import type {Transporter} from "nodemailer";
 
 import {getResendApiKey, getResendFromAddress} from "@/features/email/credentials";
+import {isHostedPreviewMailBlocked} from "@/features/email/preview";
+
+export class PreviewMailBlockedError extends Error {
+  constructor() {
+    super("Transactional mail is blocked on Vercel preview deployments");
+    this.name = "PreviewMailBlockedError";
+  }
+}
 
 type MailInput = {
   to: string;
@@ -9,6 +17,11 @@ type MailInput = {
   text: string;
   html: string;
   replyTo?: string;
+};
+
+export type MailDelivery = {
+  provider: "resend" | "smtp";
+  messageId: string | null;
 };
 
 let transporter: Transporter | undefined;
@@ -27,7 +40,7 @@ function getTransporter(): Transporter {
   return transporter;
 }
 
-async function sendViaResend(input: MailInput): Promise<void> {
+async function sendViaResend(input: MailInput): Promise<MailDelivery> {
   const apiKey = getResendApiKey();
 
   if (!apiKey) {
@@ -54,15 +67,24 @@ async function sendViaResend(input: MailInput): Promise<void> {
     const detail = await response.text();
     throw new Error(`Resend rejected the message (${response.status}): ${detail}`);
   }
+
+  const body = (await response.json().catch(() => null)) as {id?: unknown} | null;
+  return {
+    provider: "resend",
+    messageId: typeof body?.id === "string" ? body.id : null,
+  };
 }
 
-export async function sendMail(input: MailInput): Promise<void> {
-  if (getResendApiKey()) {
-    await sendViaResend(input);
-    return;
+export async function sendMail(input: MailInput): Promise<MailDelivery> {
+  if (isHostedPreviewMailBlocked()) {
+    throw new PreviewMailBlockedError();
   }
 
-  await getTransporter().sendMail({
+  if (getResendApiKey()) {
+    return sendViaResend(input);
+  }
+
+  const info = await getTransporter().sendMail({
     from: getResendFromAddress(),
     to: input.to,
     replyTo: input.replyTo,
@@ -70,4 +92,9 @@ export async function sendMail(input: MailInput): Promise<void> {
     text: input.text,
     html: input.html,
   });
+
+  return {
+    provider: "smtp",
+    messageId: typeof info.messageId === "string" ? info.messageId : null,
+  };
 }

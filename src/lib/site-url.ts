@@ -4,7 +4,7 @@ type SiteUrlEnvironment = Readonly<
   Record<string, string | undefined>
 >;
 
-function parseHttpUrl(value: string | undefined): URL | undefined {
+export function parseHttpUrl(value: string | undefined): URL | undefined {
   const candidate = value?.trim();
 
   if (!candidate) {
@@ -32,6 +32,7 @@ export function getSiteUrl(
   environment: SiteUrlEnvironment = process.env,
 ): URL {
   const candidates = [
+    environment.MARKETING_ORIGIN,
     environment.SITE_URL,
     environment.NEXT_PUBLIC_SITE_URL,
     environment.VERCEL_PROJECT_PRODUCTION_URL,
@@ -49,4 +50,16 @@ export function getSiteUrl(
 
   // LOCAL_SITE_URL is a source-controlled valid URL, so this is unreachable.
   throw new Error("No valid site URL is available");
+}
+
+export function getMarketingUrl(
+  environment: SiteUrlEnvironment = process.env,
+): URL {
+  return parseHttpUrl(environment.MARKETING_ORIGIN) ?? getSiteUrl(environment);
+}
+
+export function getAppUrl(
+  environment: SiteUrlEnvironment = process.env,
+): URL {
+  return parseHttpUrl(environment.APP_ORIGIN) ?? getSiteUrl(environment);
 }

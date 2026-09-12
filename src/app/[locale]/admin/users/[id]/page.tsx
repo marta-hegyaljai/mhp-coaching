@@ -3,6 +3,7 @@ import {notFound} from "next/navigation";
 
 import {AdminSubnav, adminSectionLabels} from "@/features/admin/components/admin-subnav";
 import {UserAccessForm} from "@/features/admin/components/user-access-form";
+import {UserDiscountForm} from "@/features/admin/components/user-discount-form";
 import {toAdminUserView} from "@/features/admin/user-view";
 import {findUserById, listAuditForUser} from "@/features/auth/repository";
 import {requireAdmin} from "@/features/auth/require";
@@ -84,9 +85,20 @@ export default async function AdminUserDetailPage({params}: AdminUserDetailPageP
               ? t("statusPending")
               : t("statusActive")}
         </p>
+        <p className="mt-3">
+          <Link
+            href={{pathname: "/admin/billing/[userId]", params: {userId: user.id}}}
+            className="text-sm underline-offset-4 hover:underline"
+          >
+            {t("viewUserBilling")}
+          </Link>
+        </p>
         <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-muted">{t("identityNote")}</p>
         <div className="mt-10">
           <UserAccessForm locale={locale} user={view} />
+        </div>
+        <div className="mt-16">
+          <UserDiscountForm locale={locale} user={view} />
         </div>
         <div className="mt-16">
           <AdminCertificatePanel

@@ -48,6 +48,11 @@ export function formatLongDate(isoDate: string, locale: AppLocale): string {
   return format(isoDate, locale, {day: "numeric", month: "long", year: "numeric"});
 }
 
+/** "septembre 2026" — open billing month labels. */
+export function formatMonthYear(isoDate: string, locale: AppLocale): string {
+  return format(isoDate, locale, {month: "long", year: "numeric"});
+}
+
 /** "jeudi 10 septembre 2026" — the day view needs the weekday for orientation. */
 export function formatWeekdayDate(isoDate: string, locale: AppLocale): string {
   return format(isoDate, locale, {

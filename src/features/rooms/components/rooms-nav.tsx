@@ -2,11 +2,15 @@ import {getTranslations} from "next-intl/server";
 
 import {SegmentedLinks} from "@/shared/ui/segmented-links";
 
-export async function RoomsNav({current}: {current: "calendar" | "bookings" | "requests"}) {
+export async function RoomsNav({
+  current,
+}: {
+  current: "calendar" | "bookings" | "requests" | "usage";
+}) {
   const t = await getTranslations("Rooms");
 
   return (
-    <div className="mt-6">
+    <div className="mt-6 overflow-x-auto">
       <SegmentedLinks
         label={t("navLabel")}
         items={[
@@ -27,6 +31,12 @@ export async function RoomsNav({current}: {current: "calendar" | "bookings" | "r
             href: "/rooms/requests",
             label: t("navRequests"),
             current: current === "requests",
+          },
+          {
+            key: "usage",
+            href: "/billing",
+            label: t("navUsage"),
+            current: current === "usage",
           },
         ]}
       />

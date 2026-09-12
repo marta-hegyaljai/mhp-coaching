@@ -30,6 +30,10 @@ type StaticPath = Exclude<
   | "/admin/bookings/[id]"
   | "/admin/requests"
   | "/admin/requests/[id]"
+  | "/admin/billing"
+  | "/admin/billing/[userId]"
+  | "/admin/billing/[userId]/statements/[id]"
+  | "/admin/notifications"
   | "/rooms"
   | "/rooms/book"
   | "/rooms/bookings"
@@ -39,6 +43,10 @@ type StaticPath = Exclude<
   | "/rooms/requests"
   | "/rooms/requests/new"
   | "/rooms/requests/[id]"
+  | "/billing"
+  | "/billing/statements/[id]"
+  | "/billing/setup"
+  | "/billing/payment-method/return"
   | "/access-denied"
 >;
 

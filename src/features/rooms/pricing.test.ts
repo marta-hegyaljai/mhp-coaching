@@ -41,15 +41,42 @@ describe("quoteRoomBooking", () => {
     });
   });
 
-  it("keeps the therapist discount path at zero until CP-08", () => {
-    expect(therapistDiscountPercent({id: "anyone"})).toBe(0);
+  it("rounds each step in integer minor units", () => {
     expect(
       quoteRoomBooking({
         hourlyRateMinor: 3500,
-        durationMinutes: 120,
-        discountPercent: therapistDiscountPercent({id: "anyone"}),
-      }).amountMinor,
-    ).toBe(7000);
+        durationMinutes: 90,
+        discountPercent: 10,
+      }),
+    ).toEqual({
+      baseHourlyRateMinor: 3500,
+      discountPercent: 10,
+      effectiveHourlyRateMinor: 3150,
+      durationMinutes: 90,
+      amountMinor: 4725,
+      currency: "CHF",
+    });
+
+    expect(
+      quoteRoomBooking({
+        hourlyRateMinor: 3500,
+        durationMinutes: 90,
+        discountPercent: 33,
+      }),
+    ).toEqual({
+      baseHourlyRateMinor: 3500,
+      discountPercent: 33,
+      effectiveHourlyRateMinor: 2345,
+      durationMinutes: 90,
+      amountMinor: 3518,
+      currency: "CHF",
+    });
+  });
+
+  it("reads the therapist discount from the user record", () => {
+    expect(therapistDiscountPercent({roomDiscountPercent: 0})).toBe(0);
+    expect(therapistDiscountPercent({roomDiscountPercent: 15})).toBe(15);
+    expect(() => therapistDiscountPercent({roomDiscountPercent: 100})).toThrow("invalidDiscount");
   });
 
   it("rejects impossible rates, durations and discounts", () => {
@@ -72,7 +99,7 @@ describe("quoteRoomBooking", () => {
         durationMinutes: 60,
         discountPercent: 100,
       }),
-    ).toThrow("invalidPrice");
+    ).toThrow("invalidDiscount");
   });
 
   it("measures duration from timezone-aware instants", () => {

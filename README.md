@@ -1,14 +1,9 @@
 # MHP Platform
 
-Multilingual Next.js platform for MHP Coaching. The implemented baseline is the
-public course catalogue, guest registration, Stripe (TWINT/card) or fake payment,
-waitlist/contact flows and a small protected staff list.
-
-The next approved expansion adds shared user accounts and a private room-booking
-module for selected therapists. It is planned, not implemented. The same modular
-monolith will support visitors, normal course users, therapists with explicit
-room access and admins. See
-[`docs/ROOM-BOOKING.md`](./docs/ROOM-BOOKING.md).
+The implemented baseline is the public course catalogue, guest registration,
+Stripe (TWINT/card) or fake payment, waitlist/contact flows, accounts, room
+booking and monthly billing. Production cutover is documented in
+[`docs/LAUNCH.md`](./docs/LAUNCH.md) and [`docs/OPERATIONS.md`](./docs/OPERATIONS.md).
 
 Execution progress is tracked in
 [`docs/IMPLEMENTATION-PLAN.md`](./docs/IMPLEMENTATION-PLAN.md). Future work can be

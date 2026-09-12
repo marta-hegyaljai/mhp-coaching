@@ -180,3 +180,91 @@ export function listingTimes(intervalMinutes: number): string[] {
   }
   return times;
 }
+
+export type ZurichMonth = {
+  year: number;
+  month: number;
+};
+
+export function zurichMonthOf(instant: Date): ZurichMonth {
+  const {year, month} = parseLocalDate(utcToZurich(instant).date);
+  return {year, month};
+}
+
+export function openZurichMonth(now = new Date()): ZurichMonth {
+  return zurichMonthOf(now);
+}
+
+/**
+ * Half-open Zurich calendar-month bounds as UTC instants.
+ * 1 September 2026 00:00 Zurich ≤ t < 1 October 2026 00:00 Zurich.
+ */
+export function zurichMonthRange(month: ZurichMonth): {start: Date; endExclusive: Date} {
+  if (
+    !Number.isInteger(month.year) ||
+    !Number.isInteger(month.month) ||
+    month.month < 1 ||
+    month.month > 12
+  ) {
+    throw new Error("invalidDate");
+  }
+
+  const startLocal = zurichLocalToUtc(formatLocalDate(month.year, month.month, 1), "00:00");
+  const next =
+    month.month === 12
+      ? {year: month.year + 1, month: 1}
+      : {year: month.year, month: month.month + 1};
+  const endLocal = zurichLocalToUtc(formatLocalDate(next.year, next.month, 1), "00:00");
+
+  if (!startLocal.ok || !endLocal.ok) {
+    throw new Error("invalidDate");
+  }
+
+  return {start: startLocal.instant, endExclusive: endLocal.instant};
+}
+
+export function isInZurichMonth(instant: Date, month: ZurichMonth): boolean {
+  const {start, endExclusive} = zurichMonthRange(month);
+  return instant >= start && instant < endExclusive;
+}
+
+export function zurichMonthKey(month: ZurichMonth): string {
+  return formatLocalDate(month.year, month.month, 1).slice(0, 7);
+}
+
+export function parseZurichMonthKey(value: string): ZurichMonth {
+  if (!/^\d{4}-\d{2}$/.test(value)) {
+    throw new Error("invalidDate");
+  }
+  const [year, month] = value.split("-").map(Number);
+  if (month < 1 || month > 12) {
+    throw new Error("invalidDate");
+  }
+  return {year, month};
+}
+
+export function addZurichMonths(month: ZurichMonth, delta: number): ZurichMonth {
+  const index = month.year * 12 + (month.month - 1) + delta;
+  const year = Math.floor(index / 12);
+  const monthIndex = ((index % 12) + 12) % 12;
+  return {year, month: monthIndex + 1};
+}
+
+export function previousZurichMonth(month: ZurichMonth): ZurichMonth {
+  return addZurichMonths(month, -1);
+}
+
+export function isZurichMonthClosed(month: ZurichMonth, now = new Date()): boolean {
+  const {endExclusive} = zurichMonthRange(month);
+  return endExclusive.getTime() <= now.getTime();
+}
+
+/** Current Zurich month first, then older closed months. */
+export function recentZurichMonths(now = new Date(), count = 13): ZurichMonth[] {
+  const open = openZurichMonth(now);
+  const months: ZurichMonth[] = [];
+  for (let offset = 0; offset < count; offset += 1) {
+    months.push(addZurichMonths(open, -offset));
+  }
+  return months;
+}

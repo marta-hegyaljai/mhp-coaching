@@ -7,16 +7,24 @@ export type RoomBookingQuote = {
   currency: "CHF";
 };
 
+export const MAX_ROOM_DISCOUNT_PERCENT = 99;
+
 export function normalizeDiscountPercent(value: number): number {
-  if (!Number.isInteger(value) || value < 0 || value > 100) {
+  if (!Number.isInteger(value) || value < 0 || value > MAX_ROOM_DISCOUNT_PERCENT) {
     throw new Error("invalidDiscount");
   }
   return value;
 }
 
 /**
- * Server-side room quote. Discount stays 0 until CP-08; the path already
- * applies a percentage so historical snapshots can hold a non-zero value.
+ * Server-side room quote in integer minor units (centimes) and integer minutes.
+ *
+ * Rounding is half-up via `Math.round` at each step — never floating francs:
+ * 1. `effectiveHourlyRateMinor = round(baseHourlyRateMinor * (100 - discountPercent) / 100)`
+ * 2. `amountMinor = round(effectiveHourlyRateMinor * durationMinutes / 60)`
+ *
+ * The base hourly rate is preserved on the snapshot so a later catalogue or
+ * discount change cannot rewrite history.
  */
 export function quoteRoomBooking(input: {
   hourlyRateMinor: number;
@@ -53,10 +61,8 @@ export function quoteRoomBooking(input: {
   };
 }
 
-/** Until CP-08 every therapist discount is zero. */
-export function therapistDiscountPercent(user: {id: string}): number {
-  void user.id;
-  return 0;
+export function therapistDiscountPercent(user: {roomDiscountPercent: number}): number {
+  return normalizeDiscountPercent(user.roomDiscountPercent);
 }
 
 export function durationMinutesBetween(startsAt: Date, endsAt: Date): number {

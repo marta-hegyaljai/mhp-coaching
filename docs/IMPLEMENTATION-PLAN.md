@@ -23,14 +23,15 @@ later scope forward.
 | --- | --- |
 | Plan revision | 3 |
 | Last updated | 2026-09-11 |
-| Last completed checkpoint | CP-07 |
-| Next checkpoint | CP-08 |
+| Last completed checkpoint | CP-11 |
+| Next checkpoint | — |
 | Active checkpoint | — |
-| Room module production status | Inventory, hours, blocks, privacy-safe availability, therapist reservations, My Bookings, change/cancel, owner-only notes and no-availability requests shipped |
+| Room module production status | Complete through CP-11. Production domain attach, live Stripe first charge and Neon restore rehearsal remain operator steps in docs/LAUNCH.md |
 
 Revision 3 completed CP-03 and CP-04 before CP-01 on this branch. CP-01 has now
-landed on main and is merged here. CP-00 through CP-07 are complete. The next
-checkpoint is CP-08.
+landed on main and is merged here. CP-00 through CP-11 are complete. Remaining
+work is production credential attach (Neon restore rehearsal, live Stripe first
+charge, DNS) documented in LAUNCH.md — not a new checkpoint.
 
 ## Status vocabulary
 
@@ -113,10 +114,10 @@ or navigation link alone is not a deliverable checkpoint.
 | CP-05 | COMPLETE | Collision-safe room reservation and “My bookings” | Therapist |
 | CP-06 | COMPLETE | Booking changes, cancellation and admin intervention | Therapist and admin |
 | CP-07 | COMPLETE | Owner-only notes and unavailable-time requests | Therapist and admin |
-| CP-08 | PLANNED | Discounts and transparent current-month usage | Therapist and admin |
-| CP-09 | PLANNED | Stable monthly statements and saved payment method | Therapist and admin |
-| CP-10 | PLANNED | Automated monthly charging and operational email | Therapist and admin |
-| CP-11 | PLANNED | Production-ready room module on the app domain | All actors |
+| CP-08 | COMPLETE | Discounts and transparent current-month usage | Therapist and admin |
+| CP-09 | COMPLETE | Stable monthly statements and saved payment method | Therapist and admin |
+| CP-10 | COMPLETE | Automated monthly charging and operational email | Therapist and admin |
+| CP-11 | COMPLETE | Production-ready room module on the app domain | All actors |
 
 ---
 
@@ -514,7 +515,7 @@ without ever gaining access to private notes.
 
 ## CP-08 — Discounts and current-month usage
 
-**Status:** `PLANNED`
+**Status:** `COMPLETE`
 
 **Depends on:** CP-07.
 
@@ -550,7 +551,7 @@ and inspect/export current totals across users.
 
 ## CP-09 — Monthly statements and payment method
 
-**Status:** `PLANNED`
+**Status:** `COMPLETE`
 
 **Depends on:** CP-08.
 
@@ -585,11 +586,13 @@ retries/dunning and credits.
 5. Owner/admin authorization protects statement reads and exports, which contain
    no private notes.
 
+**Completion evidence:** Recorded in the completion log (CP-09 — 2026-09-11).
+
 ---
 
 ## CP-10 — Automated charging, reminders and email evidence
 
-**Status:** `PLANNED`
+**Status:** `COMPLETE`
 
 **Depends on:** CP-09.
 
@@ -605,8 +608,8 @@ booking/account/billing email with internal delivery evidence.
   replay-safe Stripe webhooks as authority;
 - failed-payment user/admin states and update-payment-method action, without
   automatic account disablement;
-- React Email templates for account, booking, request, reminder and billing events
-  defined in the room specification;
+- transactional email for account, booking, request, reminder and billing events
+  composed only through `composeTransactionalEmail()`;
 - configurable 24-hour initial reminder scheduling; and
 - PostgreSQL notification attempts, provider references, delivery state and
   idempotency keys, with private-note exclusion.
@@ -632,7 +635,7 @@ integration and SMS/push notifications.
 
 ## CP-11 — Production launch and operational handoff
 
-**Status:** `PLANNED`
+**Status:** `COMPLETE`
 
 **Depends on:** CP-10.
 
@@ -1008,6 +1011,76 @@ For an incomplete checkpoint, add this directly below its acceptance criteria:
   note/request forms.
 - **Known next work:** CP-08 discounts and current-month usage.
 
+### CP-08 — 2026-09-11
+
+- **Result:** Admins set one percentage room discount per user. New bookings
+  snapshot that discount after the room rate. Therapists and admins see
+  open-month billed minutes and amounts, explicitly labelled as not finalized.
+  Later price or discount changes do not rewrite existing snapshots.
+- **Routes/UI:** Therapist `/{locale}/billing` (`/fr/facturation`,
+  `/de/abrechnung`) with Rooms nav Usage; admin `/admin/billing`,
+  `/admin/billing/[userId]`, user-detail discount form; CSV
+  `GET /api/admin/billing.csv`.
+- **Migrations:** `0013_room_discounts.sql` (`users.room_discount_percent`
+  0–99).
+- **Automated evidence:** `pnpm lint`, `pnpm typecheck`, `pnpm test` (63 files,
+  266 tests) and `pnpm build` passed. Coverage includes half-up integer minor
+  unit rounding, discount audit, snapshot immutability after later price and
+  discount changes, free/late/waiver projection, Zurich month bounds including
+  DST, therapist isolation, CSV without private notes, and Playwright auth
+  guards plus `tests/e2e/billing.spec.ts` (therapist EN/FR usage at 390px,
+  admin discount save and billing list).
+- **Browser evidence:** Playwright signed-in therapist `/en/billing` and
+  `/fr/facturation` at 390px with open-month labelling and no overflow; admin
+  set a 10% discount on a therapist and opened current-month totals.
+- **Preview/production:** Not deployed in this task.
+- **Deviations/follow-ups:** Discount cap is 99% because a 100% rate would
+  make the effective hourly rate zero and fail quote validation. Usage lives
+  in `src/features/rooms` rather than a separate `room-billing` package.
+  Rounding: `effectiveHourlyRateMinor = round(base * (100 - discount) / 100)`,
+  then `amountMinor = round(effective * minutes / 60)`, all integer centimes.
+- **Known next work:** CP-10 automated charging, reminders and email evidence.
+
+### CP-09 — 2026-09-11
+
+- **Result:** Therapists save a payment method (fake locally, Stripe Checkout
+  `mode: "setup"` when `PAYMENT_PROVIDER=stripe`) and see only brand, last four
+  digits and expiry. Admins preview and finalize a closed Zurich month
+  idempotently. Booking-derived lines and totals freeze; later price or discount
+  changes do not rewrite them. Corrections are extra reasoned adjustment lines.
+  Zero-total months can be finalized without a card. The open month cannot.
+- **Routes/UI:** Therapist `/billing` now includes payment method and statement
+  history; `/billing/setup` (fake card), `/billing/payment-method/return`,
+  `/billing/statements/[id]` (`/fr/facturation/releves/[id]`,
+  `/de/abrechnung/auszuege/[id]`). Admin month picker on `/admin/billing`,
+  per-user finalize/adjust on `/admin/billing/[userId]` and
+  `/admin/billing/[userId]/statements/[id]`; CSV
+  `GET /api/admin/statements.csv`. User detail links to billing.
+- **Migrations:** `0014_room_statements.sql` (`users` Stripe customer and
+  display-only payment-method columns; `room_statements` OPEN→FINALIZED plus
+  later payment statuses; `room_statement_line_items` USAGE,
+  LATE_CANCELLATION, ADJUSTMENT).
+- **Automated evidence:** `pnpm lint`, `pnpm typecheck`, `pnpm test` (66 files,
+  274 tests) and `pnpm build` passed. Coverage includes idempotent finalize,
+  immutable booking lines after a later price change, adjustment totals,
+  closed-month-only finalize, zero-total statements, private-note exclusion,
+  fake card display metadata, setup-event filtering that ignores course
+  Checkout, and Playwright `tests/e2e/billing.spec.ts` plus auth guards
+  (therapist fake card EN/FR 390px, admin search, open-month finalize disabled,
+  closed August finalize enabled).
+- **Browser evidence:** Therapist EN/FR/DE at 390px and desktop: current-month
+  usage, Visa •••• 4242, statements empty state, no overflow, no
+  MISSING_MESSAGE. Admin month grid with inverted selected month, closed August
+  query `?month=2026-08`, CSV links.
+- **Preview/production:** Not deployed in this task. Live Stripe setup still
+  needs test-mode keys; local/E2E use `PAYMENT_PROVIDER=fake`.
+- **Deviations/follow-ups:** EMAIL.md remains binding: CP-10 must compose room
+  mail through `composeTransactionalEmail()`, not a second React Email
+  template. Charging, webhooks-as-paid-authority and reminders stay in CP-10.
+  Payment statuses exist on the statement enum so CP-10 can advance them
+  without another migration.
+- **Known next work:** CP-10 automated charging, reminders and email evidence.
+
 ### CP-03 to CP-06 UI polish pass — 2026-09-11
 
 Not a checkpoint. A consistency review of everything CP-03 through CP-06 added,
@@ -1046,6 +1119,65 @@ against `docs/DESIGN.md`.
   `LANGUAGE_SWITCHER_ENABLED`, so locale equivalence is verified by route.
   Native `<input type="date">` still renders in the browser's locale, not the
   page's; replacing it needs a custom picker and is out of scope.
+
+### CP-10 — 2026-09-11
+
+- **Result:** Closed Zurich months can be finalized and charged once from the
+  stored statement total. Signed Stripe webhooks (and the fake adapter) are the
+  payment authority; browser returns never mark a statement paid. Failed charges
+  stay retryable without disabling access. Booking/request/billing mail is
+  composed through `composeTransactionalEmail()`, captured in Mailpit, skipped
+  on Vercel preview, and recorded as PostgreSQL notification evidence.
+- **Routes/UI:** Therapist `/billing` and `/billing/statements/[id]` (FR
+  `/facturation`, DE `/abrechnung`); admin `/admin/billing/.../statements/[id]`,
+  `/admin/notifications`; cron `GET/POST /api/cron/rooms`; webhook
+  `/api/stripe/webhook`. Charge now / Retry / Resume reuse the same stored
+  total. PAID statements show no charge action.
+- **Migrations:** `0015_room_charges_and_notifications.sql`.
+- **Automated evidence:** `pnpm verify` passed: lint 0 errors / 12 unused-arg
+  warnings (existing `useActionState` pattern), typecheck, Vitest 72 files /
+  289 tests (charging concurrency, missing card, adapter-throw recovery,
+  reminder idempotency, unsigned webhook 400, preview `sendMail` block),
+  production build. Playwright `tests/e2e/auth-guards.spec.ts` +
+  `tests/e2e/billing.spec.ts` (6 passed, including cron 401 and SENT
+  notification evidence).
+- **Browser evidence:** Therapist EN desktop billing + PAID August 2026
+  statement; FR/DE ~390px usage pages with Courses+Contact on the same header
+  row; admin notification evidence SENT; Mailpit “Room statement paid —
+  August 2026” gold eyebrow, table layout, no statement UUID, no private notes.
+- **Preview/production:** Not deployed in this task. Live Stripe charging still
+  needs production keys; local/E2E use `PAYMENT_PROVIDER=fake`.
+- **Deviations/follow-ups:** Plan “Included” previously named React Email;
+  EMAIL.md remains binding and the implementation uses
+  `composeTransactionalEmail()` only. Reminder timing is the first hourly cron
+  tick inside the configured notice window, not an exact T−24h scheduler.
+- **Known next work:** CP-11 production launch and operational handoff.
+
+### CP-11 — 2026-09-12
+
+- **Result:** Dual-origin routing (`mhp-coaching.ch` marketing vs
+  `app.mhp-coaching.ch` app), capability-aware absolute nav, app-origin
+  noindex, skip-to-content, hourly cron heartbeats with optional ops-alert
+  mail, and launch/ops/admin/privacy/security/accessibility handoff docs.
+- **Routes/UI:** Same public and app routes; host 308 redirects when
+  `APP_ORIGIN` is set. Admin Settings shows Job heartbeats. Header Courses and
+  Contact stay on the compact row at ~390px.
+- **Migrations:** `0016_ops_heartbeats.sql`.
+- **Automated evidence:** `pnpm verify` passed: lint 0 errors, typecheck,
+  Vitest 74 files / 297 tests (including origin classification and ops alert
+  chrome), production build. Playwright auth-guards + billing 6 passed.
+- **Browser evidence:** EN home desktop; admin Settings heartbeats SUCCEEDED
+  for `rooms`; 390px admin header keeps Courses+Contact on the same row; FR/DE
+  home without MISSING_MESSAGE.
+- **Preview/production:** Not deployed in this task. Production DNS, live
+  Stripe first charge and Neon restore rehearsal are operator steps in
+  `docs/LAUNCH.md` / `docs/OPERATIONS.md`.
+- **Deviations/follow-ups:** Live Neon PITR restore was not executed (no
+  production Neon in this environment). Live Stripe keys are forbidden outside
+  `VERCEL_ENV=production` and were not used. Attach `app.mhp-coaching.ch` only
+  after those rehearsals.
+- **Known next work:** Post-launch backlog only (credits, recurring bookings,
+  calendar sync — not checkpoints).
 
 ## Plan revision log
 

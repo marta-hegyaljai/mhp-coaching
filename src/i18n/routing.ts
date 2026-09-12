@@ -127,6 +127,8 @@ export const routing = defineRouting({
     "/admin/bookings/[id]": "/admin/bookings/[id]",
     "/admin/requests": "/admin/requests",
     "/admin/requests/[id]": "/admin/requests/[id]",
+    "/admin/billing": "/admin/billing",
+    "/admin/billing/[userId]": "/admin/billing/[userId]",
     "/rooms": {
       fr: "/salles",
       de: "/raeume",
@@ -172,6 +174,28 @@ export const routing = defineRouting({
       de: "/raeume/anfragen/[id]",
       en: "/rooms/requests/[id]",
     },
+    "/billing": {
+      fr: "/facturation",
+      de: "/abrechnung",
+      en: "/billing",
+    },
+    "/billing/statements/[id]": {
+      fr: "/facturation/releves/[id]",
+      de: "/abrechnung/auszuege/[id]",
+      en: "/billing/statements/[id]",
+    },
+    "/billing/setup": {
+      fr: "/facturation/moyen-de-paiement-test",
+      de: "/abrechnung/test-zahlungsmittel",
+      en: "/billing/setup",
+    },
+    "/billing/payment-method/return": {
+      fr: "/facturation/moyen-de-paiement/retour",
+      de: "/abrechnung/zahlungsmittel/rueckkehr",
+      en: "/billing/payment-method/return",
+    },
+    "/admin/billing/[userId]/statements/[id]": "/admin/billing/[userId]/statements/[id]",
+    "/admin/notifications": "/admin/notifications",
     "/access-denied": {
       fr: "/acces-refuse",
       de: "/zugriff-verweigert",

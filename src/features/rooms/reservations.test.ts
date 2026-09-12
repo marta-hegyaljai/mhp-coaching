@@ -172,6 +172,16 @@ describe.skipIf(!hasDatabase)("room reservations", () => {
       expect(retroactive.startsAt.getTime()).toBeLessThan(now.getTime());
       const ownBookings = await listMyRoomBookings(therapist, now);
       expect(ownBookings.history.map((booking) => booking.id)).toContain(retroactive.id);
+      await saveRoomSettings({
+        actor: admin,
+        cancellationNoticeHours: 48,
+        bookingIntervalMinutes: 30,
+        minimumBookingMinutes: 60,
+        maximumBookingMinutes: 120,
+        maximumAdvanceBookingDays: 14,
+        reminderNoticeHours: 24,
+        hours: defaultHours,
+      });
       await expect(
         reserveRoom({
           actor: therapist,

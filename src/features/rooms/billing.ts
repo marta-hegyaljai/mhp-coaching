@@ -28,16 +28,26 @@ export function cancellationOutcome(
     : "LATE_CANCELLATION";
 }
 
+export function isChargeableOutcome(
+  booking: Pick<RoomBooking, "status" | "billingOutcome">,
+): boolean {
+  if (booking.billingOutcome === "LATE_CANCELLATION") {
+    return true;
+  }
+  return booking.status === "CONFIRMED" && booking.billingOutcome === "USAGE";
+}
+
 export function chargeableAmountMinor(
   booking: Pick<RoomBooking, "status" | "billingOutcome" | "amountMinor">,
 ): number {
-  if (booking.billingOutcome === "LATE_CANCELLATION") {
-    return booking.amountMinor;
-  }
-  if (booking.status === "CONFIRMED" && booking.billingOutcome === "USAGE") {
-    return booking.amountMinor;
-  }
-  return 0;
+  return isChargeableOutcome(booking) ? booking.amountMinor : 0;
+}
+
+/** Minutes that contribute to open-month usage. Free cancellations and waivers are 0. */
+export function billedMinutes(
+  booking: Pick<RoomBooking, "status" | "billingOutcome" | "durationMinutes">,
+): number {
+  return isChargeableOutcome(booking) ? booking.durationMinutes : 0;
 }
 
 export function billingCopyKey(

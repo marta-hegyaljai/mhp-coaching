@@ -33,4 +33,13 @@ describe("getSiteUrl", () => {
       }).href,
     ).toBe("http://localhost:3000/");
   });
+
+  it("prefers MARKETING_ORIGIN for the public canonical origin", () => {
+    expect(
+      getSiteUrl({
+        MARKETING_ORIGIN: "https://mhp-coaching.ch",
+        SITE_URL: "https://app.mhp-coaching.ch",
+      }).origin,
+    ).toBe("https://mhp-coaching.ch");
+  });
 });

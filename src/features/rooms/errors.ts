@@ -34,7 +34,16 @@ export type RoomErrorCode =
   | "invalidAdminNote"
   | "slotAvailable"
   | "alreadyResolved"
-  | "notOpen";
+  | "notOpen"
+  | "invalidDiscount"
+  | "invalidMonth"
+  | "monthStillOpen"
+  | "statementLocked"
+  | "invalidAdjustment"
+  | "paymentSetupFailed"
+  | "paymentMethodRequired"
+  | "statementNotChargeable"
+  | "alreadyCharging";
 
 export type RoomBookingConflict = {
   bookingId: string;

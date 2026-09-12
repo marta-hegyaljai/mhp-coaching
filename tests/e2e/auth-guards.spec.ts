@@ -27,6 +27,20 @@ test("unauthenticated visitors are sent to sign-in instead of admin or rooms", a
   await expect(page).toHaveURL(/\/en\/sign-in/);
   await page.goto("/en/admin/requests");
   await expect(page).toHaveURL(/\/en\/sign-in/);
+  await page.goto("/en/admin/billing");
+  await expect(page).toHaveURL(/\/en\/sign-in/);
+  await page.goto("/en/admin/notifications");
+  await expect(page).toHaveURL(/\/en\/sign-in/);
+  await page.goto("/en/billing");
+  await expect(page).toHaveURL(/\/en\/sign-in/);
+  await page.goto("/en/billing/setup");
+  await expect(page).toHaveURL(/\/en\/sign-in/);
+  await page.goto("/en/billing/statements/11111111-1111-4111-8111-111111111111");
+  await expect(page).toHaveURL(/\/en\/sign-in/);
+  await page.goto("/fr/facturation");
+  await expect(page).toHaveURL(/\/fr\/connexion/);
+  await page.goto("/de/abrechnung");
+  await expect(page).toHaveURL(/\/de\/anmelden/);
 
   await page.goto("/en/account/courses");
   await expect(page).toHaveURL(/\/en\/sign-in/);
@@ -87,11 +101,22 @@ test("staff CSV exports reject anonymous and basic-auth requests", async ({
   expect(anonymous.status()).toBe(401);
   expect(anonymous.headers()["www-authenticate"]).toBeUndefined();
 
+  const billingCsv = await request.get("/api/admin/billing.csv");
+  expect(billingCsv.status()).toBe(401);
+  expect(billingCsv.headers()["cache-control"]).toContain("no-store");
+
+  const statementsCsv = await request.get("/api/admin/statements.csv");
+  expect(statementsCsv.status()).toBe(401);
+  expect(statementsCsv.headers()["cache-control"]).toContain("no-store");
+
   const certificate = await request.get(
     "/api/certificates/11111111-1111-4111-8111-111111111111/document",
   );
   expect(certificate.status()).toBe(401);
   expect(certificate.headers()["cache-control"]).toContain("no-store");
+
+  const cron = await request.get("/api/cron/rooms");
+  expect(cron.status()).toBe(401);
 
   const basic = await request.get("/api/staff/waitlist.csv", {
     headers: {

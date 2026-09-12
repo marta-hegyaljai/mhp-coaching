@@ -1,4 +1,4 @@
-import {and, asc, count, desc, eq, gt, inArray, isNull, lt, ne, or, sql} from "drizzle-orm";
+import {and, asc, count, desc, eq, gt, gte, inArray, isNull, lt, lte, ne, or, sql} from "drizzle-orm";
 import type {SQL} from "drizzle-orm";
 
 import {getDb, type Database} from "@/db";
@@ -502,6 +502,50 @@ export async function listOwnBookings(userId: string): Promise<RoomBooking[]> {
     .orderBy(asc(roomBookings.startsAt));
 }
 
+export type RoomBookingOwner = Pick<
+  User,
+  "id" | "firstName" | "lastName" | "email" | "roomDiscountPercent"
+>;
+
+export async function listRoomBookingsStartingInRange(input: {
+  from: Date;
+  toExclusive: Date;
+  userId?: string;
+}): Promise<Array<{booking: RoomBooking; owner: RoomBookingOwner}>> {
+  const filters: SQL[] = [
+    gte(roomBookings.startsAt, input.from),
+    lt(roomBookings.startsAt, input.toExclusive),
+  ];
+  if (input.userId) {
+    filters.push(eq(roomBookings.userId, input.userId));
+  }
+
+  const rows = await getDb()
+    .select({
+      booking: roomBookings,
+      ownerId: users.id,
+      ownerFirstName: users.firstName,
+      ownerLastName: users.lastName,
+      ownerEmail: users.email,
+      ownerDiscount: users.roomDiscountPercent,
+    })
+    .from(roomBookings)
+    .innerJoin(users, eq(roomBookings.userId, users.id))
+    .where(and(...filters))
+    .orderBy(asc(roomBookings.startsAt), asc(roomBookings.id));
+
+  return rows.map((row) => ({
+    booking: row.booking,
+    owner: {
+      id: row.ownerId,
+      firstName: row.ownerFirstName,
+      lastName: row.ownerLastName,
+      email: row.ownerEmail,
+      roomDiscountPercent: row.ownerDiscount,
+    },
+  }));
+}
+
 export async function findOwnBooking(
   userId: string,
   bookingId: string,
@@ -540,6 +584,28 @@ export async function overlappingConfirmedBookings(input: {
 export async function findBookingById(id: string): Promise<RoomBooking | undefined> {
   const [row] = await getDb().select().from(roomBookings).where(eq(roomBookings.id, id)).limit(1);
   return row;
+}
+
+export async function listUpcomingConfirmedBookings(input: {
+  fromExclusive: Date;
+  toInclusive: Date;
+}): Promise<Array<{booking: RoomBooking; owner: User}>> {
+  const rows = await getDb()
+    .select({
+      booking: roomBookings,
+      owner: users,
+    })
+    .from(roomBookings)
+    .innerJoin(users, eq(roomBookings.userId, users.id))
+    .where(
+      and(
+        eq(roomBookings.status, "CONFIRMED"),
+        gt(roomBookings.startsAt, input.fromExclusive),
+        lte(roomBookings.startsAt, input.toInclusive),
+      ),
+    )
+    .orderBy(asc(roomBookings.startsAt), asc(roomBookings.id));
+  return rows;
 }
 
 export async function listBookingEvents(bookingId: string): Promise<RoomBookingEvent[]> {

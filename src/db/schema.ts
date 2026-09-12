@@ -199,12 +199,20 @@ export const users = pgTable(
     locale: text("locale").notNull().default("fr"),
     isAdmin: boolean("is_admin").notNull().default(false),
     roomBookingEnabled: boolean("room_booking_enabled").notNull().default(false),
+    roomDiscountPercent: integer("room_discount_percent").notNull().default(0),
+    stripeCustomerId: text("stripe_customer_id"),
+    stripePaymentMethodId: text("stripe_payment_method_id"),
+    paymentMethodBrand: text("payment_method_brand"),
+    paymentMethodLast4: text("payment_method_last4"),
+    paymentMethodExpMonth: integer("payment_method_exp_month"),
+    paymentMethodExpYear: integer("payment_method_exp_year"),
     disabledAt: timestamp("disabled_at", {withTimezone: true}),
     pendingEmail: text("pending_email"),
     pendingEmailNormalized: text("pending_email_normalized"),
   },
   (table) => [
     uniqueIndex("users_email_normalized_unique").on(table.emailNormalized),
+    uniqueIndex("users_stripe_customer_id_uidx").on(table.stripeCustomerId),
     index("users_created_at_idx").on(table.createdAt),
   ],
 );
@@ -631,6 +639,179 @@ export type RoomBookingBillingOutcome =
   (typeof roomBookingBillingOutcomeEnum.enumValues)[number];
 export type RoomBookingEvent = typeof roomBookingEvents.$inferSelect;
 export type RoomBookingPrivateNote = typeof roomBookingPrivateNotes.$inferSelect;
+export const roomStatementStatusEnum = pgEnum("room_statement_status", [
+  "OPEN",
+  "FINALIZED",
+  "PAYMENT_PENDING",
+  "PAID",
+  "PAYMENT_FAILED",
+]);
+
+export const roomStatementLineKindEnum = pgEnum("room_statement_line_kind", [
+  "USAGE",
+  "LATE_CANCELLATION",
+  "ADJUSTMENT",
+]);
+
+export const roomStatements = pgTable(
+  "room_statements",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    createdAt: timestamp("created_at", {withTimezone: true})
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", {withTimezone: true})
+      .defaultNow()
+      .notNull(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, {onDelete: "restrict"}),
+    year: integer("year").notNull(),
+    month: integer("month").notNull(),
+    monthStart: timestamp("month_start", {withTimezone: true}).notNull(),
+    monthEndExclusive: timestamp("month_end_exclusive", {withTimezone: true}).notNull(),
+    status: roomStatementStatusEnum("status").notNull().default("OPEN"),
+    currency: text("currency").notNull().default("CHF"),
+    billedMinutes: integer("billed_minutes").notNull().default(0),
+    totalMinor: integer("total_minor").notNull(),
+    stripePaymentIntentId: text("stripe_payment_intent_id"),
+    chargeAttempt: integer("charge_attempt").notNull().default(0),
+    chargeIdempotencyKey: text("charge_idempotency_key"),
+    failureCode: text("failure_code"),
+    finalizedAt: timestamp("finalized_at", {withTimezone: true}),
+    finalizedByUserId: uuid("finalized_by_user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    paidAt: timestamp("paid_at", {withTimezone: true}),
+  },
+  (table) => [
+    uniqueIndex("room_statements_user_month_uidx").on(table.userId, table.year, table.month),
+    uniqueIndex("room_statements_payment_intent_uidx").on(table.stripePaymentIntentId),
+    uniqueIndex("room_statements_charge_idempotency_uidx").on(table.chargeIdempotencyKey),
+    index("room_statements_user_id_idx").on(table.userId),
+    index("room_statements_status_idx").on(table.status),
+    index("room_statements_month_idx").on(table.year, table.month),
+  ],
+);
+
+export const roomStatementLineItems = pgTable(
+  "room_statement_line_items",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    createdAt: timestamp("created_at", {withTimezone: true})
+      .defaultNow()
+      .notNull(),
+    statementId: uuid("statement_id")
+      .notNull()
+      .references(() => roomStatements.id, {onDelete: "cascade"}),
+    kind: roomStatementLineKindEnum("kind").notNull(),
+    bookingId: uuid("booking_id").references(() => roomBookings.id, {
+      onDelete: "restrict",
+    }),
+    description: text("description").notNull(),
+    minutes: integer("minutes").notNull().default(0),
+    amountMinor: integer("amount_minor").notNull(),
+    reason: text("reason"),
+    createdByUserId: uuid("created_by_user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+  },
+  (table) => [
+    index("room_statement_line_items_statement_id_idx").on(table.statementId),
+    uniqueIndex("room_statement_line_items_booking_uidx").on(table.statementId, table.bookingId),
+  ],
+);
+
 export type RoomAvailabilityRequest = typeof roomAvailabilityRequests.$inferSelect;
 export type RoomAvailabilityRequestStatus =
   (typeof roomAvailabilityRequestStatusEnum.enumValues)[number];
+export type RoomStatement = typeof roomStatements.$inferSelect;
+export type RoomStatementStatus = (typeof roomStatementStatusEnum.enumValues)[number];
+export type RoomStatementLineItem = typeof roomStatementLineItems.$inferSelect;
+export type RoomStatementLineKind = (typeof roomStatementLineKindEnum.enumValues)[number];
+
+export const roomNotificationKindEnum = pgEnum("room_notification_kind", [
+  "BOOKING_CONFIRMED",
+  "BOOKING_CHANGED",
+  "BOOKING_CANCELLED",
+  "BOOKING_REMINDER",
+  "ADMIN_CREATED",
+  "ADMIN_MOVED",
+  "REQUEST_CREATED",
+  "REQUEST_CREATED_STAFF",
+  "REQUEST_RESOLVED",
+  "REQUEST_DECLINED",
+  "STATEMENT_FINALIZED",
+  "PAYMENT_SUCCEEDED",
+  "PAYMENT_FAILED",
+]);
+
+export const roomNotificationStatusEnum = pgEnum("room_notification_status", [
+  "PENDING",
+  "SENT",
+  "FAILED",
+  "SKIPPED",
+]);
+
+export const roomNotifications = pgTable(
+  "room_notifications",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    createdAt: timestamp("created_at", {withTimezone: true})
+      .defaultNow()
+      .notNull(),
+    kind: roomNotificationKindEnum("kind").notNull(),
+    status: roomNotificationStatusEnum("status").notNull().default("PENDING"),
+    idempotencyKey: text("idempotency_key").notNull(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, {onDelete: "restrict"}),
+    bookingId: uuid("booking_id").references(() => roomBookings.id, {
+      onDelete: "set null",
+    }),
+    statementId: uuid("statement_id").references(() => roomStatements.id, {
+      onDelete: "set null",
+    }),
+    requestId: uuid("request_id").references(() => roomAvailabilityRequests.id, {
+      onDelete: "set null",
+    }),
+    toEmail: text("to_email").notNull(),
+    locale: text("locale").notNull(),
+    provider: text("provider"),
+    providerMessageId: text("provider_message_id"),
+    lastError: text("last_error"),
+    payload: jsonb("payload").$type<Record<string, unknown>>().notNull(),
+    sentAt: timestamp("sent_at", {withTimezone: true}),
+  },
+  (table) => [
+    uniqueIndex("room_notifications_idempotency_uidx").on(table.idempotencyKey),
+    index("room_notifications_user_id_idx").on(table.userId),
+    index("room_notifications_statement_id_idx").on(table.statementId),
+    index("room_notifications_booking_id_idx").on(table.bookingId),
+    index("room_notifications_status_idx").on(table.status),
+    index("room_notifications_created_at_idx").on(table.createdAt),
+  ],
+);
+
+export type RoomNotification = typeof roomNotifications.$inferSelect;
+export type RoomNotificationKind = (typeof roomNotificationKindEnum.enumValues)[number];
+export type RoomNotificationStatus = (typeof roomNotificationStatusEnum.enumValues)[number];
+
+export const opsHeartbeats = pgTable(
+  "ops_heartbeats",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    createdAt: timestamp("created_at", {withTimezone: true})
+      .defaultNow()
+      .notNull(),
+    job: text("job").notNull(),
+    ok: boolean("ok").notNull(),
+    payload: jsonb("payload").$type<Record<string, unknown>>().notNull(),
+    error: text("error"),
+  },
+  (table) => [
+    index("ops_heartbeats_job_created_at_idx").on(table.job, table.createdAt),
+  ],
+);
+
+export type OpsHeartbeat = typeof opsHeartbeats.$inferSelect;
