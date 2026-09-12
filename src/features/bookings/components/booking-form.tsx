@@ -37,6 +37,11 @@ export function BookingForm({
     firstName?: string;
     lastName?: string;
     email?: string;
+    phone?: string;
+    street?: string;
+    postalCode?: string;
+    city?: string;
+    country?: string;
   };
 }) {
   const t = useTranslations("BookingForm");
@@ -226,14 +231,14 @@ export function BookingForm({
             autoComplete="tel"
             label={t("phone")}
             error={errors?.phone}
-            defaultValue={draft?.phone}
+            defaultValue={draft?.phone ?? defaults?.phone}
           />
           <Field
             name="street"
             autoComplete="street-address"
             label={t("street")}
             error={errors?.street}
-            defaultValue={draft?.street}
+            defaultValue={draft?.street ?? defaults?.street}
             className="sm:col-span-2"
           />
           <Field
@@ -241,21 +246,21 @@ export function BookingForm({
             autoComplete="postal-code"
             label={t("postalCode")}
             error={errors?.postalCode}
-            defaultValue={draft?.postalCode}
+            defaultValue={draft?.postalCode ?? defaults?.postalCode}
           />
           <Field
             name="city"
             autoComplete="address-level2"
             label={t("city")}
             error={errors?.city}
-            defaultValue={draft?.city}
+            defaultValue={draft?.city ?? defaults?.city}
           />
           <Field
             name="country"
             autoComplete="country-name"
             label={t("country")}
             error={errors?.country}
-            defaultValue={draft?.country ?? t("countryDefault")}
+            defaultValue={draft?.country ?? defaults?.country ?? t("countryDefault")}
             className="sm:col-span-2"
           />
         </div>

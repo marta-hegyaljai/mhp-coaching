@@ -4,8 +4,9 @@ import {redirect} from "next/navigation";
 import {getTranslations} from "next-intl/server";
 import {hasLocale} from "next-intl";
 
-import {getCourseById, getBookableDates} from "@/features/courses/queries";
-import {isCoursePublished} from "@/features/courses/types";
+import {getBookableDates} from "@/features/courses/queries";
+import {loadPublishedCourseById} from "@/features/courses/live";
+import {persistCheckoutContact} from "@/features/auth/contact";
 import {getCurrentUser} from "@/features/auth/session";
 import {sendLeadNotification} from "@/features/email/lead-notification";
 import {getPaymentProvider} from "@/features/payments/get-provider";
@@ -59,9 +60,8 @@ export async function createBookingAction(
     };
   }
 
-  const course = getCourseById(courseId);
-
-  if (!course || !isCoursePublished(course)) {
+  const course = await loadPublishedCourseById(courseId);
+  if (!course) {
     return {errors: {form: t("courseMissing")}, draft};
   }
 
@@ -105,6 +105,15 @@ export async function createBookingAction(
       privacyAcceptedAt: new Date(),
       status: isLead ? "LEAD" : "PENDING",
       userId: signedInUser?.id ?? null,
+    });
+    await persistCheckoutContact({
+      userId: signedInUser?.id,
+      email: values.email,
+      phone: values.phone,
+      street: values.street,
+      postalCode: values.postalCode,
+      city: values.city,
+      country: values.country,
     });
 
     if (isLead) {

@@ -6,8 +6,9 @@ import {safeInternalPath} from "@/features/auth/redirect-path";
 import {signedInHomePath} from "@/features/auth/signed-in-home";
 import {buildPageMetadata} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
-import {redirect} from "@/i18n/navigation";
+import {Link, redirect} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
+import {buttonStyles} from "@/shared/ui/button";
 import {Eyebrow, Section} from "@/shared/ui/layout";
 
 type SignInPageProps = {
@@ -55,6 +56,13 @@ export default async function SignInPage({params, searchParams}: SignInPageProps
         </p>
         <div className="mt-10">
           <SignInForm locale={locale} nextPath={nextPath} />
+        </div>
+        <div className="mt-10 max-w-xl rounded-panel border border-ink bg-white p-5">
+          <h2 className="font-serif text-subheading">{t("signUpTitle")}</h2>
+          <p className="mt-2 text-sm leading-6 text-ink-muted">{t("signInCreatePrompt")}</p>
+          <Link href="/sign-up" className={`${buttonStyles({size: "lg"})} mt-5`}>
+            {t("signUpSubmit")}
+          </Link>
         </div>
       </Section>
     </SiteShell>

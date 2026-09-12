@@ -13,9 +13,16 @@ import {SpinnerIcon} from "@/shared/ui/icons";
 export function WaitlistForm({
   locale,
   course,
+  defaults,
 }: {
   locale: AppLocale;
   course: Course;
+  defaults?: {
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    phone?: string;
+  };
 }) {
   const t = useTranslations("WaitlistForm");
   const [state, formAction, pending] = useActionState(
@@ -61,14 +68,14 @@ export function WaitlistForm({
           name="firstName"
           label={t("firstName")}
           error={errors?.firstName}
-          defaultValue={draft?.firstName}
+          defaultValue={draft?.firstName ?? defaults?.firstName}
           autoComplete="given-name"
         />
         <Field
           name="lastName"
           label={t("lastName")}
           error={errors?.lastName}
-          defaultValue={draft?.lastName}
+          defaultValue={draft?.lastName ?? defaults?.lastName}
           autoComplete="family-name"
         />
         <Field
@@ -77,7 +84,7 @@ export function WaitlistForm({
           inputMode="email"
           label={t("email")}
           error={errors?.email}
-          defaultValue={draft?.email}
+          defaultValue={draft?.email ?? defaults?.email}
           autoComplete="email"
         />
         <Field
@@ -86,7 +93,7 @@ export function WaitlistForm({
           inputMode="tel"
           label={t("phone")}
           error={errors?.phone}
-          defaultValue={draft?.phone}
+          defaultValue={draft?.phone ?? defaults?.phone}
           autoComplete="tel"
         />
       </div>

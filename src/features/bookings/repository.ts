@@ -71,6 +71,55 @@ export async function listBookings(): Promise<Booking[]> {
   return getDb().select().from(bookings).orderBy(desc(bookings.createdAt));
 }
 
+export async function findLatestBookingForEmail(
+  emailNormalized: string,
+): Promise<Booking | undefined> {
+  const [booking] = await getDb()
+    .select()
+    .from(bookings)
+    .where(eq(bookings.emailNormalized, emailNormalized))
+    .orderBy(desc(bookings.createdAt))
+    .limit(1);
+
+  return booking;
+}
+
+export async function listCourseEnrolments(input: {
+  courseId?: string;
+  courseDateId?: string;
+  status?: BookingStatus | "all";
+  q?: string;
+  limit?: number;
+}): Promise<Booking[]> {
+  const filters = [];
+  if (input.courseId) {
+    filters.push(eq(bookings.courseId, input.courseId));
+  }
+  if (input.courseDateId) {
+    filters.push(eq(bookings.courseDateId, input.courseDateId));
+  }
+  if (input.status && input.status !== "all") {
+    filters.push(eq(bookings.status, input.status));
+  }
+
+  const needle = input.q?.trim().toLowerCase();
+  const rows = await getDb()
+    .select()
+    .from(bookings)
+    .where(filters.length > 0 ? and(...filters) : undefined)
+    .orderBy(desc(bookings.createdAt));
+
+  const filtered = needle
+    ? rows.filter((row) =>
+        `${row.firstName} ${row.lastName} ${row.email} ${row.phone} ${row.courseTitle}`
+          .toLowerCase()
+          .includes(needle),
+      )
+    : rows;
+
+  return typeof input.limit === "number" ? filtered.slice(0, input.limit) : filtered;
+}
+
 export async function recordPaymentEvent(input: {
   bookingId: string;
   provider: string;

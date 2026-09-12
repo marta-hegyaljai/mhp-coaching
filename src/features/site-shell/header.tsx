@@ -7,8 +7,10 @@ import {buttonStyles} from "@/shared/ui/button";
 import {ArrowRightIcon} from "@/shared/ui/icons";
 import {Container} from "@/shared/ui/layout";
 
+import {AccountMenu} from "./account-menu";
 import {LANGUAGE_SWITCHER_ENABLED} from "./locale-ui";
 import {LanguageSwitcher} from "./language-switcher";
+import {NavCurrent} from "./nav-current";
 import {OriginLink} from "./origin-link";
 
 const navLink =
@@ -27,50 +29,67 @@ export async function SiteHeader({
   return (
     <header className="sticky top-0 z-40 h-14 border-b border-ink bg-ivory/95 backdrop-blur-sm sm:h-16">
       <Container className="flex h-full flex-nowrap items-center justify-between gap-2 overflow-x-clip sm:gap-4">
-        <OriginLink
-          locale={locale}
-          origin="marketing"
-          href="/"
-          aria-label="MHP Coaching"
-          className="flex h-full min-w-0 shrink-0 items-center whitespace-nowrap font-sans text-ink transition-opacity duration-150 hover:opacity-60"
-        >
-          <span className="text-base font-black tracking-[-0.06em] sm:text-lg md:text-xl">
-            MHP
-          </span>
-          <span
-            aria-hidden="true"
-            className="mx-2.5 hidden h-6 border-l border-ink md:mx-3 md:inline-block md:h-8"
-          />
-          <span className="hidden text-lg font-normal tracking-[-0.035em] md:inline md:text-xl">
-            Coaching
-          </span>
-        </OriginLink>
+        <NavCurrent match="/">
+          <OriginLink
+            locale={locale}
+            origin="marketing"
+            href="/"
+            aria-label="MHP Coaching"
+            className="flex h-full min-w-0 shrink-0 items-center whitespace-nowrap font-sans text-ink transition-opacity duration-150 hover:opacity-60"
+          >
+            <span className="text-base font-black tracking-[-0.06em] sm:text-lg md:text-xl">
+              MHP
+            </span>
+            <span
+              aria-hidden="true"
+              className="mx-2.5 hidden h-6 border-l border-ink md:mx-3 md:inline-block md:h-8"
+            />
+            <span className="hidden text-lg font-normal tracking-[-0.035em] md:inline md:text-xl">
+              Coaching
+            </span>
+          </OriginLink>
+        </NavCurrent>
         <div className="flex h-full min-w-0 shrink-0 items-center justify-end">
           <nav aria-label={t("label")} className="flex h-full items-center">
-            <OriginLink locale={locale} origin="marketing" href="/courses" className={navLink}>
-              {t("courses")}
-            </OriginLink>
-            <OriginLink locale={locale} origin="marketing" href="/contact" className={navLink}>
-              {t("contact")}
-            </OriginLink>
-            {viewer?.isAdmin ? (
-              <OriginLink locale={locale} origin="app" href="/admin/users" className={navLink}>
-                {t("admin")}
+            <NavCurrent match="/courses">
+              <OriginLink locale={locale} origin="marketing" href="/courses" className={navLink}>
+                {t("courses")}
               </OriginLink>
+            </NavCurrent>
+            <NavCurrent match="/contact">
+              <OriginLink locale={locale} origin="marketing" href="/contact" className={navLink}>
+                {t("contact")}
+              </OriginLink>
+            </NavCurrent>
+            {viewer?.isAdmin ? (
+              <NavCurrent match="/admin">
+                <OriginLink locale={locale} origin="app" href="/admin/users" className={navLink}>
+                  {t("admin")}
+                </OriginLink>
+              </NavCurrent>
             ) : null}
             {viewer?.canAccessRooms ? (
-              <OriginLink locale={locale} origin="app" href="/rooms" className={navLink}>
-                {t("rooms")}
-              </OriginLink>
+              <NavCurrent match="/rooms">
+                <OriginLink locale={locale} origin="app" href="/rooms" className={navLink}>
+                  {t("rooms")}
+                </OriginLink>
+              </NavCurrent>
             ) : null}
             {viewer ? (
-              <OriginLink locale={locale} origin="app" href="/account" className={navLink}>
-                {t("account")}
-              </OriginLink>
+              <AccountMenu locale={locale} viewer={viewer} />
             ) : (
-              <OriginLink locale={locale} origin="app" href="/sign-in" className={navLink}>
-                {t("signIn")}
-              </OriginLink>
+              <>
+                <NavCurrent match="/sign-in">
+                  <OriginLink locale={locale} origin="app" href="/sign-in" className={navLink}>
+                    {t("signIn")}
+                  </OriginLink>
+                </NavCurrent>
+                <NavCurrent match="/sign-up">
+                  <OriginLink locale={locale} origin="app" href="/sign-up" className={navLink}>
+                    {t("signUp")}
+                  </OriginLink>
+                </NavCurrent>
+              </>
             )}
           </nav>
           {LANGUAGE_SWITCHER_ENABLED ? (

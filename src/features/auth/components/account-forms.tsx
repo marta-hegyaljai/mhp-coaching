@@ -18,6 +18,11 @@ type ProfileValues = {
   lastName: string;
   email: string;
   locale: string;
+  phone: string | null;
+  street: string | null;
+  postalCode: string | null;
+  city: string | null;
+  country: string | null;
 };
 
 export function ProfileForm({locale, user}: {locale: string; user: ProfileValues}) {
@@ -26,9 +31,16 @@ export function ProfileForm({locale, user}: {locale: string; user: ProfileValues
     updateProfileAction.bind(null, locale),
     null,
   );
+  const values = state?.values;
 
   return (
-    <form action={formAction} noValidate className="max-w-xl space-y-5" aria-busy={pending}>
+    <form
+      action={formAction}
+      noValidate
+      className="max-w-xl space-y-5"
+      aria-busy={pending}
+      key={state?.formKey ?? "profile"}
+    >
       {state?.error ? <AuthAlert>{state.error}</AuthAlert> : null}
       {state?.notice ? <AuthNotice>{state.notice}</AuthNotice> : null}
       <div className="grid gap-5 sm:grid-cols-2">
@@ -36,14 +48,14 @@ export function ProfileForm({locale, user}: {locale: string; user: ProfileValues
           name="firstName"
           label={t("firstName")}
           autoComplete="given-name"
-          defaultValue={user.firstName}
+          defaultValue={values?.firstName ?? user.firstName}
           error={state?.fieldErrors?.firstName}
         />
         <AuthField
           name="lastName"
           label={t("lastName")}
           autoComplete="family-name"
-          defaultValue={user.lastName}
+          defaultValue={values?.lastName ?? user.lastName}
           error={state?.fieldErrors?.lastName}
         />
       </div>
@@ -59,6 +71,50 @@ export function ProfileForm({locale, user}: {locale: string; user: ProfileValues
       <p id="account-email-locked" className="text-sm leading-6 text-ink-muted">
         {t("emailLockedNote")}
       </p>
+      <AuthField
+        name="phone"
+        type="tel"
+        label={t("phone")}
+        autoComplete="tel"
+        required={false}
+        defaultValue={values?.phone ?? user.phone ?? ""}
+        error={state?.fieldErrors?.phone}
+        hint={t("contactOptionalHint")}
+      />
+      <AuthField
+        name="street"
+        label={t("street")}
+        autoComplete="street-address"
+        required={false}
+        defaultValue={values?.street ?? user.street ?? ""}
+        error={state?.fieldErrors?.street}
+      />
+      <div className="grid gap-5 sm:grid-cols-2">
+        <AuthField
+          name="postalCode"
+          label={t("postalCode")}
+          autoComplete="postal-code"
+          required={false}
+          defaultValue={values?.postalCode ?? user.postalCode ?? ""}
+          error={state?.fieldErrors?.postalCode}
+        />
+        <AuthField
+          name="city"
+          label={t("city")}
+          autoComplete="address-level2"
+          required={false}
+          defaultValue={values?.city ?? user.city ?? ""}
+          error={state?.fieldErrors?.city}
+        />
+      </div>
+      <AuthField
+        name="country"
+        label={t("country")}
+        autoComplete="country-name"
+        required={false}
+        defaultValue={values?.country ?? user.country ?? ""}
+        error={state?.fieldErrors?.country}
+      />
       <AuthSelect
         name="locale"
         label={t("locale")}

@@ -301,6 +301,11 @@ describe("staff email destinations", () => {
         disabledAt: null,
         pendingEmail: null,
         pendingEmailNormalized: null,
+        phone: null,
+        street: null,
+        postalCode: null,
+        city: null,
+        country: null,
       },
     });
 
@@ -375,6 +380,11 @@ describe("staff email destinations", () => {
       disabledAt: null,
       pendingEmail: null,
       pendingEmailNormalized: null,
+      phone: null,
+      street: null,
+      postalCode: null,
+      city: null,
+      country: null,
     };
     const booking = {
       id: "88888888-8888-4888-8888-888888888888",

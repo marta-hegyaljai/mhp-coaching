@@ -76,10 +76,13 @@ primary action behind an ambiguous icon.
   surfaces, black rules, restrained gold, square geometry, no shadows and the
   same type hierarchy. Dense operational screens may use tighter functional
   sans-serif text while editorial headings retain the serif.
-- Account, profile and My Courses use the public header with one extra Account
-  link. Sign-out lives on the account screens. Profile email is read-only.
-  Present upcoming and past registrations as a compact equal-height bordered
-  card grid, not full-width rows.
+- Account, profile and My Courses use the public header. The header shows the
+  signed-in person's name, a menu with Profile, My courses and Sign out, and
+  the current page with an underline. Signed-out visitors see Sign in and
+  Sign up as first-class header links. Profile email is read-only. Optional
+  phone and address on the profile fill course checkout and waiting-list
+  forms. Present upcoming and past registrations as a compact equal-height
+  bordered card grid, not full-width rows.
 - Week is the primary room-calendar view and day view is required. On a phone,
   prioritize one navigable day or a horizontally controlled time grid rather
   than shrinking a seven-day desktop grid into illegibility. Preserve 44px
@@ -87,6 +90,10 @@ primary action behind an ambiguous icon.
 - Availability, booked, unavailable and “my booking” states must differ through
   label, border/pattern and contrast—not color alone. Other users' bookings say
   only “Booked”; never render names, notes or hidden private metadata.
+- Collapse consecutive available slots into one continuous labelled bar. Therapists
+  select a range by dragging with the mouse or a finger; a popover on the same
+  page collects the remaining details and reserves. Do not send them to another
+  page to pick an end time. Booked and unavailable cells are not selectable.
 - Use compact room filters/cards and time-slot controls. Avoid a long full-width
   list of every room/time combination. Show conflicts and changed availability
   next to the affected selection, then preserve the user's safe inputs.
@@ -104,7 +111,11 @@ primary action behind an ambiguous icon.
   separate patient-information warning.
 - Billing screens show minutes/hours, line items, adjustments, total and payment
   state with tabular numerals. Finalized historical statements must look fixed;
-  admin corrections are separate labeled adjustments.
+  admin corrections are separate labeled adjustments. Admins pick any start and
+  end month (past or future) and download a formatted Excel workbook, not CSV.
+- The admin Courses tab edits catalogue copy, prices, publish state and session
+  dates, and lists enrolments and waiting-list entries with filters. Seed data
+  must not overwrite those edits.
 - Status styles remain monochrome and textual. Gold does not become a semantic
   success/warning/error color.
 - Collapse consecutive slots that share a state into one continuous labelled

@@ -3,9 +3,10 @@
 import {getTranslations} from "next-intl/server";
 import {hasLocale} from "next-intl";
 
+import {persistCheckoutContact} from "@/features/auth/contact";
+import {getCurrentUser} from "@/features/auth/session";
 import {sendWaitlistNotification} from "@/features/email/waitlist-notification";
-import {getCourseById} from "@/features/courses/queries";
-import {isCoursePublished} from "@/features/courses/types";
+import {loadPublishedCourseById} from "@/features/courses/live";
 import {routing, type AppLocale} from "@/i18n/routing";
 
 import {createWaitlistEntry} from "./repository";
@@ -50,9 +51,9 @@ export async function createWaitlistAction(
     };
   }
 
-  const course = getCourseById(courseId);
+  const course = await loadPublishedCourseById(courseId);
 
-  if (!course || !isCoursePublished(course)) {
+  if (!course) {
     return {errors: {form: t("unavailable")}, draft};
   }
 
@@ -76,6 +77,17 @@ export async function createWaitlistAction(
 
   if (entry === "duplicate") {
     return {alreadyListed: true, draft};
+  }
+
+  const signedInUser = await getCurrentUser();
+  try {
+    await persistCheckoutContact({
+      userId: signedInUser?.id,
+      email: parsed.values.email,
+      phone: parsed.values.phone,
+    });
+  } catch (error) {
+    console.error("Failed to persist waitlist contact", error);
   }
 
   try {

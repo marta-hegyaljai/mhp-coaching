@@ -1,6 +1,7 @@
 import {getTranslations, setRequestLocale} from "next-intl/server";
 
 import {ChangePasswordForm, ProfileForm} from "@/features/auth/components/account-forms";
+import {AuthNotice} from "@/features/auth/components/auth-field";
 import {AccountNav} from "@/features/auth/components/account-nav";
 import {requireSignedInUser} from "@/features/auth/require";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
@@ -10,6 +11,7 @@ import {Eyebrow, Section} from "@/shared/ui/layout";
 
 type AccountPageProps = {
   params: Promise<{locale: AppLocale}>;
+  searchParams: Promise<{verified?: string | string[]}>;
 };
 
 export const dynamic = "force-dynamic";
@@ -27,8 +29,10 @@ export async function generateMetadata({params}: AccountPageProps) {
   });
 }
 
-export default async function AccountPage({params}: AccountPageProps) {
+export default async function AccountPage({params, searchParams}: AccountPageProps) {
   const {locale} = await params;
+  const verifiedParam = (await searchParams).verified;
+  const verified = Array.isArray(verifiedParam) ? verifiedParam[0] : verifiedParam;
   setRequestLocale(locale);
   const user = await requireSignedInUser(locale, localizedPath(locale, "/account"));
   const t = await getTranslations("Auth");
@@ -42,6 +46,11 @@ export default async function AccountPage({params}: AccountPageProps) {
         <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-muted">
           {t("profileIntro")}
         </p>
+        {verified === "1" ? (
+          <div className="mt-6 max-w-xl">
+            <AuthNotice>{t("emailConfirmedNotice")}</AuthNotice>
+          </div>
+        ) : null}
         <AccountNav
           locale={locale}
           labels={{

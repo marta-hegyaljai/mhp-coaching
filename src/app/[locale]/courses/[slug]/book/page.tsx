@@ -3,11 +3,12 @@ import {notFound} from "next/navigation";
 
 import {BookingForm} from "@/features/bookings/components/booking-form";
 import {WaitlistForm} from "@/features/waitlist/components/waitlist-form";
+import {checkoutDefaultsFromUser} from "@/features/auth/contact";
 import {getCurrentUser} from "@/features/auth/session";
 import {courseLocaleHrefs} from "@/features/courses/locale-hrefs";
+import {loadPublishedCourseBySlug} from "@/features/courses/live";
 import {
   getBookableDates,
-  getCourseBySlug,
   getCourseStaticParams,
 } from "@/features/courses/queries";
 import {BreadcrumbTrail} from "@/features/seo/breadcrumb-trail";
@@ -30,7 +31,7 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({params}: BookPageProps) {
   const {locale, slug} = await params;
-  const course = getCourseBySlug(slug);
+  const course = await loadPublishedCourseBySlug(slug);
   const t = await getTranslations({locale, namespace: "BookingForm"});
 
   if (!course) {
@@ -56,7 +57,7 @@ export default async function BookCoursePage({
   const {locale, slug} = await params;
   const {date, waitlist} = await searchParams;
   setRequestLocale(locale);
-  const course = getCourseBySlug(slug);
+  const course = await loadPublishedCourseBySlug(slug);
 
   if (!course) {
     notFound();
@@ -137,7 +138,11 @@ export default async function BookCoursePage({
 
         <div className="mt-10 sm:mt-12">
           {showWaitlist ? (
-            <WaitlistForm locale={locale} course={course} />
+            <WaitlistForm
+              locale={locale}
+              course={course}
+              {...(signedInUser ? {defaults: checkoutDefaultsFromUser(signedInUser)} : {})}
+            />
           ) : (
             <BookingForm
               locale={locale}
@@ -145,13 +150,7 @@ export default async function BookCoursePage({
               dates={dates}
               {...(date ? {initialDateId: date} : {})}
               {...(signedInUser
-                ? {
-                    defaults: {
-                      firstName: signedInUser.firstName,
-                      lastName: signedInUser.lastName,
-                      email: signedInUser.email,
-                    },
-                  }
+                ? {defaults: checkoutDefaultsFromUser(signedInUser)}
                 : {})}
             />
           )}

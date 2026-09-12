@@ -1,5 +1,6 @@
 import type {User} from "@/db/schema";
 import {linkUnownedBookingsForVerifiedUser} from "@/features/account/link-bookings";
+import {hydrateUserContactFromBookings} from "@/features/auth/contact";
 import {AUDIT_ACTIONS} from "@/features/admin/audit-actions";
 import {isValidEmail, normalizeEmail} from "@/features/auth/email";
 import {issueAuthToken} from "@/features/auth/issue-token";
@@ -33,9 +34,13 @@ export type RegisterResult =
   | {ok: false; fieldErrors: Partial<Record<RegisterFieldError, true>>}
   | {
       ok: true;
-      outcome: "created" | "resent" | "noop";
-      user?: User;
-      rawToken?: string;
+      outcome: "created" | "resent";
+      user: User;
+      rawToken: string;
+    }
+  | {
+      ok: true;
+      outcome: "already_registered" | "disabled" | "invite_pending";
     };
 
 export async function registerAccount(input: RegisterInput): Promise<RegisterResult> {
@@ -98,19 +103,28 @@ export async function registerAccount(input: RegisterInput): Promise<RegisterRes
       if (raced) {
         return resendVerificationIfPending(raced);
       }
-      return {ok: true, outcome: "noop"};
+      return {ok: true, outcome: "already_registered"};
     }
     throw error;
   }
 }
 
+function existingRegisterOutcome(user: User): Extract<RegisterResult, {ok: true}> {
+  if (user.disabledAt) {
+    return {ok: true, outcome: "disabled"};
+  }
+  if (user.emailVerifiedAt) {
+    return {ok: true, outcome: "already_registered"};
+  }
+  if (!user.passwordHash) {
+    return {ok: true, outcome: "invite_pending"};
+  }
+  return {ok: true, outcome: "already_registered"};
+}
+
 async function resendVerificationIfPending(user: User): Promise<Extract<RegisterResult, {ok: true}>> {
-  if (
-    user.disabledAt ||
-    user.emailVerifiedAt ||
-    !user.passwordHash
-  ) {
-    return {ok: true, outcome: "noop"};
+  if (user.disabledAt || user.emailVerifiedAt || !user.passwordHash) {
+    return existingRegisterOutcome(user);
   }
 
   const rawToken = await issueAuthToken(user.id, "verify");
@@ -142,12 +156,13 @@ export async function verifySignupEmail(rawToken: string): Promise<
     : await updateUser(user.id, {emailVerifiedAt: new Date()});
 
   await linkUnownedBookingsForVerifiedUser(ready);
+  const withContact = await hydrateUserContactFromBookings(ready);
   await recordAudit({
-    actorUserId: ready.id,
-    targetUserId: ready.id,
+    actorUserId: withContact.id,
+    targetUserId: withContact.id,
     action: AUDIT_ACTIONS.EMAIL_VERIFIED,
-    after: {emailNormalized: ready.emailNormalized},
+    after: {emailNormalized: withContact.emailNormalized},
   });
 
-  return {ok: true, user: ready};
+  return {ok: true, user: withContact};
 }

@@ -1,5 +1,6 @@
 import type {User} from "@/db/schema";
 import {AUDIT_ACTIONS} from "@/features/admin/audit-actions";
+import {type UserContact, contactFromUser} from "@/features/auth/contact";
 import {isValidPersonName, trimPersonName} from "@/features/auth/person-name";
 import {recordAudit, updateUser} from "@/features/auth/repository";
 import {routing, type AppLocale} from "@/i18n/routing";
@@ -11,6 +12,7 @@ export type UpdateProfileInput = {
   firstName: string;
   lastName: string;
   locale: string;
+  contact?: UserContact;
 };
 
 export type UpdateProfileResult =
@@ -19,6 +21,14 @@ export type UpdateProfileResult =
 
 function isAppLocale(value: string): value is AppLocale {
   return (routing.locales as readonly string[]).includes(value);
+}
+
+function emptyContact(value: string | null | undefined): string | null {
+  if (typeof value !== "string") {
+    return null;
+  }
+  const trimmed = value.trim();
+  return trimmed.length === 0 ? null : trimmed;
 }
 
 export async function updateAccountProfile(
@@ -43,16 +53,31 @@ export async function updateAccountProfile(
   }
 
   const locale = input.locale as AppLocale;
+  const contact = input.contact ?? contactFromUser(input.user);
   const profileChanged =
     firstName !== input.user.firstName ||
     lastName !== input.user.lastName ||
-    locale !== input.user.locale;
+    locale !== input.user.locale ||
+    contact.phone !== emptyContact(input.user.phone) ||
+    contact.street !== emptyContact(input.user.street) ||
+    contact.postalCode !== emptyContact(input.user.postalCode) ||
+    contact.city !== emptyContact(input.user.city) ||
+    contact.country !== emptyContact(input.user.country);
 
   if (!profileChanged) {
     return {ok: true, user: input.user};
   }
 
-  const user = await updateUser(input.user.id, {firstName, lastName, locale});
+  const user = await updateUser(input.user.id, {
+    firstName,
+    lastName,
+    locale,
+    phone: contact.phone,
+    street: contact.street,
+    postalCode: contact.postalCode,
+    city: contact.city,
+    country: contact.country,
+  });
   await recordAudit({
     actorUserId: input.user.id,
     targetUserId: input.user.id,
@@ -61,8 +86,22 @@ export async function updateAccountProfile(
       firstName: input.user.firstName,
       lastName: input.user.lastName,
       locale: input.user.locale,
+      phone: input.user.phone,
+      street: input.user.street,
+      postalCode: input.user.postalCode,
+      city: input.user.city,
+      country: input.user.country,
     },
-    after: {firstName, lastName, locale},
+    after: {
+      firstName,
+      lastName,
+      locale,
+      phone: contact.phone,
+      street: contact.street,
+      postalCode: contact.postalCode,
+      city: contact.city,
+      country: contact.country,
+    },
   });
 
   return {ok: true, user};
