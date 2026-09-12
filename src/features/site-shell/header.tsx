@@ -14,7 +14,7 @@ import {NavCurrent} from "./nav-current";
 import {OriginLink} from "./origin-link";
 
 const navLink =
-  "inline-flex h-14 shrink-0 items-center px-2 text-[0.7rem] font-semibold uppercase tracking-[0.06em] text-ink whitespace-nowrap transition-opacity duration-150 hover:opacity-60 sm:h-16 sm:px-2.5 sm:text-xs sm:tracking-[0.1em]";
+  "inline-flex h-9 shrink-0 items-center rounded-panel px-2.5 text-[0.7rem] font-semibold uppercase tracking-[0.06em] text-ink whitespace-nowrap transition-colors duration-150 hover:bg-hover sm:px-3 sm:text-xs sm:tracking-[0.1em]";
 
 export async function SiteHeader({
   locale,
@@ -29,7 +29,7 @@ export async function SiteHeader({
   return (
     <header className="sticky top-0 z-40 h-14 border-b border-ink bg-ivory/95 backdrop-blur-sm sm:h-16">
       <Container className="flex h-full flex-nowrap items-center justify-between gap-2 overflow-x-clip sm:gap-4">
-        <NavCurrent match="/">
+        <NavCurrent match="/" indicate={false}>
           <OriginLink
             locale={locale}
             origin="marketing"
@@ -50,7 +50,7 @@ export async function SiteHeader({
           </OriginLink>
         </NavCurrent>
         <div className="flex h-full min-w-0 shrink-0 items-center justify-end">
-          <nav aria-label={t("label")} className="flex h-full items-center">
+          <nav aria-label={t("label")} className="flex h-full items-center gap-0.5">
             <NavCurrent match="/courses">
               <OriginLink locale={locale} origin="marketing" href="/courses" className={navLink}>
                 {t("courses")}

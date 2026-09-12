@@ -21,6 +21,8 @@ source of truth and overrides generic design preferences.
   grids, not oversized full-width rows or long-scroll sections.
 - Keep Courses and Contact visible in phone navigation on the same compact
   row as the brand and language control; do not use a second header row.
+  Nav items use square chips: grey hover, black fill when selected; never
+  underline the brand or nav links for current-page state.
 - Set course prices in the functional sans-serif with tabular numbers, never
   the editorial serif.
 - Keep the language control as the custom fixed-width dropdown and preserve

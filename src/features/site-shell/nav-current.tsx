@@ -7,9 +7,12 @@ import {usePathname} from "@/i18n/navigation";
 export function NavCurrent({
   match,
   children,
+  indicate = true,
 }: {
   match: string | string[];
   children: ReactNode;
+  /** When false, still sets aria-current but skips the selected chip style (e.g. brand). */
+  indicate?: boolean;
 }) {
   const pathname = usePathname();
   const rootRef = useRef<HTMLSpanElement>(null);
@@ -37,8 +40,8 @@ export function NavCurrent({
     <span
       ref={rootRef}
       className={
-        active
-          ? "[&_a]:underline [&_a]:decoration-2 [&_a]:underline-offset-4"
+        active && indicate
+          ? "[&_a]:bg-ink [&_a]:text-parchment [&_a]:hover:bg-ink [&_a]:hover:text-parchment"
           : ""
       }
     >

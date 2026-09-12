@@ -50,6 +50,10 @@ dashboard.
   phones they share one compact row with the brand and language control. The
   wordmark may shorten to MHP so those links stay visible and tappable. Do not
   hide them in a menu unless the information architecture grows beyond the MVP.
+- Nav items are compact rectangular chips (`rounded-panel`). Hover uses the
+  neutral `hover` surface; the current section inverts to black with white
+  type. Do not underline nav items or the brand wordmark to show the current
+  page.
 - The language switcher is a custom accessible dropdown. Its closed trigger
   is a compact neutral capsule inspired by the reference site, shows only the
   stable locale code, has a fixed width, and opens a bordered menu with native
@@ -78,8 +82,11 @@ primary action behind an ambiguous icon.
   sans-serif text while editorial headings retain the serif.
 - Account, profile and My Courses use the public header. The header shows the
   signed-in person's name, a menu with Profile, My courses and Sign out, and
-  the current page with an underline. Signed-out visitors see Sign in and
-  Sign up as first-class header links. Profile email is read-only. Optional
+  marks the current section with a square filled chip (black on white). Nav
+  links use the same chip on selection and a neutral grey surface on hover;
+  the brand wordmark never uses that selected treatment. Signed-out visitors
+  see Sign in and Sign up as first-class header links. Profile email is
+  read-only. Optional
   phone and address on the profile fill course checkout and waiting-list
   forms. Present upcoming and past registrations as a compact equal-height
   bordered card grid, not full-width rows.
