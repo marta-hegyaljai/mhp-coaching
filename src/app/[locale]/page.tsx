@@ -1,7 +1,7 @@
 import {getTranslations, setRequestLocale} from "next-intl/server";
 
 import {CourseCard} from "@/features/courses/components/course-card";
-import {getPublishedCourses} from "@/features/courses/queries";
+import {loadPublishedCourses} from "@/features/courses/live";
 import {HomeHero} from "@/features/home/home-hero";
 import {homeStatueJsonLd, courseListJsonLd} from "@/features/seo/json-ld";
 import {JsonLd} from "@/features/seo/json-ld-script";
@@ -17,6 +17,8 @@ import {Eyebrow, Section} from "@/shared/ui/layout";
 type HomePageProps = {
   params: Promise<{locale: AppLocale}>;
 };
+
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({params}: HomePageProps) {
   const {locale} = await params;
@@ -41,7 +43,7 @@ export default async function HomePage({params}: HomePageProps) {
   setRequestLocale(locale);
   const t = await getTranslations("HomePage");
   const coursesT = await getTranslations("CoursesPage");
-  const publishedCourses = getPublishedCourses();
+  const publishedCourses = await loadPublishedCourses();
   const courses = publishedCourses.slice(0, 3);
   const hiddenCourseCount = publishedCourses.length - courses.length;
 

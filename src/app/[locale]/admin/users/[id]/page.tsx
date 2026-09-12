@@ -1,16 +1,18 @@
 import {getTranslations, setRequestLocale} from "next-intl/server";
 import {notFound} from "next/navigation";
 
+import {AccessHistory} from "@/features/admin/components/access-history";
 import {AdminSubnav, adminSectionLabels} from "@/features/admin/components/admin-subnav";
 import {UserAccessForm} from "@/features/admin/components/user-access-form";
 import {UserDiscountForm} from "@/features/admin/components/user-discount-form";
+import {parseAuditHistoryPage, userAuditHref} from "@/features/admin/audit-history-query";
 import {toAdminUserView} from "@/features/admin/user-view";
-import {findUserById, listAuditForUser} from "@/features/auth/repository";
+import {findUserById, listAuditForUserPage} from "@/features/auth/repository";
 import {requireAdmin} from "@/features/auth/require";
 import {AdminCertificatePanel} from "@/features/certificates/components/admin/panel";
 import {listCertificatesForUser} from "@/features/certificates/repository";
 import {toCertificateCardView} from "@/features/certificates/views";
-import {getCatalogueCourses} from "@/features/courses/queries";
+import {loadCatalogueCourses} from "@/features/courses/live";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
@@ -19,6 +21,7 @@ import {Eyebrow, Section} from "@/shared/ui/layout";
 
 type AdminUserDetailPageProps = {
   params: Promise<{locale: AppLocale; id: string}>;
+  searchParams: Promise<{history?: string | string[]}>;
 };
 
 export const dynamic = "force-dynamic";
@@ -36,13 +39,14 @@ export async function generateMetadata({params}: AdminUserDetailPageProps) {
   });
 }
 
-export default async function AdminUserDetailPage({params}: AdminUserDetailPageProps) {
+export default async function AdminUserDetailPage({
+  params,
+  searchParams,
+}: AdminUserDetailPageProps) {
   const {locale, id} = await params;
+  const historyPage = parseAuditHistoryPage(await searchParams);
   setRequestLocale(locale);
-  await requireAdmin(locale, localizedPath(locale, {
-    pathname: "/admin/users/[id]",
-    params: {id},
-  }));
+  await requireAdmin(locale, localizedPath(locale, userAuditHref(id, historyPage)));
   const t = await getTranslations("Admin");
   const user = await findUserById(id);
 
@@ -51,11 +55,11 @@ export default async function AdminUserDetailPage({params}: AdminUserDetailPageP
   }
 
   const view = toAdminUserView(user);
-  const audit = await listAuditForUser(user.id);
+  const audit = await listAuditForUserPage(user.id, historyPage);
   const certificates = (await listCertificatesForUser(user.id)).map((certificate) =>
     toCertificateCardView(certificate, locale),
   );
-  const courses = getCatalogueCourses().map((course) => ({
+  const courses = (await loadCatalogueCourses()).map((course) => ({
     id: course.id,
     title: course.title[locale],
   }));
@@ -109,28 +113,14 @@ export default async function AdminUserDetailPage({params}: AdminUserDetailPageP
           />
         </div>
         <div className="mt-16">
-          <h2 className="font-serif text-subheading">{t("auditTitle")}</h2>
-          {audit.length === 0 ? (
-            <p className="mt-4 text-sm text-ink-muted">{t("auditEmpty")}</p>
-          ) : (
-            <ol className="mt-6 space-y-4">
-              {audit.map((event) => (
-                <li key={event.id} className="border border-ink px-4 py-4 text-sm">
-                  <p className="font-medium">{event.action}</p>
-                  <p className="mt-1 text-ink-muted">{event.createdAt.toISOString()}</p>
-                  <p className="mt-2 text-ink-subtle">
-                    {t("auditActor")}: {event.actorUserId ?? t("auditSystem")}
-                  </p>
-                  <p className="mt-1 text-ink-subtle">
-                    {t("auditBefore")}: {JSON.stringify(event.before ?? {})}
-                  </p>
-                  <p className="mt-1 text-ink-subtle">
-                    {t("auditAfter")}: {JSON.stringify(event.after ?? {})}
-                  </p>
-                </li>
-              ))}
-            </ol>
-          )}
+          <AccessHistory
+            locale={locale}
+            userId={user.id}
+            events={audit.events}
+            page={audit.page}
+            pageCount={audit.pageCount}
+            total={audit.total}
+          />
         </div>
       </Section>
     </SiteShell>

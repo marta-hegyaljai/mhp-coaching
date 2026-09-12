@@ -10,6 +10,10 @@ export type RunCell = {
   href?: PathnameHref;
   meta?: string;
   ariaLabel?: string;
+  select?: {
+    date: string;
+    roomIds: string[];
+  };
 };
 
 export type SlotRun = RunCell & {
@@ -31,8 +35,6 @@ export function mergeSlotRuns(cells: readonly RunCell[]): SlotRun[] {
 
     if (
       open &&
-      // Every available start is an independent calendar action. Merging them
-      // made a long free period link only to its first time.
       !(cell.state === "available" && cell.href) &&
       open.state === cell.state &&
       open.endTime === cell.startTime &&
@@ -41,6 +43,9 @@ export function mergeSlotRuns(cells: readonly RunCell[]): SlotRun[] {
     ) {
       open.endTime = cell.endTime;
       open.span += 1;
+      if (!open.select && cell.select) {
+        open.select = cell.select;
+      }
       return;
     }
 
@@ -52,6 +57,7 @@ export function mergeSlotRuns(cells: readonly RunCell[]): SlotRun[] {
       ...(cell.href ? {href: cell.href} : {}),
       ...(cell.meta ? {meta: cell.meta} : {}),
       ...(cell.ariaLabel ? {ariaLabel: cell.ariaLabel} : {}),
+      ...(cell.select ? {select: cell.select} : {}),
       startIndex: index,
       span: 1,
     });
@@ -68,6 +74,10 @@ type SlotLike = {
   href?: PathnameHref;
   meta?: string;
   ariaLabel?: string;
+  select?: {
+    date: string;
+    roomIds: string[];
+  };
 };
 
 /**
@@ -91,6 +101,7 @@ export function buildColumnCells(
         ...(slot.href ? {href: slot.href} : {}),
         ...(slot.meta ? {meta: slot.meta} : {}),
         ...(slot.ariaLabel ? {ariaLabel: slot.ariaLabel} : {}),
+        ...(slot.select ? {select: slot.select} : {}),
       };
     }
 

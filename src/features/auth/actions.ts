@@ -8,6 +8,7 @@ import {linkUnownedBookingsForVerifiedUser} from "@/features/account/link-bookin
 import {canAuthenticate} from "@/features/auth/policy";
 import {passwordErrors, hashPassword, verifyPassword} from "@/features/auth/password";
 import {isValidEmail, normalizeEmail} from "@/features/auth/email";
+import {parseOptionalContact} from "@/features/auth/contact";
 import {updateAccountProfile} from "@/features/auth/profile";
 import {
   isInviteAcceptRateLimited,
@@ -39,7 +40,7 @@ import {
   createSessionCookie,
   readActiveSession,
 } from "@/features/auth/session";
-import {signedInHomePath} from "@/features/auth/signed-in-home";
+import {signedInHomeHref, signedInHomePath} from "@/features/auth/signed-in-home";
 import {hashToken} from "@/features/auth/tokens";
 import {sendEmailVerification, sendPasswordRecovery} from "@/features/email/account";
 import {localizedPathname} from "@/i18n/path";
@@ -48,6 +49,17 @@ import {routing, type AppLocale} from "@/i18n/routing";
 export type AuthFormState = {
   error?: string;
   notice?: string;
+  formKey?: string;
+  values?: {
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    phone?: string;
+    street?: string;
+    postalCode?: string;
+    city?: string;
+    country?: string;
+  };
   fieldErrors?: {
     firstName?: string;
     lastName?: string;
@@ -56,6 +68,11 @@ export type AuthFormState = {
     currentPassword?: string;
     password?: string;
     passwordConfirm?: string;
+    phone?: string;
+    street?: string;
+    postalCode?: string;
+    city?: string;
+    country?: string;
   };
 };
 
@@ -207,6 +224,14 @@ export async function acceptInviteAction(
   redirect(localizedPathname(resolvedLocale, signedInHomePath(updated)));
 }
 
+function readSignupValues(formData: FormData): NonNullable<AuthFormState["values"]> {
+  return {
+    firstName: String(formData.get("firstName") ?? "").slice(0, 80),
+    lastName: String(formData.get("lastName") ?? "").slice(0, 80),
+    email: String(formData.get("email") ?? "").slice(0, 160),
+  };
+}
+
 export async function signUpAction(
   locale: string,
   _previous: AuthFormState | null,
@@ -215,18 +240,20 @@ export async function signUpAction(
   const resolvedLocale = resolveLocale(locale);
   const t = await getTranslations({locale: resolvedLocale, namespace: "Auth.errors"});
   const auth = await getTranslations({locale: resolvedLocale, namespace: "Auth"});
-  const email = String(formData.get("email") ?? "");
+  const values = readSignupValues(formData);
+  const email = values.email ?? "";
   const emailNormalized = isValidEmail(email) ? normalizeEmail(email) : "invalid";
+  const formKey = String(Date.now());
 
   if (await isSignUpRateLimited(emailNormalized)) {
-    return {error: t("rateLimited")};
+    return {error: t("rateLimited"), values, formKey};
   }
 
   await recordSignUpAttempt(emailNormalized);
 
   const result = await registerAccount({
-    firstName: String(formData.get("firstName") ?? ""),
-    lastName: String(formData.get("lastName") ?? ""),
+    firstName: values.firstName ?? "",
+    lastName: values.lastName ?? "",
     email,
     password: String(formData.get("password") ?? ""),
     passwordConfirm: String(formData.get("passwordConfirm") ?? ""),
@@ -257,12 +284,27 @@ export async function signUpAction(
     ).includes("sameAsEmail")) {
       fieldErrors.password = t("passwordSameAsEmail");
     }
-    return {fieldErrors};
+    return {
+      error: auth("passwordNotSaved"),
+      fieldErrors,
+      values,
+      formKey,
+    };
   }
 
-  if (result.rawToken && result.user) {
+  if (result.outcome === "already_registered") {
+    return {error: t("alreadyRegistered"), values, formKey};
+  }
+  if (result.outcome === "disabled") {
+    return {error: t("disabled"), values, formKey};
+  }
+  if (result.outcome === "invite_pending") {
+    return {error: t("invitePending"), values, formKey};
+  }
+
+  if (result.outcome === "created" || result.outcome === "resent") {
     if (await isVerifyRateLimited(result.user.emailNormalized)) {
-      return {notice: auth("checkEmailNotice")};
+      return {error: t("rateLimited"), values, formKey};
     }
     await recordVerifyAttempt(result.user.emailNormalized);
     try {
@@ -274,10 +316,16 @@ export async function signUpAction(
       });
     } catch (error) {
       console.error("Failed to send verification email", error);
+      return {error: t("verificationSendFailed"), values, formKey};
     }
+
+    return {
+      notice: auth("confirmEmailSent", {email: result.user.email}),
+      values: {email: result.user.email},
+    };
   }
 
-  return {notice: auth("checkEmailNotice")};
+  return {error: t("unavailable"), values, formKey};
 }
 
 export async function verifyEmailAction(
@@ -295,7 +343,9 @@ export async function verifyEmailAction(
   }
 
   await createSessionCookie(result.user.id);
-  redirect(localizedPathname(resolvedLocale, "/account/courses"));
+  redirect(
+    localizedPathname(resolvedLocale, signedInHomeHref(result.user, {verified: true})),
+  );
 }
 
 export async function forgotPasswordAction(
@@ -406,11 +456,51 @@ export async function updateProfileAction(
     redirect(localizedPathname(resolvedLocale, "/sign-in"));
   }
 
-  const result = await updateAccountProfile({
-    user: session.user,
+  const contact = parseOptionalContact({
+    phone: String(formData.get("phone") ?? ""),
+    street: String(formData.get("street") ?? ""),
+    postalCode: String(formData.get("postalCode") ?? ""),
+    city: String(formData.get("city") ?? ""),
+    country: String(formData.get("country") ?? ""),
+  });
+  const values = {
     firstName: String(formData.get("firstName") ?? ""),
     lastName: String(formData.get("lastName") ?? ""),
+    email: session.user.email,
+    phone: String(formData.get("phone") ?? ""),
+    street: String(formData.get("street") ?? ""),
+    postalCode: String(formData.get("postalCode") ?? ""),
+    city: String(formData.get("city") ?? ""),
+    country: String(formData.get("country") ?? ""),
+  };
+  const formKey = String(Date.now());
+
+  if (!contact.ok) {
+    const fieldErrors: AuthFormState["fieldErrors"] = {};
+    if (contact.fieldErrors.phone) {
+      fieldErrors.phone = t("phoneInvalid");
+    }
+    if (contact.fieldErrors.street) {
+      fieldErrors.street = t("streetInvalid");
+    }
+    if (contact.fieldErrors.postalCode) {
+      fieldErrors.postalCode = t("postalCodeInvalid");
+    }
+    if (contact.fieldErrors.city) {
+      fieldErrors.city = t("cityInvalid");
+    }
+    if (contact.fieldErrors.country) {
+      fieldErrors.country = t("countryInvalid");
+    }
+    return {error: auth("passwordNotSaved"), fieldErrors, values, formKey};
+  }
+
+  const result = await updateAccountProfile({
+    user: session.user,
+    firstName: values.firstName,
+    lastName: values.lastName,
     locale: String(formData.get("locale") ?? resolvedLocale),
+    contact: contact.contact,
   });
 
   if (!result.ok) {
@@ -424,7 +514,7 @@ export async function updateProfileAction(
     if (result.fieldErrors.locale) {
       fieldErrors.locale = t("localeInvalid");
     }
-    return {fieldErrors};
+    return {error: auth("passwordNotSaved"), fieldErrors, values, formKey};
   }
 
   return {notice: auth("profileUpdatedNotice")};

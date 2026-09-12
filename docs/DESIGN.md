@@ -46,10 +46,33 @@ dashboard.
 
 ## Navigation and locale stability
 
-- Header navigation must expose Courses and Contact at every viewport. On
-  phones they share one compact row with the brand and language control. The
-  wordmark may shorten to MHP so those links stay visible and tappable. Do not
-  hide them in a menu unless the information architecture grows beyond the MVP.
+- The header has three zones and never blends them: product navigation, the
+  account control, and exactly one call to action. A hairline separates the
+  navigation from the account zone on wide viewports.
+- Nav items are compact rectangular chips (`rounded-panel`). Hover uses the
+  neutral `hover` surface; the current section inverts to black with white
+  type. Do not underline nav items or the brand wordmark to show the current
+  page.
+- The account control is not a nav chip. Signed-in people get a bordered
+  trigger carrying a black monogram tile and, from `xl`, the person's name;
+  its menu opens with name and email, then personal destinations, then Sign
+  out behind a rule. Signed-out visitors get exactly one secondary auth
+  button: Sign in on every page except the sign-in screen, where Sign up is
+  offered instead. The filled black button in the bar is only ever the booking
+  action.
+- Below `lg` the product navigation collapses into a full-height sheet opened
+  from a square menu button. The call to action and the brand stay in the bar:
+  the primary action is never hidden inside the menu. The sheet opens with the
+  signed-in identity, lists product sections as large rows under the thumb
+  path, and pins personal actions and Sign out to the bottom edge. Escape, a
+  completed navigation, or the same button closes it, and the page beneath
+  must not scroll while it is open.
+- Header navigation must expose Courses and Contact at every viewport, in the
+  bar on `lg` and above and in the first sheet section below it. Capability
+  sections (Rooms, Admin) appear only once the server granted them.
+- The shell is installable: the header and the sheet pay back
+  `env(safe-area-inset-*)` so a standalone window never puts controls under the
+  notch or the home indicator.
 - The language switcher is a custom accessible dropdown. Its closed trigger
   is a compact neutral capsule inspired by the reference site, shows only the
   stable locale code, has a fixed width, and opens a bordered menu with native
@@ -76,10 +99,16 @@ primary action behind an ambiguous icon.
   surfaces, black rules, restrained gold, square geometry, no shadows and the
   same type hierarchy. Dense operational screens may use tighter functional
   sans-serif text while editorial headings retain the serif.
-- Account, profile and My Courses use the public header with one extra Account
-  link. Sign-out lives on the account screens. Profile email is read-only.
-  Present upcoming and past registrations as a compact equal-height bordered
-  card grid, not full-width rows.
+- Account, profile and My Courses use the public header. The header shows the
+  signed-in person's name, a menu with Profile, My courses and Sign out, and
+  marks the current section with a square filled chip (black on white). Nav
+  links use the same chip on selection and a neutral grey surface on hover;
+  the brand wordmark never uses that selected treatment. Signed-out visitors
+  see Sign in and Sign up as first-class header links. Profile email is
+  read-only. Optional
+  phone and address on the profile fill course checkout and waiting-list
+  forms. Present upcoming and past registrations as a compact equal-height
+  bordered card grid, not full-width rows.
 - Week is the primary room-calendar view and day view is required. On a phone,
   prioritize one navigable day or a horizontally controlled time grid rather
   than shrinking a seven-day desktop grid into illegibility. Preserve 44px
@@ -87,6 +116,10 @@ primary action behind an ambiguous icon.
 - Availability, booked, unavailable and “my booking” states must differ through
   label, border/pattern and contrast—not color alone. Other users' bookings say
   only “Booked”; never render names, notes or hidden private metadata.
+- Collapse consecutive available slots into one continuous labelled bar. Therapists
+  select a range by dragging with the mouse or a finger; a popover on the same
+  page collects the remaining details and reserves. Do not send them to another
+  page to pick an end time. Booked and unavailable cells are not selectable.
 - Use compact room filters/cards and time-slot controls. Avoid a long full-width
   list of every room/time combination. Show conflicts and changed availability
   next to the affected selection, then preserve the user's safe inputs.
@@ -104,7 +137,11 @@ primary action behind an ambiguous icon.
   separate patient-information warning.
 - Billing screens show minutes/hours, line items, adjustments, total and payment
   state with tabular numerals. Finalized historical statements must look fixed;
-  admin corrections are separate labeled adjustments.
+  admin corrections are separate labeled adjustments. Admins pick any start and
+  end month (past or future) and download a formatted Excel workbook, not CSV.
+- The admin Courses tab edits catalogue copy, prices, publish state and session
+  dates, and lists enrolments and waiting-list entries with filters. Seed data
+  must not overwrite those edits.
 - Status styles remain monochrome and textual. Gold does not become a semantic
   success/warning/error color.
 - Collapse consecutive slots that share a state into one continuous labelled

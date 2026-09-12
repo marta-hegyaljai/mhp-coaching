@@ -55,6 +55,12 @@ export type MonthUsage = {
   year: number;
   month: number;
   monthKey: string;
+  from: ZurichMonth;
+  to: ZurichMonth;
+  fromKey: string;
+  toKey: string;
+  periodKey: string;
+  singleMonth: boolean;
   start: Date;
   endExclusive: Date;
   open: boolean;
@@ -163,18 +169,61 @@ export function resolveUsageMonth(input: {
   return input.month;
 }
 
+export function resolveUsagePeriod(input: {
+  month?: ZurichMonth | string;
+  from?: ZurichMonth | string;
+  to?: ZurichMonth | string;
+  now?: Date;
+}): {from: ZurichMonth; to: ZurichMonth} {
+  const now = input.now ?? new Date();
+  const resolve = (value?: ZurichMonth | string): ZurichMonth | undefined => {
+    if (value === undefined || value === "") {
+      return undefined;
+    }
+    return resolveUsageMonth({month: value, now});
+  };
+
+  const open = openZurichMonth(now);
+  let from = resolve(input.from) ?? resolve(input.month) ?? open;
+  let to = resolve(input.to) ?? resolve(input.from) ?? resolve(input.month) ?? open;
+  if (from.year > to.year || (from.year === to.year && from.month > to.month)) {
+    const swap = from;
+    from = to;
+    to = swap;
+  }
+  return {from, to};
+}
+
+export function usagePeriodKey(from: ZurichMonth, to: ZurichMonth): string {
+  const fromKey = zurichMonthKey(from);
+  const toKey = zurichMonthKey(to);
+  return fromKey === toKey ? fromKey : `${fromKey}_${toKey}`;
+}
+
 export async function loadMonthUsage(input: {
   actor?: User;
   system?: boolean;
   month?: ZurichMonth | string;
+  from?: ZurichMonth | string;
+  to?: ZurichMonth | string;
   now?: Date;
   userId?: string;
 }): Promise<MonthUsage> {
   const now = input.now ?? new Date();
-  const month = resolveUsageMonth({month: input.month, now});
+  const {from, to} = resolveUsagePeriod({
+    month: input.month,
+    from: input.from,
+    to: input.to,
+    now,
+  });
   const open = openZurichMonth(now);
-  const isOpen = month.year === open.year && month.month === open.month;
-  const {start, endExclusive} = zurichMonthRange(month);
+  const singleMonth = from.year === to.year && from.month === to.month;
+  const isOpen = singleMonth && from.year === open.year && from.month === open.month;
+  const start = zurichMonthRange(from).start;
+  const endExclusive = zurichMonthRange(to).endExclusive;
+  const fromKey = zurichMonthKey(from);
+  const toKey = zurichMonthKey(to);
+  const periodKey = usagePeriodKey(from, to);
 
   if (!input.system) {
     if (!input.actor) {
@@ -214,9 +263,15 @@ export async function loadMonthUsage(input: {
     .sort((a, b) => a.lastName.localeCompare(b.lastName) || a.firstName.localeCompare(b.firstName) || a.email.localeCompare(b.email));
 
   return {
-    year: month.year,
-    month: month.month,
-    monthKey: zurichMonthKey(month),
+    year: from.year,
+    month: from.month,
+    monthKey: periodKey,
+    from,
+    to,
+    fromKey,
+    toKey,
+    periodKey,
+    singleMonth,
     start,
     endExclusive,
     open: isOpen,

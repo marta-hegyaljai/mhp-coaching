@@ -27,6 +27,7 @@ type ExplorerLabels = {
   gridView: string;
   calendarView: string;
   noResults: string;
+  emptyCategory: string;
   previousMonth: string;
   nextMonth: string;
   emptyDay: string;
@@ -92,12 +93,11 @@ export function CourseExplorer({
     }
     return occupiesMonth(session, month);
   });
-  const visibleGroups = groups
-    .map((group) => ({
-      ...group,
-      courses: group.courses.filter((course) => filteredIds.has(course.id)),
-    }))
-    .filter((group) => group.courses.length > 0);
+  const visibleGroups = groups.map((group) => ({
+    ...group,
+    courses: group.courses.filter((course) => filteredIds.has(course.id)),
+  }));
+  const hasActiveFilters = Boolean(query.trim() || month);
 
   const toolbar = (
       <div className="grid gap-3 border border-ink bg-white p-4 sm:grid-cols-[minmax(0,1fr)_12rem_auto] sm:items-end">
@@ -185,7 +185,7 @@ export function CourseExplorer({
         toolbar
       )}
 
-      {filteredCourses.length === 0 ? (
+      {filteredCourses.length === 0 && hasActiveFilters ? (
         <p className="mt-8 text-sm leading-7 text-ink-muted">{labels.noResults}</p>
       ) : view === "calendar" ? (
         <div className="mt-8">
@@ -205,18 +205,22 @@ export function CourseExplorer({
                   {group.courses.length}
                 </p>
               </div>
-              <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                {group.courses.map((course) => (
-                  <CourseCard
-                    key={course.id}
-                    course={course}
-                    locale={locale}
-                    detailsLabel={detailsLabel}
-                    awaitingDateLabel={labels.awaitingDateLabel}
-                    headingLevel="h3"
-                  />
-                ))}
-              </div>
+              {group.courses.length === 0 ? (
+                <p className="mt-5 text-sm leading-7 text-ink-muted">{labels.emptyCategory}</p>
+              ) : (
+                <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                  {group.courses.map((course) => (
+                    <CourseCard
+                      key={course.id}
+                      course={course}
+                      locale={locale}
+                      detailsLabel={detailsLabel}
+                      awaitingDateLabel={labels.awaitingDateLabel}
+                      headingLevel="h3"
+                    />
+                  ))}
+                </div>
+              )}
             </section>
           ))}
         </div>

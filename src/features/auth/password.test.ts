@@ -97,10 +97,11 @@ describe("authorization policy", () => {
 });
 
 describe("signed-in home", () => {
-  it("sends course users to account, therapists to rooms, admins to the directory", async () => {
+  it("sends room users to rooms, admins to the directory, others to courses", async () => {
     const {signedInHomePath} = await import("./signed-in-home");
-    expect(signedInHomePath({isAdmin: false})).toBe("/account");
+    expect(signedInHomePath({isAdmin: false})).toBe("/courses");
     expect(signedInHomePath({isAdmin: false, roomBookingEnabled: true})).toBe("/rooms");
+    expect(signedInHomePath({isAdmin: true, roomBookingEnabled: true})).toBe("/rooms");
     expect(signedInHomePath({isAdmin: true})).toBe("/admin/users");
   });
 });

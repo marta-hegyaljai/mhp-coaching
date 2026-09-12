@@ -271,6 +271,26 @@ test("serves the mhp-coaching.ch favicon", async ({page, request}) => {
   await expect(icon).toHaveAttribute("href", /icon/i);
 });
 
+test("header exposes sign-up and marks the current page", async ({page}) => {
+  await page.goto("/en");
+  const header = page.locator("header").first();
+  await expect(header.getByRole("link", {name: "Sign in"})).toBeVisible();
+  await expect(header.getByRole("link", {name: "Sign up"})).toBeHidden();
+
+  await header.getByRole("link", {name: "Courses"}).click();
+  await expect(page).toHaveURL(/\/en\/courses$/);
+  await expect(header.getByRole("link", {name: "Courses"})).toHaveAttribute("aria-current", "page");
+  await expect(header.getByRole("link", {name: "Contact"})).not.toHaveAttribute("aria-current");
+  await expect(header.getByRole("link", {name: "Sign in"})).not.toHaveAttribute("aria-current");
+
+  await page.goto("/fr");
+  await expect(page.locator("header").first().getByRole("link", {name: "Connexion"})).toBeVisible();
+  await expect(page.locator("header").first().getByRole("link", {name: "S'inscrire"})).toBeHidden();
+  await page.goto("/de");
+  await expect(page.locator("header").first().getByRole("link", {name: "Anmelden"})).toBeVisible();
+  await expect(page.locator("header").first().getByRole("link", {name: "Registrieren"})).toBeHidden();
+});
+
 test("equivalent localized course slugs remain reachable", async ({page}) => {
   await page.goto("/fr/formations/praticien-hypnose-omni");
   await expect(page.getByRole("heading", {level: 1})).toContainText("Praticien");

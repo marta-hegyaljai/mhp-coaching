@@ -120,6 +120,13 @@
       "when": 1789119000000,
       "tag": "0016_ops_heartbeats",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1789120000000,
+      "tag": "0017_user_contact",
+      "breakpoints": true
     }
   ]
 }

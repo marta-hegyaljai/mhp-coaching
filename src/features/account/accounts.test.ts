@@ -74,7 +74,7 @@ describe.skipIf(!hasDatabase)("CP-01 public accounts", () => {
       locale: "en",
     });
     expect(registered.ok).toBe(true);
-    if (!registered.ok || !registered.user || !registered.rawToken) {
+    if (!registered.ok || registered.outcome !== "created") {
       throw new Error("expected a created account");
     }
     expect(registered.outcome).toBe("created");
@@ -92,7 +92,7 @@ describe.skipIf(!hasDatabase)("CP-01 public accounts", () => {
       locale: "en",
     });
     expect(duplicate.ok).toBe(true);
-    if (!duplicate.ok) {
+    if (!duplicate.ok || duplicate.outcome !== "resent") {
       throw new Error("expected generic success");
     }
     expect(duplicate.outcome).toBe("resent");
@@ -100,8 +100,7 @@ describe.skipIf(!hasDatabase)("CP-01 public accounts", () => {
     const verified = await verifySignupEmail(registered.rawToken);
     expect(verified.ok).toBe(false);
 
-    const resent = duplicate.ok ? duplicate : undefined;
-    const token = resent?.rawToken;
+    const token = duplicate.rawToken;
     expect(token).toBeTruthy();
     const confirmed = await verifySignupEmail(token!);
     expect(confirmed.ok).toBe(true);
@@ -120,6 +119,16 @@ describe.skipIf(!hasDatabase)("CP-01 public accounts", () => {
     expect(again).toBe(0);
     const reused = await verifySignupEmail(token!);
     expect(reused.ok).toBe(false);
+
+    const hijack = await registerAccount({
+      firstName: "Ada",
+      lastName: "Lovelace",
+      email,
+      password: "correct-horse-12",
+      passwordConfirm: "correct-horse-12",
+      locale: "en",
+    });
+    expect(hijack.ok && hijack.outcome).toBe("already_registered");
   });
 
   it("does not let an existing invitation or verified account be hijacked by sign-up", async () => {
@@ -139,7 +148,7 @@ describe.skipIf(!hasDatabase)("CP-01 public accounts", () => {
       passwordConfirm: "correct-horse-12",
       locale: "en",
     });
-    expect(invited.ok && invited.outcome).toBe("noop");
+    expect(invited.ok && invited.outcome).toBe("invite_pending");
     const stillInvited = await findUserByNormalizedEmail(normalizeEmail(invitedEmail));
     expect(stillInvited?.passwordHash).toBeNull();
     expect(stillInvited?.firstName).toBe("Invited");

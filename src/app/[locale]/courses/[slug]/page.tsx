@@ -7,9 +7,9 @@ import {CourseDates} from "@/features/courses/components/course-dates";
 import {CourseUpcomingSessions} from "@/features/courses/components/course-upcoming-sessions";
 import {CourseWaitlistLink} from "@/features/courses/components/course-waitlist-link";
 import {courseLocaleHrefs} from "@/features/courses/locale-hrefs";
+import {loadPublishedCourseBySlug} from "@/features/courses/live";
 import {
   getBookableDates,
-  getCourseBySlug,
   getCourseStaticParams,
 } from "@/features/courses/queries";
 import {UPCOMING_SESSION_PREVIEW_COUNT} from "@/features/courses/upcoming-sessions";
@@ -31,13 +31,15 @@ type CoursePageProps = {
   params: Promise<{locale: AppLocale; slug: string}>;
 };
 
+export const dynamic = "force-dynamic";
+
 export function generateStaticParams() {
   return getCourseStaticParams();
 }
 
 export async function generateMetadata({params}: CoursePageProps) {
   const {locale, slug} = await params;
-  const course = getCourseBySlug(slug);
+  const course = await loadPublishedCourseBySlug(slug);
 
   if (!course) {
     return {};
@@ -57,7 +59,7 @@ export async function generateMetadata({params}: CoursePageProps) {
 export default async function CourseDetailPage({params}: CoursePageProps) {
   const {locale, slug} = await params;
   setRequestLocale(locale);
-  const course = getCourseBySlug(slug);
+  const course = await loadPublishedCourseBySlug(slug);
 
   if (!course) {
     notFound();

@@ -14,6 +14,7 @@ export type PathnameHref =
       | "/admin/requests/[id]"
       | "/admin/billing/[userId]"
       | "/admin/billing/[userId]/statements/[id]"
+      | "/admin/courses/[id]"
       | "/billing/statements/[id]"
       | "/rooms/bookings/[id]"
       | "/rooms/bookings/[id]/change"
@@ -22,7 +23,24 @@ export type PathnameHref =
     >
   | {
       pathname: "/courses";
-      query?: {view?: string};
+      query?: {view?: string; verified?: string};
+    }
+  | {
+      pathname: "/account";
+      query?: {verified?: string};
+    }
+  | {
+      pathname: "/sign-in";
+      query?: {next?: string; verify?: string};
+    }
+  | {
+      pathname: "/admin/courses";
+      query?: {q?: string; category?: string; published?: string};
+    }
+  | {
+      pathname: "/admin/courses/[id]";
+      params: {id: string};
+      query?: {q?: string; session?: string; status?: string};
     }
   | {
       pathname: "/courses/[slug]";
@@ -39,11 +57,19 @@ export type PathnameHref =
     }
   | {
       pathname: "/admin/users";
-      query?: {q?: string; status?: string; access?: string; page?: string};
+      query?: {
+        q?: string;
+        status?: string;
+        access?: string;
+        page?: string;
+        verified?: string;
+      };
     }
   | {
       pathname: "/admin/users/[id]";
       params: {id: string};
+      query?: {history?: string};
+      hash?: string;
     }
   | {
       pathname: "/admin/rooms/[id]";
@@ -51,7 +77,7 @@ export type PathnameHref =
     }
   | {
       pathname: "/rooms";
-      query?: {view?: string; date?: string; room?: string};
+      query?: {view?: string; date?: string; room?: string; verified?: string};
     }
   | {
       pathname: "/rooms/book";
@@ -117,12 +143,12 @@ export type PathnameHref =
     }
   | {
       pathname: "/admin/billing";
-      query?: {q?: string; month?: string};
+      query?: {q?: string; month?: string; from?: string; to?: string};
     }
   | {
       pathname: "/admin/billing/[userId]";
       params: {userId: string};
-      query?: {month?: string};
+      query?: {month?: string; from?: string; to?: string};
     }
   | {
       pathname: "/admin/billing/[userId]/statements/[id]";
@@ -144,4 +170,9 @@ export type PathnameHref =
 export const catalogueCalendarHref = {
   pathname: "/courses",
   query: {view: "calendar"},
+} as const satisfies PathnameHref;
+
+/** Catalogue list (card grid), never the calendar toggle. */
+export const catalogueListHref = {
+  pathname: "/courses",
 } as const satisfies PathnameHref;

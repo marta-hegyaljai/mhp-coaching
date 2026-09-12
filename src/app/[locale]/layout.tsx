@@ -36,6 +36,9 @@ export const viewport: Viewport = {
   themeColor: "#ffffff",
   width: "device-width",
   initialScale: 1,
+  // Installed/standalone windows draw under the notch and home indicator; the
+  // shell pays that back with `env(safe-area-inset-*)` padding.
+  viewportFit: "cover",
 };
 
 export function generateStaticParams() {

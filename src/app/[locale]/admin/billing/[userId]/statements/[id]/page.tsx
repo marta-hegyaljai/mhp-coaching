@@ -114,11 +114,11 @@ export default async function AdminStatementPage({params}: AdminStatementPagePro
         </p>
         <p className="mt-8">
           <a
-            href={`/api/admin/statements.csv?statement=${encodeURIComponent(detail.statement.id)}`}
+            href={`/api/admin/statements.xlsx?statement=${encodeURIComponent(detail.statement.id)}`}
             className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold underline-offset-4 hover:underline"
           >
             <DownloadIcon />
-            {t("statementCsv")}
+            {t("statementXlsx")}
           </a>
         </p>
         <section className="mt-12">

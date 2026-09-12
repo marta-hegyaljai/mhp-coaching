@@ -1,6 +1,7 @@
 import type {MetadataRoute} from "next";
 
 import {getPublishedCourses} from "@/features/courses/queries";
+import type {Course} from "@/features/courses/types";
 import {localizedPathname} from "@/i18n/path";
 import {routing, type AppLocale, type AppPathname} from "@/i18n/routing";
 import {getSiteUrl} from "@/lib/site-url";
@@ -33,6 +34,8 @@ type StaticPath = Exclude<
   | "/admin/billing"
   | "/admin/billing/[userId]"
   | "/admin/billing/[userId]/statements/[id]"
+  | "/admin/courses"
+  | "/admin/courses/[id]"
   | "/admin/notifications"
   | "/rooms"
   | "/rooms/book"
@@ -65,7 +68,9 @@ const publicStaticPaths: Array<{
   {href: "/legal/copyright", changeFrequency: "yearly", priority: 0.3},
 ];
 
-export function buildSitemapEntries(): MetadataRoute.Sitemap {
+export function buildSitemapEntries(
+  publishedCourses: Course[] = getPublishedCourses(),
+): MetadataRoute.Sitemap {
   const origin = getSiteUrl().origin;
   const lastModified = new Date();
   const entries: MetadataRoute.Sitemap = [];
@@ -82,7 +87,7 @@ export function buildSitemapEntries(): MetadataRoute.Sitemap {
     );
   }
 
-  for (const course of getPublishedCourses()) {
+  for (const course of publishedCourses) {
     entries.push(
       ...localizedEntry(
         origin,

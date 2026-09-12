@@ -129,6 +129,8 @@ export const routing = defineRouting({
     "/admin/requests/[id]": "/admin/requests/[id]",
     "/admin/billing": "/admin/billing",
     "/admin/billing/[userId]": "/admin/billing/[userId]",
+    "/admin/courses": "/admin/courses",
+    "/admin/courses/[id]": "/admin/courses/[id]",
     "/rooms": {
       fr: "/salles",
       de: "/raeume",

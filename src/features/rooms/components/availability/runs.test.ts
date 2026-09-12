@@ -3,10 +3,10 @@ import {describe, expect, it} from "vitest";
 import {buildColumnCells, mergeSlotRuns} from "./runs";
 
 describe("mergeSlotRuns", () => {
-  it("keeps actionable available starts separate while collapsing status runs", () => {
+  it("collapses available ranges that are selected on the grid, not linked away", () => {
     const runs = mergeSlotRuns([
-      {startTime: "09:00", endTime: "09:30", state: "available", href: "/rooms"},
-      {startTime: "09:30", endTime: "10:00", state: "available", href: "/rooms"},
+      {startTime: "09:00", endTime: "09:30", state: "available", select: {date: "2026-09-14", roomIds: ["r"]}},
+      {startTime: "09:30", endTime: "10:00", state: "available", select: {date: "2026-09-14", roomIds: ["r"]}},
       {startTime: "10:00", endTime: "10:30", state: "booked"},
       {startTime: "10:30", endTime: "11:00", state: "booked"},
     ]);
@@ -14,19 +14,11 @@ describe("mergeSlotRuns", () => {
     expect(runs).toEqual([
       {
         startTime: "09:00",
-        endTime: "09:30",
-        state: "available",
-        href: "/rooms",
-        startIndex: 0,
-        span: 1,
-      },
-      {
-        startTime: "09:30",
         endTime: "10:00",
         state: "available",
-        href: "/rooms",
-        startIndex: 1,
-        span: 1,
+        select: {date: "2026-09-14", roomIds: ["r"]},
+        startIndex: 0,
+        span: 2,
       },
       {startTime: "10:00", endTime: "11:00", state: "booked", startIndex: 2, span: 2},
     ]);

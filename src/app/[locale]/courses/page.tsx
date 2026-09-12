@@ -1,14 +1,9 @@
 import {getTranslations, setRequestLocale} from "next-intl/server";
 
+import {AuthNotice} from "@/features/auth/components/auth-field";
 import {CourseCatalogueLead, CourseCataloguePortrait} from "@/features/courses/components/course-catalogue-masthead";
 import {CourseExplorer} from "@/features/courses/components/course-explorer";
-import {
-  getAdvancedCourses,
-  getFoundationCourses,
-  getMedicalCourses,
-  getPublishedCourses,
-  getWorkshopCourses,
-} from "@/features/courses/queries";
+import {loadPublishedCourses} from "@/features/courses/live";
 import type {Course} from "@/features/courses/types";
 import {BreadcrumbTrail} from "@/features/seo/breadcrumb-trail";
 import {courseListJsonLd} from "@/features/seo/json-ld";
@@ -20,8 +15,10 @@ import {Section} from "@/shared/ui/layout";
 
 type CoursesPageProps = {
   params: Promise<{locale: AppLocale}>;
-  searchParams: Promise<{view?: string}>;
+  searchParams: Promise<{view?: string; verified?: string | string[]}>;
 };
+
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({params}: CoursesPageProps) {
   const {locale} = await params;
@@ -37,22 +34,25 @@ export async function generateMetadata({params}: CoursesPageProps) {
 
 export default async function CoursesPage({params, searchParams}: CoursesPageProps) {
   const {locale} = await params;
-  const {view} = await searchParams;
+  const {view, verified: verifiedParam} = await searchParams;
+  const verified = Array.isArray(verifiedParam) ? verifiedParam[0] : verifiedParam;
   setRequestLocale(locale);
   const t = await getTranslations("CoursesPage");
+  const authT = await getTranslations("Auth");
   const navT = await getTranslations("Nav");
   const calendarT = await getTranslations("CourseCalendar");
 
+  const publishedCourses = await loadPublishedCourses();
   const groups: Array<{title: string; courses: Course[]}> = [
-    {title: t("foundation"), courses: getFoundationCourses()},
-    {title: t("advanced"), courses: getAdvancedCourses()},
-    {title: t("medical"), courses: getMedicalCourses()},
-    {title: t("workshops"), courses: getWorkshopCourses()},
-  ].filter((group) => group.courses.length > 0);
+    {title: t("foundation"), courses: publishedCourses.filter((course) => course.category === "foundation")},
+    {title: t("advanced"), courses: publishedCourses.filter((course) => course.category === "advanced")},
+    {title: t("medical"), courses: publishedCourses.filter((course) => course.category === "medical")},
+    {title: t("workshops"), courses: publishedCourses.filter((course) => course.category === "workshop")},
+  ];
 
   return (
     <SiteShell locale={locale} footerCta={null}>
-      <JsonLd data={courseListJsonLd(getPublishedCourses(), locale)} />
+      <JsonLd data={courseListJsonLd(publishedCourses, locale)} />
 
       <Section size="sm" className="pt-8 pb-16 sm:pb-24">
         <BreadcrumbTrail
@@ -62,6 +62,11 @@ export default async function CoursesPage({params, searchParams}: CoursesPagePro
             {name: t("title"), path: localizedPath(locale, "/courses")},
           ]}
         />
+        {verified === "1" ? (
+          <div className="mb-8 max-w-xl">
+            <AuthNotice>{authT("emailConfirmedNotice")}</AuthNotice>
+          </div>
+        ) : null}
         <CourseExplorer
           locale={locale}
           groups={groups}
@@ -71,7 +76,7 @@ export default async function CoursesPage({params, searchParams}: CoursesPagePro
               eyebrow={t("eyebrow")}
               title={t("title")}
               intro={t("intro")}
-              courseCount={t("courseCount", {count: getPublishedCourses().length})}
+              courseCount={t("courseCount", {count: publishedCourses.length})}
             />
           }
           portrait={<CourseCataloguePortrait imageAlt={t("instructorImageAlt")} />}
@@ -85,6 +90,7 @@ export default async function CoursesPage({params, searchParams}: CoursesPagePro
             gridView: t("gridView"),
             calendarView: t("calendarView"),
             noResults: t("noResults"),
+            emptyCategory: t("emptyCategory"),
             previousMonth: calendarT("previousMonth"),
             nextMonth: calendarT("nextMonth"),
             emptyDay: calendarT("emptyDay"),

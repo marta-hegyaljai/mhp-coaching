@@ -10,7 +10,7 @@ async function signIn(page: Page, email: string, password: string) {
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password", {exact: true}).fill(password);
   await page.getByRole("button", {name: /sign in/i}).click();
-  await page.waitForURL(/\/en\/(account|rooms|admin)/);
+  await page.waitForURL(/\/en\/(courses|account|rooms|admin)/);
 }
 
 test.describe("current-month usage and discounts", () => {
@@ -61,10 +61,15 @@ test.describe("current-month usage and discounts", () => {
     await page.goto("/en/admin/billing");
     await expect(page.getByRole("heading", {name: "Current month usage"})).toBeVisible();
     await expect(page.getByText("Open — not finalized")).toBeVisible();
-    await expect(page.getByRole("heading", {name: "Months"})).toBeVisible();
-    await expect(page.getByRole("link", {name: "Download current totals CSV"})).toBeVisible();
+    await expect(page.getByRole("heading", {name: "Billing period"})).toBeVisible();
+    await expect(page.locator("#billing-from")).toBeVisible();
+    await expect(page.locator("#billing-to")).toBeVisible();
+    await expect(page.getByRole("button", {name: "Show period"})).toBeVisible();
+    await expect(page.getByRole("link", {name: "This year"})).toBeVisible();
+    await expect(page.getByRole("link", {name: "Last 12 months"})).toBeVisible();
+    await expect(page.getByRole("link", {name: "Download Excel workbook"})).toBeVisible();
     await page.getByLabel("Search therapists").fill("qa.therapist@example.test");
-    await page.getByRole("button", {name: "Show"}).click();
+    await page.getByRole("button", {name: "Show", exact: true}).click();
     await expect(page.getByText("qa.therapist@example.test")).toBeVisible();
     await page.getByRole("link", {name: /qa\.therapist@example\.test/}).click();
     await expect(page.getByRole("heading", {name: "User usage"})).toBeVisible();

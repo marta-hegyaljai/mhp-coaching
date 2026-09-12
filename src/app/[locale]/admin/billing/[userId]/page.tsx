@@ -5,7 +5,10 @@ import {AdminSubnav, adminSectionLabels} from "@/features/admin/components/admin
 import {findUserById} from "@/features/auth/repository";
 import {requireAdmin} from "@/features/auth/require";
 import {FinalizeStatementForm} from "@/features/rooms/components/finalize-statement-form";
-import {MonthPicker} from "@/features/rooms/components/month-picker";
+import {
+  BillingPeriodPicker,
+  billingPeriodSearch,
+} from "@/features/rooms/components/billing-period-picker";
 import {StatementCardGrid} from "@/features/rooms/components/statement-card-grid";
 import {
   UsageLineList,
@@ -15,7 +18,7 @@ import {
 } from "@/features/rooms/components/usage-panels";
 import {formatPaymentMethodLabel, paymentMethodFromUser} from "@/features/payments/billing-method";
 import {previewFinalize, loadUserStatements} from "@/features/rooms/statements";
-import {openZurichMonth, recentZurichMonths, zurichMonthKey} from "@/features/rooms/timezone";
+import {emptyUserUsage, loadMonthUsage} from "@/features/rooms/usage";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
@@ -27,7 +30,7 @@ import {StatusLabel} from "@/shared/ui/status-label";
 
 type AdminBillingUserPageProps = {
   params: Promise<{locale: AppLocale; userId: string}>;
-  searchParams: Promise<{month?: string | string[]}>;
+  searchParams: Promise<{month?: string | string[]; from?: string | string[]; to?: string | string[]}>;
 };
 
 export const dynamic = "force-dynamic";
@@ -52,13 +55,19 @@ export async function generateMetadata({params}: AdminBillingUserPageProps) {
 export default async function AdminBillingUserPage({params, searchParams}: AdminBillingUserPageProps) {
   const {locale, userId} = await params;
   const monthParam = firstString((await searchParams).month).trim();
+  const fromParam = firstString((await searchParams).from).trim();
+  const toParam = firstString((await searchParams).to).trim();
   setRequestLocale(locale);
   const actor = await requireAdmin(
     locale,
     localizedPath(locale, {
       pathname: "/admin/billing/[userId]",
       params: {userId},
-      query: {month: monthParam || undefined},
+      query: {
+        month: monthParam || undefined,
+        from: fromParam || undefined,
+        to: toParam || undefined,
+      },
     }),
   );
   const t = await getTranslations("Admin");
@@ -68,22 +77,29 @@ export default async function AdminBillingUserPage({params, searchParams}: Admin
     notFound();
   }
 
-  const preview = await previewFinalize({
+  const report = await loadMonthUsage({
     actor,
     userId,
     month: monthParam || undefined,
+    from: fromParam || undefined,
+    to: toParam || undefined,
   });
-  const usage = preview.usage;
+  const usage = report.users[0] ?? emptyUserUsage(user);
+  const preview = report.singleMonth
+    ? await previewFinalize({
+        actor,
+        userId,
+        month: report.from,
+      })
+    : null;
   const statements = await loadUserStatements({actor, userId});
   const paymentMethod = paymentMethodFromUser(user);
-  const months = recentZurichMonths();
-  const open = openZurichMonth();
-  const csvQuery = [
+  const periodSearch = billingPeriodSearch(report.from, report.to);
+  const periodQuery = [
     `user=${encodeURIComponent(user.id)}`,
-    preview.open ? "" : `month=${encodeURIComponent(preview.monthKey)}`,
-  ]
-    .filter(Boolean)
-    .join("&");
+    `from=${encodeURIComponent(report.fromKey)}`,
+    `to=${encodeURIComponent(report.toKey)}`,
+  ].join("&");
 
   return (
     <SiteShell locale={locale} footerCta={null}>
@@ -98,7 +114,7 @@ export default async function AdminBillingUserPage({params, searchParams}: Admin
           <Link
             href={{
               pathname: "/admin/billing",
-              query: {month: preview.open ? undefined : preview.monthKey},
+              query: periodSearch,
             }}
             className="underline-offset-4 hover:underline"
           >
@@ -131,27 +147,32 @@ export default async function AdminBillingUserPage({params, searchParams}: Admin
               : t("paymentMethodMissingHelp")}
           </p>
         </Panel>
-        <MonthPicker
+        <BillingPeriodPicker
           locale={locale}
-          months={months}
-          selected={preview.month}
-          hrefFor={(month) => ({
+          action={localizedPath(locale, {
             pathname: "/admin/billing/[userId]",
             params: {userId},
-            query: {
-              month:
-                month.year === open.year && month.month === open.month
-                  ? undefined
-                  : zurichMonthKey(month),
-            },
+          })}
+          from={report.from}
+          to={report.to}
+          hrefFor={(fromMonth, toMonth) => ({
+            pathname: "/admin/billing/[userId]",
+            params: {userId},
+            query: billingPeriodSearch(fromMonth, toMonth),
           })}
         />
-        <UsageMonthBanner
-          locale={locale}
-          year={preview.month.year}
-          month={preview.month.month}
-          open={preview.open}
-        />
+        {report.singleMonth ? (
+          <UsageMonthBanner
+            locale={locale}
+            year={report.year}
+            month={report.month}
+            open={report.open}
+          />
+        ) : (
+          <p className="mt-8 font-sans text-sm tabular-nums text-ink-muted">
+            {t("billingPeriodSelected", {from: report.fromKey, to: report.toKey})}
+          </p>
+        )}
         {usage.bookingCount > 0 ? (
           <>
             <UsageTotals
@@ -179,14 +200,15 @@ export default async function AdminBillingUserPage({params, searchParams}: Admin
 
         <p className="mt-10">
           <a
-            href={`/api/admin/billing.csv?${csvQuery}`}
+            href={`/api/admin/billing.xlsx?${periodQuery}`}
             className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold underline-offset-4 hover:underline"
           >
             <DownloadIcon />
-            {t("billingUserCsv")}
+            {t("billingUserXlsx")}
           </a>
         </p>
 
+        {preview ? (
         <section className="mt-12 max-w-xl">
           <h2 className="font-serif text-subheading">{t("finalizeTitle")}</h2>
           <p className="mt-3 text-sm leading-7 text-ink-muted">
@@ -209,6 +231,11 @@ export default async function AdminBillingUserPage({params, searchParams}: Admin
             disabled={!preview.canFinalize}
           />
         </section>
+        ) : (
+          <p className="mt-12 max-w-xl text-sm leading-7 text-ink-muted">
+            {t("finalizeNeedsSingleMonth")}
+          </p>
+        )}
 
         <section className="mt-12">
           <h2 className="font-serif text-subheading">{rooms("statementsTitle")}</h2>

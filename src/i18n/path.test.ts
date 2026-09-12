@@ -43,6 +43,14 @@ describe("localizedPathname", () => {
         query: {q: "ada", status: "disabled", page: "2"},
       }),
     ).toBe("/en/admin/users?q=ada&status=disabled&page=2");
+    expect(
+      localizedPathname("fr", {
+        pathname: "/admin/users/[id]",
+        params: {id: "user-1"},
+        query: {history: "2"},
+        hash: "account-history",
+      }),
+    ).toBe("/fr/admin/users/user-1?history=2#account-history");
   });
 
   it("fills localized dynamic course slugs", () => {
