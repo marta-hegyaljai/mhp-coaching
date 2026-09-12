@@ -23,14 +23,14 @@ later scope forward.
 | --- | --- |
 | Plan revision | 3 |
 | Last updated | 2026-09-11 |
-| Last completed checkpoint | CP-09 |
-| Next checkpoint | CP-10 |
-| Active checkpoint | CP-10 |
-| Room module production status | Inventory, hours, blocks, privacy-safe availability, therapist reservations, My Bookings, change/cancel, owner-only notes, no-availability requests, discounts, current-month usage, saved payment method and monthly statements shipped |
+| Last completed checkpoint | CP-10 |
+| Next checkpoint | CP-11 |
+| Active checkpoint | — |
+| Room module production status | Inventory, hours, blocks, privacy-safe availability, therapist reservations, My Bookings, change/cancel, owner-only notes, no-availability requests, discounts, current-month usage, saved payment method, monthly statements, automated charging, reminders and notification evidence shipped |
 
 Revision 3 completed CP-03 and CP-04 before CP-01 on this branch. CP-01 has now
-landed on main and is merged here. CP-00 through CP-09 are complete. The next
-checkpoint is CP-10.
+landed on main and is merged here. CP-00 through CP-10 are complete. The next
+checkpoint is CP-11.
 
 ## Status vocabulary
 
@@ -115,7 +115,7 @@ or navigation link alone is not a deliverable checkpoint.
 | CP-07 | COMPLETE | Owner-only notes and unavailable-time requests | Therapist and admin |
 | CP-08 | COMPLETE | Discounts and transparent current-month usage | Therapist and admin |
 | CP-09 | COMPLETE | Stable monthly statements and saved payment method | Therapist and admin |
-| CP-10 | IN_PROGRESS | Automated monthly charging and operational email | Therapist and admin |
+| CP-10 | COMPLETE | Automated monthly charging and operational email | Therapist and admin |
 | CP-11 | PLANNED | Production-ready room module on the app domain | All actors |
 
 ---
@@ -591,7 +591,7 @@ retries/dunning and credits.
 
 ## CP-10 — Automated charging, reminders and email evidence
 
-**Status:** `IN_PROGRESS`
+**Status:** `COMPLETE`
 
 **Depends on:** CP-09.
 
@@ -607,8 +607,8 @@ booking/account/billing email with internal delivery evidence.
   replay-safe Stripe webhooks as authority;
 - failed-payment user/admin states and update-payment-method action, without
   automatic account disablement;
-- React Email templates for account, booking, request, reminder and billing events
-  defined in the room specification;
+- transactional email for account, booking, request, reminder and billing events
+  composed only through `composeTransactionalEmail()`;
 - configurable 24-hour initial reminder scheduling; and
 - PostgreSQL notification attempts, provider references, delivery state and
   idempotency keys, with private-note exclusion.
@@ -1118,6 +1118,39 @@ against `docs/DESIGN.md`.
   `LANGUAGE_SWITCHER_ENABLED`, so locale equivalence is verified by route.
   Native `<input type="date">` still renders in the browser's locale, not the
   page's; replacing it needs a custom picker and is out of scope.
+
+### CP-10 — 2026-09-11
+
+- **Result:** Closed Zurich months can be finalized and charged once from the
+  stored statement total. Signed Stripe webhooks (and the fake adapter) are the
+  payment authority; browser returns never mark a statement paid. Failed charges
+  stay retryable without disabling access. Booking/request/billing mail is
+  composed through `composeTransactionalEmail()`, captured in Mailpit, skipped
+  on Vercel preview, and recorded as PostgreSQL notification evidence.
+- **Routes/UI:** Therapist `/billing` and `/billing/statements/[id]` (FR
+  `/facturation`, DE `/abrechnung`); admin `/admin/billing/.../statements/[id]`,
+  `/admin/notifications`; cron `GET/POST /api/cron/rooms`; webhook
+  `/api/stripe/webhook`. Charge now / Retry / Resume reuse the same stored
+  total. PAID statements show no charge action.
+- **Migrations:** `0015_room_charges_and_notifications.sql`.
+- **Automated evidence:** `pnpm verify` passed: lint 0 errors / 12 unused-arg
+  warnings (existing `useActionState` pattern), typecheck, Vitest 72 files /
+  289 tests (charging concurrency, missing card, adapter-throw recovery,
+  reminder idempotency, unsigned webhook 400, preview `sendMail` block),
+  production build. Playwright `tests/e2e/auth-guards.spec.ts` +
+  `tests/e2e/billing.spec.ts` (6 passed, including cron 401 and SENT
+  notification evidence).
+- **Browser evidence:** Therapist EN desktop billing + PAID August 2026
+  statement; FR/DE ~390px usage pages with Courses+Contact on the same header
+  row; admin notification evidence SENT; Mailpit “Room statement paid —
+  August 2026” gold eyebrow, table layout, no statement UUID, no private notes.
+- **Preview/production:** Not deployed in this task. Live Stripe charging still
+  needs production keys; local/E2E use `PAYMENT_PROVIDER=fake`.
+- **Deviations/follow-ups:** Plan “Included” previously named React Email;
+  EMAIL.md remains binding and the implementation uses
+  `composeTransactionalEmail()` only. Reminder timing is the first hourly cron
+  tick inside the configured notice window, not an exact T−24h scheduler.
+- **Known next work:** CP-11 production launch and operational handoff.
 
 ## Plan revision log
 

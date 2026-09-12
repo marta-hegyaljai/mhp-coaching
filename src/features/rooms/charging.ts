@@ -54,12 +54,6 @@ export async function chargeStatement(input: {
     });
     return {statement: detail.statement, status: detail.statement.status, changed: false};
   }
-  if (current.status === "PAYMENT_PENDING") {
-    if (input.system) {
-      return {statement: current, status: "PAYMENT_PENDING", changed: false};
-    }
-    throw new RoomError("alreadyCharging");
-  }
 
   const claimed = await claimStatementForCharge(current.id);
   if (!claimed) {
@@ -74,7 +68,7 @@ export async function chargeStatement(input: {
     return {statement: detail.statement, status: "PAID", changed: false};
   }
   if (!claimed.claimed) {
-    throw new RoomError(claimed.statement.status === "PAYMENT_PENDING" ? "alreadyCharging" : "statementNotChargeable");
+    throw new RoomError("statementNotChargeable");
   }
 
   const pending = claimed.statement;
@@ -140,16 +134,27 @@ export async function chargeStatement(input: {
   });
 
   const adapter = getBillingPaymentAdapter();
-  const result = await adapter.chargeStatement({
-    statementId: pending.id,
-    userId: pending.userId,
-    amountMinor,
-    currency: pending.currency,
-    customerId: method.stripeCustomerId,
-    paymentMethodId: method.stripePaymentMethodId,
-    idempotencyKey: pending.chargeIdempotencyKey ?? `room_statement_charge_${pending.id}`,
-    paymentMethodLast4: method.last4,
-  });
+  let result;
+  try {
+    result = await adapter.chargeStatement({
+      statementId: pending.id,
+      userId: pending.userId,
+      amountMinor,
+      currency: pending.currency,
+      customerId: method.stripeCustomerId,
+      paymentMethodId: method.stripePaymentMethodId,
+      idempotencyKey: pending.chargeIdempotencyKey ?? `room_statement_charge_${pending.id}`,
+      paymentMethodLast4: method.last4,
+    });
+  } catch (error) {
+    console.error("Room statement charge adapter failed", error);
+    return applyStatementPaymentEvent({
+      statementId: pending.id,
+      type: "failed",
+      failureCode: "charge_error",
+      actor: input.actor,
+    });
+  }
 
   if (result.providerReference) {
     await storeStatementPaymentIntent({

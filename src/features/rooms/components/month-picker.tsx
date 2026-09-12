@@ -38,6 +38,7 @@ export async function MonthPicker({
               <Link
                 href={href}
                 aria-current={selectedMonth ? "page" : undefined}
+                aria-label={`${closed ? t("monthClosed") : t("monthOpen")} ${formatMonthYear(formatLocalDate(month.year, month.month, 1), locale)}`}
                 className={`block h-full rounded-panel border p-4 transition-colors duration-150 ease-standard focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink ${
                   selectedMonth
                     ? "border-ink bg-ink text-parchment"

@@ -42,6 +42,7 @@ export async function StatementCardGrid({
           <li key={statement.id}>
             <Link
               href={hrefFor(statement)}
+              aria-label={`${t(`statementStatus.${statement.status}`)} ${label}`}
               className="block h-full rounded-panel border border-ink bg-white p-5 transition-colors duration-150 ease-standard hover:bg-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
             >
               <StatusLabel

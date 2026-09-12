@@ -69,15 +69,24 @@ test.describe("current-month usage and discounts", () => {
     await page.getByRole("link", {name: /qa\.therapist@example\.test/}).click();
     await expect(page.getByRole("heading", {name: "User usage"})).toBeVisible();
     await expect(page.getByRole("button", {name: "Finalize this month"})).toBeDisabled();
-    await page.getByRole("link", {name: /August 2026/i}).click();
+    await page.getByRole("link", {name: /Closed August 2026/i}).click();
     await expect(page.getByText("Closed month", {exact: true}).first()).toBeVisible();
-    await expect(page.getByRole("button", {name: "Finalize this month"})).toBeEnabled();
+    await expect(page.getByText(/already finalized/i)).toBeVisible();
+    await expect(page.getByRole("button", {name: "Finalize this month"})).toBeDisabled();
+    await page.getByRole("link", {name: /Paid August 2026/i}).click();
+    await expect(page.getByText("Paid", {exact: true}).first()).toBeVisible();
+    await expect(page.getByRole("button", {name: "Charge now"})).toHaveCount(0);
+    await expect(page.getByRole("button", {name: "Retry charge"})).toHaveCount(0);
+    await expect(page.getByRole("heading", {name: "Notification evidence"})).toBeVisible();
 
     await page.goto("/en/admin/billing");
     await expect(page.getByRole("link", {name: "Notification evidence"})).toBeVisible();
     await page.getByRole("link", {name: "Notification evidence"}).click();
     await expect(page).toHaveURL(/\/en\/admin\/notifications/);
     await expect(page.getByRole("heading", {name: "Notification evidence"})).toBeVisible();
+    await expect(page.getByText("Statement finalized")).toBeVisible();
+    await expect(page.getByText("Payment succeeded")).toBeVisible();
+    await expect(page.getByText("Sent").first()).toBeVisible();
     await page.setViewportSize({width: 390, height: 844});
     await expect(page.getByRole("heading", {name: "Notification evidence"})).toBeVisible();
   });

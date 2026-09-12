@@ -13,35 +13,41 @@ export function ChargeStatementForm({
   statementId,
   userId,
   retry,
+  mode,
 }: {
   locale: string;
   statementId: string;
   userId: string;
   retry?: boolean;
+  mode?: "charge" | "retry" | "resume";
 }) {
   const t = useTranslations("Admin");
+  const action = mode ?? (retry ? "retry" : "charge");
   const [state, formAction, pending] = useActionState(
     chargeStatementAction.bind(null, locale, statementId, userId),
     null,
   );
 
+  const notice =
+    action === "retry" ? t("chargeRetried") : action === "resume" ? t("chargeResumed") : t("chargeStarted");
+  const help =
+    action === "retry" ? t("retryChargeHelp") : action === "resume" ? t("resumeChargeHelp") : t("chargeNowHelp");
+  const label =
+    action === "retry" ? t("retryCharge") : action === "resume" ? t("resumeCharge") : t("chargeNow");
+
   return (
     <form action={formAction} className="mt-6 max-w-xl space-y-4">
       {state?.error ? <AuthAlert>{state.error}</AuthAlert> : null}
-      {state?.ok ? <AuthNotice>{retry ? t("chargeRetried") : t("chargeStarted")}</AuthNotice> : null}
-      <p className="text-sm leading-7 text-ink-muted">
-        {retry ? t("retryChargeHelp") : t("chargeNowHelp")}
-      </p>
+      {state?.ok ? <AuthNotice>{notice}</AuthNotice> : null}
+      <p className="text-sm leading-7 text-ink-muted">{help}</p>
       <Button type="submit" disabled={pending}>
         {pending ? (
           <>
             <SpinnerIcon />
             {t("charging")}
           </>
-        ) : retry ? (
-          t("retryCharge")
         ) : (
-          t("chargeNow")
+          label
         )}
       </Button>
     </form>

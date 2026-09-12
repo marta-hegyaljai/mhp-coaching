@@ -45,6 +45,7 @@ export const FAKE_CARD: {
 };
 
 export const FAKE_DECLINE_LAST4 = "0002";
+export const FAKE_THROW_LAST4 = "9999";
 
 export class FakeBillingPaymentAdapter implements BillingPaymentAdapter {
   readonly name = "fake" as const;
@@ -67,6 +68,9 @@ export class FakeBillingPaymentAdapter implements BillingPaymentAdapter {
   async chargeStatement(input: ChargeStatementInput): Promise<ChargeResult> {
     if (input.amountMinor <= 0) {
       return {status: "succeeded", providerReference: `pi_fake_zero_${input.statementId}`};
+    }
+    if (input.paymentMethodLast4 === FAKE_THROW_LAST4) {
+      throw new Error("fake_charge_unavailable");
     }
     if (input.paymentMethodLast4 === FAKE_DECLINE_LAST4) {
       return {

@@ -310,8 +310,11 @@ export async function claimStatementForCharge(
     if (!current) {
       return undefined;
     }
-    if (current.status === "PAID" || current.status === "PAYMENT_PENDING") {
+    if (current.status === "PAID") {
       return {statement: current, claimed: false};
+    }
+    if (current.status === "PAYMENT_PENDING") {
+      return {statement: current, claimed: true};
     }
     if (!canChargeStatus(current.status)) {
       return {statement: current, claimed: false};

@@ -7,7 +7,7 @@ import {AUDIT_ACTIONS} from "@/features/admin/audit-actions";
 import {normalizeEmail} from "@/features/auth/email";
 import {hashPassword} from "@/features/auth/password";
 import {insertUser, listAuditForUser} from "@/features/auth/repository";
-import {FAKE_DECLINE_LAST4} from "@/features/payments/fake/billing-setup";
+import {FAKE_DECLINE_LAST4, FAKE_THROW_LAST4} from "@/features/payments/fake/billing-setup";
 import {applyStatementPaymentEvent, chargeStatement} from "@/features/rooms/charging";
 import {createRoom} from "@/features/rooms/inventory";
 import {savePaymentMethodDisplay} from "@/features/rooms/payment-method";
@@ -290,5 +290,121 @@ describe.skipIf(!hasDatabase)("room statement charging", () => {
     expect(reminders).toHaveLength(1);
     expect(second.considered).toBeGreaterThanOrEqual(1);
     assertNoPrivateNoteMaterial(reminders[0]);
+  });
+
+  it("fails a missing card without disabling access and stays retryable", async () => {
+    const admin = await createAdmin();
+    const therapist = await createTherapist("nocard");
+    await seedClosedBooking(admin, therapist);
+    const finalized = await finalizeUserMonth({
+      actor: admin,
+      userId: therapist.id,
+      month: closedMonth,
+      now,
+    });
+
+    await expect(
+      chargeStatement({actor: admin, statementId: finalized.statement.id}),
+    ).rejects.toMatchObject({code: "paymentMethodRequired"});
+
+    const {findStatementById} = await import("@/features/rooms/statement-repository");
+    const failed = await findStatementById(finalized.statement.id);
+    expect(failed?.status).toBe("PAYMENT_FAILED");
+    expect(failed?.failureCode).toBe("missing_payment_method");
+
+    const system = await chargeStatement({
+      system: true,
+      statementId: finalized.statement.id,
+    });
+    expect(system.status).toBe("PAYMENT_FAILED");
+
+    await savePaymentMethodDisplay({
+      actor: therapist,
+      userId: therapist.id,
+      method: {
+        brand: "visa",
+        last4: "4242",
+        expMonth: 12,
+        expYear: 2030,
+        stripeCustomerId: `cus_fake_${therapist.id}`,
+        stripePaymentMethodId: `pm_fake_${therapist.id}`,
+      },
+    });
+    const retried = await chargeStatement({actor: admin, statementId: finalized.statement.id});
+    expect(retried.status).toBe("PAID");
+    const audit = await listAuditForUser(therapist.id);
+    expect(audit.every((row) => row.action !== "USER_DISABLED")).toBe(true);
+  });
+
+  it("recovers a stuck pending charge after an adapter throw using the same attempt", async () => {
+    const admin = await createAdmin();
+    const therapist = await createTherapist("throw");
+    await seedClosedBooking(admin, therapist);
+    await savePaymentMethodDisplay({
+      actor: therapist,
+      userId: therapist.id,
+      method: {
+        brand: "visa",
+        last4: FAKE_THROW_LAST4,
+        expMonth: 12,
+        expYear: 2030,
+        stripeCustomerId: `cus_fake_${therapist.id}`,
+        stripePaymentMethodId: `pm_fake_${therapist.id}`,
+      },
+    });
+    const finalized = await finalizeUserMonth({
+      actor: admin,
+      userId: therapist.id,
+      month: closedMonth,
+      now,
+    });
+    const failed = await chargeStatement({actor: admin, statementId: finalized.statement.id});
+    expect(failed.status).toBe("PAYMENT_FAILED");
+    expect(failed.statement.failureCode).toBe("charge_error");
+    expect(failed.statement.chargeAttempt).toBe(1);
+
+    await savePaymentMethodDisplay({
+      actor: therapist,
+      userId: therapist.id,
+      method: {
+        brand: "visa",
+        last4: "4242",
+        expMonth: 12,
+        expYear: 2030,
+        stripeCustomerId: `cus_fake_${therapist.id}`,
+        stripePaymentMethodId: `pm_fake_${therapist.id}`,
+      },
+    });
+    const recovered = await chargeStatement({actor: admin, statementId: finalized.statement.id});
+    expect(recovered.status).toBe("PAID");
+    expect(recovered.statement.chargeAttempt).toBe(2);
+  });
+
+  it("does not mark a statement paid when only the saved card changes", async () => {
+    const admin = await createAdmin();
+    const therapist = await createTherapist("return");
+    await seedClosedBooking(admin, therapist);
+    const finalized = await finalizeUserMonth({
+      actor: admin,
+      userId: therapist.id,
+      month: closedMonth,
+      now,
+    });
+    await savePaymentMethodDisplay({
+      actor: therapist,
+      userId: therapist.id,
+      method: {
+        brand: "visa",
+        last4: "4242",
+        expMonth: 12,
+        expYear: 2030,
+        stripeCustomerId: `cus_fake_${therapist.id}`,
+        stripePaymentMethodId: `pm_fake_${therapist.id}`,
+      },
+    });
+    const {findStatementById} = await import("@/features/rooms/statement-repository");
+    const stored = await findStatementById(finalized.statement.id);
+    expect(stored?.status).toBe("FINALIZED");
+    expect(stored?.paidAt).toBeNull();
   });
 });

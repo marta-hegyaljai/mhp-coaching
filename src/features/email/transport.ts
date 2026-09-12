@@ -2,6 +2,14 @@ import nodemailer from "nodemailer";
 import type {Transporter} from "nodemailer";
 
 import {getResendApiKey, getResendFromAddress} from "@/features/email/credentials";
+import {isHostedPreviewMailBlocked} from "@/features/email/preview";
+
+export class PreviewMailBlockedError extends Error {
+  constructor() {
+    super("Transactional mail is blocked on Vercel preview deployments");
+    this.name = "PreviewMailBlockedError";
+  }
+}
 
 type MailInput = {
   to: string;
@@ -68,6 +76,10 @@ async function sendViaResend(input: MailInput): Promise<MailDelivery> {
 }
 
 export async function sendMail(input: MailInput): Promise<MailDelivery> {
+  if (isHostedPreviewMailBlocked()) {
+    throw new PreviewMailBlockedError();
+  }
+
   if (getResendApiKey()) {
     return sendViaResend(input);
   }

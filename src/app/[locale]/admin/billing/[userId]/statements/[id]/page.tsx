@@ -143,12 +143,20 @@ export default async function AdminStatementPage({params}: AdminStatementPagePro
             />
           </>
         ) : null}
+        {detail.statement.status === "PAYMENT_PENDING" ? (
+          <ChargeStatementForm
+            locale={locale}
+            statementId={detail.statement.id}
+            userId={userId}
+            mode="resume"
+          />
+        ) : null}
         {detail.statement.status === "PAYMENT_FAILED" ? (
           <ChargeStatementForm
             locale={locale}
             statementId={detail.statement.id}
             userId={userId}
-            retry
+            mode="retry"
           />
         ) : null}
         <section className="mt-12">

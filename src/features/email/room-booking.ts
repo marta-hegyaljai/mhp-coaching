@@ -1,6 +1,5 @@
-import {getTranslations} from "next-intl/server";
-
 import type {RoomBooking, User} from "@/db/schema";
+import {emailTranslator} from "@/features/email/catalog";
 import {composeTransactionalEmail} from "@/features/email/layout";
 import {mailLocale} from "@/features/email/locale";
 import {sendMail, type MailDelivery} from "@/features/email/transport";
@@ -33,8 +32,8 @@ async function sendUserRoomMail(input: {
     href: PathnameHref;
 }): Promise<MailDelivery> {
   const locale = mailLocale(input.user.locale);
-  const t = await getTranslations({locale, namespace: `Email.${input.copy}`});
-  const fields = await getTranslations({locale, namespace: "Email.fields"});
+  const t = emailTranslator(locale, `Email.${input.copy}`);
+  const fields = emailTranslator(locale, "Email.fields");
   const url = await absoluteUrl(locale, input.href);
   const greeting = t("greeting", {name: input.user.firstName});
   const text = [
@@ -146,8 +145,8 @@ export async function sendAvailabilityRequestCreated(input: {
   roomName: string | null;
 }): Promise<MailDelivery> {
   const locale = mailLocale(input.user.locale);
-  const t = await getTranslations({locale, namespace: "Email.requestCreated"});
-  const fields = await getTranslations({locale, namespace: "Email.fields"});
+  const t = emailTranslator(locale, "Email.requestCreated");
+  const fields = emailTranslator(locale, "Email.fields");
   const url = await absoluteUrl(locale, "/rooms/requests");
   const room = input.roomName ?? t("anyRoom");
   const greeting = t("greeting", {name: input.user.firstName});
@@ -187,8 +186,8 @@ export async function sendAvailabilityRequestCreatedStaff(input: {
   roomName: string | null;
 }): Promise<MailDelivery> {
   const locale = mailLocale("fr");
-  const t = await getTranslations({locale, namespace: "Email.requestCreatedStaff"});
-  const fields = await getTranslations({locale, namespace: "Email.fields"});
+  const t = emailTranslator(locale, "Email.requestCreatedStaff");
+  const fields = emailTranslator(locale, "Email.fields");
   const url = await absoluteUrl(locale, "/admin/requests");
   const room = input.roomName ?? t("anyRoom");
   const text = [
@@ -232,8 +231,8 @@ export async function sendAvailabilityRequestDecision(input: {
 }): Promise<MailDelivery> {
   const copy = input.decision === "RESOLVED" ? "requestResolved" : "requestDeclined";
   const locale = mailLocale(input.user.locale);
-  const t = await getTranslations({locale, namespace: `Email.${copy}`});
-  const fields = await getTranslations({locale, namespace: "Email.fields"});
+  const t = emailTranslator(locale, `Email.${copy}`);
+  const fields = emailTranslator(locale, "Email.fields");
   const url = await absoluteUrl(locale, "/rooms/requests");
   const room = input.roomName ?? t("anyRoom");
   const greeting = t("greeting", {name: input.user.firstName});
@@ -273,8 +272,8 @@ export async function sendStatementFinalizedMail(input: {
   minutes: number;
 }): Promise<MailDelivery> {
   const locale = mailLocale(input.user.locale);
-  const t = await getTranslations({locale, namespace: "Email.statementFinalized"});
-  const fields = await getTranslations({locale, namespace: "Email.fields"});
+  const t = emailTranslator(locale, "Email.statementFinalized");
+  const fields = emailTranslator(locale, "Email.fields");
   const url = await absoluteUrl(locale, "/billing");
   const greeting = t("greeting", {name: input.user.firstName});
   const text = [
@@ -319,8 +318,8 @@ export async function sendStatementPaymentSucceededMail(input: {
   amount: string;
 }): Promise<MailDelivery> {
   const locale = mailLocale(input.user.locale);
-  const t = await getTranslations({locale, namespace: "Email.paymentSucceeded"});
-  const fields = await getTranslations({locale, namespace: "Email.fields"});
+  const t = emailTranslator(locale, "Email.paymentSucceeded");
+  const fields = emailTranslator(locale, "Email.fields");
   const url = await absoluteUrl(locale, "/billing");
   const greeting = t("greeting", {name: input.user.firstName});
   const text = [
@@ -364,8 +363,8 @@ export async function sendStatementPaymentFailedMail(input: {
   amount: string;
 }): Promise<MailDelivery> {
   const locale = mailLocale(input.user.locale);
-  const t = await getTranslations({locale, namespace: "Email.paymentFailed"});
-  const fields = await getTranslations({locale, namespace: "Email.fields"});
+  const t = emailTranslator(locale, "Email.paymentFailed");
+  const fields = emailTranslator(locale, "Email.fields");
   const url = await absoluteUrl(locale, "/billing");
   const greeting = t("greeting", {name: input.user.firstName});
   const text = [
