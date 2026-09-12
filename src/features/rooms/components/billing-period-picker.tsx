@@ -52,6 +52,7 @@ export async function BillingPeriodPicker({
       <h2 className="font-serif text-subheading">{t("billingPeriodTitle")}</h2>
       <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-muted">{t("billingPeriodHelp")}</p>
       <form
+        key={`${zurichMonthKey(from)}-${zurichMonthKey(to)}`}
         method="get"
         action={action}
         className="mt-5 grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] sm:items-end"
