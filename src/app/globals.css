@@ -80,8 +80,10 @@ h3 {
   color: var(--color-parchment);
 }
 
-:focus-visible {
-  outline: 2px solid var(--color-bronze);
+/* Form controls carry their own focus through a single ink border; an outline
+   here stacks on top and reads as a double frame. */
+:focus-visible:not(input):not(textarea):not(select) {
+  outline: 2px solid var(--color-ink);
   outline-offset: 3px;
 }
 

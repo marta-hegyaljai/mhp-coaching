@@ -70,6 +70,12 @@ export default async function CoursesPage({params, searchParams}: CoursesPagePro
         <CourseExplorer
           locale={locale}
           groups={groups}
+          categoryLabels={{
+            foundation: t("foundation"),
+            advanced: t("advanced"),
+            medical: t("medical"),
+            workshop: t("workshops"),
+          }}
           detailsLabel={t("readMore")}
           lead={
             <CourseCatalogueLead
@@ -85,6 +91,10 @@ export default async function CoursesPage({params, searchParams}: CoursesPagePro
           labels={{
             search: t("search"),
             searchPlaceholder: t("searchPlaceholder"),
+            searchSuggestions: t("searchSuggestions"),
+            searchBrowseAll: t("searchBrowseAll"),
+            searchNoSuggestions: t("searchNoSuggestions"),
+            viewCourse: t("viewCourse"),
             month: t("monthFilter"),
             allMonths: t("allMonths"),
             gridView: t("gridView"),

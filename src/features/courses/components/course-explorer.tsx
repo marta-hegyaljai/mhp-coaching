@@ -15,13 +15,19 @@ import {occupiedMonthKeys} from "@/features/courses/calendar-layout";
 import {getBookableDates} from "@/features/courses/queries";
 import type {Course} from "@/features/courses/types";
 import type {AppLocale} from "@/i18n/routing";
-import {SearchIcon} from "@/shared/ui/icons";
+import {CourseSearchAutocomplete} from "@/features/courses/components/course-search-autocomplete";
+import {courseMatchesQuery} from "@/features/courses/course-search";
+import {fieldStyles} from "@/shared/ui/field";
 
 type ViewMode = "grid" | "calendar";
 
 type ExplorerLabels = {
   search: string;
   searchPlaceholder: string;
+  searchSuggestions: string;
+  searchBrowseAll: string;
+  searchNoSuggestions: string;
+  viewCourse: string;
   month: string;
   allMonths: string;
   gridView: string;
@@ -49,6 +55,7 @@ type ExplorerLabels = {
 export function CourseExplorer({
   locale,
   groups,
+  categoryLabels,
   detailsLabel,
   labels,
   lead,
@@ -58,6 +65,7 @@ export function CourseExplorer({
 }: {
   locale: AppLocale;
   groups: Array<{title: string; courses: Course[]}>;
+  categoryLabels: Record<Course["category"], string>;
   detailsLabel: string;
   labels: ExplorerLabels;
   lead?: ReactNode;
@@ -101,22 +109,23 @@ export function CourseExplorer({
 
   const toolbar = (
       <div className="grid gap-3 border border-ink bg-white p-4 sm:grid-cols-[minmax(0,1fr)_12rem_auto] sm:items-end">
-        <div>
-          <label htmlFor="course-search" className="block text-sm font-medium text-ink">
-            {labels.search}
-          </label>
-          <div className="relative mt-2">
-            <SearchIcon className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-ink-subtle" />
-            <input
-              id="course-search"
-              type="search"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder={labels.searchPlaceholder}
-              className="block min-h-11 w-full rounded-panel border border-line bg-white py-2 pr-3 pl-10 text-base text-ink placeholder:text-ink-subtle focus:border-ink focus:outline-none"
-            />
-          </div>
-        </div>
+        <CourseSearchAutocomplete
+          locale={locale}
+          courses={allCourses}
+          categoryLabels={categoryLabels}
+          query={query}
+          month={month}
+          onQueryChange={setQuery}
+          labels={{
+            search: labels.search,
+            searchPlaceholder: labels.searchPlaceholder,
+            suggestions: labels.searchSuggestions,
+            browseAll: labels.searchBrowseAll,
+            noSuggestions: labels.searchNoSuggestions,
+            awaitingDateLabel: labels.awaitingDateLabel,
+            viewCourse: labels.viewCourse,
+          }}
+        />
         <div>
           <label htmlFor="course-month" className="block text-sm font-medium text-ink">
             {labels.month}
@@ -125,7 +134,7 @@ export function CourseExplorer({
             id="course-month"
             value={month}
             onChange={(event) => setMonth(event.target.value)}
-            className="mt-2 block min-h-11 w-full rounded-panel border border-line bg-white px-3 text-base text-ink focus:border-ink focus:outline-none"
+            className={`mt-2 ${fieldStyles({size: "sm"})}`}
           >
             <option value="">{labels.allMonths}</option>
             {months.map((item) => (
@@ -258,13 +267,7 @@ function matchesFilters(
   query: string,
   month: string,
 ): boolean {
-  const needle = query.trim().toLowerCase();
-  const textMatch =
-    needle.length === 0 ||
-    course.title[locale].toLowerCase().includes(needle) ||
-    course.shortDescription[locale].toLowerCase().includes(needle);
-
-  if (!textMatch) {
+  if (!courseMatchesQuery(course, locale, query)) {
     return false;
   }
 

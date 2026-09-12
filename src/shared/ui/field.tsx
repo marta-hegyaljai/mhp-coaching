@@ -16,8 +16,12 @@ const sizes: Record<FieldSize, string> = {
   md: "min-h-12 px-3.5",
 };
 
+/** One ink border on focus — never stack an outline ring on top of the frame. */
+export const controlFocusClass =
+  "outline-none focus:border-ink focus-visible:border-ink";
+
 const base =
-  "block w-full rounded-panel border bg-white font-sans text-base text-ink outline-none transition-colors duration-150 ease-standard focus:border-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink disabled:cursor-not-allowed disabled:opacity-55";
+  `block w-full rounded-panel border bg-white font-sans text-base text-ink transition-colors duration-150 ease-standard disabled:cursor-not-allowed disabled:opacity-55 ${controlFocusClass}`;
 
 type StyleOptions = {
   size?: FieldSize;

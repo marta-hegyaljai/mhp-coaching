@@ -6,6 +6,7 @@ import {useTranslations} from "next-intl";
 import {createInquiryAction} from "@/features/inquiries/actions";
 import type {AppLocale} from "@/i18n/routing";
 import {Button} from "@/shared/ui/button";
+import {fieldLabelClass, fieldStyles} from "@/shared/ui/field";
 import {SpinnerIcon} from "@/shared/ui/icons";
 
 export function ContactForm({
@@ -108,9 +109,7 @@ export function ContactForm({
           rows={6}
           defaultValue={draft?.message}
           aria-invalid={errors?.message ? true : undefined}
-          className={`mt-2 block w-full rounded-panel border bg-white px-3.5 py-3 text-base text-ink focus:border-ink ${
-            errors?.message ? "border-bronze" : "border-line"
-          }`}
+          className={`mt-2 ${fieldStyles({invalid: Boolean(errors?.message)})} min-h-24 py-3`}
         />
         {errors?.message ? (
           <p role="alert" className="mt-1.5 text-sm text-bronze">
@@ -154,7 +153,7 @@ function Field({
 }) {
   return (
     <div>
-      <label htmlFor={name} className="block text-sm font-medium text-ink">
+      <label htmlFor={name} className={fieldLabelClass}>
         {label}
       </label>
       <input
@@ -166,9 +165,7 @@ function Field({
         defaultValue={defaultValue}
         required={required}
         aria-invalid={error ? true : undefined}
-        className={`mt-2 block min-h-12 w-full rounded-panel border bg-white px-3.5 text-base text-ink focus:border-ink ${
-          error ? "border-bronze" : "border-line"
-        }`}
+        className={`mt-2 ${fieldStyles({invalid: Boolean(error)})}`}
       />
       {error ? (
         <p role="alert" className="mt-1.5 text-sm text-bronze">

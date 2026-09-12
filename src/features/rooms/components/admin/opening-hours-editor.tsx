@@ -158,7 +158,7 @@ function TimeSelect({
       aria-disabled={closed}
       tabIndex={closed ? -1 : 0}
       defaultValue={defaultValue}
-      className={`min-h-11 rounded-panel border border-line bg-white px-3 font-sans text-sm tabular-nums text-ink focus:border-ink focus:outline-none ${
+      className={`min-h-11 rounded-panel border border-line bg-white px-3 font-sans text-sm tabular-nums text-ink outline-none focus:border-ink focus-visible:border-ink ${
         closed ? "pointer-events-none" : ""
       }`}
     >

@@ -17,7 +17,7 @@ export function RoomDescriptionField({
         name="description"
         rows={4}
         defaultValue={defaultValue}
-        className="mt-2 block w-full rounded-panel border border-line bg-white px-3.5 py-3 text-base text-ink focus:border-ink focus:outline-none"
+        className="mt-2 block w-full rounded-panel border border-line bg-white px-3.5 py-3 text-base text-ink outline-none focus:border-ink focus-visible:border-ink"
       />
     </div>
   );

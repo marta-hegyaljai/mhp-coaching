@@ -19,6 +19,7 @@ import {formatChf} from "@/features/payments/money";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {Button} from "@/shared/ui/button";
+import {fieldStyles} from "@/shared/ui/field";
 import {CheckIcon, LockIcon, SpinnerIcon} from "@/shared/ui/icons";
 import {Price} from "@/shared/ui/price";
 
@@ -482,9 +483,7 @@ function Field({
         required
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? errorId : undefined}
-        className={`mt-2 block min-h-12 w-full rounded-panel border bg-parchment px-3.5 text-base text-ink transition duration-200 placeholder:text-ink-subtle focus:border-ink ${
-          error ? "border-ink" : "border-line"
-        }`}
+        className={`mt-2 ${fieldStyles({invalid: Boolean(error)})} bg-parchment placeholder:text-ink-subtle`}
       />
       {error ? (
         <p id={errorId} role="alert" className="mt-1.5 text-sm text-ink">

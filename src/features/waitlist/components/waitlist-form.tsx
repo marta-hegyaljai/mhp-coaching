@@ -8,6 +8,7 @@ import type {Course} from "@/features/courses/types";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {Button} from "@/shared/ui/button";
+import {fieldLabelClass, fieldStyles} from "@/shared/ui/field";
 import {SpinnerIcon} from "@/shared/ui/icons";
 
 export function WaitlistForm({
@@ -166,7 +167,7 @@ function Field({
 
   return (
     <div>
-      <label htmlFor={name} className="block text-sm font-medium text-ink">
+      <label htmlFor={name} className={fieldLabelClass}>
         {label}
       </label>
       <input
@@ -179,9 +180,7 @@ function Field({
         required
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? errorId : undefined}
-        className={`mt-2 block min-h-12 w-full rounded-panel border bg-white px-3.5 text-base text-ink focus:border-ink focus:outline-none ${
-          error ? "border-bronze" : "border-line"
-        }`}
+        className={`mt-2 ${fieldStyles({invalid: Boolean(error)})}`}
       />
       {error ? (
         <p id={errorId} role="alert" className="mt-2 text-sm text-bronze">
