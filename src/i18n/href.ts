@@ -44,6 +44,8 @@ export type PathnameHref =
   | {
       pathname: "/admin/users/[id]";
       params: {id: string};
+      query?: {history?: string};
+      hash?: string;
     }
   | {
       pathname: "/admin/rooms/[id]";

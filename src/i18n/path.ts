@@ -29,8 +29,12 @@ export function localizedPathname(
       : null;
   const search =
     query && [...query.keys()].length > 0 ? `?${query.toString()}` : "";
+  const hash =
+    "hash" in href && href.hash
+      ? `#${String(href.hash).replace(/^#/, "")}`
+      : "";
 
-  return `${prefix}${search}`;
+  return `${prefix}${search}${hash}`;
 }
 
 function externalPath(locale: AppLocale, pathname: string): string {

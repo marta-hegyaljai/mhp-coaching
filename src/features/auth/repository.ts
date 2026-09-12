@@ -1,4 +1,4 @@
-import {and, count, desc, eq, gt, isNotNull, isNull, ne, or, sql} from "drizzle-orm";
+import {and, count, desc, eq, gt, inArray, isNotNull, isNull, ne, or, sql} from "drizzle-orm";
 import type {SQL} from "drizzle-orm";
 
 import {getDb} from "@/db";
@@ -8,10 +8,12 @@ import {
   auditEvents,
   sessions,
   users,
+  type AuditEvent,
   type AuthToken,
   type AuthTokenPurpose,
   type User,
 } from "@/db/schema";
+import {AUDIT_HISTORY_PAGE_SIZE} from "@/features/admin/audit-history-query";
 import {AUDIT_ACTIONS, type AuditAction} from "@/features/admin/audit-actions";
 import {
   USER_LIST_PAGE_SIZE,
@@ -44,6 +46,15 @@ export function accessSnapshot(user: User): AccessSnapshot {
 export async function findUserById(id: string): Promise<User | undefined> {
   const [user] = await getDb().select().from(users).where(eq(users.id, id)).limit(1);
   return user;
+}
+
+export async function findUsersByIds(ids: string[]): Promise<User[]> {
+  const unique = [...new Set(ids.filter(Boolean))];
+  if (unique.length === 0) {
+    return [];
+  }
+
+  return getDb().select().from(users).where(inArray(users.id, unique));
 }
 
 export async function findUserByNormalizedEmail(
@@ -409,7 +420,42 @@ export async function listAuditForUser(targetUserId: string) {
     .select()
     .from(auditEvents)
     .where(eq(auditEvents.targetUserId, targetUserId))
-    .orderBy(desc(auditEvents.createdAt));
+    .orderBy(desc(auditEvents.createdAt), desc(auditEvents.id));
+}
+
+export async function listAuditForUserPage(
+  targetUserId: string,
+  page: number,
+  options?: {pageSize?: number},
+): Promise<{
+  events: AuditEvent[];
+  total: number;
+  page: number;
+  pageSize: number;
+  pageCount: number;
+}> {
+  const pageSize = Math.min(
+    100,
+    Math.max(1, options?.pageSize ?? AUDIT_HISTORY_PAGE_SIZE),
+  );
+  const db = getDb();
+  const [totalRow] = await db
+    .select({value: count()})
+    .from(auditEvents)
+    .where(eq(auditEvents.targetUserId, targetUserId));
+  const total = Number(totalRow?.value ?? 0);
+  const pageCount = Math.max(1, Math.ceil(total / pageSize));
+  const safePage = Math.min(Math.max(1, page), pageCount);
+  const offset = (safePage - 1) * pageSize;
+  const events = await db
+    .select()
+    .from(auditEvents)
+    .where(eq(auditEvents.targetUserId, targetUserId))
+    .orderBy(desc(auditEvents.createdAt), desc(auditEvents.id))
+    .limit(pageSize)
+    .offset(offset);
+
+  return {events, total, page: safePage, pageSize, pageCount};
 }
 
 export async function recordAuthAttempt(action: string, subject: string): Promise<void> {
