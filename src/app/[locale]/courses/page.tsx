@@ -2,13 +2,7 @@ import {getTranslations, setRequestLocale} from "next-intl/server";
 
 import {CourseCatalogueLead, CourseCataloguePortrait} from "@/features/courses/components/course-catalogue-masthead";
 import {CourseExplorer} from "@/features/courses/components/course-explorer";
-import {
-  getAdvancedCourses,
-  getFoundationCourses,
-  getMedicalCourses,
-  getPublishedCourses,
-  getWorkshopCourses,
-} from "@/features/courses/queries";
+import {loadPublishedCourses} from "@/features/courses/live";
 import type {Course} from "@/features/courses/types";
 import {BreadcrumbTrail} from "@/features/seo/breadcrumb-trail";
 import {courseListJsonLd} from "@/features/seo/json-ld";
@@ -22,6 +16,8 @@ type CoursesPageProps = {
   params: Promise<{locale: AppLocale}>;
   searchParams: Promise<{view?: string}>;
 };
+
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({params}: CoursesPageProps) {
   const {locale} = await params;
@@ -43,16 +39,17 @@ export default async function CoursesPage({params, searchParams}: CoursesPagePro
   const navT = await getTranslations("Nav");
   const calendarT = await getTranslations("CourseCalendar");
 
+  const publishedCourses = await loadPublishedCourses();
   const groups: Array<{title: string; courses: Course[]}> = [
-    {title: t("foundation"), courses: getFoundationCourses()},
-    {title: t("advanced"), courses: getAdvancedCourses()},
-    {title: t("medical"), courses: getMedicalCourses()},
-    {title: t("workshops"), courses: getWorkshopCourses()},
+    {title: t("foundation"), courses: publishedCourses.filter((course) => course.category === "foundation")},
+    {title: t("advanced"), courses: publishedCourses.filter((course) => course.category === "advanced")},
+    {title: t("medical"), courses: publishedCourses.filter((course) => course.category === "medical")},
+    {title: t("workshops"), courses: publishedCourses.filter((course) => course.category === "workshop")},
   ].filter((group) => group.courses.length > 0);
 
   return (
     <SiteShell locale={locale} footerCta={null}>
-      <JsonLd data={courseListJsonLd(getPublishedCourses(), locale)} />
+      <JsonLd data={courseListJsonLd(publishedCourses, locale)} />
 
       <Section size="sm" className="pt-8 pb-16 sm:pb-24">
         <BreadcrumbTrail
@@ -71,7 +68,7 @@ export default async function CoursesPage({params, searchParams}: CoursesPagePro
               eyebrow={t("eyebrow")}
               title={t("title")}
               intro={t("intro")}
-              courseCount={t("courseCount", {count: getPublishedCourses().length})}
+              courseCount={t("courseCount", {count: publishedCourses.length})}
             />
           }
           portrait={<CourseCataloguePortrait imageAlt={t("instructorImageAlt")} />}

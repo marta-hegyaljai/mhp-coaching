@@ -12,7 +12,7 @@ import {requireAdmin} from "@/features/auth/require";
 import {AdminCertificatePanel} from "@/features/certificates/components/admin/panel";
 import {listCertificatesForUser} from "@/features/certificates/repository";
 import {toCertificateCardView} from "@/features/certificates/views";
-import {getCatalogueCourses} from "@/features/courses/queries";
+import {loadCatalogueCourses} from "@/features/courses/live";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
@@ -59,7 +59,7 @@ export default async function AdminUserDetailPage({
   const certificates = (await listCertificatesForUser(user.id)).map((certificate) =>
     toCertificateCardView(certificate, locale),
   );
-  const courses = getCatalogueCourses().map((course) => ({
+  const courses = (await loadCatalogueCourses()).map((course) => ({
     id: course.id,
     title: course.title[locale],
   }));

@@ -30,6 +30,7 @@ export type Course = {
    * Public listings, sitemap and JSON-LD only use published courses.
    */
   published?: boolean;
+  displayOrder?: number;
   dates: CourseDate[];
 };
 

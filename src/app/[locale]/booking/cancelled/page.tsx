@@ -3,7 +3,7 @@ import {getTranslations, setRequestLocale} from "next-intl/server";
 import {isDateToBeConfirmed} from "@/features/bookings/booking-date";
 import {getBookingById} from "@/features/bookings/repository";
 import {formatDateRange} from "@/features/courses/dates";
-import {getCourseById} from "@/features/courses/queries";
+import {loadCourseById} from "@/features/courses/live";
 import {ContactForm} from "@/features/inquiries/components/contact-form";
 import {buildPageMetadata} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
@@ -44,7 +44,7 @@ export default async function BookingCancelledPage({
   setRequestLocale(locale);
   const t = await getTranslations("BookingCancelled");
   const booking = bookingId ? await getBookingById(bookingId) : undefined;
-  const course = booking ? getCourseById(booking.courseId) : undefined;
+  const course = booking ? await loadCourseById(booking.courseId) : undefined;
   const otherPayment = source === "other";
   const dateLabel = booking
     ? isDateToBeConfirmed(booking.courseDateStart)

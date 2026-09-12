@@ -1,6 +1,7 @@
 import {getTranslations, setRequestLocale} from "next-intl/server";
 
 import {requireRoomBooking} from "@/features/auth/require";
+import {therapistDiscountPercent} from "@/features/rooms/pricing";
 import {therapistAvailability} from "@/features/rooms/availability";
 import {AvailabilityCalendar} from "@/features/rooms/components/availability/calendar";
 import {RoomsNav} from "@/features/rooms/components/rooms-nav";
@@ -60,6 +61,7 @@ export default async function RoomsPage({params, searchParams}: RoomsPageProps) 
             locale={locale}
             query={query}
             availability={availability}
+            discountPercent={therapistDiscountPercent(user)}
           />
         </div>
       </Section>

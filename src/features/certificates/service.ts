@@ -18,7 +18,7 @@ import {
   updateActiveCertificate,
 } from "@/features/certificates/repository";
 import {certificateAuditSnapshot} from "@/features/certificates/views";
-import {getCourseById} from "@/features/courses/queries";
+import {loadCourseById} from "@/features/courses/live";
 import {isUuid} from "@/lib/uuid";
 
 const documents: CertificateDocumentStore = createPostgresCertificateDocumentStore();
@@ -69,7 +69,7 @@ export async function attachCertificate(input: {
 }): Promise<{certificateId: string}> {
   requireAdmin(input.actor);
   const target = await requireTargetUser(input.userId);
-  const course = getCourseById(input.courseId.trim());
+  const course = await loadCourseById(input.courseId.trim());
   if (!course) {
     throw new CertificateError("invalidCourse");
   }

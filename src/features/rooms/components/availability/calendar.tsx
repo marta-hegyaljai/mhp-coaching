@@ -2,7 +2,6 @@ import {getTranslations} from "next-intl/server";
 
 import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
 import type {AvailabilityRoom, TherapistAvailability} from "@/features/rooms/availability";
-import {bookHref} from "@/features/rooms/book-query";
 import {requestHref} from "@/features/rooms/request-query";
 import {availabilityHref, type AvailabilityQuery} from "@/features/rooms/query";
 import {addLocalDays, minutesToTime, timeToMinutes, todayInZurich} from "@/features/rooms/timezone";
@@ -17,7 +16,7 @@ import {
 import {ArrowRightIcon} from "@/shared/ui/icons";
 import {SectionLabel} from "@/shared/ui/section-label";
 
-import {AvailabilityGrid, type GridColumn} from "./grid";
+import {AvailabilityGrid, type CalendarReserveContext, type GridColumn} from "./grid";
 import {AvailabilityLegend} from "./legend";
 import {MobileWeekCalendar} from "./mobile-week-calendar";
 import {RoomFilter} from "./room-filter";
@@ -47,10 +46,12 @@ export async function AvailabilityCalendar({
   locale,
   query,
   availability,
+  discountPercent,
 }: {
   locale: AppLocale;
   query: AvailabilityQuery;
   availability: TherapistAvailability;
+  discountPercent: number;
 }) {
   const t = await getTranslations("Rooms");
   const labels: SlotLabels = {
@@ -93,6 +94,14 @@ export async function AvailabilityCalendar({
     availability.minimumBookingMinutes / availability.intervalMinutes,
   );
 
+  const reserve: CalendarReserveContext = {
+    locale,
+    intervalMinutes: availability.intervalMinutes,
+    minimumBookingMinutes: availability.minimumBookingMinutes,
+    maximumBookingMinutes: availability.maximumBookingMinutes,
+    rooms: consideredRooms,
+    discountPercent,
+  };
   const rangeLabel = isWeek
     ? formatDayRange(availability.startDate, availability.endDate, locale)
     : formatWeekdayDate(query.date, locale);
@@ -186,6 +195,7 @@ export async function AvailabilityCalendar({
                         columns={columnsForDate(date)}
                         labels={labels}
                         minWidthClass={dayMinWidth}
+                        reserve={reserve}
                       />
                     </div>
                   ),
@@ -222,6 +232,7 @@ export async function AvailabilityCalendar({
               }
               labels={labels}
               minWidthClass="min-w-[48rem]"
+              reserve={reserve}
             />
             </div>
           </>
@@ -232,6 +243,7 @@ export async function AvailabilityCalendar({
             columns={singleDayColumns}
             labels={labels}
             minWidthClass={dayMinWidth}
+            reserve={reserve}
           />
         )}
       </section>
@@ -416,10 +428,10 @@ function aggregateDayColumns({
           return withSlotHref(own, own.roomId, date, false);
         }
 
-        const bookableRooms = rooms.filter((room) =>
-          isBookableStart({roomId: room.id, date, time, index, requiredSlots}),
+        const availableRooms = rooms.filter(
+          (room) => index.slotAt(room.id, date, time)?.state === "available",
         );
-        const chosen = bookableRooms[0];
+        const chosen = availableRooms[0];
         if (chosen) {
           const slot = index.slotAt(chosen.id, date, time);
           if (!slot) {
@@ -428,14 +440,12 @@ function aggregateDayColumns({
           return {
             ...slot,
             state: "available" as const,
-            href: bookHref({
-              roomId: chosen.id,
-              roomIds: bookableRooms.map((room) => room.id),
+            select: {
               date,
-              start: time,
-            }),
-            meta: labels.roomsAvailable(bookableRooms.length),
-            ariaLabel: labels.bookAt(time, bookableRooms.length),
+              roomIds: availableRooms.map((room) => room.id),
+            },
+            meta: labels.roomsAvailable(availableRooms.length),
+            ariaLabel: labels.bookAt(time, availableRooms.length),
           };
         }
 
@@ -491,21 +501,18 @@ function withSlotHref(
   slot: ReturnType<SlotIndex["slotAt"]>,
   roomId: string,
   date: string,
-  bookable: boolean,
+  _bookable: boolean,
   ariaLabel?: string,
 ) {
   if (!slot) {
     return undefined;
   }
-  if (slot.state === "available" && bookable) {
+  if (slot.state === "available") {
     return {
       ...slot,
-      href: bookHref({roomId, date, start: slot.localStart}),
+      select: {date, roomIds: [roomId]},
       ...(ariaLabel ? {ariaLabel} : {}),
     };
-  }
-  if (slot.state === "available") {
-    return {...slot, state: "unavailable" as const};
   }
   if (slot.state === "unavailable") {
     return {

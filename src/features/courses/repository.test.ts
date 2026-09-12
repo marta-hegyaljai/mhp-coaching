@@ -1,6 +1,8 @@
 import {afterAll, describe, expect, it} from "vitest";
+import {eq} from "drizzle-orm";
 
-import {closeDb} from "@/db";
+import {closeDb, getDb} from "@/db";
+import {courses} from "@/db/schema";
 import {getDatabaseUrl} from "@/lib/database-url";
 import {courses as seedCourses} from "@/features/courses/catalog";
 import {
@@ -39,5 +41,23 @@ describe.skipIf(!hasDatabase)("course catalogue persistence", () => {
     expect(paused?.published).toBe(false);
     const practitioner = stored.find((course) => course.id === "omni-practitioner");
     expect(practitioner?.dates).toHaveLength(3);
+  });
+
+  it("does not overwrite an unpublished course on reseed", async () => {
+    await upsertSeedCatalogue();
+    const db = getDb();
+    await db
+      .update(courses)
+      .set({published: false, updatedAt: new Date()})
+      .where(eq(courses.id, "omni-practitioner"));
+
+    await upsertSeedCatalogue();
+    const stored = await listCatalogueFromDatabase();
+    expect(stored.find((course) => course.id === "omni-practitioner")?.published).toBe(false);
+
+    await db
+      .update(courses)
+      .set({published: true, updatedAt: new Date()})
+      .where(eq(courses.id, "omni-practitioner"));
   });
 });

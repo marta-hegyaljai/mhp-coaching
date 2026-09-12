@@ -1,9 +1,15 @@
 import {asc, eq} from "drizzle-orm";
 
 import {getDb} from "@/db";
-import {courseSessions, courses, type CourseRow, type CourseSessionRow} from "@/db/schema";
+import {
+  courseSessions,
+  courses,
+  type CourseRow,
+  type CourseSessionRow,
+  type LocalizedJson,
+} from "@/db/schema";
 import {courses as seedCourses} from "@/features/courses/catalog";
-import type {Course, CourseDate} from "@/features/courses/types";
+import type {Course, CourseCategory, CourseDate} from "@/features/courses/types";
 import {isCoursePublished} from "@/features/courses/types";
 
 export function courseFromRows(
@@ -22,6 +28,7 @@ export function courseFromRows(
     priceChf: course.priceChf,
     category: course.category,
     published: course.published,
+    displayOrder: course.displayOrder,
     dates: sessions.map(sessionFromRow),
   };
 }
@@ -60,42 +67,7 @@ export async function upsertSeedCatalogue(): Promise<void> {
         displayOrder,
         updatedAt: now,
       })
-      .onConflictDoUpdate({
-        target: courses.id,
-        set: {
-          slug: course.slug,
-          title: course.title,
-          shortDescription: course.shortDescription,
-          description: course.description,
-          audience: course.audience,
-          duration: course.duration,
-          location: course.location,
-          priceChf: course.priceChf,
-          category: course.category,
-          published: isCoursePublished(course),
-          displayOrder,
-          updatedAt: now,
-        },
-      });
-
-    const keepIds = course.dates.map((date) => date.id);
-
-    if (keepIds.length === 0) {
-      await db.delete(courseSessions).where(eq(courseSessions.courseId, course.id));
-    } else {
-      const existing = await db
-        .select({id: courseSessions.id})
-        .from(courseSessions)
-        .where(eq(courseSessions.courseId, course.id));
-
-      const staleIds = existing
-        .map((row) => row.id)
-        .filter((id) => !keepIds.includes(id));
-
-      for (const staleId of staleIds) {
-        await db.delete(courseSessions).where(eq(courseSessions.id, staleId));
-      }
-    }
+      .onConflictDoNothing();
 
     for (const [sessionOrder, date] of course.dates.entries()) {
       await db
@@ -111,19 +83,7 @@ export async function upsertSeedCatalogue(): Promise<void> {
           active: date.active,
           displayOrder: sessionOrder,
         })
-        .onConflictDoUpdate({
-          target: courseSessions.id,
-          set: {
-            courseId: course.id,
-            startDate: date.startDate,
-            endDate: date.endDate ?? null,
-            location: date.location,
-            venue: date.venue ?? null,
-            capacity: date.capacity,
-            active: date.active,
-            displayOrder: sessionOrder,
-          },
-        });
+        .onConflictDoNothing();
     }
   }
 }
@@ -147,4 +107,63 @@ export async function listCatalogueFromDatabase(): Promise<Course[]> {
   return courseRows.map((course) =>
     courseFromRows(course, sessionsByCourse.get(course.id) ?? []),
   );
+}
+
+export type CourseUpdateInput = {
+  slug: LocalizedJson;
+  title: LocalizedJson;
+  shortDescription: LocalizedJson;
+  description: LocalizedJson;
+  audience: LocalizedJson;
+  duration: LocalizedJson;
+  location: LocalizedJson;
+  priceChf: number;
+  category: CourseCategory;
+  published: boolean;
+  displayOrder: number;
+};
+
+export type CourseSessionUpdateInput = {
+  startDate: string;
+  endDate: string | null;
+  location: LocalizedJson;
+  venue: LocalizedJson | null;
+  capacity: number;
+  active: boolean;
+};
+
+export type CourseSessionCreateInput = CourseSessionUpdateInput & {
+  id: string;
+  courseId: string;
+};
+
+export async function updateCourse(id: string, patch: CourseUpdateInput): Promise<void> {
+  await getDb()
+    .update(courses)
+    .set({
+      ...patch,
+      updatedAt: new Date(),
+    })
+    .where(eq(courses.id, id));
+}
+
+export async function updateCourseSession(
+  id: string,
+  patch: CourseSessionUpdateInput,
+): Promise<void> {
+  await getDb().update(courseSessions).set(patch).where(eq(courseSessions.id, id));
+}
+
+export async function createCourseSession(input: CourseSessionCreateInput): Promise<void> {
+  const existing = await getDb()
+    .select({displayOrder: courseSessions.displayOrder})
+    .from(courseSessions)
+    .where(eq(courseSessions.courseId, input.courseId));
+  const displayOrder =
+    existing.reduce((max, row) => Math.max(max, row.displayOrder), -1) + 1;
+
+  await getDb().insert(courseSessions).values({
+    ...input,
+    displayOrder,
+  });
 }

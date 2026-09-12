@@ -59,6 +59,7 @@ export type TherapistAvailability = {
   endDate: string;
   intervalMinutes: number;
   minimumBookingMinutes: number;
+  maximumBookingMinutes: number | null;
   rooms: AvailabilityRoom[];
   slots: TherapistAvailabilitySlot[];
 };
@@ -70,6 +71,7 @@ export type AdminAvailability = {
   endDate: string;
   intervalMinutes: number;
   minimumBookingMinutes: number;
+  maximumBookingMinutes: number | null;
   rooms: AvailabilityRoom[];
   slots: AdminAvailabilitySlot[];
 };
@@ -366,6 +368,7 @@ export async function therapistAvailability(input: {
     endDate: grid.range.endDate,
     intervalMinutes: interval,
     minimumBookingMinutes: grid.settings.minimumBookingMinutes,
+    maximumBookingMinutes: grid.settings.maximumBookingMinutes,
     rooms: grid.rooms.map(toPublicRoom),
     slots,
   };
@@ -401,6 +404,7 @@ export async function adminAvailability(input: {
     endDate: therapistLike.endDate,
     intervalMinutes: therapistLike.intervalMinutes,
     minimumBookingMinutes: therapistLike.minimumBookingMinutes,
+    maximumBookingMinutes: therapistLike.maximumBookingMinutes,
     rooms: therapistLike.rooms,
     slots: therapistLike.slots.map((slot) => ({
       roomId: slot.roomId,
