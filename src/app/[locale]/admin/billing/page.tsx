@@ -2,7 +2,10 @@ import {getTranslations, setRequestLocale} from "next-intl/server";
 
 import {AdminSubnav, adminSectionLabels} from "@/features/admin/components/admin-subnav";
 import {requireAdmin} from "@/features/auth/require";
-import {MonthPicker} from "@/features/rooms/components/month-picker";
+import {
+  BillingPeriodPicker,
+  billingPeriodSearch,
+} from "@/features/rooms/components/billing-period-picker";
 import {
   UsageMonthBanner,
   UsageTotals,
@@ -11,7 +14,7 @@ import {emptyUserUsage, loadMonthUsage} from "@/features/rooms/usage";
 import {loadMonthStatements} from "@/features/rooms/statements";
 import {listRoomBillableUsers, listStatementsByStatuses} from "@/features/rooms/statement-repository";
 import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
-import {openZurichMonth, recentZurichMonths, zurichMonthKey, formatLocalDate} from "@/features/rooms/timezone";
+import {formatLocalDate} from "@/features/rooms/timezone";
 import {formatMonthYear} from "@/shared/format/calendar-date";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
@@ -28,7 +31,13 @@ import {StatusLabel} from "@/shared/ui/status-label";
 
 type AdminBillingPageProps = {
   params: Promise<{locale: AppLocale}>;
-  searchParams: Promise<{q?: string | string[]; month?: string | string[]}>;
+  searchParams: Promise<{
+    q?: string | string[];
+    month?: string | string[];
+    from?: string | string[];
+    to?: string | string[];
+    year?: string | string[];
+  }>;
 };
 
 export const dynamic = "force-dynamic";
@@ -55,6 +64,13 @@ export default async function AdminBillingPage({params, searchParams}: AdminBill
   setRequestLocale(locale);
   const query = firstString((await searchParams).q).trim();
   const monthParam = firstString((await searchParams).month).trim();
+  const fromParam = firstString((await searchParams).from).trim();
+  const toParam = firstString((await searchParams).to).trim();
+  const yearParam = firstString((await searchParams).year).trim();
+  const yearPeriod =
+    /^\d{4}$/.test(yearParam)
+      ? {from: `${yearParam}-01`, to: `${yearParam}-12`}
+      : null;
   const actor = await requireAdmin(
     locale,
     localizedPath(locale, {
@@ -62,6 +78,8 @@ export default async function AdminBillingPage({params, searchParams}: AdminBill
       query: {
         q: query || undefined,
         month: monthParam || undefined,
+        from: fromParam || yearPeriod?.from || undefined,
+        to: toParam || yearPeriod?.to || undefined,
       },
     }),
   );
@@ -70,15 +88,21 @@ export default async function AdminBillingPage({params, searchParams}: AdminBill
   const report = await loadMonthUsage({
     actor,
     month: monthParam || undefined,
+    from: fromParam || yearPeriod?.from || undefined,
+    to: toParam || yearPeriod?.to || undefined,
   });
-  const months = recentZurichMonths();
-  const open = openZurichMonth();
-  const selected = {year: report.year, month: report.month};
-  const statements = report.open ? [] : await loadMonthStatements({actor, month: selected});
-  const failedStatements = await listStatementsByStatuses(
-    ["PAYMENT_FAILED"],
-    report.open ? undefined : selected,
-  );
+  const selected = report.from;
+  const statements = report.singleMonth && !report.open
+    ? await loadMonthStatements({actor, month: selected})
+    : [];
+  const failedStatements = (await listStatementsByStatuses(["PAYMENT_FAILED"]))
+    .filter((statement) => {
+      const index = statement.year * 12 + statement.month;
+      return (
+        index >= report.from.year * 12 + report.from.month &&
+        index <= report.to.year * 12 + report.to.month
+      );
+    });
   const needle = query.toLowerCase();
   let users = report.users;
   if (needle) {
@@ -90,11 +114,11 @@ export default async function AdminBillingPage({params, searchParams}: AdminBill
       )
       .map((owner) => usageById.get(owner.id) ?? emptyUserUsage(owner));
   }
-  const csvQuery = [
-    report.open ? "" : `month=${encodeURIComponent(report.monthKey)}`,
-  ]
-    .filter(Boolean)
-    .join("&");
+  const periodQuery = [
+    `from=${encodeURIComponent(report.fromKey)}`,
+    `to=${encodeURIComponent(report.toKey)}`,
+  ].join("&");
+  const periodSearch = billingPeriodSearch(report.from, report.to);
 
   return (
     <SiteShell locale={locale} footerCta={null}>
@@ -106,37 +130,50 @@ export default async function AdminBillingPage({params, searchParams}: AdminBill
           labels={adminSectionLabels(t)}
         />
         <h1 className="mt-6 font-serif text-heading">
-          {report.open ? t("billingTitle") : t("billingClosedTitle")}
+          {report.singleMonth
+            ? report.open
+              ? t("billingTitle")
+              : t("billingClosedTitle")
+            : t("billingRangeTitle")}
         </h1>
         <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-muted">
-          {report.open ? t("billingIntro") : t("billingClosedIntro")}
+          {report.singleMonth
+            ? report.open
+              ? t("billingIntro")
+              : t("billingClosedIntro")
+            : t("billingRangeIntro")}
         </p>
         <p className="mt-4">
           <Link href="/admin/notifications" className="text-sm font-semibold underline-offset-4 hover:underline">
             {t("notificationsLink")}
           </Link>
         </p>
-        <MonthPicker
+        <BillingPeriodPicker
           locale={locale}
-          months={months}
-          selected={selected}
-          hrefFor={(month) => ({
+          action={localizedPath(locale, "/admin/billing")}
+          from={report.from}
+          to={report.to}
+          hidden={{q: query || undefined}}
+          hrefFor={(fromMonth, toMonth) => ({
             pathname: "/admin/billing",
             query: {
               q: query || undefined,
-              month:
-                month.year === open.year && month.month === open.month
-                  ? undefined
-                  : zurichMonthKey(month),
+              ...billingPeriodSearch(fromMonth, toMonth),
             },
           })}
         />
-        <UsageMonthBanner
-          locale={locale}
-          year={report.year}
-          month={report.month}
-          open={report.open}
-        />
+        {report.singleMonth ? (
+          <UsageMonthBanner
+            locale={locale}
+            year={report.year}
+            month={report.month}
+            open={report.open}
+          />
+        ) : (
+          <p className="mt-8 font-sans text-sm tabular-nums text-ink-muted">
+            {t("billingPeriodSelected", {from: report.fromKey, to: report.toKey})}
+          </p>
+        )}
         <UsageTotals
           locale={locale}
           billedMinutes={report.billedMinutes}
@@ -181,8 +218,16 @@ export default async function AdminBillingPage({params, searchParams}: AdminBill
             columnsClassName="sm:grid-cols-[minmax(0,1fr)_auto]"
             actions={
               <>
-                {report.open ? null : (
-                  <input type="hidden" name="month" value={report.monthKey} />
+                {report.singleMonth && !report.open ? (
+                  <>
+                    <input type="hidden" name="from" value={report.fromKey} />
+                    <input type="hidden" name="to" value={report.toKey} />
+                  </>
+                ) : report.singleMonth ? null : (
+                  <>
+                    <input type="hidden" name="from" value={report.fromKey} />
+                    <input type="hidden" name="to" value={report.toKey} />
+                  </>
                 )}
                 <Button type="submit" variant="secondary">
                   {t("filter")}
@@ -191,7 +236,7 @@ export default async function AdminBillingPage({params, searchParams}: AdminBill
                   <Link
                     href={{
                       pathname: "/admin/billing",
-                      query: {month: report.open ? undefined : report.monthKey},
+                      query: periodSearch,
                     }}
                     className="text-sm underline-offset-4 hover:underline"
                   >
@@ -214,19 +259,19 @@ export default async function AdminBillingPage({params, searchParams}: AdminBill
 
         <p className="mt-6 flex flex-wrap gap-x-6 gap-y-3">
           <a
-            href={csvQuery ? `/api/admin/billing.csv?${csvQuery}` : "/api/admin/billing.csv"}
+            href={`/api/admin/billing.xlsx?${periodQuery}`}
             className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold underline-offset-4 hover:underline"
           >
             <DownloadIcon />
-            {t("billingCsv")}
+            {t("billingXlsx")}
           </a>
-          {report.open ? null : (
+          {report.open && report.singleMonth ? null : (
             <a
-              href={`/api/admin/statements.csv?month=${encodeURIComponent(report.monthKey)}`}
+              href={`/api/admin/statements.xlsx?${periodQuery}`}
               className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold underline-offset-4 hover:underline"
             >
               <DownloadIcon />
-              {t("statementsCsv")}
+              {t("statementsXlsx")}
             </a>
           )}
         </p>
@@ -245,7 +290,7 @@ export default async function AdminBillingPage({params, searchParams}: AdminBill
                     href={{
                       pathname: "/admin/billing/[userId]",
                       params: {userId: user.userId},
-                      query: {month: report.open ? undefined : report.monthKey},
+                      query: periodSearch,
                     }}
                     className="block h-full rounded-panel border border-ink bg-white p-5 transition-colors duration-150 ease-standard hover:bg-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
                   >

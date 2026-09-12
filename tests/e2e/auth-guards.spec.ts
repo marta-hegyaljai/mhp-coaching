@@ -101,13 +101,13 @@ test("staff CSV exports reject anonymous and basic-auth requests", async ({
   expect(anonymous.status()).toBe(401);
   expect(anonymous.headers()["www-authenticate"]).toBeUndefined();
 
-  const billingCsv = await request.get("/api/admin/billing.csv");
-  expect(billingCsv.status()).toBe(401);
-  expect(billingCsv.headers()["cache-control"]).toContain("no-store");
+  const billingXlsx = await request.get("/api/admin/billing.xlsx");
+  expect(billingXlsx.status()).toBe(401);
+  expect(billingXlsx.headers()["cache-control"]).toContain("no-store");
 
-  const statementsCsv = await request.get("/api/admin/statements.csv");
-  expect(statementsCsv.status()).toBe(401);
-  expect(statementsCsv.headers()["cache-control"]).toContain("no-store");
+  const statementsXlsx = await request.get("/api/admin/statements.xlsx");
+  expect(statementsXlsx.status()).toBe(401);
+  expect(statementsXlsx.headers()["cache-control"]).toContain("no-store");
 
   const certificate = await request.get(
     "/api/certificates/11111111-1111-4111-8111-111111111111/document",
