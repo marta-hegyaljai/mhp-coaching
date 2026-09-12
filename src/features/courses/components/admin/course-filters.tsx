@@ -5,7 +5,6 @@ import {localizedPath} from "@/features/seo/metadata";
 import {
   COURSE_LIST_CATEGORIES,
   COURSE_LIST_PUBLISHED,
-  courseListHref,
   type CourseListQuery,
 } from "@/features/courses/admin-query";
 import {Link} from "@/i18n/navigation";

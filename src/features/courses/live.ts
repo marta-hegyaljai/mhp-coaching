@@ -1,5 +1,3 @@
-import "server-only";
-
 import {listCatalogueFromDatabase} from "@/features/courses/repository";
 import {
   getCatalogueCourses,

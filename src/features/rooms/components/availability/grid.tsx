@@ -64,8 +64,7 @@ export function AvailabilityGrid({
 }) {
   const t = useTranslations("Rooms");
   const [draft, setDraft] = useState<{columnKey: string; from: number; to: number} | null>(null);
-  const draftRef = useRef(draft);
-  draftRef.current = draft;
+  const draftRef = useRef<{columnKey: string; from: number; to: number} | null>(null);
   const [selection, setSelection] = useState<DragSelection | null>(null);
   const [notice, setNotice] = useState<DragFailure | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);

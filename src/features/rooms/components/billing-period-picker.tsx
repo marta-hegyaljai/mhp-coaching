@@ -29,7 +29,6 @@ export function billingPeriodSearch(from: ZurichMonth, to: ZurichMonth): {
 }
 
 export async function BillingPeriodPicker({
-  locale,
   action,
   from,
   to,
