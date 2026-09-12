@@ -2,6 +2,7 @@ import {getTranslations, setRequestLocale} from "next-intl/server";
 
 import {CourseCard} from "@/features/courses/components/course-card";
 import {loadPublishedCourses} from "@/features/courses/live";
+import {splitCatalogueByFormat} from "@/features/courses/programme";
 import {HomeHero} from "@/features/home/home-hero";
 import {homeStatueJsonLd, courseListJsonLd} from "@/features/seo/json-ld";
 import {JsonLd} from "@/features/seo/json-ld-script";
@@ -44,7 +45,9 @@ export default async function HomePage({params}: HomePageProps) {
   const t = await getTranslations("HomePage");
   const coursesT = await getTranslations("CoursesPage");
   const publishedCourses = await loadPublishedCourses();
-  const courses = publishedCourses.slice(0, 3);
+  // The home teaser shows individual modules; bundles live on the catalogue.
+  const modules = splitCatalogueByFormat(publishedCourses).modules;
+  const courses = modules.slice(0, 3);
   const hiddenCourseCount = publishedCourses.length - courses.length;
 
   const reasons = [

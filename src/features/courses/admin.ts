@@ -7,15 +7,21 @@ import {AUDIT_ACTIONS} from "@/features/admin/audit-actions";
 import {canAdminister} from "@/features/auth/policy";
 import {recordAudit} from "@/features/auth/repository";
 import {readSessionUser} from "@/features/auth/session";
+import {defaultDisplayOrderForCourse} from "@/features/courses/catalogue-order";
 import {loadCatalogueCourses, loadCourseById} from "@/features/courses/live";
 import {
   createCourseSession,
+  listCatalogueFromDatabase,
+  setProgrammeModules,
+  swapCourseDisplayOrder,
   updateCourse,
   updateCourseSession,
   type CourseSessionCreateInput,
   type CourseSessionUpdateInput,
   type CourseUpdateInput,
 } from "@/features/courses/repository";
+import {selectProgrammeModuleIds} from "@/features/courses/programme";
+import {parseCourseFormat} from "@/features/courses/types";
 import type {CourseCategory} from "@/features/courses/types";
 import type {LocalizedJson} from "@/db/schema";
 
@@ -80,8 +86,6 @@ function parseCoursePatch(formData: FormData): CourseUpdateInput | CourseAdminEr
   const location = parseLocalized(formData, "location");
   const categoryRaw = readString(formData, "category");
   const priceChf = Number.parseInt(readString(formData, "priceChf"), 10);
-  const displayOrder = readInt(formData, "displayOrder");
-
   if (
     !isComplete(slug) ||
     !isComplete(title) ||
@@ -111,9 +115,14 @@ function parseCoursePatch(formData: FormData): CourseUpdateInput | CourseAdminEr
     location,
     priceChf,
     category,
+    format: parseCourseFormat(readString(formData, "format")),
     published: formData.get("published") === "on",
-    displayOrder: displayOrder ?? 0,
+    displayOrder: 0,
   };
+}
+
+function readSelectedModuleIds(formData: FormData): string[] {
+  return formData.getAll("moduleIds").map((value) => String(value));
 }
 
 function parseSessionPatch(formData: FormData): CourseSessionUpdateInput | CourseAdminError {
@@ -186,13 +195,25 @@ export async function updateCourseAction(
     return {error: "slug"};
   }
 
-  await updateCourse(courseId, patch);
+  const moduleIds =
+    patch.format === "programme"
+      ? selectProgrammeModuleIds(catalogue, courseId, readSelectedModuleIds(formData))
+      : [];
+
+  await updateCourse(courseId, {
+    ...patch,
+    displayOrder: existing.displayOrder ?? 0,
+  });
+  // Demoting a programme back to a module clears its contents.
+  await setProgrammeModules(courseId, moduleIds);
   await recordAudit({
     actorUserId: admin.id,
     action: AUDIT_ACTIONS.COURSE_UPDATED,
     after: {
       courseId,
       published: patch.published,
+      format: patch.format,
+      moduleCount: moduleIds.length,
       title: patch.title.en,
     },
   });
@@ -232,6 +253,51 @@ export async function updateCourseSessionAction(
   });
   revalidatePath("/", "layout");
   return {success: "session"};
+}
+
+export async function reorderCourseAction(
+  _locale: string,
+  _prev: CourseAdminState | null,
+  formData: FormData,
+): Promise<CourseAdminState> {
+  const admin = await requireAdminActor();
+  if (!admin) {
+    return {error: "forbidden"};
+  }
+
+  const courseId = readString(formData, "courseId");
+  const direction = readString(formData, "direction");
+  if (!courseId || (direction !== "up" && direction !== "down")) {
+    return {error: "missing"};
+  }
+
+  const ordered = await listCatalogueFromDatabase();
+  const index = ordered.findIndex((course) => course.id === courseId);
+  const current = ordered[index];
+  const swapWith = direction === "up" ? ordered[index - 1] : ordered[index + 1];
+
+  if (!current || !swapWith) {
+    return {error: "missing"};
+  }
+
+  await swapCourseDisplayOrder(
+    {
+      id: current.id,
+      displayOrder: current.displayOrder ?? defaultDisplayOrderForCourse(current.id),
+    },
+    {
+      id: swapWith.id,
+      displayOrder: swapWith.displayOrder ?? defaultDisplayOrderForCourse(swapWith.id),
+    },
+  );
+  await recordAudit({
+    actorUserId: admin.id,
+    action: AUDIT_ACTIONS.COURSE_REORDERED,
+    before: {courseId: current.id, displayOrder: current.displayOrder},
+    after: {courseId: current.id, displayOrder: swapWith.displayOrder},
+  });
+  revalidatePath("/", "layout");
+  return {success: "saved"};
 }
 
 export async function createCourseSessionAction(

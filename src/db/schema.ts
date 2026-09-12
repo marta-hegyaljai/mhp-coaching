@@ -8,6 +8,7 @@ import {
   jsonb,
   pgEnum,
   pgTable,
+  primaryKey,
   smallint,
   text,
   timestamp,
@@ -180,6 +181,12 @@ export const courseCategoryEnum = pgEnum("course_category", [
   "workshop",
 ]);
 
+/**
+ * `module` is a course sold on its own. `programme` bundles several modules
+ * into one purchasable learning path and is presented separately.
+ */
+export const courseFormatEnum = pgEnum("course_format", ["module", "programme"]);
+
 export const users = pgTable(
   "users",
   {
@@ -327,12 +334,32 @@ export const courses = pgTable(
     location: jsonb("location").$type<LocalizedJson>().notNull(),
     priceChf: integer("price_chf").notNull(),
     category: courseCategoryEnum("category").notNull(),
+    format: courseFormatEnum("format").notNull().default("module"),
     published: boolean("published").notNull().default(true),
     displayOrder: integer("display_order").notNull(),
   },
   (table) => [
     index("courses_published_idx").on(table.published),
     index("courses_display_order_idx").on(table.displayOrder),
+    index("courses_format_idx").on(table.format),
+  ],
+);
+
+/** Modules bundled into a programme course, in presentation order. */
+export const courseProgrammeModules = pgTable(
+  "course_programme_modules",
+  {
+    programmeId: text("programme_id")
+      .notNull()
+      .references(() => courses.id, {onDelete: "cascade"}),
+    moduleId: text("module_id")
+      .notNull()
+      .references(() => courses.id, {onDelete: "cascade"}),
+    displayOrder: integer("display_order").notNull(),
+  },
+  (table) => [
+    primaryKey({columns: [table.programmeId, table.moduleId]}),
+    index("course_programme_modules_module_idx").on(table.moduleId),
   ],
 );
 
@@ -630,6 +657,7 @@ export type AuthTokenPurpose = (typeof authTokenPurposeEnum.enumValues)[number];
 export type AuditEvent = typeof auditEvents.$inferSelect;
 export type CourseRow = typeof courses.$inferSelect;
 export type CourseSessionRow = typeof courseSessions.$inferSelect;
+export type CourseProgrammeModuleRow = typeof courseProgrammeModules.$inferSelect;
 export type CourseCertificate = typeof courseCertificates.$inferSelect;
 export type CourseCertificateDocument = typeof courseCertificateDocuments.$inferSelect;
 export type CourseCertificateStatus =

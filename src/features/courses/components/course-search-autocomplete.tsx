@@ -6,7 +6,7 @@ import {CourseArtwork} from "@/features/courses/components/course-artwork";
 import {formatCourseDateRange} from "@/features/courses/dates";
 import {filterCoursesForSearch} from "@/features/courses/course-search";
 import {getBookableDates} from "@/features/courses/queries";
-import type {Course, CourseCategory} from "@/features/courses/types";
+import {isProgrammeCourse, type Course, type CourseCategory} from "@/features/courses/types";
 import {formatChf} from "@/features/payments/money";
 import {Link, useRouter} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
@@ -21,6 +21,8 @@ type SearchLabels = {
   noSuggestions: string;
   awaitingDateLabel: string;
   viewCourse: string;
+  /** Replaces the category label for bundled paths. */
+  programme?: string;
 };
 
 export function CourseSearchAutocomplete({
@@ -209,7 +211,11 @@ export function CourseSearchAutocomplete({
                     <SuggestionRow
                       course={course}
                       locale={locale}
-                      categoryLabel={categoryLabels[course.category]}
+                      categoryLabel={
+                        labels.programme && isProgrammeCourse(course)
+                          ? labels.programme
+                          : categoryLabels[course.category]
+                      }
                       index={index}
                       listboxId={listboxId}
                       active={index === activeIndex}

@@ -10,6 +10,8 @@ const CATEGORIES: Array<CourseCategory | "all"> = [
   "workshop",
 ];
 const PUBLISHED = ["all", "yes", "no"] as const;
+/** Whether a course still has a bookable session ahead of today. */
+const UPCOMING = ["all", "yes", "no"] as const;
 const STATUSES: Array<BookingStatus | "all"> = [
   "all",
   "PAID",
@@ -24,6 +26,7 @@ export type CourseListQuery = {
   q: string;
   category: (typeof CATEGORIES)[number];
   published: (typeof PUBLISHED)[number];
+  upcoming: (typeof UPCOMING)[number];
 };
 
 export type CourseEnrolmentQuery = {
@@ -40,9 +43,11 @@ export function parseCourseListQuery(searchParams: {
   q?: string | string[];
   category?: string | string[];
   published?: string | string[];
+  upcoming?: string | string[];
 }): CourseListQuery {
   const category = firstString(searchParams.category);
   const published = firstString(searchParams.published);
+  const upcoming = firstString(searchParams.upcoming);
   return {
     q: firstString(searchParams.q).trim(),
     category: CATEGORIES.includes(category as CourseListQuery["category"])
@@ -50,6 +55,9 @@ export function parseCourseListQuery(searchParams: {
       : "all",
     published: PUBLISHED.includes(published as CourseListQuery["published"])
       ? (published as CourseListQuery["published"])
+      : "all",
+    upcoming: UPCOMING.includes(upcoming as CourseListQuery["upcoming"])
+      ? (upcoming as CourseListQuery["upcoming"])
       : "all",
   };
 }
@@ -61,6 +69,7 @@ export function courseListHref(query: Partial<CourseListQuery> = {}): PathnameHr
       q: query.q || undefined,
       category: query.category && query.category !== "all" ? query.category : undefined,
       published: query.published && query.published !== "all" ? query.published : undefined,
+      upcoming: query.upcoming && query.upcoming !== "all" ? query.upcoming : undefined,
     },
   };
 }
@@ -97,4 +106,5 @@ export function courseDetailHref(
 
 export const COURSE_LIST_CATEGORIES = CATEGORIES;
 export const COURSE_LIST_PUBLISHED = PUBLISHED;
+export const COURSE_LIST_UPCOMING = UPCOMING;
 export const COURSE_ENROLMENT_STATUSES = STATUSES;

@@ -16,6 +16,11 @@ import {getBookableDates} from "@/features/courses/queries";
 import type {Course} from "@/features/courses/types";
 import type {AppLocale} from "@/i18n/routing";
 import {CourseSearchAutocomplete} from "@/features/courses/components/course-search-autocomplete";
+import type {ProgrammeCardModel} from "@/features/courses/components/programme/programme-card-model";
+import {
+  ProgrammeSection,
+  type ProgrammeSectionLabels,
+} from "@/features/courses/components/programme/programme-section";
 import {courseMatchesQuery} from "@/features/courses/course-search";
 import {fieldStyles} from "@/shared/ui/field";
 
@@ -34,6 +39,7 @@ type ExplorerLabels = {
   calendarView: string;
   noResults: string;
   emptyCategory: string;
+  programmeLabel?: string;
   previousMonth: string;
   nextMonth: string;
   emptyDay: string;
@@ -55,6 +61,9 @@ type ExplorerLabels = {
 export function CourseExplorer({
   locale,
   groups,
+  programmes = [],
+  programmeCourses = [],
+  programmeLabels,
   categoryLabels,
   detailsLabel,
   labels,
@@ -65,6 +74,11 @@ export function CourseExplorer({
 }: {
   locale: AppLocale;
   groups: Array<{title: string; courses: Course[]}>;
+  /** Pre-formatted programme cards shown after the module groups. */
+  programmes?: ProgrammeCardModel[];
+  /** Same programmes as catalogue entries, used for search and the calendar. */
+  programmeCourses?: Course[];
+  programmeLabels?: ProgrammeSectionLabels;
   categoryLabels: Record<Course["category"], string>;
   detailsLabel: string;
   labels: ExplorerLabels;
@@ -73,7 +87,10 @@ export function CourseExplorer({
   portraitAlt?: string;
   initialView?: ViewMode;
 }) {
-  const allCourses = groups.flatMap((group) => group.courses);
+  const allCourses = useMemo(
+    () => [...groups.flatMap((group) => group.courses), ...programmeCourses],
+    [groups, programmeCourses],
+  );
   const sessions = useMemo(
     () =>
       allCourses.flatMap((course) =>
@@ -105,6 +122,9 @@ export function CourseExplorer({
     ...group,
     courses: group.courses.filter((course) => filteredIds.has(course.id)),
   }));
+  const visibleProgrammes = programmes.filter((programme) =>
+    filteredIds.has(programme.id),
+  );
   const hasActiveFilters = Boolean(query.trim() || month);
 
   const toolbar = (
@@ -124,6 +144,7 @@ export function CourseExplorer({
             noSuggestions: labels.searchNoSuggestions,
             awaitingDateLabel: labels.awaitingDateLabel,
             viewCourse: labels.viewCourse,
+            programme: labels.programmeLabel,
           }}
         />
         <div>
@@ -232,6 +253,12 @@ export function CourseExplorer({
               )}
             </section>
           ))}
+          {programmeLabels ? (
+            <ProgrammeSection
+              programmes={visibleProgrammes}
+              labels={programmeLabels}
+            />
+          ) : null}
         </div>
       )}
     </div>

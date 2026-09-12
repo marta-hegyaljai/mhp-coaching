@@ -142,6 +142,19 @@ primary action behind an ambiguous icon.
 - The admin Courses tab edits catalogue copy, prices, publish state and session
   dates, and lists enrolments and waiting-list entries with filters. Seed data
   must not overwrite those edits.
+- An operational index shows one list of its records, never a second copy of
+  the same rows for a secondary task. The admin catalogue is a single dense row
+  list that both manages and reorders courses: position, title, state chips,
+  category, session and enrolment counts, next date, price, the move controls
+  and one row-wide link to the record. Reserve cards for the public catalogue.
+- Lead such a list with a hairline-separated metric strip that answers what
+  needs attention (total, published, without an upcoming date, enrolments), and
+  make each actionable metric a link into the matching filter.
+- Filters sit directly above the list they narrow and pin to the viewport only
+  from `lg`, where the bar is one row and cannot cover the results. State the
+  visible count against the catalogue total next to them.
+- Reordering swaps neighbours in the full catalogue, so offer the move controls
+  only on the unfiltered list and say why they are gone otherwise.
 - Status styles remain monochrome and textual. Gold does not become a semantic
   success/warning/error color.
 - Collapse consecutive slots that share a state into one continuous labelled
@@ -178,6 +191,30 @@ primary action behind an ambiguous icon.
   dates do not fit.
 - Booking forms use the same bordered, rectangular language and keep the live
   summary visible on desktop. Validation must remain localized and accessible.
+
+### Individual modules and complete pathways
+
+A course carries a format: `module` or `programme`. Modules are the default and
+are listed inside their category grid. A programme bundles modules into one
+purchasable path and is never mixed into that grid.
+
+- Programmes close the catalogue, after every category, under a 2px black rule
+  and their own heading. The intro asks whether the visitor wants the whole
+  path, and offers booking it in one go as an alternative to the modules.
+- A programme uses a wide card, not a course card: an inverted black header
+  carrying the gold eyebrow, the title and the alternative-purchase sentence,
+  then a white body with the summary, the included modules, the schedule, the
+  price and one primary action. Unlike a course card it is not a single
+  full-surface link, so each included module may link to its own page.
+- Show the separate-modules total and the saving only when the programme is
+  genuinely cheaper than buying its modules one by one. Never present a
+  comparison that makes the bundle look worse.
+- A programme page labels its eyebrow as a pathway and lists its numbered
+  contents with each module's duration and price, stating that every module
+  stays bookable on its own. A module page that belongs to a pathway shows a
+  bordered secondary-surface notice linking to it.
+- An undated programme follows the undated-course rule: schedule awaiting
+  confirmation, primary action to the waiting list.
 
 ## Course imagery and source content
 

@@ -1,6 +1,6 @@
 "use client";
 
-import {useActionState} from "react";
+import {useActionState, useState} from "react";
 import {useTranslations} from "next-intl";
 
 import {AuthAlert, AuthField, AuthNotice} from "@/features/auth/components/auth-field";
@@ -8,14 +8,33 @@ import {
   updateCourseAction,
 } from "@/features/courses/admin";
 import {LocalizedFields} from "@/features/courses/components/admin/localized-fields";
-import type {Course, CourseCategory} from "@/features/courses/types";
+import {ProgrammeModulesField} from "@/features/courses/components/admin/programme-modules-field";
+import {programmeModuleIds} from "@/features/courses/programme";
+import {
+  COURSE_FORMATS,
+  courseFormatOf,
+  type Course,
+  type CourseCategory,
+  type CourseFormat,
+} from "@/features/courses/types";
+import type {AppLocale} from "@/i18n/routing";
 import {fieldLabelClass, fieldStyles} from "@/shared/ui/field";
 import {SubmitButton} from "@/shared/ui/submit-button";
 
 const CATEGORIES: CourseCategory[] = ["foundation", "advanced", "medical", "workshop"];
 
-export function AdminCourseForm({course}: {course: Course}) {
+export function AdminCourseForm({
+  course,
+  modules,
+  locale,
+}: {
+  course: Course;
+  /** Modules selectable as programme contents, in catalogue order. */
+  modules: Course[];
+  locale: AppLocale;
+}) {
   const t = useTranslations("Admin");
+  const [format, setFormat] = useState<CourseFormat>(courseFormatOf(course));
   const [state, action, pending] = useActionState(
     updateCourseAction,
     null,
@@ -52,6 +71,24 @@ export function AdminCourseForm({course}: {course: Course}) {
 
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         <div>
+          <label htmlFor="format" className={fieldLabelClass}>
+            {t("coursesFormat")}
+          </label>
+          <select
+            id="format"
+            name="format"
+            value={format}
+            onChange={(event) => setFormat(event.target.value as CourseFormat)}
+            className={`mt-2 ${fieldStyles()}`}
+          >
+            {COURSE_FORMATS.map((option) => (
+              <option key={option} value={option}>
+                {t(`coursesFormat_${option}`)}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
           <label htmlFor="category" className={fieldLabelClass}>
             {t("coursesCategory")}
           </label>
@@ -74,12 +111,6 @@ export function AdminCourseForm({course}: {course: Course}) {
           type="number"
           defaultValue={String(course.priceChf)}
         />
-        <AuthField
-          name="displayOrder"
-          label={t("coursesDisplayOrder")}
-          type="number"
-          defaultValue={String(course.displayOrder ?? 0)}
-        />
         <label className="flex min-h-12 items-end gap-3 pb-2 text-sm font-medium text-ink">
           <input
             type="checkbox"
@@ -90,6 +121,19 @@ export function AdminCourseForm({course}: {course: Course}) {
           {t("coursesPublished")}
         </label>
       </div>
+
+      {format === "programme" ? (
+        <ProgrammeModulesField
+          modules={modules}
+          selectedIds={programmeModuleIds(course)}
+          locale={locale}
+          labels={{
+            label: t("coursesProgrammeModules"),
+            hint: t("coursesProgrammeModulesHint"),
+            empty: t("coursesProgrammeModulesEmpty"),
+          }}
+        />
+      ) : null}
 
       <SubmitButton
         pending={pending}

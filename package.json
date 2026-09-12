@@ -20,6 +20,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "db:seed": "tsx src/db/seed.ts",
+    "db:seed-dev": "tsx src/db/seed-dev-data.ts",
     "db:bootstrap-admin": "tsx src/db/bootstrap-admin.ts"
   },
   "dependencies": {

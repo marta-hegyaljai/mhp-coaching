@@ -52,6 +52,15 @@ export const courses: Course[] = [
     location,
     priceChf: 4950,
     category: "advanced",
+    format: "programme",
+    moduleIds: [
+      "anxiety-hypnosis",
+      "advanced-techniques",
+      "sport-hypnosis",
+      "children-hypnosis",
+      "addictions-hypnosis",
+      "illness-hypnosis",
+    ],
     dates: agendaDates("master-practitioner"),
   },
   {

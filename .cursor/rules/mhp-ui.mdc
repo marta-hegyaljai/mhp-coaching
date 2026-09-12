@@ -43,7 +43,12 @@ source of truth and overrides generic design preferences.
   its embedded `/` or `//` mark without cropping its title, and never split a
   card into tall image/text columns.
 - Undated courses are not sold. Label the schedule as awaiting confirmation
-  and send the primary action to a waiting-list form stored in PostgreSQL.
+ and send the primary action to a waiting-list form stored in PostgreSQL.
+- A course is a `module` or a `programme`. Keep programmes out of the category
+ grids: close the catalogue with them under their own rule and heading, as an
+ alternative to booking modules one by one. Use the wide inverted-header
+ programme card, list the included modules, and show the separate-modules
+ total and saving only when the bundle is actually cheaper.
 - Animate only clickable encouragement: short black/white inversion, <=2px
   lift, <=4px CTA arrow movement, or pending spinner. No entrance or ambient
   animation.

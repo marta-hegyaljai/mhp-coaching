@@ -3,7 +3,9 @@ import {getTranslations, setRequestLocale} from "next-intl/server";
 import {AuthNotice} from "@/features/auth/components/auth-field";
 import {CourseCatalogueLead, CourseCataloguePortrait} from "@/features/courses/components/course-catalogue-masthead";
 import {CourseExplorer} from "@/features/courses/components/course-explorer";
+import {buildProgrammeCardModel} from "@/features/courses/components/programme/programme-card-model";
 import {loadPublishedCourses} from "@/features/courses/live";
+import {resolveProgramme, splitCatalogueByFormat} from "@/features/courses/programme";
 import type {Course} from "@/features/courses/types";
 import {BreadcrumbTrail} from "@/features/seo/breadcrumb-trail";
 import {courseListJsonLd} from "@/features/seo/json-ld";
@@ -43,12 +45,27 @@ export default async function CoursesPage({params, searchParams}: CoursesPagePro
   const calendarT = await getTranslations("CourseCalendar");
 
   const publishedCourses = await loadPublishedCourses();
+  // Bundled paths leave the category grids and close the page instead.
+  const {modules, programmes} = splitCatalogueByFormat(publishedCourses);
   const groups: Array<{title: string; courses: Course[]}> = [
-    {title: t("foundation"), courses: publishedCourses.filter((course) => course.category === "foundation")},
-    {title: t("advanced"), courses: publishedCourses.filter((course) => course.category === "advanced")},
-    {title: t("medical"), courses: publishedCourses.filter((course) => course.category === "medical")},
-    {title: t("workshops"), courses: publishedCourses.filter((course) => course.category === "workshop")},
+    {title: t("foundation"), courses: modules.filter((course) => course.category === "foundation")},
+    {title: t("advanced"), courses: modules.filter((course) => course.category === "advanced")},
+    {title: t("medical"), courses: modules.filter((course) => course.category === "medical")},
+    {title: t("workshops"), courses: modules.filter((course) => course.category === "workshop")},
   ];
+  const programmeCards = programmes.map((programme) =>
+    buildProgrammeCardModel(resolveProgramme(programme, publishedCourses), locale, {
+      eyebrow: t("programmeEyebrow"),
+      includesTitle: t("programmeIncludesTitle"),
+      includesCount: (count) => t("programmeIncludesCount", {count}),
+      altPrompt: (title) => t("programmeAltPrompt", {title}),
+      comparison: (price) => t("programmeComparison", {price}),
+      savings: (amount) => t("programmeSavings", {amount}),
+      bookCta: t("programmeBookCta"),
+      waitlistCta: t("programmeWaitlistCta"),
+      awaitingDates: t("waitlistLabel"),
+    }),
+  );
 
   return (
     <SiteShell locale={locale} footerCta={null}>
@@ -70,6 +87,12 @@ export default async function CoursesPage({params, searchParams}: CoursesPagePro
         <CourseExplorer
           locale={locale}
           groups={groups}
+          programmes={programmeCards}
+          programmeCourses={programmes}
+          programmeLabels={{
+            title: t("programmeSectionTitle"),
+            intro: t("programmeSectionIntro"),
+          }}
           categoryLabels={{
             foundation: t("foundation"),
             advanced: t("advanced"),
@@ -101,6 +124,7 @@ export default async function CoursesPage({params, searchParams}: CoursesPagePro
             calendarView: t("calendarView"),
             noResults: t("noResults"),
             emptyCategory: t("emptyCategory"),
+            programmeLabel: t("programmeEyebrow"),
             previousMonth: calendarT("previousMonth"),
             nextMonth: calendarT("nextMonth"),
             emptyDay: calendarT("emptyDay"),

@@ -1179,6 +1179,40 @@ against `docs/DESIGN.md`.
 - **Known next work:** Post-launch backlog only (credits, recurring bookings,
   calendar sync — not checkpoints).
 
+### Catalogue presentation note — 2026-09-12
+
+- No checkpoint change. Owner-requested catalogue work on top of a complete
+  CP-00 through CP-11; the course MVP baseline is unchanged.
+- **Student-journey order:** `src/features/courses/catalogue-order.ts` holds the
+  canonical default (foundation, then Troubles anxieux and Techniques avancées,
+  then the remaining advanced, medical and workshop modules, with bundled
+  programmes last). Admins override it in the catalogue order panel on
+  `/admin/courses`; overrides persist in `courses.display_order` and are
+  audited as `COURSE_REORDERED`.
+- **Course format:** courses now carry `module` or `programme`
+  (`courses.format`), and a programme declares its contents in
+  `course_programme_modules`. Maître Praticien is the first programme. It
+  leaves the advanced grid and closes `/courses` in its own section as an
+  alternative to booking modules individually; its page lists the included
+  modules and each module page links back to it. Admins set the format and
+  pick the modules on the course form; the selection is re-validated
+  server-side against the catalogue, so unknown ids, nested programmes and
+  self-references cannot be stored.
+- **Migrations:** `0018_catalogue_display_order.sql` (was authored but missing
+  from `drizzle/meta/_journal.json`, so it had never been applied) and
+  `0019_course_programmes.sql`. Both are now journalled and applied locally.
+- **Automated evidence:** `pnpm verify` passed (lint 0 errors, typecheck,
+  Vitest 82 files, production build). New unit tests cover programme
+  resolution, bundle pricing, admin selection normalization and the
+  persistence round-trip.
+- **Browser evidence:** `/courses` in FR, DE and EN at 1280px plus FR at 390px;
+  programme and module detail pages in FR; admin course list, catalogue order
+  panel and the programme form at 1280px and 390px. No browser console errors.
+- **Deviations/follow-ups:** The separate-modules comparison and saving render
+  only when the programme is cheaper than its modules; with today's prices
+  Maître Praticien is not, so both lines stay hidden. Category chip filters on
+  the search toolbar remain unimplemented.
+
 ## Plan revision log
 
 ### Revision 3 — 2026-09-10

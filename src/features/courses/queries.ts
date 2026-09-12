@@ -1,11 +1,20 @@
 import {routing, type AppLocale} from "@/i18n/routing";
 
 import {courses} from "./catalog";
+import {
+  defaultDisplayOrderForCourse,
+  sortCoursesByCatalogueOrder,
+} from "./catalogue-order";
 import {isCourseDateBookable} from "./dates";
 import {isCoursePublished, type Course, type CourseDate} from "./types";
 
 export function getCatalogueCourses(): Course[] {
-  return courses;
+  return sortCoursesByCatalogueOrder(
+    courses.map((course) => ({
+      ...course,
+      displayOrder: course.displayOrder ?? defaultDisplayOrderForCourse(course.id),
+    })),
+  );
 }
 
 export function getPublishedCourses(): Course[] {

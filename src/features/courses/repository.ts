@@ -1,20 +1,34 @@
-import {asc, eq} from "drizzle-orm";
+import {asc, eq, inArray} from "drizzle-orm";
 
 import {getDb} from "@/db";
 import {
+  courseProgrammeModules,
   courseSessions,
   courses,
+  type CourseProgrammeModuleRow,
   type CourseRow,
   type CourseSessionRow,
   type LocalizedJson,
 } from "@/db/schema";
 import {courses as seedCourses} from "@/features/courses/catalog";
-import type {Course, CourseCategory, CourseDate} from "@/features/courses/types";
-import {isCoursePublished} from "@/features/courses/types";
+import {
+  DEFAULT_CATALOGUE_ORDER,
+  defaultDisplayOrderForCourse,
+  sortCoursesByCatalogueOrder,
+} from "@/features/courses/catalogue-order";
+import {programmeModuleIds} from "@/features/courses/programme";
+import type {
+  Course,
+  CourseCategory,
+  CourseDate,
+  CourseFormat,
+} from "@/features/courses/types";
+import {courseFormatOf, isCoursePublished} from "@/features/courses/types";
 
 export function courseFromRows(
   course: CourseRow,
   sessions: CourseSessionRow[],
+  moduleIds: string[] = [],
 ): Course {
   return {
     id: course.id,
@@ -27,6 +41,8 @@ export function courseFromRows(
     location: course.location,
     priceChf: course.priceChf,
     category: course.category,
+    format: course.format,
+    moduleIds: course.format === "programme" ? moduleIds : undefined,
     published: course.published,
     displayOrder: course.displayOrder,
     dates: sessions.map(sessionFromRow),
@@ -49,7 +65,7 @@ export async function upsertSeedCatalogue(): Promise<void> {
   const db = getDb();
   const now = new Date();
 
-  for (const [displayOrder, course] of seedCourses.entries()) {
+  for (const course of seedCourses) {
     await db
       .insert(courses)
       .values({
@@ -63,8 +79,9 @@ export async function upsertSeedCatalogue(): Promise<void> {
         location: course.location,
         priceChf: course.priceChf,
         category: course.category,
+        format: courseFormatOf(course),
         published: isCoursePublished(course),
-        displayOrder,
+        displayOrder: defaultDisplayOrderForCourse(course.id),
         updatedAt: now,
       })
       .onConflictDoNothing();
@@ -86,6 +103,44 @@ export async function upsertSeedCatalogue(): Promise<void> {
         .onConflictDoNothing();
     }
   }
+
+  // Second pass: programme links need every referenced course row to exist.
+  for (const course of seedCourses) {
+    const moduleIds = programmeModuleIds(course);
+    if (courseFormatOf(course) !== "programme" || moduleIds.length === 0) {
+      continue;
+    }
+
+    for (const [displayOrder, moduleId] of moduleIds.entries()) {
+      await db
+        .insert(courseProgrammeModules)
+        .values({programmeId: course.id, moduleId, displayOrder})
+        .onConflictDoNothing();
+    }
+  }
+}
+
+async function readProgrammeModuleIds(
+  programmeIds: string[],
+): Promise<Map<string, string[]>> {
+  const byProgramme = new Map<string, string[]>();
+  if (programmeIds.length === 0) {
+    return byProgramme;
+  }
+
+  const rows: CourseProgrammeModuleRow[] = await getDb()
+    .select()
+    .from(courseProgrammeModules)
+    .where(inArray(courseProgrammeModules.programmeId, programmeIds))
+    .orderBy(asc(courseProgrammeModules.displayOrder));
+
+  for (const row of rows) {
+    const list = byProgramme.get(row.programmeId) ?? [];
+    list.push(row.moduleId);
+    byProgramme.set(row.programmeId, list);
+  }
+
+  return byProgramme;
 }
 
 export async function listCatalogueFromDatabase(): Promise<Course[]> {
@@ -104,9 +159,50 @@ export async function listCatalogueFromDatabase(): Promise<Course[]> {
     sessionsByCourse.set(session.courseId, list);
   }
 
-  return courseRows.map((course) =>
-    courseFromRows(course, sessionsByCourse.get(course.id) ?? []),
+  const modulesByProgramme = await readProgrammeModuleIds(
+    courseRows.filter((course) => course.format === "programme").map((course) => course.id),
   );
+
+  return sortCoursesByCatalogueOrder(
+    courseRows.map((course) =>
+      courseFromRows(
+        course,
+        sessionsByCourse.get(course.id) ?? [],
+        modulesByProgramme.get(course.id) ?? [],
+      ),
+    ),
+  );
+}
+
+/** One-time or migration helper; does not run on ordinary catalogue reseeds. */
+export async function applyDefaultCatalogueDisplayOrders(): Promise<void> {
+  const db = getDb();
+  const now = new Date();
+
+  for (const [displayOrder, courseId] of DEFAULT_CATALOGUE_ORDER.entries()) {
+    await db
+      .update(courses)
+      .set({displayOrder, updatedAt: now})
+      .where(eq(courses.id, courseId));
+  }
+}
+
+export async function swapCourseDisplayOrder(
+  first: {id: string; displayOrder: number},
+  second: {id: string; displayOrder: number},
+): Promise<void> {
+  const db = getDb();
+  const now = new Date();
+
+  await db
+    .update(courses)
+    .set({displayOrder: second.displayOrder, updatedAt: now})
+    .where(eq(courses.id, first.id));
+
+  await db
+    .update(courses)
+    .set({displayOrder: first.displayOrder, updatedAt: now})
+    .where(eq(courses.id, second.id));
 }
 
 export type CourseUpdateInput = {
@@ -119,6 +215,7 @@ export type CourseUpdateInput = {
   location: LocalizedJson;
   priceChf: number;
   category: CourseCategory;
+  format: CourseFormat;
   published: boolean;
   displayOrder: number;
 };
@@ -145,6 +242,33 @@ export async function updateCourse(id: string, patch: CourseUpdateInput): Promis
       updatedAt: new Date(),
     })
     .where(eq(courses.id, id));
+}
+
+/**
+ * Replaces the contents of a programme. Passing an empty list (or demoting a
+ * programme back to a module) simply clears the links.
+ */
+export async function setProgrammeModules(
+  programmeId: string,
+  moduleIds: string[],
+): Promise<void> {
+  await getDb().transaction(async (tx) => {
+    await tx
+      .delete(courseProgrammeModules)
+      .where(eq(courseProgrammeModules.programmeId, programmeId));
+
+    if (moduleIds.length === 0) {
+      return;
+    }
+
+    await tx.insert(courseProgrammeModules).values(
+      moduleIds.map((moduleId, displayOrder) => ({
+        programmeId,
+        moduleId,
+        displayOrder,
+      })),
+    );
+  });
 }
 
 export async function updateCourseSession(

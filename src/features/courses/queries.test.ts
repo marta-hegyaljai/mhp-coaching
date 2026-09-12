@@ -1,6 +1,7 @@
 import {describe, expect, it} from "vitest";
 
 import {agendaByCourseId} from "./sessions";
+import {DEFAULT_CATALOGUE_ORDER} from "./catalogue-order";
 import {
   getAdvancedCourses,
   getCatalogueCourses,
@@ -38,6 +39,15 @@ describe("course catalogue", () => {
     expect(getWorkshopCourses()).toHaveLength(1);
     expect(getCourseById("transgenerational-mia")?.published).toBe(false);
     expect(getCourseBySlug("hypnose-transgenerationnelle-methode-mia")).toBeUndefined();
+  });
+
+  it("orders the fallback catalogue for the student journey", () => {
+    const catalogue = getCatalogueCourses();
+
+    expect(catalogue[0]?.id).toBe(DEFAULT_CATALOGUE_ORDER[0]);
+    expect(catalogue.findIndex((course) => course.id === "anxiety-hypnosis")).toBeLessThan(
+      catalogue.findIndex((course) => course.id === "advanced-techniques"),
+    );
   });
 
   it("publishes a dated 10 CHF Stripe payment-test course", () => {

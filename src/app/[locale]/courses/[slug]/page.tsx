@@ -6,8 +6,12 @@ import {CourseArtwork} from "@/features/courses/components/course-artwork";
 import {CourseDates} from "@/features/courses/components/course-dates";
 import {CourseUpcomingSessions} from "@/features/courses/components/course-upcoming-sessions";
 import {CourseWaitlistLink} from "@/features/courses/components/course-waitlist-link";
+import {ProgrammeModules} from "@/features/courses/components/programme/programme-modules";
+import {ProgrammeNotice} from "@/features/courses/components/programme/programme-notice";
 import {courseLocaleHrefs} from "@/features/courses/locale-hrefs";
-import {loadPublishedCourseBySlug} from "@/features/courses/live";
+import {loadPublishedCourseBySlug, loadPublishedCourses} from "@/features/courses/live";
+import {findProgrammesForModule, resolveProgramme} from "@/features/courses/programme";
+import {isProgrammeCourse} from "@/features/courses/types";
 import {
   getBookableDates,
   getCourseStaticParams,
@@ -90,6 +94,13 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
   } as const;
   const price = formatChf(course.priceChf, locale, {compact: true});
   const sourceContent = getCourseSourceContent(course);
+  const catalogue = await loadPublishedCourses();
+  const isProgramme = isProgrammeCourse(course);
+  const programmeView = isProgramme ? resolveProgramme(course, catalogue) : null;
+  const parentProgrammes = isProgramme
+    ? []
+    : findProgrammesForModule(course.id, catalogue);
+  const showProgrammeSaving = (programmeView?.savingsChf ?? 0) > 0;
 
   return (
     <SiteShell
@@ -140,7 +151,11 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
                 />
               </div>
               <div>
-                <Eyebrow>{course.duration[locale]}</Eyebrow>
+                <Eyebrow>
+                  {isProgramme
+                    ? `${coursesT("programmeEyebrow")} · ${course.duration[locale]}`
+                    : course.duration[locale]}
+                </Eyebrow>
                 <h1 className="mt-4 font-serif text-title">{course.title[locale]}</h1>
               </div>
             </div>
@@ -197,9 +212,43 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
                 />
               ) : null}
             </div>
+            <ProgrammeNotice
+              programmes={parentProgrammes}
+              locale={locale}
+              eyebrow={coursesT("programmeEyebrow")}
+              promptFor={(title) => coursesT("programmePartOf", {title})}
+              linkLabel={coursesT("programmeViewCta")}
+              className="mt-6"
+            />
           </aside>
         </div>
       </Section>
+
+      {programmeView ? (
+        <Section size="sm" tone="shell" ariaLabelledBy="course-programme-modules">
+          <ProgrammeModules
+            view={programmeView}
+            locale={locale}
+            headingId="course-programme-modules"
+            labels={{
+              title: coursesT("programmeIncludesTitle"),
+              intro: coursesT("programmeModulesIntro"),
+              comparison: showProgrammeSaving
+                ? coursesT("programmeComparison", {
+                    price: formatChf(programmeView.modulesPriceChf, locale, {
+                      compact: true,
+                    }),
+                  })
+                : null,
+              savings: showProgrammeSaving
+                ? coursesT("programmeSavings", {
+                    amount: formatChf(programmeView.savingsChf, locale, {compact: true}),
+                  })
+                : null,
+            }}
+          />
+        </Section>
+      ) : null}
 
       <Section size="sm" ariaLabelledBy="course-about">
         <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">

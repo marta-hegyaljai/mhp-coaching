@@ -17,7 +17,8 @@ import {
   AdminCreateSessionForm,
   AdminSessionForm,
 } from "@/features/courses/components/admin/session-form";
-import {loadCourseById} from "@/features/courses/live";
+import {loadCatalogueCourses, loadCourseById} from "@/features/courses/live";
+import {splitCatalogueByFormat} from "@/features/courses/programme";
 import {listWaitlistForCourse} from "@/features/waitlist/repository";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
@@ -66,6 +67,10 @@ export default async function AdminCourseDetailPage({
     notFound();
   }
 
+  const catalogue = await loadCatalogueCourses();
+  const selectableModules = splitCatalogueByFormat(catalogue).modules.filter(
+    (item) => item.id !== course.id,
+  );
   const allEnrolments = await listCourseEnrolments({courseId: course.id});
   const bookings = await listCourseEnrolments({
     courseId: course.id,
@@ -117,7 +122,11 @@ export default async function AdminCourseDetailPage({
               {t("coursesEditHelp")}
             </p>
             <div className="mt-6">
-              <AdminCourseForm course={course} />
+              <AdminCourseForm
+                course={course}
+                modules={selectableModules}
+                locale={locale}
+              />
             </div>
           </section>
 

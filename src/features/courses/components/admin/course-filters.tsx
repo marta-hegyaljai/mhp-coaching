@@ -5,6 +5,7 @@ import {localizedPath} from "@/features/seo/metadata";
 import {
   COURSE_LIST_CATEGORIES,
   COURSE_LIST_PUBLISHED,
+  COURSE_LIST_UPCOMING,
   type CourseListQuery,
 } from "@/features/courses/admin-query";
 import {Link} from "@/i18n/navigation";
@@ -28,6 +29,10 @@ export function CourseListFilters({
     publishedAll: string;
     publishedYes: string;
     publishedNo: string;
+    upcoming: string;
+    upcomingAll: string;
+    upcomingYes: string;
+    upcomingNo: string;
     categories: Record<Exclude<CourseListQuery["category"], "all">, string>;
   };
 }) {
@@ -35,7 +40,7 @@ export function CourseListFilters({
     <FilterBar
       action={localizedPath(locale, "/admin/courses")}
       label={labels.filter}
-      columnsClassName="sm:grid-cols-[minmax(0,1fr)_12rem_12rem_auto]"
+      columnsClassName="lg:grid-cols-[minmax(0,1fr)_12rem_11rem_11rem_auto]"
       actions={
         <>
           <Button type="submit" variant="secondary">
@@ -82,6 +87,23 @@ export function CourseListFilters({
               : value === "yes"
                 ? labels.publishedYes
                 : labels.publishedNo}
+          </option>
+        ))}
+      </SelectField>
+      <SelectField
+        id="courses-upcoming"
+        name="upcoming"
+        size="sm"
+        label={labels.upcoming}
+        defaultValue={query.upcoming}
+      >
+        {COURSE_LIST_UPCOMING.map((value) => (
+          <option key={value} value={value}>
+            {value === "all"
+              ? labels.upcomingAll
+              : value === "yes"
+                ? labels.upcomingYes
+                : labels.upcomingNo}
           </option>
         ))}
       </SelectField>
