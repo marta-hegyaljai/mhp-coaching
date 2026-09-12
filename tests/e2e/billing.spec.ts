@@ -62,14 +62,14 @@ test.describe("current-month usage and discounts", () => {
     await expect(page.getByRole("heading", {name: "Current month usage"})).toBeVisible();
     await expect(page.getByText("Open — not finalized")).toBeVisible();
     await expect(page.getByRole("heading", {name: "Billing period"})).toBeVisible();
-    await expect(page.getByLabel("From")).toBeVisible();
-    await expect(page.getByLabel("To")).toBeVisible();
+    await expect(page.locator("#billing-from")).toBeVisible();
+    await expect(page.locator("#billing-to")).toBeVisible();
     await expect(page.getByRole("button", {name: "Show period"})).toBeVisible();
     await expect(page.getByRole("link", {name: "This year"})).toBeVisible();
     await expect(page.getByRole("link", {name: "Last 12 months"})).toBeVisible();
     await expect(page.getByRole("link", {name: "Download Excel workbook"})).toBeVisible();
     await page.getByLabel("Search therapists").fill("qa.therapist@example.test");
-    await page.getByRole("button", {name: "Show"}).click();
+    await page.getByRole("button", {name: "Show", exact: true}).click();
     await expect(page.getByText("qa.therapist@example.test")).toBeVisible();
     await page.getByRole("link", {name: /qa\.therapist@example\.test/}).click();
     await expect(page.getByRole("heading", {name: "User usage"})).toBeVisible();
