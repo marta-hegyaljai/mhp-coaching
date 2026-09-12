@@ -38,8 +38,8 @@ export function NavCurrent({
       ref={rootRef}
       className={
         active
-          ? "[&_a]:shadow-[inset_0_-2px_0_0_currentColor]"
-          : "[&_a]:shadow-[inset_0_-2px_0_0_transparent]"
+          ? "[&_a]:underline [&_a]:decoration-2 [&_a]:underline-offset-4"
+          : ""
       }
     >
       {children}

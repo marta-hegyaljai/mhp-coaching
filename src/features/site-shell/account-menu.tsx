@@ -56,11 +56,12 @@ export function AccountMenu({
         aria-expanded={isOpen}
         aria-current={current ? "page" : undefined}
         onClick={() => setIsOpen((open) => !open)}
-        className={`inline-flex h-14 max-w-[9.5rem] items-center gap-2 px-2 text-[0.7rem] font-semibold uppercase tracking-[0.06em] text-ink transition-opacity duration-150 hover:opacity-60 sm:h-16 sm:max-w-[12rem] sm:px-2.5 sm:text-xs sm:tracking-[0.1em] ${
-          current ? "shadow-[inset_0_-2px_0_0_currentColor]" : ""
+        className={`inline-flex h-14 max-w-[7.5rem] items-center gap-2 px-2 text-[0.7rem] font-semibold uppercase tracking-[0.06em] text-ink transition-opacity duration-150 hover:opacity-60 sm:h-16 sm:max-w-[12rem] sm:px-2.5 sm:text-xs sm:tracking-[0.1em] ${
+          current ? "underline decoration-2 underline-offset-4" : ""
         }`}
       >
-        <span className="truncate">{displayName}</span>
+        <span className="truncate sm:hidden">{viewer.firstName.trim() || displayName}</span>
+        <span className="hidden truncate sm:inline">{displayName}</span>
         <span
           aria-hidden="true"
           className={`h-2 w-2 shrink-0 border-r border-b border-ink transition-transform duration-150 ${

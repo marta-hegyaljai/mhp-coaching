@@ -29,7 +29,8 @@ export function AuthField({
 }) {
   const errorId = `${name}-error`;
   const hintId = `${name}-hint`;
-  const describedByIds = [describedBy, hint ? hintId : undefined, error ? errorId : undefined]
+  const showHint = Boolean(hint) && !error;
+  const describedByIds = [describedBy, showHint ? hintId : undefined, error ? errorId : undefined]
     .filter(Boolean)
     .join(" ") || undefined;
 
@@ -54,7 +55,7 @@ export function AuthField({
           readOnly ? "cursor-default" : ""
         }`}
       />
-      {hint ? (
+      {showHint ? (
         <p id={hintId} className="mt-2 text-sm text-muted">
           {hint}
         </p>
