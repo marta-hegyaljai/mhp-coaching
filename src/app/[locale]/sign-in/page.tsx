@@ -1,5 +1,6 @@
 import {getTranslations, setRequestLocale} from "next-intl/server";
 
+import {AuthAlert} from "@/features/auth/components/auth-field";
 import {SignInForm} from "@/features/auth/components/sign-in-form";
 import {getViewer} from "@/features/auth/require";
 import {safeInternalPath} from "@/features/auth/redirect-path";
@@ -13,7 +14,7 @@ import {Eyebrow, Section} from "@/shared/ui/layout";
 
 type SignInPageProps = {
   params: Promise<{locale: AppLocale}>;
-  searchParams: Promise<{next?: string}>;
+  searchParams: Promise<{next?: string; verify?: string}>;
 };
 
 export const dynamic = "force-dynamic";
@@ -33,7 +34,7 @@ export async function generateMetadata({params}: SignInPageProps) {
 
 export default async function SignInPage({params, searchParams}: SignInPageProps) {
   const {locale} = await params;
-  const {next} = await searchParams;
+  const {next, verify} = await searchParams;
   setRequestLocale(locale);
   const t = await getTranslations("Auth");
   const viewer = await getViewer();
@@ -54,6 +55,12 @@ export default async function SignInPage({params, searchParams}: SignInPageProps
         <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-muted">
           {t("signInIntro")}
         </p>
+        {verify === "invalid" ? (
+          <div className="mt-6 max-w-xl space-y-3">
+            <AuthAlert>{t("errors.verifyInvalid")}</AuthAlert>
+            <p className="text-sm leading-7 text-ink-muted">{t("verifyFailedHint")}</p>
+          </div>
+        ) : null}
         <div className="mt-10">
           <SignInForm locale={locale} nextPath={nextPath} />
         </div>

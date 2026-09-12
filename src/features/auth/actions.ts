@@ -343,7 +343,12 @@ export async function verifyEmailAction(
   }
 
   await createSessionCookie(result.user.id);
-  redirect(localizedPathname(resolvedLocale, "/account/courses"));
+  redirect(
+    localizedPathname(resolvedLocale, {
+      pathname: "/account",
+      query: {verified: "1"},
+    }),
+  );
 }
 
 export async function forgotPasswordAction(

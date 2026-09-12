@@ -30,6 +30,10 @@ export type PathnameHref =
       query?: {verified?: string};
     }
   | {
+      pathname: "/sign-in";
+      query?: {next?: string; verify?: string};
+    }
+  | {
       pathname: "/admin/courses";
       query?: {q?: string; category?: string; published?: string};
     }
