@@ -40,7 +40,7 @@ import {
   createSessionCookie,
   readActiveSession,
 } from "@/features/auth/session";
-import {signedInHomePath} from "@/features/auth/signed-in-home";
+import {signedInHomeHref, signedInHomePath} from "@/features/auth/signed-in-home";
 import {hashToken} from "@/features/auth/tokens";
 import {sendEmailVerification, sendPasswordRecovery} from "@/features/email/account";
 import {localizedPathname} from "@/i18n/path";
@@ -344,10 +344,7 @@ export async function verifyEmailAction(
 
   await createSessionCookie(result.user.id);
   redirect(
-    localizedPathname(resolvedLocale, {
-      pathname: "/account",
-      query: {verified: "1"},
-    }),
+    localizedPathname(resolvedLocale, signedInHomeHref(result.user, {verified: true})),
   );
 }
 

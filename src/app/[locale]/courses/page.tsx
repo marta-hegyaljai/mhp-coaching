@@ -1,5 +1,6 @@
 import {getTranslations, setRequestLocale} from "next-intl/server";
 
+import {AuthNotice} from "@/features/auth/components/auth-field";
 import {CourseCatalogueLead, CourseCataloguePortrait} from "@/features/courses/components/course-catalogue-masthead";
 import {CourseExplorer} from "@/features/courses/components/course-explorer";
 import {loadPublishedCourses} from "@/features/courses/live";
@@ -14,7 +15,7 @@ import {Section} from "@/shared/ui/layout";
 
 type CoursesPageProps = {
   params: Promise<{locale: AppLocale}>;
-  searchParams: Promise<{view?: string}>;
+  searchParams: Promise<{view?: string; verified?: string | string[]}>;
 };
 
 export const dynamic = "force-dynamic";
@@ -33,9 +34,11 @@ export async function generateMetadata({params}: CoursesPageProps) {
 
 export default async function CoursesPage({params, searchParams}: CoursesPageProps) {
   const {locale} = await params;
-  const {view} = await searchParams;
+  const {view, verified: verifiedParam} = await searchParams;
+  const verified = Array.isArray(verifiedParam) ? verifiedParam[0] : verifiedParam;
   setRequestLocale(locale);
   const t = await getTranslations("CoursesPage");
+  const authT = await getTranslations("Auth");
   const navT = await getTranslations("Nav");
   const calendarT = await getTranslations("CourseCalendar");
 
@@ -45,7 +48,7 @@ export default async function CoursesPage({params, searchParams}: CoursesPagePro
     {title: t("advanced"), courses: publishedCourses.filter((course) => course.category === "advanced")},
     {title: t("medical"), courses: publishedCourses.filter((course) => course.category === "medical")},
     {title: t("workshops"), courses: publishedCourses.filter((course) => course.category === "workshop")},
-  ].filter((group) => group.courses.length > 0);
+  ];
 
   return (
     <SiteShell locale={locale} footerCta={null}>
@@ -59,6 +62,11 @@ export default async function CoursesPage({params, searchParams}: CoursesPagePro
             {name: t("title"), path: localizedPath(locale, "/courses")},
           ]}
         />
+        {verified === "1" ? (
+          <div className="mb-8 max-w-xl">
+            <AuthNotice>{authT("emailConfirmedNotice")}</AuthNotice>
+          </div>
+        ) : null}
         <CourseExplorer
           locale={locale}
           groups={groups}
@@ -82,6 +90,7 @@ export default async function CoursesPage({params, searchParams}: CoursesPagePro
             gridView: t("gridView"),
             calendarView: t("calendarView"),
             noResults: t("noResults"),
+            emptyCategory: t("emptyCategory"),
             previousMonth: calendarT("previousMonth"),
             nextMonth: calendarT("nextMonth"),
             emptyDay: calendarT("emptyDay"),

@@ -1,21 +1,33 @@
 import {getTranslations} from "next-intl/server";
 
 import {getViewer} from "@/features/auth/require";
-import {catalogueCalendarHref, type PathnameHref} from "@/i18n/href";
+import {
+  catalogueCalendarHref,
+  catalogueListHref,
+  type PathnameHref,
+} from "@/i18n/href";
 import type {AppLocale} from "@/i18n/routing";
 import {buttonStyles} from "@/shared/ui/button";
 import {ArrowRightIcon} from "@/shared/ui/icons";
 import {Container} from "@/shared/ui/layout";
 
 import {AccountMenu} from "./account-menu";
-import {LANGUAGE_SWITCHER_ENABLED} from "./locale-ui";
+import {DesktopNav} from "./desktop-nav";
+import {GuestAuthAction} from "./guest-auth-action";
 import {LanguageSwitcher} from "./language-switcher";
+import {LANGUAGE_SWITCHER_ENABLED} from "./locale-ui";
+import {MenuPanel} from "./menu-panel";
+import {MobileMenu} from "./mobile-menu";
 import {NavCurrent} from "./nav-current";
+import {primaryNavEntries} from "./nav-model";
 import {OriginLink} from "./origin-link";
 
-const navLink =
-  "inline-flex h-9 shrink-0 items-center rounded-panel px-2.5 text-[0.7rem] font-semibold uppercase tracking-[0.06em] text-ink whitespace-nowrap transition-colors duration-150 hover:bg-hover sm:px-3 sm:text-xs sm:tracking-[0.1em]";
-
+/**
+ * One header for visitors, signed-in people and the installed app. Product
+ * navigation, the account control and the booking call to action are three
+ * distinct zones; below `lg` the navigation collapses into a sheet while the
+ * call to action stays in the bar.
+ */
 export async function SiteHeader({
   locale,
   hreflangs,
@@ -25,17 +37,27 @@ export async function SiteHeader({
 }) {
   const t = await getTranslations({locale, namespace: "Nav"});
   const viewer = await getViewer();
+  const entries = primaryNavEntries(viewer);
+  // Signed-in people go straight to the bookable list; visitors keep the
+  // calendar entry point that the public catalogue is built around.
+  const cta = viewer
+    ? {
+        href: catalogueListHref,
+        label: t("datesAndRegistration"),
+        shortLabel: t("datesShort"),
+      }
+    : {href: catalogueCalendarHref, label: t("cta"), shortLabel: t("ctaShort")};
 
   return (
-    <header className="sticky top-0 z-40 h-14 border-b border-ink bg-ivory/95 backdrop-blur-sm sm:h-16">
-      <Container className="flex h-full flex-nowrap items-center justify-between gap-2 overflow-x-clip sm:gap-4">
-        <NavCurrent match="/" indicate={false}>
+    <header className="sticky top-0 z-40 border-b border-ink bg-ivory/95 pt-[env(safe-area-inset-top)] backdrop-blur-sm [--mhp-header-height:calc(3.5rem+env(safe-area-inset-top))] sm:[--mhp-header-height:calc(4rem+env(safe-area-inset-top))]">
+      <Container className="flex h-14 flex-nowrap items-center justify-between gap-2 overflow-x-clip sm:h-16 sm:gap-4">
+        <NavCurrent match="/" activeClassName="">
           <OriginLink
             locale={locale}
             origin="marketing"
             href="/"
             aria-label="MHP Coaching"
-            className="flex h-full min-w-0 shrink-0 items-center whitespace-nowrap font-sans text-ink transition-opacity duration-150 hover:opacity-60"
+            className="flex min-w-0 shrink-0 items-center whitespace-nowrap font-sans text-ink transition-opacity duration-150 hover:opacity-60"
           >
             <span className="text-base font-black tracking-[-0.06em] sm:text-lg md:text-xl">
               MHP
@@ -49,63 +71,41 @@ export async function SiteHeader({
             </span>
           </OriginLink>
         </NavCurrent>
-        <div className="flex h-full min-w-0 shrink-0 items-center justify-end">
-          <nav aria-label={t("label")} className="flex h-full items-center gap-0.5">
-            <NavCurrent match="/courses">
-              <OriginLink locale={locale} origin="marketing" href="/courses" className={navLink}>
-                {t("courses")}
-              </OriginLink>
-            </NavCurrent>
-            <NavCurrent match="/contact">
-              <OriginLink locale={locale} origin="marketing" href="/contact" className={navLink}>
-                {t("contact")}
-              </OriginLink>
-            </NavCurrent>
-            {viewer?.isAdmin ? (
-              <NavCurrent match="/admin">
-                <OriginLink locale={locale} origin="app" href="/admin/users" className={navLink}>
-                  {t("admin")}
-                </OriginLink>
-              </NavCurrent>
-            ) : null}
-            {viewer?.canAccessRooms ? (
-              <NavCurrent match="/rooms">
-                <OriginLink locale={locale} origin="app" href="/rooms" className={navLink}>
-                  {t("rooms")}
-                </OriginLink>
-              </NavCurrent>
-            ) : null}
+
+        <div className="flex min-w-0 shrink-0 items-center gap-2">
+          <DesktopNav locale={locale} entries={entries} />
+
+          <span
+            aria-hidden="true"
+            className="mx-1 hidden h-7 w-px bg-line-soft lg:block"
+          />
+
+          <div className="hidden items-center gap-2 lg:flex">
             {viewer ? (
               <AccountMenu locale={locale} viewer={viewer} />
             ) : (
-              <>
-                <NavCurrent match="/sign-in">
-                  <OriginLink locale={locale} origin="app" href="/sign-in" className={navLink}>
-                    {t("signIn")}
-                  </OriginLink>
-                </NavCurrent>
-                <NavCurrent match="/sign-up">
-                  <OriginLink locale={locale} origin="app" href="/sign-up" className={navLink}>
-                    {t("signUp")}
-                  </OriginLink>
-                </NavCurrent>
-              </>
+              <GuestAuthAction />
             )}
-          </nav>
+          </div>
+
           {LANGUAGE_SWITCHER_ENABLED ? (
             <LanguageSwitcher hreflangs={hreflangs} />
           ) : null}
-          <div className="ml-3 hidden lg:block">
-            <OriginLink
-              locale={locale}
-              origin="marketing"
-              href={catalogueCalendarHref}
-              className={`${buttonStyles()} min-w-40`}
-            >
-              {t("cta")}
-              <ArrowRightIcon className="transition-transform duration-150 ease-standard group-hover/button:translate-x-1" />
-            </OriginLink>
-          </div>
+
+          <OriginLink
+            locale={locale}
+            origin="marketing"
+            href={cta.href}
+            className={`${buttonStyles()} px-3 sm:px-5`}
+          >
+            <span className="sm:hidden">{cta.shortLabel}</span>
+            <span className="hidden sm:inline">{cta.label}</span>
+            <ArrowRightIcon className="transition-transform duration-150 ease-standard group-hover/button:translate-x-1" />
+          </OriginLink>
+
+          <MobileMenu openLabel={t("openMenu")} closeLabel={t("closeMenu")}>
+            <MenuPanel locale={locale} viewer={viewer} hreflangs={hreflangs} />
+          </MobileMenu>
         </div>
       </Container>
     </header>

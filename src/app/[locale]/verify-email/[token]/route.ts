@@ -2,6 +2,7 @@ import {redirect} from "next/navigation";
 
 import {verifySignupEmail} from "@/features/auth/register";
 import {createSessionCookie} from "@/features/auth/session";
+import {signedInHomeHref} from "@/features/auth/signed-in-home";
 import {localizedPathname} from "@/i18n/path";
 import {locales, type AppLocale} from "@/i18n/routing";
 
@@ -30,12 +31,7 @@ export async function GET(
 
   if (result.ok) {
     await createSessionCookie(result.user.id);
-    redirect(
-      localizedPathname(locale, {
-        pathname: "/account",
-        query: {verified: "1"},
-      }),
-    );
+    redirect(localizedPathname(locale, signedInHomeHref(result.user, {verified: true})));
   }
 
   redirect(

@@ -23,7 +23,7 @@ export type PathnameHref =
     >
   | {
       pathname: "/courses";
-      query?: {view?: string};
+      query?: {view?: string; verified?: string};
     }
   | {
       pathname: "/account";
@@ -57,7 +57,13 @@ export type PathnameHref =
     }
   | {
       pathname: "/admin/users";
-      query?: {q?: string; status?: string; access?: string; page?: string};
+      query?: {
+        q?: string;
+        status?: string;
+        access?: string;
+        page?: string;
+        verified?: string;
+      };
     }
   | {
       pathname: "/admin/users/[id]";
@@ -71,7 +77,7 @@ export type PathnameHref =
     }
   | {
       pathname: "/rooms";
-      query?: {view?: string; date?: string; room?: string};
+      query?: {view?: string; date?: string; room?: string; verified?: string};
     }
   | {
       pathname: "/rooms/book";
@@ -164,4 +170,9 @@ export type PathnameHref =
 export const catalogueCalendarHref = {
   pathname: "/courses",
   query: {view: "calendar"},
+} as const satisfies PathnameHref;
+
+/** Catalogue list (card grid), never the calendar toggle. */
+export const catalogueListHref = {
+  pathname: "/courses",
 } as const satisfies PathnameHref;

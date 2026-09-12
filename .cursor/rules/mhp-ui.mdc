@@ -19,10 +19,16 @@ source of truth and overrides generic design preferences.
   spacing, 2px corners, no shadows, no pills.
 - Present multiple courses or dates as compact equal-height bordered card
   grids, not oversized full-width rows or long-scroll sections.
-- Keep Courses and Contact visible in phone navigation on the same compact
-  row as the brand and language control; do not use a second header row.
-  Nav items use square chips: grey hover, black fill when selected; never
-  underline the brand or nav links for current-page state.
+- Keep the header in three zones: product navigation, the account control and
+  one call to action. Nav items use square chips: grey hover, black fill when
+  selected; never underline the brand or nav links for current-page state.
+  The account control is a bordered monogram trigger, never a nav chip; signed
+  -out visitors get one secondary auth button (Sign in, or Sign up on the
+  sign-in page).
+- Below `lg`, collapse navigation into the full-height sheet in
+  `src/features/site-shell/mobile-menu.tsx` and keep the call to action in the
+  bar, outside the menu. Pin account actions to the bottom of the sheet and
+  respect `env(safe-area-inset-*)` for installed/standalone windows.
 - Set course prices in the functional sans-serif with tabular numbers, never
   the editorial serif.
 - Keep the language control as the custom fixed-width dropdown and preserve

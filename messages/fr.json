@@ -10,12 +10,19 @@
     "courses": "Formations",
     "contact": "Contact",
     "cta": "Réserver une place",
+    "ctaShort": "Réserver",
+    "datesAndRegistration": "Dates et inscriptions",
+    "datesShort": "Dates",
     "breadcrumb": "Fil d’Ariane",
+    "openMenu": "Ouvrir le menu",
+    "closeMenu": "Fermer le menu",
+    "sections": "Navigation",
     "signIn": "Connexion",
     "signUp": "S'inscrire",
     "signOut": "Déconnexion",
     "account": "Compte",
     "accountMenu": "Menu du compte",
+    "accountSection": "Mon compte",
     "admin": "Admin",
     "rooms": "Salles",
     "myCourses": "Mes cours"
@@ -71,7 +78,8 @@
     "allMonths": "Tous les mois",
     "gridView": "Liste",
     "calendarView": "Calendrier",
-    "noResults": "Aucune formation ne correspond à cette recherche."
+    "noResults": "Aucune formation ne correspond à cette recherche.",
+    "emptyCategory": "Aucune formation dans cette catégorie pour le moment."
   },
   "CourseCalendar": {
     "previousMonth": "Mois précédent",

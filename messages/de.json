@@ -10,12 +10,19 @@
     "courses": "Ausbildungen",
     "contact": "Kontakt",
     "cta": "Platz buchen",
+    "ctaShort": "Buchen",
+    "datesAndRegistration": "Termine und Anmeldung",
+    "datesShort": "Termine",
     "breadcrumb": "Navigationspfad",
+    "openMenu": "Menü öffnen",
+    "closeMenu": "Menü schliessen",
+    "sections": "Navigation",
     "signIn": "Anmelden",
     "signUp": "Registrieren",
     "signOut": "Abmelden",
     "account": "Konto",
     "accountMenu": "Kontomenü",
+    "accountSection": "Mein Konto",
     "admin": "Admin",
     "rooms": "Räume",
     "myCourses": "Meine Kurse"
@@ -71,7 +78,8 @@
     "allMonths": "Alle Monate",
     "gridView": "Liste",
     "calendarView": "Kalender",
-    "noResults": "Keine Ausbildung entspricht dieser Suche."
+    "noResults": "Keine Ausbildung entspricht dieser Suche.",
+    "emptyCategory": "Derzeit keine Ausbildung in dieser Kategorie."
   },
   "CourseCalendar": {
     "previousMonth": "Vorheriger Monat",

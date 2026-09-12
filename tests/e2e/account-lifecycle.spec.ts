@@ -71,10 +71,11 @@ test("a new user can verify, change password and reset access", async ({page}) =
   expect(verification.HTML).toContain("#c8aa6a");
   expect(verification.HTML).toContain('href="http://localhost:3000/en/verify-email/');
   await page.goto(firstHttpUrl(verification.Text).replace("http://localhost:3000", ""));
-  await expect(page).toHaveURL(/\/en\/account\?verified=1/);
+  await expect(page).toHaveURL(/\/en\/courses\?verified=1/);
   await expect(page.getByRole("status")).toContainText("Your email is confirmed. You are signed in.");
   await expect(page.getByRole("button", {name: "Account menu"})).toContainText("Walk Through");
-  await page.getByRole("navigation", {name: "Profile"}).getByRole("link", {name: "My courses"}).click();
+  await page.getByRole("button", {name: "Account menu"}).click();
+  await page.getByRole("menuitem", {name: "My courses"}).click();
   await expect(page).toHaveURL(/\/en\/account\/courses/);
   await expect(page.getByRole("heading", {name: "My courses"})).toBeVisible();
   await expect(page.getByText("No course registrations are linked")).toBeVisible();
@@ -98,11 +99,12 @@ test("a new user can verify, change password and reset access", async ({page}) =
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill(nextPassword);
   await page.getByRole("button", {name: "Sign in"}).click();
-  await expect(page).toHaveURL(/\/en\/account/);
+  await expect(page).toHaveURL(/\/en\/courses/);
   await expect(page.getByRole("button", {name: "Account menu"})).toBeVisible();
   await expect(page.getByRole("button", {name: "Account menu"})).toContainText("Walk Through");
 
-  await page.getByRole("navigation", {name: "Profile"}).getByRole("button", {name: "Sign out"}).click();
+  await page.getByRole("button", {name: "Account menu"}).click();
+  await page.getByRole("menuitem", {name: "Sign out"}).click();
   await expect(page).toHaveURL(/\/en\/sign-in/);
 
   await page.goto("/en/forgot-password");
@@ -116,5 +118,5 @@ test("a new user can verify, change password and reset access", async ({page}) =
   await page.getByLabel("Password", {exact: true}).fill(resetPassword);
   await page.getByLabel("Confirm password").fill(resetPassword);
   await page.getByRole("button", {name: "Save password and sign in"}).click();
-  await expect(page).toHaveURL(/\/en\/account/);
+  await expect(page).toHaveURL(/\/en\/courses/);
 });

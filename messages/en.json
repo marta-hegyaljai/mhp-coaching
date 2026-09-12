@@ -10,12 +10,19 @@
     "courses": "Courses",
     "contact": "Contact",
     "cta": "Book a place",
+    "ctaShort": "Book",
+    "datesAndRegistration": "Dates and registration",
+    "datesShort": "Dates",
     "breadcrumb": "Breadcrumb",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "sections": "Navigation",
     "signIn": "Sign in",
     "signUp": "Sign up",
     "signOut": "Sign out",
     "account": "Account",
     "accountMenu": "Account menu",
+    "accountSection": "My account",
     "admin": "Admin",
     "rooms": "Rooms",
     "myCourses": "My courses"
@@ -71,7 +78,8 @@
     "allMonths": "All months",
     "gridView": "List",
     "calendarView": "Calendar",
-    "noResults": "No courses match this search."
+    "noResults": "No courses match this search.",
+    "emptyCategory": "No courses in this category right now."
   },
   "CourseCalendar": {
     "previousMonth": "Previous month",

@@ -24,7 +24,7 @@ async function signIn(page: Page) {
   await page.getByLabel("Email").fill(email ?? "");
   await page.getByLabel("Password", {exact: true}).fill(password ?? "");
   await page.getByRole("button", {name: /sign in/i}).click();
-  await page.waitForURL(/\/en\/(account|rooms|admin)/);
+  await page.waitForURL(/\/en\/(courses|account|rooms|admin)/);
 }
 
 /** The suite reads ids from the UI so it never pins a seeded fixture. */

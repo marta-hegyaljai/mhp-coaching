@@ -46,14 +46,33 @@ dashboard.
 
 ## Navigation and locale stability
 
-- Header navigation must expose Courses and Contact at every viewport. On
-  phones they share one compact row with the brand and language control. The
-  wordmark may shorten to MHP so those links stay visible and tappable. Do not
-  hide them in a menu unless the information architecture grows beyond the MVP.
+- The header has three zones and never blends them: product navigation, the
+  account control, and exactly one call to action. A hairline separates the
+  navigation from the account zone on wide viewports.
 - Nav items are compact rectangular chips (`rounded-panel`). Hover uses the
   neutral `hover` surface; the current section inverts to black with white
   type. Do not underline nav items or the brand wordmark to show the current
   page.
+- The account control is not a nav chip. Signed-in people get a bordered
+  trigger carrying a black monogram tile and, from `xl`, the person's name;
+  its menu opens with name and email, then personal destinations, then Sign
+  out behind a rule. Signed-out visitors get exactly one secondary auth
+  button: Sign in on every page except the sign-in screen, where Sign up is
+  offered instead. The filled black button in the bar is only ever the booking
+  action.
+- Below `lg` the product navigation collapses into a full-height sheet opened
+  from a square menu button. The call to action and the brand stay in the bar:
+  the primary action is never hidden inside the menu. The sheet opens with the
+  signed-in identity, lists product sections as large rows under the thumb
+  path, and pins personal actions and Sign out to the bottom edge. Escape, a
+  completed navigation, or the same button closes it, and the page beneath
+  must not scroll while it is open.
+- Header navigation must expose Courses and Contact at every viewport, in the
+  bar on `lg` and above and in the first sheet section below it. Capability
+  sections (Rooms, Admin) appear only once the server granted them.
+- The shell is installable: the header and the sheet pay back
+  `env(safe-area-inset-*)` so a standalone window never puts controls under the
+  notch or the home indicator.
 - The language switcher is a custom accessible dropdown. Its closed trigger
   is a compact neutral capsule inspired by the reference site, shows only the
   stable locale code, has a fixed width, and opens a bordered menu with native
