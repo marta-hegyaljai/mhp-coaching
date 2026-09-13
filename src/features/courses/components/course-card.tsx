@@ -41,12 +41,7 @@ export function CourseCard({
       className="group/card block h-full rounded-panel focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-ink"
     >
       <article className="flex h-full flex-col border border-ink bg-parchment p-5 transition-[background-color,transform] duration-150 group-hover/card:-translate-y-0.5 group-hover/card:bg-hover sm:p-6">
-        <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-          <Eyebrow>{course.duration[locale]}</Eyebrow>
-          <Price size="sm">
-            {formatChf(course.priceChf, locale, {compact: true})}
-          </Price>
-        </div>
+        <Eyebrow>{course.duration[locale]}</Eyebrow>
 
         <div className="mt-5 grid grid-cols-[5.25rem_minmax(0,1fr)] items-start gap-4 sm:grid-cols-[6rem_minmax(0,1fr)] xl:grid-cols-[5.25rem_minmax(0,1fr)]">
           <div className="relative aspect-square overflow-hidden border border-line bg-white">
@@ -76,10 +71,15 @@ export function CourseCard({
         />
 
         <div className="mt-auto pt-6">
-          <span className="inline-flex min-h-11 w-full items-center justify-between border-t border-current pt-3 text-sm font-bold uppercase tracking-[0.08em] sm:w-auto">
-            {detailsLabel}
-            <ArrowRightIcon className="transition-transform duration-150 ease-standard group-hover/card:translate-x-1" />
-          </span>
+          <div className="flex min-h-11 flex-wrap items-center gap-x-4 gap-y-1 border-t border-current pt-3">
+            <span className="inline-flex min-w-0 items-center gap-1 text-sm font-bold uppercase tracking-[0.08em]">
+              {detailsLabel}
+              <ArrowRightIcon className="transition-transform duration-150 ease-standard group-hover/card:translate-x-1" />
+            </span>
+            <Price size="sm" className="ml-auto shrink-0">
+              {formatChf(course.priceChf, locale, {compact: true})}
+            </Price>
+          </div>
         </div>
       </article>
     </Link>

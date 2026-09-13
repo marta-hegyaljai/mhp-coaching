@@ -42,6 +42,28 @@ test.describe("course cards", () => {
     });
   }
 
+  test("the catalogue price sits on the closing row", async ({page}) => {
+    await page.goto(omniCard.path);
+
+    const card = page.locator("article").filter({hasText: omniCard.title}).first();
+    const title = card.getByRole("heading", {name: omniCard.title});
+    const price = card.getByText(/3’490/);
+    const action = card.getByText(/Détail de la formation/i);
+
+    const [titleBox, priceBox, actionBox] = await Promise.all([
+      title.boundingBox(),
+      price.boundingBox(),
+      action.boundingBox(),
+    ]);
+
+    expect(titleBox).not.toBeNull();
+    expect(priceBox).not.toBeNull();
+    expect(actionBox).not.toBeNull();
+    expect(priceBox!.y).toBeGreaterThan(titleBox!.y + (titleBox!.height ?? 0));
+    expect(Math.abs(priceBox!.y - actionBox!.y)).toBeLessThanOrEqual(6);
+    expect(priceBox!.x).toBeGreaterThan(actionBox!.x);
+  });
+
   test("a single-date course keeps one date line", async ({page}) => {
     await page.goto("/fr/formations");
 

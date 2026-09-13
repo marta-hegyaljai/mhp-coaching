@@ -179,8 +179,12 @@ primary action behind an ambiguous icon.
   equal-height grid behavior, and no shadow. A course card is one full-surface
   link; never nest a second link inside it.
 - Cards must show the decision essentials without another click: title,
-  duration/price, Fribourg as the course location, the nearest date when
-  available, and one clear action. An undated course is not sold until a
+  duration, Fribourg as the course location, the nearest date when
+  available, the price, and one clear action. Duration leads as the gold
+  eyebrow so the card opens on time, not on tariff. The CHF figure sits on
+  the closing row, opposite the details action: visible without another
+  click, set in the sans-serif with tabular numbers, and read after the
+  title, description and schedule. An undated course is not sold until a
   session is published. Label its schedule as awaiting confirmation and route
   the primary action to a waiting-list form stored in PostgreSQL.
 - When a course has several bookable dates, the card lists up to three of them

@@ -30,7 +30,9 @@ source of truth and overrides generic design preferences.
   bar, outside the menu. Pin account actions to the bottom of the sheet and
   respect `env(safe-area-inset-*)` for installed/standalone windows.
 - Set course prices in the functional sans-serif with tabular numbers, never
-  the editorial serif.
+  the editorial serif. On a course card, duration leads as the gold eyebrow;
+  the price sits on the closing row opposite the details action, never beside
+  the duration.
 - Keep the language control as the custom fixed-width dropdown and preserve
   localized equivalent routes. Switching FR/DE/EN must not move surrounding
   controls.
