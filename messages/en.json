@@ -30,6 +30,14 @@
   "LanguageSwitcher": {
     "label": "Choose language"
   },
+  "DateField": {
+    "empty": "Choose a date",
+    "calendar": "Calendar",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "today": "Today",
+    "clear": "Clear"
+  },
   "HomePage": {
     "eyebrow": "Hypnosis training centre",
     "title": "Elmanian hypnosis training, taught with calm precision.",

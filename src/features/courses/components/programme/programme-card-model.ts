@@ -1,6 +1,7 @@
 import {formatCourseDateRange} from "@/features/courses/dates";
 import type {ProgrammeView} from "@/features/courses/programme";
 import {getBookableDates} from "@/features/courses/queries";
+import type {CourseCategory} from "@/features/courses/types";
 import {formatChf} from "@/features/payments/money";
 import type {AppLocale} from "@/i18n/routing";
 
@@ -31,6 +32,7 @@ export type ProgrammeModuleLink = {
 export type ProgrammeCardModel = {
   id: string;
   slug: string;
+  category: CourseCategory;
   eyebrow: string;
   title: string;
   summary: string;
@@ -61,6 +63,7 @@ export function buildProgrammeCardModel(
   return {
     id: programme.id,
     slug: programme.slug[locale],
+    category: programme.category,
     eyebrow: copy.eyebrow,
     title: programme.title[locale],
     summary: programme.shortDescription[locale],

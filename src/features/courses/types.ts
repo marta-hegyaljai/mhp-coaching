@@ -16,8 +16,8 @@ export type CourseCategory = "foundation" | "advanced" | "medical" | "workshop";
 
 /**
  * A `module` is booked on its own and listed inside its category. A
- * `programme` bundles modules into one purchasable path and is presented
- * apart from the module grid.
+ * `programme` bundles modules into one purchasable path and closes that
+ * category, never mixed into the module grid.
  */
 export type CourseFormat = "module" | "programme";
 

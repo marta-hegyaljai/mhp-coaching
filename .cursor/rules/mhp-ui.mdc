@@ -30,7 +30,12 @@ source of truth and overrides generic design preferences.
   bar, outside the menu. Pin account actions to the bottom of the sheet and
   respect `env(safe-area-inset-*)` for installed/standalone windows.
 - Set course prices in the functional sans-serif with tabular numbers, never
-  the editorial serif.
+  the editorial serif. On a course card, duration leads as the gold eyebrow;
+  the price sits on the closing row opposite the details action, never beside
+  the duration.
+- Date fields use `<DateField>`: the shared field frame and a Monday-first
+  month grid with the selected day inverted to black. Do not use a native
+  `<input type="date">` picker.
 - Keep the language control as the custom fixed-width dropdown and preserve
   localized equivalent routes. Switching FR/DE/EN must not move surrounding
   controls.
@@ -45,10 +50,11 @@ source of truth and overrides generic design preferences.
 - Undated courses are not sold. Label the schedule as awaiting confirmation
  and send the primary action to a waiting-list form stored in PostgreSQL.
 - A course is a `module` or a `programme`. Keep programmes out of the category
- grids: close the catalogue with them under their own rule and heading, as an
- alternative to booking modules one by one. Use the wide inverted-header
- programme card, list the included modules, and show the separate-modules
- total and saving only when the bundle is actually cheaper.
+ grids: close the programme’s own category with a short inverted card
+ (eyebrow, title, summary, a compact two-column module list, price and one
+ action). Never make it a tall page-level section after every category.
+ Show the separate-modules total and saving only when the bundle is actually
+ cheaper.
 - Animate only clickable encouragement: short black/white inversion, <=2px
   lift, <=4px CTA arrow movement, or pending spinner. No entrance or ambient
   animation.

@@ -7,6 +7,7 @@ import {LocalizedFields} from "@/features/courses/components/admin/localized-fie
 import type {CourseDate, LocalizedText} from "@/features/courses/types";
 import type {AppLocale} from "@/i18n/routing";
 import {ChevronDownIcon} from "@/shared/ui/icons";
+import {DateField} from "@/shared/ui/date-field";
 import {InputField} from "@/shared/ui/field";
 
 const EMPTY_TEXT: LocalizedText = {fr: "", de: "", en: ""};
@@ -60,23 +61,19 @@ export function SessionFields({
   return (
     <div className="space-y-4">
       <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_7rem]">
-        <InputField
+        <DateField
           id={`${idPrefix}-start`}
           name="startDate"
           label={t("coursesStartDate")}
-          type="date"
           size="sm"
-          numeric
           required
           defaultValue={date?.startDate ?? ""}
         />
-        <InputField
+        <DateField
           id={`${idPrefix}-end`}
           name="endDate"
           label={t("coursesEndDate")}
-          type="date"
           size="sm"
-          numeric
           defaultValue={date?.endDate ?? date?.startDate ?? ""}
         />
         <InputField

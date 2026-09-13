@@ -30,6 +30,14 @@
   "LanguageSwitcher": {
     "label": "Choisir la langue"
   },
+  "DateField": {
+    "empty": "Choisir une date",
+    "calendar": "Calendrier",
+    "previousMonth": "Mois précédent",
+    "nextMonth": "Mois suivant",
+    "today": "Aujourd’hui",
+    "clear": "Effacer"
+  },
   "HomePage": {
     "eyebrow": "Centre de formation en hypnose",
     "title": "La formation en hypnose elmanienne, avec calme et précision.",
