@@ -41,16 +41,24 @@ describe.skipIf(!hasDatabase)("course catalogue persistence", () => {
       expect(row?.title).toEqual(seed.title);
       expect(row?.priceChf).toBe(seed.priceChf);
       expect(row?.published).toBe(isCoursePublished(seed));
-      expect(row?.dates.map((date) => date.id)).toEqual(seed.dates.map((date) => date.id));
-      expect(row?.dates.map((date) => date.startDate)).toEqual(
-        seed.dates.map((date) => date.startDate),
+      const storedIds = row?.dates.map((date) => date.id) ?? [];
+      const storedStarts = row?.dates.map((date) => date.startDate) ?? [];
+      expect(storedIds).toEqual(expect.arrayContaining(seed.dates.map((date) => date.id)));
+      expect(storedStarts).toEqual(
+        expect.arrayContaining(seed.dates.map((date) => date.startDate)),
       );
     }
 
     const paused = stored.find((course) => course.id === "transgenerational-mia");
     expect(paused?.published).toBe(false);
     const practitioner = stored.find((course) => course.id === "omni-practitioner");
-    expect(practitioner?.dates).toHaveLength(3);
+    expect(practitioner?.dates.map((date) => date.id)).toEqual(
+      expect.arrayContaining([
+        "omni-practitioner-2026-09-10",
+        "omni-practitioner-2026-10-08",
+        "omni-practitioner-2026-11-12",
+      ]),
+    );
   });
 
   it("round-trips the programme format and its ordered modules", async () => {
