@@ -29,5 +29,5 @@ card, admin charge) are button/link/form controls with visible
 
 - No axe/pa11y job in CI. Re-run a keyboard pass on Vercel production after
   the app domain is attached.
-- Native `<input type="date">` still follows the browser locale, not the page
-  locale (known DESIGN.md follow-up).
+- Date entry uses the shared `<DateField>` so the closed value and the month
+  grid follow the page locale, not the browser’s native date picker.

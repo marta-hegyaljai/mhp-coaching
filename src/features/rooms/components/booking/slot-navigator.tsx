@@ -4,7 +4,8 @@ import type {ReactNode} from "react";
 import {useTranslations} from "next-intl";
 
 import {Button} from "@/shared/ui/button";
-import {InputField, SelectField} from "@/shared/ui/field";
+import {DateField} from "@/shared/ui/date-field";
+import {SelectField} from "@/shared/ui/field";
 import {Panel} from "@/shared/ui/panel";
 import {SectionLabel} from "@/shared/ui/section-label";
 
@@ -61,11 +62,9 @@ export function SlotNavigator({
             </option>
           ))}
         </SelectField>
-        <InputField
+        <DateField
           id="slot-date"
           name="date"
-          type="date"
-          numeric
           label={t("bookDate")}
           defaultValue={date}
         />

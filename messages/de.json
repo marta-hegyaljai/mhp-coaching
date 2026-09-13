@@ -30,6 +30,14 @@
   "LanguageSwitcher": {
     "label": "Sprache wählen"
   },
+  "DateField": {
+    "empty": "Datum wählen",
+    "calendar": "Kalender",
+    "previousMonth": "Vorheriger Monat",
+    "nextMonth": "Nächster Monat",
+    "today": "Heute",
+    "clear": "Löschen"
+  },
   "HomePage": {
     "eyebrow": "Hypnose-Ausbildungszentrum",
     "title": "Ausbildung in elmanischer Hypnose, ruhig und präzise.",

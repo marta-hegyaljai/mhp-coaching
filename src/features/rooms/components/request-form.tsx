@@ -8,7 +8,8 @@ import {createAvailabilityRequestAction} from "@/features/rooms/actions";
 import {NoticePanel} from "@/features/rooms/components/booking/notice-panel";
 import {REQUEST_MESSAGE_MAX_LENGTH} from "@/features/rooms/limits";
 import type {AppLocale} from "@/i18n/routing";
-import {InputField, SelectField, TextareaField} from "@/shared/ui/field";
+import {DateField} from "@/shared/ui/date-field";
+import {SelectField, TextareaField} from "@/shared/ui/field";
 import {Panel} from "@/shared/ui/panel";
 import {SubmitButton} from "@/shared/ui/submit-button";
 
@@ -49,10 +50,9 @@ export function AvailabilityRequestForm({
               </option>
             ))}
           </SelectField>
-          <InputField
+          <DateField
             id="request-date"
             name="date"
-            type="date"
             label={t("bookDate")}
             defaultValue={defaults.date}
             required

@@ -5,6 +5,7 @@ import {useTranslations} from "next-intl";
 
 import {AuthAlert, AuthNotice} from "@/features/auth/components/auth-field";
 import {attachCertificateAction} from "@/features/certificates/actions";
+import {DateField} from "@/shared/ui/date-field";
 import {fieldStyles} from "@/shared/ui/field";
 import {SectionLabel} from "@/shared/ui/section-label";
 import {SubmitButton} from "@/shared/ui/submit-button";
@@ -64,18 +65,12 @@ export function AttachCertificateForm({
               ))}
             </select>
           </div>
-          <div>
-            <label htmlFor="issuedOn" className="block text-sm font-medium text-ink">
-              {t("issuedOn")}
-            </label>
-            <input
-              id="issuedOn"
-              name="issuedOn"
-              type="date"
-              required
-              className={controlClass}
-            />
-          </div>
+          <DateField
+            id="issuedOn"
+            name="issuedOn"
+            label={t("issuedOn")}
+            required
+          />
         </div>
 
         <div>

@@ -45,13 +45,13 @@ export default async function CoursesPage({params, searchParams}: CoursesPagePro
   const calendarT = await getTranslations("CourseCalendar");
 
   const publishedCourses = await loadPublishedCourses();
-  // Bundled paths leave the category grids and close the page instead.
+  // Bundled paths leave the module grids and close their own category.
   const {modules, programmes} = splitCatalogueByFormat(publishedCourses);
-  const groups: Array<{title: string; courses: Course[]}> = [
-    {title: t("foundation"), courses: modules.filter((course) => course.category === "foundation")},
-    {title: t("advanced"), courses: modules.filter((course) => course.category === "advanced")},
-    {title: t("medical"), courses: modules.filter((course) => course.category === "medical")},
-    {title: t("workshops"), courses: modules.filter((course) => course.category === "workshop")},
+  const groups: Array<{title: string; category: Course["category"]; courses: Course[]}> = [
+    {title: t("foundation"), category: "foundation", courses: modules.filter((course) => course.category === "foundation")},
+    {title: t("advanced"), category: "advanced", courses: modules.filter((course) => course.category === "advanced")},
+    {title: t("medical"), category: "medical", courses: modules.filter((course) => course.category === "medical")},
+    {title: t("workshops"), category: "workshop", courses: modules.filter((course) => course.category === "workshop")},
   ];
   const programmeCards = programmes.map((programme) =>
     buildProgrammeCardModel(resolveProgramme(programme, publishedCourses), locale, {
@@ -89,10 +89,6 @@ export default async function CoursesPage({params, searchParams}: CoursesPagePro
           groups={groups}
           programmes={programmeCards}
           programmeCourses={programmes}
-          programmeLabels={{
-            title: t("programmeSectionTitle"),
-            intro: t("programmeSectionIntro"),
-          }}
           categoryLabels={{
             foundation: t("foundation"),
             advanced: t("advanced"),

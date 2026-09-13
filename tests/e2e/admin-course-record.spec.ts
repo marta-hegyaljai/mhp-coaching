@@ -39,3 +39,21 @@ test("the course record has a visible way back to the catalogue list", async ({
   await deBack.click();
   await expect(page).toHaveURL(/\/de\/admin\/courses$/);
 });
+
+test("session dates open the product calendar, not the native picker", async ({page}) => {
+  await signIn(page);
+  await page.goto("/de/admin/courses/advanced-techniques");
+  await page.getByRole("button", {name: "Termin hinzufügen"}).click();
+
+  const start = page.getByRole("button", {name: "Startdatum"});
+  await start.click();
+
+  const calendar = page.getByRole("dialog", {name: "Kalender"});
+  await expect(calendar).toBeVisible();
+  await expect(calendar.getByRole("button", {name: "Heute"})).toBeVisible();
+  await expect(page.locator("input[type=date]")).toHaveCount(0);
+
+  await calendar.getByRole("button", {name: /13/}).first().click();
+  await expect(calendar).toHaveCount(0);
+  await expect(start).toContainText("13");
+});

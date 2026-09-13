@@ -6,6 +6,7 @@ import {useTranslations} from "next-intl";
 import {AuthAlert, AuthNotice} from "@/features/auth/components/auth-field";
 import {createBlockAction, removeBlockAction} from "@/features/rooms/actions";
 import {Button} from "@/shared/ui/button";
+import {DateField} from "@/shared/ui/date-field";
 import {fieldStyles} from "@/shared/ui/field";
 import {SectionLabel} from "@/shared/ui/section-label";
 import {SubmitButton} from "@/shared/ui/submit-button";
@@ -121,13 +122,11 @@ function ZurichDateTimeFields({
     <div>
       <p className="block text-sm font-medium text-ink">{label}</p>
       <div className="mt-2 grid grid-cols-2 gap-2">
-        <input
+        <DateField
           id={dateId}
           name={dateName}
-          type="date"
-          required
           aria-label={label}
-          className={controlClass}
+          required
         />
         <input
           id={timeId}

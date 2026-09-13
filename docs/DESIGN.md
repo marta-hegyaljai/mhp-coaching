@@ -211,14 +211,16 @@ A course carries a format: `module` or `programme`. Modules are the default and
 are listed inside their category grid. A programme bundles modules into one
 purchasable path and is never mixed into that grid.
 
-- Programmes close the catalogue, after every category, under a 2px black rule
-  and their own heading. The intro asks whether the visitor wants the whole
-  path, and offers booking it in one go as an alternative to the modules.
-- A programme uses a wide card, not a course card: an inverted black header
-  carrying the gold eyebrow, the title and the alternative-purchase sentence,
-  then a white body with the summary, the included modules, the schedule, the
-  price and one primary action. Unlike a course card it is not a single
-  full-surface link, so each included module may link to its own page.
+- A programme closes its own category, after that category’s module cards,
+  never as a page-level section after every category. The closer is a short
+  inverted card: gold eyebrow, title and the pathway summary, then a white
+  body with a compact two-column list of included modules and a purchase
+  rail (duration, place, schedule, price, one action). Keep it dense enough
+  that the next category stays in reach on a phone; do not restore the old
+  full-width novel with a large price column.
+- Unlike a course card it is not a single full-surface link, so each included
+  module may link to its own page and the purchase action can sit beside the
+  price. The programme page still carries the numbered module list.
 - Show the separate-modules total and the saving only when the programme is
   genuinely cheaper than buying its modules one by one. Never present a
   comparison that makes the bundle look worse.
@@ -295,7 +297,10 @@ motion, or animated background. Always honor `prefers-reduced-motion`.
 - Rhythm: `Section`, `Container`, `Eyebrow` in `src/shared/ui/layout.tsx`.
 - Form controls: `fieldStyles()`, `fieldLabelClass`, `<InputField>` and
   `<SelectField>` in `src/shared/ui/field.tsx`. One geometry for the product;
-  `size="sm"` is the compact operational filter bar. Both clear 44px.
+  `size="sm"` is the compact operational filter bar. Both clear 44px. Dates
+  use `<DateField>` in `src/shared/ui/date-field.tsx`: the same field frame,
+  a Monday-first month grid, selected day inverted to black. Never ship a
+  native `<input type="date">` picker.
 - Bordered surfaces: `<Panel>` and `<PanelDivider>` in
   `src/shared/ui/panel.tsx`.
 - Operational lists: `<FilterBar>` in `src/shared/ui/filter-bar.tsx` and

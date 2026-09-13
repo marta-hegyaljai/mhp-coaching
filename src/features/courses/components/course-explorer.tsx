@@ -16,11 +16,8 @@ import {getBookableDates} from "@/features/courses/queries";
 import type {Course} from "@/features/courses/types";
 import type {AppLocale} from "@/i18n/routing";
 import {CourseSearchAutocomplete} from "@/features/courses/components/course-search-autocomplete";
+import {ProgrammeCard} from "@/features/courses/components/programme/programme-card";
 import type {ProgrammeCardModel} from "@/features/courses/components/programme/programme-card-model";
-import {
-  ProgrammeSection,
-  type ProgrammeSectionLabels,
-} from "@/features/courses/components/programme/programme-section";
 import {courseMatchesQuery} from "@/features/courses/course-search";
 import {fieldStyles} from "@/shared/ui/field";
 
@@ -63,7 +60,6 @@ export function CourseExplorer({
   groups,
   programmes = [],
   programmeCourses = [],
-  programmeLabels,
   categoryLabels,
   detailsLabel,
   labels,
@@ -73,12 +69,11 @@ export function CourseExplorer({
   initialView = "grid",
 }: {
   locale: AppLocale;
-  groups: Array<{title: string; courses: Course[]}>;
-  /** Pre-formatted programme cards shown after the module groups. */
+  groups: Array<{title: string; category: Course["category"]; courses: Course[]}>;
+  /** Pre-formatted programme cards shown at the close of their category. */
   programmes?: ProgrammeCardModel[];
   /** Same programmes as catalogue entries, used for search and the calendar. */
   programmeCourses?: Course[];
-  programmeLabels?: ProgrammeSectionLabels;
   categoryLabels: Record<Course["category"], string>;
   detailsLabel: string;
   labels: ExplorerLabels;
@@ -227,38 +222,51 @@ export function CourseExplorer({
         </div>
       ) : (
         <div className="mt-4">
-          {visibleGroups.map((group) => (
-            <section key={group.title} className="mt-10 first:mt-8">
-              <div className="flex items-baseline justify-between gap-4 border-b border-ink/15 pb-3">
-                <h2 className="font-serif text-subheading">{group.title}</h2>
-                <p className="text-xs uppercase tracking-[0.16em] text-ink-subtle">
-                  {group.courses.length}
-                </p>
-              </div>
-              {group.courses.length === 0 ? (
-                <p className="mt-5 text-sm leading-7 text-ink-muted">{labels.emptyCategory}</p>
-              ) : (
-                <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                  {group.courses.map((course) => (
-                    <CourseCard
-                      key={course.id}
-                      course={course}
-                      locale={locale}
-                      detailsLabel={detailsLabel}
-                      awaitingDateLabel={labels.awaitingDateLabel}
-                      headingLevel="h3"
-                    />
-                  ))}
+          {visibleGroups.map((group) => {
+            const categoryProgrammes = visibleProgrammes.filter(
+              (programme) => programme.category === group.category,
+            );
+            const isEmpty = group.courses.length === 0 && categoryProgrammes.length === 0;
+
+            return (
+              <section
+                key={group.category}
+                data-catalogue-category={group.category}
+                className="mt-10 first:mt-8"
+              >
+                <div className="flex items-baseline justify-between gap-4 border-b border-ink/15 pb-3">
+                  <h2 className="font-serif text-subheading">{group.title}</h2>
+                  <p className="text-xs uppercase tracking-[0.16em] text-ink-subtle">
+                    {group.courses.length}
+                  </p>
                 </div>
-              )}
-            </section>
-          ))}
-          {programmeLabels ? (
-            <ProgrammeSection
-              programmes={visibleProgrammes}
-              labels={programmeLabels}
-            />
-          ) : null}
+                {isEmpty ? (
+                  <p className="mt-5 text-sm leading-7 text-ink-muted">{labels.emptyCategory}</p>
+                ) : null}
+                {group.courses.length > 0 ? (
+                  <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                    {group.courses.map((course) => (
+                      <CourseCard
+                        key={course.id}
+                        course={course}
+                        locale={locale}
+                        detailsLabel={detailsLabel}
+                        awaitingDateLabel={labels.awaitingDateLabel}
+                        headingLevel="h3"
+                      />
+                    ))}
+                  </div>
+                ) : null}
+                {categoryProgrammes.length > 0 ? (
+                  <div className="mt-4 grid gap-4">
+                    {categoryProgrammes.map((programme) => (
+                      <ProgrammeCard key={programme.id} model={programme} />
+                    ))}
+                  </div>
+                ) : null}
+              </section>
+            );
+          })}
         </div>
       )}
     </div>

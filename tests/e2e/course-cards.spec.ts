@@ -108,4 +108,49 @@ test.describe("course cards", () => {
       expect((monthBoxes[2]?.y ?? 0) - (monthBoxes[0]?.y ?? 0)).toBeLessThanOrEqual(52);
     });
   }
+
+  test("the complete pathway closes its own category, compactly", async ({page}) => {
+    await page.setViewportSize({width: 1280, height: 900});
+    await page.goto("/fr/formations");
+
+    const advanced = page.locator("[data-catalogue-category=advanced]");
+    const medical = page.locator("[data-catalogue-category=medical]");
+    const medicalHeading = medical.getByRole("heading", {level: 2, name: "Hypnose médicale"});
+    const programme = advanced.locator("[data-catalogue-programme]");
+    const lastModule = advanced.locator("article:not([data-catalogue-programme])").last();
+
+    await expect(page.getByRole("heading", {name: "Parcours complets"})).toHaveCount(0);
+    await expect(programme).toHaveCount(1);
+    await expect(programme.getByRole("heading", {name: /Maître Praticien/})).toBeVisible();
+    await expect(programme.getByText("Modules inclus")).toBeVisible();
+    await expect(programme.getByRole("link", {name: /Troubles Anxieux/i})).toBeVisible();
+
+    const [programmeBox, lastModuleBox, medicalBox] = await Promise.all([
+      programme.boundingBox(),
+      lastModule.boundingBox(),
+      medicalHeading.boundingBox(),
+    ]);
+
+    expect(programmeBox).not.toBeNull();
+    expect(lastModuleBox).not.toBeNull();
+    expect(medicalBox).not.toBeNull();
+    expect(programmeBox!.y).toBeGreaterThan(lastModuleBox!.y);
+    expect(programmeBox!.y + programmeBox!.height).toBeLessThan(medicalBox!.y);
+    expect(programmeBox!.height).toBeLessThanOrEqual(420);
+
+    await page.setViewportSize({width: 390, height: 844});
+    await programme.scrollIntoViewIfNeeded();
+    const mobileBox = await programme.boundingBox();
+    const moduleLinks = programme.locator("ul a");
+    const [firstModule, secondModule] = await Promise.all([
+      moduleLinks.nth(0).boundingBox(),
+      moduleLinks.nth(1).boundingBox(),
+    ]);
+
+    expect(mobileBox).not.toBeNull();
+    expect(mobileBox!.height).toBeLessThanOrEqual(560);
+    expect(firstModule).not.toBeNull();
+    expect(secondModule).not.toBeNull();
+    expect(Math.abs((firstModule!.y ?? 0) - (secondModule!.y ?? 0))).toBeLessThanOrEqual(4);
+  });
 });
