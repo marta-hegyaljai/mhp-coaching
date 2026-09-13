@@ -27,6 +27,14 @@ describe("availability query", () => {
     );
   });
 
+  it("accepts month view", () => {
+    expect(parseAvailabilityQuery({view: "month", date: "2026-09-14"}).view).toBe("month");
+    expect(availabilityHref({view: "month", date: "2026-09-14", roomIds: []})).toEqual({
+      pathname: "/rooms",
+      query: {view: "month", date: "2026-09-14"},
+    });
+  });
+
   it("keeps a unique multi-room subset from repeated or comma-separated values", () => {
     expect(
       parseAvailabilityQuery({

@@ -25,7 +25,8 @@ export function parseAvailabilityQuery(search: {
   rooms?: string | string[];
 }): AvailabilityQuery {
   const viewRaw = firstString(search.view);
-  const view: AvailabilityView = viewRaw === "day" ? "day" : "week";
+  const view: AvailabilityView =
+    viewRaw === "day" ? "day" : viewRaw === "month" ? "month" : "week";
   const dateRaw = firstString(search.date) ?? todayInZurich();
   let date = todayInZurich();
   try {

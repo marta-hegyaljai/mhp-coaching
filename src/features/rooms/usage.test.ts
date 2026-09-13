@@ -15,7 +15,10 @@ import {
 } from "@/features/rooms/lifecycle";
 import {assertNoPrivateNoteMaterial} from "@/features/rooms/privacy";
 import {saveOwnPrivateNote} from "@/features/rooms/private-notes";
+import {quoteRoomBooking} from "@/features/rooms/pricing";
+import {insertConfirmedBookingUnlessOccupied} from "@/features/rooms/repository";
 import {reserveRoom} from "@/features/rooms/reservations";
+import {zurichLocalToUtc} from "@/features/rooms/timezone";
 import {openMonthUserTotalsToCsv} from "@/features/rooms/usage-csv";
 import {loadOpenMonthUsage, loadOwnOpenMonthUsage, usageTotalsMatch} from "@/features/rooms/usage";
 import {getDatabaseUrl} from "@/lib/database-url";
@@ -166,14 +169,37 @@ describe.skipIf(!hasDatabase)("open-month room usage", () => {
       end: "11:00",
       now,
     });
-    const next = await reserveRoom({
-      actor: therapist,
-      roomId: room.id,
-      date: nextMonth,
-      start: "10:00",
-      end: "11:00",
-      now,
+    const nextStart = zurichLocalToUtc(nextMonth, "10:00");
+    const nextEnd = zurichLocalToUtc(nextMonth, "11:00");
+    expect(nextStart.ok && nextEnd.ok).toBe(true);
+    if (!nextStart.ok || !nextEnd.ok) {
+      throw new Error("invalid next-month range");
+    }
+    const nextQuote = quoteRoomBooking({
+      hourlyRateMinor: 4000,
+      durationMinutes: 60,
+      discountPercent: 0,
     });
+    const nextInserted = await insertConfirmedBookingUnlessOccupied({
+      roomId: room.id,
+      userId: therapist.id,
+      createdByUserId: therapist.id,
+      startsAt: nextStart.instant,
+      endsAt: nextEnd.instant,
+      roomName: room.name,
+      baseHourlyRateMinor: nextQuote.baseHourlyRateMinor,
+      discountPercent: nextQuote.discountPercent,
+      effectiveHourlyRateMinor: nextQuote.effectiveHourlyRateMinor,
+      durationMinutes: nextQuote.durationMinutes,
+      amountMinor: nextQuote.amountMinor,
+      actorUserId: therapist.id,
+      eventAction: "CREATED",
+    });
+    expect(nextInserted.ok).toBe(true);
+    if (!nextInserted.ok) {
+      throw new Error("next-month booking missing");
+    }
+    const next = nextInserted.booking;
     const stranger = await reserveRoom({
       actor: other,
       roomId: room.id,

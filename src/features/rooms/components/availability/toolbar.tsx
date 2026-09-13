@@ -1,14 +1,15 @@
 import {getTranslations} from "next-intl/server";
 
 import {availabilityHref, type AvailabilityQuery} from "@/features/rooms/query";
+import {shiftLocalMonth} from "@/features/rooms/month-layout";
 import {addLocalDays} from "@/features/rooms/timezone";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
-import {formatDayRange, formatWeekdayDate} from "@/shared/format/calendar-date";
+import {formatDayRange, formatMonthYear, formatWeekdayDate} from "@/shared/format/calendar-date";
 import {ChevronLeftIcon, ChevronRightIcon} from "@/shared/ui/icons";
 import {SectionLabel} from "@/shared/ui/section-label";
 
-import {DateJump} from "./date-jump";
+import {PeriodJump} from "./period-jump";
 import {AvailabilityViewSwitch} from "./view-switch";
 
 const stepClass =
@@ -27,12 +28,26 @@ export async function AvailabilityToolbar({
 }) {
   const t = await getTranslations("Rooms");
   const isWeek = query.view === "week";
+  const isMonth = query.view === "month";
   const anchor = isWeek ? range.startDate : query.date;
-  const step = isWeek ? 7 : 1;
-  const rangeLabel = isWeek
-    ? formatDayRange(range.startDate, range.endDate, locale)
-    : formatWeekdayDate(query.date, locale);
+  const previousDate = isMonth
+    ? shiftLocalMonth(query.date, -1)
+    : addLocalDays(anchor, isWeek ? -7 : -1);
+  const nextDate = isMonth
+    ? shiftLocalMonth(query.date, 1)
+    : addLocalDays(anchor, isWeek ? 7 : 1);
+  const rangeLabel = isMonth
+    ? formatMonthYear(range.startDate, locale)
+    : isWeek
+      ? formatDayRange(range.startDate, range.endDate, locale)
+      : formatWeekdayDate(query.date, locale);
   const showsToday = today >= range.startDate && today <= range.endDate;
+  const previousLabel = isMonth
+    ? t("previousMonth")
+    : isWeek
+      ? t("previousWeek")
+      : t("previousDay");
+  const nextLabel = isMonth ? t("nextMonth") : isWeek ? t("nextWeek") : t("nextDay");
 
   return (
     <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
@@ -54,14 +69,15 @@ export async function AvailabilityToolbar({
           label={t("viewLabel")}
           dayLabel={t("viewDay")}
           weekLabel={t("viewWeek")}
+          monthLabel={t("viewMonth")}
         />
 
-        <DateJump query={query} label={t("jumpToDate")} />
+        <PeriodJump locale={locale} query={query} today={today} />
 
         <div className="inline-flex rounded-panel border border-ink bg-white">
           <Link
-            href={availabilityHref({...query, date: addLocalDays(anchor, -step)})}
-            aria-label={isWeek ? t("previousWeek") : t("previousDay")}
+            href={availabilityHref({...query, date: previousDate})}
+            aria-label={previousLabel}
             className={stepClass}
           >
             <ChevronLeftIcon />
@@ -73,8 +89,8 @@ export async function AvailabilityToolbar({
             {t("today")}
           </Link>
           <Link
-            href={availabilityHref({...query, date: addLocalDays(anchor, step)})}
-            aria-label={isWeek ? t("nextWeek") : t("nextDay")}
+            href={availabilityHref({...query, date: nextDate})}
+            aria-label={nextLabel}
             className={stepClass}
           >
             <ChevronRightIcon />

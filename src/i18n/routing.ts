@@ -186,6 +186,11 @@ export const routing = defineRouting({
       de: "/abrechnung/auszuege/[id]",
       en: "/billing/statements/[id]",
     },
+    "/billing/[year]/[month]": {
+      fr: "/facturation/[year]/[month]",
+      de: "/abrechnung/[year]/[month]",
+      en: "/billing/[year]/[month]",
+    },
     "/billing/setup": {
       fr: "/facturation/moyen-de-paiement-test",
       de: "/abrechnung/test-zahlungsmittel",

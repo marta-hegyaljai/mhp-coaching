@@ -1,7 +1,11 @@
 import {getTranslations} from "next-intl/server";
 
 import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
-import type {AvailabilityRoom, TherapistAvailability} from "@/features/rooms/availability";
+import type {
+  AvailabilityRoom,
+  TherapistAvailability,
+  TherapistMonthOverview,
+} from "@/features/rooms/availability";
 import {requestHref} from "@/features/rooms/request-query";
 import {availabilityHref, type AvailabilityQuery} from "@/features/rooms/query";
 import {addLocalDays, minutesToTime, timeToMinutes, todayInZurich} from "@/features/rooms/timezone";
@@ -23,6 +27,7 @@ import {RoomFilter} from "./room-filter";
 import {buildColumnCells} from "./runs";
 import {indexSlots, type SlotIndex} from "./slot-index";
 import type {SlotLabels} from "./slot-styles";
+import {MonthCalendar} from "./month-calendar";
 import {AvailabilityToolbar} from "./toolbar";
 
 /** Bounded so a malformed range can never spin the renderer. */
@@ -46,21 +51,87 @@ export async function AvailabilityCalendar({
   locale,
   query,
   availability,
+  monthOverview,
   discountPercent,
 }: {
   locale: AppLocale;
   query: AvailabilityQuery;
-  availability: TherapistAvailability;
+  availability?: TherapistAvailability;
+  monthOverview?: TherapistMonthOverview;
   discountPercent: number;
 }) {
   const t = await getTranslations("Rooms");
+  const today = todayInZurich();
+  const isMonth = query.view === "month";
+
+  if (isMonth && monthOverview) {
+    if (monthOverview.rooms.length === 0) {
+      return (
+        <EmptyState
+          message={query.roomIds.length > 0 ? t("filteredRoomMissing") : t("emptyInventory")}
+          action={
+            query.roomIds.length > 0
+              ? {href: availabilityHref({...query, roomIds: []}), label: t("allRooms")}
+              : undefined
+          }
+        />
+      );
+    }
+
+    const navigationQuery: AvailabilityQuery = {
+      ...query,
+      roomIds:
+        query.roomIds.length > 0
+          ? monthOverview.rooms
+              .filter((room) => query.roomIds.includes(room.id))
+              .map((room) => room.id)
+          : [],
+    };
+
+    return (
+      <div className="space-y-8">
+        <RoomFilter
+          locale={locale}
+          query={navigationQuery}
+          rooms={monthOverview.rooms}
+          selectedRoomIds={navigationQuery.roomIds}
+        />
+
+        <section id="availability-calendar" className="space-y-3 scroll-mt-36">
+          <div className="sticky top-14 z-30 -mx-3 space-y-3 border-b border-ink bg-white px-3 pb-3 sm:top-16 sm:mx-0 sm:px-0">
+            <AvailabilityToolbar
+              locale={locale}
+              query={navigationQuery}
+              range={{
+                startDate: monthOverview.startDate,
+                endDate: monthOverview.endDate,
+              }}
+              today={today}
+            />
+          </div>
+
+          <MonthCalendar
+            locale={locale}
+            query={navigationQuery}
+            overview={monthOverview}
+            today={today}
+            discountPercent={discountPercent}
+          />
+        </section>
+      </div>
+    );
+  }
+
+  if (!availability) {
+    return null;
+  }
+
   const labels: SlotLabels = {
     available: t("available"),
     booked: t("booked"),
     unavailable: t("unavailable"),
     "my-booking": t("myBooking"),
   };
-  const today = todayInZurich();
   const index = indexSlots(availability.slots);
   const days = listDays(availability.startDate, availability.endDate);
   const isWeek = query.view === "week";

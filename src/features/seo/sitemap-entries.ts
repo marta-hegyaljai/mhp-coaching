@@ -47,6 +47,7 @@ type StaticPath = Exclude<
   | "/rooms/requests/new"
   | "/rooms/requests/[id]"
   | "/billing"
+  | "/billing/[year]/[month]"
   | "/billing/statements/[id]"
   | "/billing/setup"
   | "/billing/payment-method/return"

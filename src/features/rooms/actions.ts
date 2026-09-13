@@ -355,6 +355,77 @@ export async function moveRoomBookingAction(
   redirect(nextPath);
 }
 
+/** Same mutations as the booking pages, but stay on the calendar after success. */
+export async function reserveRoomOnCalendarAction(
+  locale: string,
+  _previous: RoomFormState | null,
+  formData: FormData,
+): Promise<RoomFormState> {
+  const resolvedLocale = resolveLocale(locale);
+  try {
+    const actor = await requireRoomActor();
+    const booking = await reserveRoom({
+      actor,
+      roomId: String(formData.get("roomId") ?? ""),
+      date: String(formData.get("date") ?? ""),
+      start: String(formData.get("start") ?? ""),
+      end: String(formData.get("end") ?? ""),
+      note: String(formData.get("note") ?? ""),
+    });
+    await notifyRoomBookingConfirmed({user: actor, booking});
+    revalidateRoomSurfaces(booking.roomId, booking.id);
+    return {ok: true};
+  } catch (error) {
+    return localizeRoomError(error, resolvedLocale);
+  }
+}
+
+export async function cancelRoomBookingOnCalendarAction(
+  locale: string,
+  bookingId: string,
+  _previous: RoomFormState | null,
+  _formData: FormData,
+): Promise<RoomFormState> {
+  const resolvedLocale = resolveLocale(locale);
+  try {
+    const actor = await requireRoomActor();
+    const booking = await cancelRoomBooking({actor, bookingId});
+    await notifyRoomBookingCancelled({user: actor, booking});
+    revalidateRoomSurfaces(booking.roomId, booking.id);
+    return {ok: true};
+  } catch (error) {
+    return localizeRoomError(error, resolvedLocale);
+  }
+}
+
+export async function moveRoomBookingOnCalendarAction(
+  locale: string,
+  bookingId: string,
+  _previous: RoomFormState | null,
+  formData: FormData,
+): Promise<RoomFormState> {
+  const resolvedLocale = resolveLocale(locale);
+  try {
+    const actor = await requireRoomActor();
+    const result = await moveRoomBooking({
+      actor,
+      bookingId,
+      roomId: String(formData.get("roomId") ?? ""),
+      date: String(formData.get("date") ?? ""),
+      start: String(formData.get("start") ?? ""),
+      end: String(formData.get("end") ?? ""),
+    });
+    await notifyRoomBookingChanged({user: actor, booking: result.booking});
+    revalidateRoomSurfaces(result.booking.roomId, result.booking.id);
+    if (result.kind === "replaced") {
+      revalidateRoomSurfaces(result.original.roomId, result.original.id);
+    }
+    return {ok: true};
+  } catch (error) {
+    return localizeRoomError(error, resolvedLocale);
+  }
+}
+
 export async function adminCreateRoomBookingAction(
   locale: string,
   _previous: RoomFormState | null,

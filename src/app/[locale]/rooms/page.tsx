@@ -2,7 +2,7 @@ import {getTranslations, setRequestLocale} from "next-intl/server";
 
 import {requireRoomBooking} from "@/features/auth/require";
 import {therapistDiscountPercent} from "@/features/rooms/pricing";
-import {therapistAvailability} from "@/features/rooms/availability";
+import {therapistAvailability, therapistMonthOverview} from "@/features/rooms/availability";
 import {AvailabilityCalendar} from "@/features/rooms/components/availability/calendar";
 import {RoomsNav} from "@/features/rooms/components/rooms-nav";
 import {parseAvailabilityQuery} from "@/features/rooms/query";
@@ -42,12 +42,23 @@ export default async function RoomsPage({params, searchParams}: RoomsPageProps) 
   const user = await requireRoomBooking(locale, localizedPath(locale, "/rooms"));
   const t = await getTranslations("Rooms");
   const query = parseAvailabilityQuery(await searchParams);
-  const availability = await therapistAvailability({
-    actor: user,
-    view: query.view,
-    date: query.date,
-    roomIds: query.roomIds,
-  });
+  const monthOverview =
+    query.view === "month"
+      ? await therapistMonthOverview({
+          actor: user,
+          date: query.date,
+          roomIds: query.roomIds,
+        })
+      : undefined;
+  const availability =
+    query.view === "month"
+      ? undefined
+      : await therapistAvailability({
+          actor: user,
+          view: query.view,
+          date: query.date,
+          roomIds: query.roomIds,
+        });
 
   return (
     <SiteShell locale={locale} footerCta={null}>
@@ -61,6 +72,7 @@ export default async function RoomsPage({params, searchParams}: RoomsPageProps) 
             locale={locale}
             query={query}
             availability={availability}
+            monthOverview={monthOverview}
             discountPercent={therapistDiscountPercent(user)}
           />
         </div>

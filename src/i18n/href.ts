@@ -16,6 +16,7 @@ export type PathnameHref =
       | "/admin/billing/[userId]/statements/[id]"
       | "/admin/courses/[id]"
       | "/billing/statements/[id]"
+      | "/billing/[year]/[month]"
       | "/rooms/bookings/[id]"
       | "/rooms/bookings/[id]/change"
       | "/rooms/bookings/[id]/cancel"
@@ -157,6 +158,10 @@ export type PathnameHref =
   | {
       pathname: "/billing/statements/[id]";
       params: {id: string};
+    }
+  | {
+      pathname: "/billing/[year]/[month]";
+      params: {year: string; month: string};
     }
   | {
       pathname: "/reset-password/[token]";

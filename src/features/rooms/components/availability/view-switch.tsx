@@ -10,11 +10,13 @@ export function AvailabilityViewSwitch({
   label,
   dayLabel,
   weekLabel,
+  monthLabel,
 }: {
   query: AvailabilityQuery;
   label: string;
   dayLabel: string;
   weekLabel: string;
+  monthLabel: string;
 }) {
   const searchParams = useSearchParams();
   const date = searchParams.get("date") ?? query.date;
@@ -34,6 +36,12 @@ export function AvailabilityViewSwitch({
           href: availabilityHref({...query, date, view: "week"}),
           label: weekLabel,
           current: query.view === "week",
+        },
+        {
+          key: "month",
+          href: availabilityHref({...query, date, view: "month"}),
+          label: monthLabel,
+          current: query.view === "month",
         },
       ]}
     />

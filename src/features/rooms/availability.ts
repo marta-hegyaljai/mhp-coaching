@@ -9,17 +9,24 @@ import {
   listRooms,
 } from "@/features/rooms/repository";
 import {
+  groupOwnBookingsByDate,
+  monthBounds,
+  monthWeeks,
+  type MonthDayBooking,
+} from "@/features/rooms/month-layout";
+import {
   addLocalDays,
   isoWeekday,
   minutesToTime,
   mondayOf,
   parseLocalDate,
   rangesOverlap,
+  utcToZurich,
   zurichLocalToUtc,
 } from "@/features/rooms/timezone";
 import {isUuid} from "@/lib/uuid";
 
-export type AvailabilityView = "day" | "week";
+export type AvailabilityView = "day" | "week" | "month";
 export type AvailabilityState = "available" | "booked" | "unavailable" | "my-booking";
 
 export type AvailabilityRoom = {
@@ -76,6 +83,19 @@ export type AdminAvailability = {
   slots: AdminAvailabilitySlot[];
 };
 
+export type TherapistMonthOverview = {
+  timezone: "Europe/Zurich";
+  view: "month";
+  startDate: string;
+  endDate: string;
+  year: number;
+  month: number;
+  rooms: AvailabilityRoom[];
+  weeks: Array<Array<string | null>>;
+  bookingsByDate: Record<string, MonthDayBooking[]>;
+  cancellationNoticeHours: number;
+};
+
 function requireTherapist(actor: User): void {
   if (!canAccessRooms(actor)) {
     throw new RoomError("forbidden");
@@ -120,6 +140,10 @@ function buildRange(view: AvailabilityView, date: string): {startDate: string; e
   parseLocalDate(date);
   if (view === "day") {
     return {startDate: date, endDate: date};
+  }
+  if (view === "month") {
+    const bounds = monthBounds(date);
+    return {startDate: bounds.startDate, endDate: bounds.endDate};
   }
   const startDate = mondayOf(date);
   return {startDate, endDate: addLocalDays(startDate, 6)};
@@ -271,6 +295,49 @@ function displayWindow(
     startMinute: Math.min(...openings.map((item) => item.startMinute)),
     endMinute: Math.max(...openings.map((item) => item.endMinute)),
   };
+}
+
+export async function therapistMonthOverview(input: {
+  actor: User;
+  date: string;
+  roomId?: string;
+  roomIds?: string[];
+}): Promise<TherapistMonthOverview> {
+  requireTherapist(input.actor);
+  const requestedRoomIds = input.roomIds ?? (input.roomId ? [input.roomId] : []);
+  if (requestedRoomIds.some((roomId) => !isUuid(roomId))) {
+    throw new RoomError("notFound");
+  }
+
+  const grid = await loadGrid({
+    view: "month",
+    date: input.date,
+    roomIds: requestedRoomIds,
+  });
+  const bounds = monthBounds(input.date);
+  const roomNames = new Map(grid.rooms.map((room) => [room.id, room.name]));
+  const bookingsByDate = groupOwnBookingsByDate({
+    actorId: input.actor.id,
+    bookings: grid.bookings,
+    roomNames,
+    utcToLocal: utcToZurich,
+  });
+
+  const payload: TherapistMonthOverview = {
+    timezone: "Europe/Zurich",
+    view: "month",
+    startDate: bounds.startDate,
+    endDate: bounds.endDate,
+    year: bounds.year,
+    month: bounds.month,
+    rooms: grid.rooms.map(toPublicRoom),
+    weeks: monthWeeks(bounds),
+    bookingsByDate,
+    cancellationNoticeHours: grid.settings.cancellationNoticeHours,
+  };
+
+  assertPrivacySafePayload(payload);
+  return payload;
 }
 
 export async function therapistAvailability(input: {

@@ -4,7 +4,7 @@ import {getTranslations, setRequestLocale} from "next-intl/server";
 import {requireRoomBooking} from "@/features/auth/require";
 import {isFreeCancellation} from "@/features/rooms/billing";
 import {BookingFacts} from "@/features/rooms/components/booking/booking-facts";
-import {CancelBookingForm} from "@/features/rooms/components/cancel-form";
+import {CancelBookingDialog} from "@/features/rooms/components/cancel-booking-dialog";
 import {RoomsNav} from "@/features/rooms/components/rooms-nav";
 import {RoomError} from "@/features/rooms/errors";
 import {bookingWhen} from "@/features/rooms/format";
@@ -100,11 +100,13 @@ export default async function CancelRoomBookingPage({params}: CancelPageProps) {
             </div>
           </Panel>
 
-          <CancelBookingForm
+          <CancelBookingDialog
             locale={locale}
             bookingId={booking.id}
             late={late}
             amount={amount}
+            triggerLabel={t("cancelBooking")}
+            defaultOpen
           />
         </div>
       </Section>

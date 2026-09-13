@@ -1,23 +1,16 @@
 import {getTranslations, setRequestLocale} from "next-intl/server";
 
 import {requireRoomBooking} from "@/features/auth/require";
+import {loadOwnBillingOverview} from "@/features/rooms/billing-overview";
+import {BillingMonthTable} from "@/features/rooms/components/billing-month-table";
+import {BillingSettleBanner} from "@/features/rooms/components/billing-settle-banner";
 import {PaymentMethodPanel} from "@/features/rooms/components/payment-method-panel";
 import {RoomsNav} from "@/features/rooms/components/rooms-nav";
-import {StatementCardGrid} from "@/features/rooms/components/statement-card-grid";
-import {
-  UsageLineList,
-  UsageMonthBanner,
-  UsageRoomGrid,
-  UsageTotals,
-} from "@/features/rooms/components/usage-panels";
 import {savedPaymentMethodFor} from "@/features/rooms/payment-method";
-import {loadOwnStatements} from "@/features/rooms/statements";
-import {loadOwnOpenMonthUsage} from "@/features/rooms/usage";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
 import {Eyebrow, Section} from "@/shared/ui/layout";
-import {Panel} from "@/shared/ui/panel";
 
 type BillingPageProps = {
   params: Promise<{locale: AppLocale}>;
@@ -43,8 +36,7 @@ export default async function BillingPage({params}: BillingPageProps) {
   setRequestLocale(locale);
   const user = await requireRoomBooking(locale, localizedPath(locale, "/billing"));
   const t = await getTranslations("Rooms");
-  const usage = await loadOwnOpenMonthUsage(user);
-  const statements = await loadOwnStatements(user);
+  const overview = await loadOwnBillingOverview(user);
   const paymentMethod = savedPaymentMethodFor(user);
 
   return (
@@ -54,47 +46,24 @@ export default async function BillingPage({params}: BillingPageProps) {
         <h1 className="mt-3 font-serif text-heading">{t("usageTitle")}</h1>
         <p className="mt-4 max-w-2xl text-sm leading-7 text-ink-muted">{t("usageIntro")}</p>
         <RoomsNav current="usage" />
-        <UsageMonthBanner locale={locale} year={usage.month.year} month={usage.month.month} />
-        {usage.bookingCount === 0 ? (
-          <Panel className="mt-10 max-w-xl">
-            <p className="text-sm leading-7 text-ink-muted">{t("usageEmpty")}</p>
-          </Panel>
-        ) : (
-          <>
-            <UsageTotals
-              locale={locale}
-              billedMinutes={usage.billedMinutes}
-              billedAmountMinor={usage.billedAmountMinor}
-              bookingCount={usage.bookingCount}
-            />
-            <UsageRoomGrid locale={locale} rooms={usage.rooms} />
-            <UsageLineList
-              locale={locale}
-              lines={usage.lines}
-              empty={t("usageEmpty")}
-              hrefForLine={(line) => ({
-                pathname: "/rooms/bookings/[id]",
-                params: {id: line.bookingId},
-              })}
-            />
-          </>
-        )}
 
-        <PaymentMethodPanel method={paymentMethod} locale={locale} />
+        <BillingSettleBanner locale={locale} statements={overview.unsettledStatements} />
 
-        <section className="mt-12">
-          <h2 className="font-serif text-subheading">{t("statementsTitle")}</h2>
-          <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-muted">{t("statementsHelp")}</p>
-          <StatementCardGrid
+        <section className="mt-10">
+          <h2 className="font-serif text-subheading">{t("billingOverviewTitle")}</h2>
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-muted">
+            {t("billingOverviewHelp")}
+          </p>
+          <BillingMonthTable
             locale={locale}
-            statements={statements}
-            empty={t("statementsEmpty")}
-            hrefFor={(statement) => ({
-              pathname: "/billing/statements/[id]",
-              params: {id: statement.id},
-            })}
+            rows={overview.rows}
+            empty={t("billingOverviewEmpty")}
           />
         </section>
+
+        <div className="mt-12 max-w-xl">
+          <PaymentMethodPanel method={paymentMethod} locale={locale} />
+        </div>
       </Section>
     </SiteShell>
   );

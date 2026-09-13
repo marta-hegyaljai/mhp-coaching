@@ -5,6 +5,10 @@ import {useTranslations} from "next-intl";
 
 import {AuthAlert} from "@/features/auth/components/auth-field";
 import {reserveRoomAction} from "@/features/rooms/actions";
+import {
+  pickPreferredRoomId,
+  writeLastRoomPreference,
+} from "@/features/rooms/components/availability/last-room-preference";
 import {AmountSummary} from "@/features/rooms/components/booking/amount-summary";
 import {RoomHeader} from "@/features/rooms/components/booking/room-header";
 import {SlotFields} from "@/features/rooms/components/booking/slot-fields";
@@ -28,7 +32,10 @@ export function RoomBookForm({
   dateLabel: string;
 }) {
   const t = useTranslations("Rooms");
-  const [roomId, setRoomId] = useState(previews[0].room.id);
+  const availableRoomIds = previews.map((preview) => preview.room.id);
+  const [roomId, setRoomId] = useState(
+    () => pickPreferredRoomId(availableRoomIds) ?? previews[0].room.id,
+  );
   const preview = previews.find((candidate) => candidate.room.id === roomId) ?? previews[0];
   const selection = useSlotSelection(preview);
   const [state, action, pending] = useActionState(
@@ -38,7 +45,11 @@ export function RoomBookForm({
   const quote = selection.quote ?? preview.quote;
 
   return (
-    <form action={action} className="space-y-6">
+    <form
+      action={action}
+      className="space-y-6"
+      onSubmit={() => writeLastRoomPreference(roomId)}
+    >
       {state?.error ? <AuthAlert>{state.error}</AuthAlert> : null}
 
       <input type="hidden" name="roomId" value={roomId} />
@@ -51,7 +62,11 @@ export function RoomBookForm({
             label={t("chooseAvailableRoom")}
             help={t("chooseAvailableRoomHelp", {count: previews.length})}
             value={roomId}
-            onChange={(event) => setRoomId(event.target.value)}
+            onChange={(event) => {
+              const nextRoomId = event.target.value;
+              setRoomId(nextRoomId);
+              writeLastRoomPreference(nextRoomId);
+            }}
           >
             {previews.map((candidate) => (
               <option key={candidate.room.id} value={candidate.room.id}>

@@ -1,13 +1,21 @@
 "use client";
 
-import {useActionState, useEffect, useMemo, useRef, useState, type ReactNode} from "react";
+import {
+  useActionState,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
 import {useTranslations} from "next-intl";
 
 import {AuthAlert} from "@/features/auth/components/auth-field";
 import {AmountSummary} from "@/features/rooms/components/booking/amount-summary";
+import {SlotFields} from "@/features/rooms/components/booking/slot-fields";
 import {reserveRoomAction} from "@/features/rooms/actions";
 import {PRIVATE_NOTE_MAX_LENGTH} from "@/features/rooms/limits";
-import {quoteRoomBooking} from "@/features/rooms/pricing";
 import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
 import type {AvailabilityRoom} from "@/features/rooms/availability";
 import {Link} from "@/i18n/navigation";
@@ -17,14 +25,24 @@ import {SelectField, TextareaField} from "@/shared/ui/field";
 import {SubmitButton} from "@/shared/ui/submit-button";
 import {Button} from "@/shared/ui/button";
 
-import {mergeSlotRuns, type RunCell} from "./runs";
-import {slotMetaClass, slotSurface, type SlotLabels} from "./slot-styles";
+import {
+  buildCalendarSlotOptions,
+  resolveCalendarSlotDraft,
+  roomIdsForRange,
+} from "./calendar-slot-preview";
 import {
   completeDragSelection,
   slotsFromColumn,
   type DragFailure,
   type DragSelection,
+  type DragSlot,
 } from "./drag-select";
+import {
+  pickPreferredRoomId,
+  writeLastRoomPreference,
+} from "./last-room-preference";
+import {mergeSlotRuns, type RunCell} from "./runs";
+import {slotMetaClass, slotSurface, type SlotLabels} from "./slot-styles";
 
 export type GridColumn = {
   key: string;
@@ -114,6 +132,47 @@ export function AvailabilityGrid({
     setSelection(result.selection);
   }
 
+  function beginDrag(
+    event: ReactPointerEvent<HTMLButtonElement>,
+    columnKey: string,
+    index: number,
+  ) {
+    event.preventDefault();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    const next = {columnKey, from: index, to: index};
+    draftRef.current = next;
+    setDraft(next);
+  }
+
+  function extendDrag(event: ReactPointerEvent<HTMLButtonElement>, columnKey: string) {
+    const current = draftRef.current;
+    if (current?.columnKey !== columnKey) {
+      return;
+    }
+    const hit = document
+      .elementFromPoint(event.clientX, event.clientY)
+      ?.closest("[data-slot-index]");
+    if (!(hit instanceof HTMLElement)) {
+      return;
+    }
+    if (hit.dataset.columnKey !== columnKey) {
+      return;
+    }
+    const nextIndex = Number.parseInt(hit.dataset.slotIndex ?? "", 10);
+    if (Number.isFinite(nextIndex) && nextIndex !== current.to) {
+      const next = {...current, to: nextIndex};
+      draftRef.current = next;
+      setDraft(next);
+    }
+  }
+
+  function finishPointerDrag(columnKey: string) {
+    const current = draftRef.current;
+    if (current?.columnKey === columnKey) {
+      finishDrag(columnKey, current.from, current.to);
+    }
+  }
+
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) {
@@ -151,6 +210,7 @@ export function AvailabilityGrid({
   return (
     <div className="space-y-3">
       {noticeMessage ? <AuthAlert>{noticeMessage}</AuthAlert> : null}
+      <p className="text-xs leading-5 text-ink-muted">{t("dragToSelectHint")}</p>
       <div className="overflow-x-auto">
         <table
           className={`w-full border-separate border-spacing-[3px] text-left ${minWidthClass}`}
@@ -242,46 +302,16 @@ export function AvailabilityGrid({
                                 <button
                                   key={`${column.key}-${index}`}
                                   type="button"
-                                  className={`min-h-11 touch-none select-none focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-ink ${
+                                  className={`min-h-11 cursor-grab touch-none select-none focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-ink active:cursor-grabbing ${
                                     active ? "bg-ink text-parchment" : "bg-transparent"
                                   }`}
-                                  aria-label={t("selectTime", {time: cell?.startTime ?? time})}
+                                  aria-label={`${t("selectTime", {time: cell?.startTime ?? time})}. ${t("dragToSelectHint")}`}
+                                  title={t("dragToSelectHint")}
                                   data-column-key={column.key}
                                   data-slot-index={index}
-                                  onPointerDown={(event) => {
-                                    event.preventDefault();
-                                    event.currentTarget.setPointerCapture(event.pointerId);
-                                    const next = {columnKey: column.key, from: index, to: index};
-                                    draftRef.current = next;
-                                    setDraft(next);
-                                  }}
-                                  onPointerMove={(event) => {
-                                    const current = draftRef.current;
-                                    if (current?.columnKey !== column.key) {
-                                      return;
-                                    }
-                                    const hit = document
-                                      .elementFromPoint(event.clientX, event.clientY)
-                                      ?.closest("[data-slot-index]");
-                                    if (!(hit instanceof HTMLElement)) {
-                                      return;
-                                    }
-                                    if (hit.dataset.columnKey !== column.key) {
-                                      return;
-                                    }
-                                    const nextIndex = Number.parseInt(hit.dataset.slotIndex ?? "", 10);
-                                    if (Number.isFinite(nextIndex) && nextIndex !== current.to) {
-                                      const next = {...current, to: nextIndex};
-                                      draftRef.current = next;
-                                      setDraft(next);
-                                    }
-                                  }}
-                                  onPointerUp={() => {
-                                    const current = draftRef.current;
-                                    if (current?.columnKey === column.key) {
-                                      finishDrag(column.key, current.from, current.to);
-                                    }
-                                  }}
+                                  onPointerDown={(event) => beginDrag(event, column.key, index)}
+                                  onPointerMove={(event) => extendDrag(event, column.key)}
+                                  onPointerUp={() => finishPointerDrag(column.key)}
                                 />
                               );
                             })}
@@ -316,12 +346,13 @@ export function AvailabilityGrid({
 
       <dialog
         ref={dialogRef}
-        className="w-[min(28rem,calc(100%-1.5rem))] rounded-panel border border-ink bg-white p-0 text-ink backdrop:bg-ink/35"
+        className="fixed inset-0 m-auto h-fit max-h-[calc(100dvh-2rem)] w-[min(28rem,calc(100%-1.5rem))] overflow-y-auto rounded-panel border border-ink bg-white p-0 text-ink backdrop:bg-ink/35"
         onClose={() => setSelection(null)}
       >
         {selection ? (
           <ReserveDialog
             selection={selection}
+            columnSlots={slotsByColumn.get(selection.columnKey) ?? []}
             reserve={reserve}
             onClose={() => setSelection(null)}
           />
@@ -333,40 +364,96 @@ export function AvailabilityGrid({
 
 function ReserveDialog({
   selection,
+  columnSlots,
   reserve,
   onClose,
 }: {
   selection: DragSelection;
+  columnSlots: readonly DragSlot[];
   reserve: CalendarReserveContext;
   onClose: () => void;
 }) {
   const t = useTranslations("Rooms");
-  const rooms = reserve.rooms.filter((room) => selection.roomIds.includes(room.id));
-  const [roomId, setRoomId] = useState(rooms[0]?.id ?? selection.roomIds[0]);
-  const room = rooms.find((candidate) => candidate.id === roomId) ?? rooms[0];
+  const initialRoomId = pickPreferredRoomId(selection.roomIds) ?? "";
+  const [roomId, setRoomId] = useState(initialRoomId);
+  const [draft, setDraft] = useState({start: selection.start, end: selection.end});
   const [state, action, pending] = useActionState(
     reserveRoomAction.bind(null, reserve.locale),
     null,
   );
-  const quote = room
-    ? quoteRoomBooking({
-        hourlyRateMinor: room.hourlyRateMinor,
-        durationMinutes: selection.durationMinutes,
-        discountPercent: reserve.discountPercent,
-      })
-    : null;
+
+  const rangeEnd = draft.end || selection.end;
+  const roomIdsForDraft = useMemo(
+    () => roomIdsForRange(columnSlots, draft.start, rangeEnd),
+    [columnSlots, draft.start, rangeEnd],
+  );
+  const activeRoomId = pickPreferredRoomId(roomIdsForDraft, roomId) ?? roomId;
+  const activeRoom = reserve.rooms.find((candidate) => candidate.id === activeRoomId);
+
+  const slotOptions = useMemo(() => {
+    if (!activeRoom) {
+      return null;
+    }
+    return buildCalendarSlotOptions({
+      slots: columnSlots,
+      roomId: activeRoom.id,
+      intervalMinutes: reserve.intervalMinutes,
+      minimumBookingMinutes: reserve.minimumBookingMinutes,
+      maximumBookingMinutes: reserve.maximumBookingMinutes,
+      hourlyRateMinor: activeRoom.hourlyRateMinor,
+      discountPercent: reserve.discountPercent,
+    });
+  }, [
+    activeRoom,
+    columnSlots,
+    reserve.discountPercent,
+    reserve.intervalMinutes,
+    reserve.maximumBookingMinutes,
+    reserve.minimumBookingMinutes,
+  ]);
+
+  const resolved = resolveCalendarSlotDraft(draft, slotOptions);
+  const availableRoomIds = useMemo(
+    () => roomIdsForRange(columnSlots, resolved.start, resolved.end),
+    [columnSlots, resolved.end, resolved.start],
+  );
+  const availableRooms = reserve.rooms.filter((room) => availableRoomIds.includes(room.id));
+  const room = availableRooms.find((candidate) => candidate.id === activeRoomId) ?? availableRooms[0];
+  const quote = resolved.quote;
+  const ready = resolved.ready && Boolean(room && availableRoomIds.includes(room.id));
 
   if (!room || !quote) {
-    return null;
+    return (
+      <div className="space-y-4 p-5">
+        <AuthAlert>{t("selectionUnavailable")}</AuthAlert>
+        <Button type="button" variant="quiet" onClick={onClose}>
+          {t("closeDialog")}
+        </Button>
+      </div>
+    );
   }
 
+  const slotSelection = {
+    start: resolved.start,
+    end: resolved.end,
+    ends: resolved.ends,
+    quote,
+    ready,
+    selectStart: (time: string) => setDraft({start: time, end: ""}),
+    selectEnd: (time: string) => setDraft({start: resolved.start, end: time}),
+  };
+
   return (
-    <form action={action} className="space-y-5 p-5">
+    <form
+      action={action}
+      className="space-y-5 p-5"
+      onSubmit={() => writeLastRoomPreference(room.id)}
+    >
       <div className="flex items-start justify-between gap-4">
         <div>
           <h2 className="font-serif text-subheading">{t("reserveOnCalendar")}</h2>
           <p className="mt-1 font-sans text-sm tabular-nums text-ink-muted">
-            {selection.date} · {t("selectedRange", {start: selection.start, end: selection.end})}
+            {selection.date}
           </p>
         </div>
         <Button type="button" variant="quiet" onClick={onClose}>
@@ -378,29 +465,33 @@ function ReserveDialog({
 
       <input type="hidden" name="roomId" value={room.id} />
       <input type="hidden" name="date" value={selection.date} />
-      <input type="hidden" name="start" value={selection.start} />
-      <input type="hidden" name="end" value={selection.end} />
 
-      {rooms.length > 1 ? (
-        <SelectField
-          id="calendar-room"
-          label={t("chooseAvailableRoom")}
-          value={roomId}
-          onChange={(event) => setRoomId(event.target.value)}
-        >
-          {rooms.map((candidate) => (
-            <option key={candidate.id} value={candidate.id}>
-              {candidate.name} · {formatChf(minorUnitsToFrancs(candidate.hourlyRateMinor), reserve.locale)}
-              {t("perHour")}
-            </option>
-          ))}
-        </SelectField>
-      ) : (
-        <p className="text-sm text-ink">
-          {room.name} · {formatChf(minorUnitsToFrancs(room.hourlyRateMinor), reserve.locale)}
-          {t("perHour")}
-        </p>
-      )}
+      <SelectField
+        id="calendar-room"
+        label={t("chooseAvailableRoom")}
+        help={
+          availableRooms.length > 1
+            ? t("chooseAvailableRoomHelp", {count: availableRooms.length})
+            : reserve.rooms.length > 1
+              ? t("onlyRoomAvailableNote", {room: room.name})
+              : undefined
+        }
+        value={room.id}
+        onChange={(event) => {
+          const nextRoomId = event.target.value;
+          setRoomId(nextRoomId);
+          writeLastRoomPreference(nextRoomId);
+        }}
+      >
+        {availableRooms.map((candidate) => (
+          <option key={candidate.id} value={candidate.id}>
+            {candidate.name} · {formatChf(minorUnitsToFrancs(candidate.hourlyRateMinor), reserve.locale)}
+            {t("perHour")}
+          </option>
+        ))}
+      </SelectField>
+
+      <SlotFields starts={slotOptions?.starts ?? []} selection={slotSelection} />
 
       <AmountSummary
         locale={reserve.locale}
@@ -423,6 +514,7 @@ function ReserveDialog({
 
       <SubmitButton
         pending={pending}
+        disabled={!ready}
         label={t("confirmBooking")}
         pendingLabel={t("confirming")}
       />

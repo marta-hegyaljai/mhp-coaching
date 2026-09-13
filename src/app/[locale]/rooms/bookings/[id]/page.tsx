@@ -3,11 +3,14 @@ import {getTranslations, setRequestLocale} from "next-intl/server";
 
 import {AuthNotice} from "@/features/auth/components/auth-field";
 import {requireRoomBooking} from "@/features/auth/require";
-import {chargeableAmountMinor} from "@/features/rooms/billing";
+import {chargeableAmountMinor, isFreeCancellation} from "@/features/rooms/billing";
 import {bookingLabelKeys} from "@/features/rooms/booking-labels";
 import {AmountSummary} from "@/features/rooms/components/booking/amount-summary";
 import {BookingFacts} from "@/features/rooms/components/booking/booking-facts";
+import {CancelBookingDialog} from "@/features/rooms/components/cancel-booking-dialog";
 import {PrivateNoteForm} from "@/features/rooms/components/private-note-form";
+import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
+import {getBookingSettings} from "@/features/rooms/settings";
 import {RoomsNav} from "@/features/rooms/components/rooms-nav";
 import {RoomError} from "@/features/rooms/errors";
 import {bookingWhen} from "@/features/rooms/format";
@@ -87,6 +90,11 @@ export default async function RoomBookingDetailPage({params, searchParams}: Book
   const keys = bookingLabelKeys(booking);
   const when = bookingWhen(booking.startsAt, booking.endsAt, locale);
   const canMutate = ownerCanMutateBooking(booking);
+  const settings = canMutate ? await getBookingSettings() : null;
+  const late = settings
+    ? !isFreeCancellation(booking.startsAt, new Date(), settings.cancellationNoticeHours)
+    : false;
+  const cancelAmount = formatChf(minorUnitsToFrancs(booking.amountMinor), locale);
   const notice = firstString(notices.moved) === "1"
     ? t("changed")
     : firstString(notices.replaced) === "1"
@@ -177,12 +185,13 @@ export default async function RoomBookingDetailPage({params, searchParams}: Book
               >
                 {t("changeBooking")}
               </Link>
-              <Link
-                href={{pathname: "/rooms/bookings/[id]/cancel", params: {id: booking.id}}}
-                className={buttonStyles({variant: "secondary"})}
-              >
-                {t("cancelBooking")}
-              </Link>
+              <CancelBookingDialog
+                locale={locale}
+                bookingId={booking.id}
+                late={late}
+                amount={cancelAmount}
+                triggerLabel={t("cancelBooking")}
+              />
             </div>
           ) : null}
 

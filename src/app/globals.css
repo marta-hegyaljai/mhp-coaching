@@ -116,6 +116,11 @@ select:disabled,
   cursor: not-allowed;
 }
 
+/* Native dialogs default to the top-left once preflight resets UA margins. */
+dialog:modal {
+  margin: auto;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

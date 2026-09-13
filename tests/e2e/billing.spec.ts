@@ -19,10 +19,9 @@ test.describe("current-month usage and discounts", () => {
   test("therapist sees an open, not-finalized usage page in EN and FR", async ({page}) => {
     await signIn(page, therapistEmail, therapistPassword);
     await page.goto("/en/billing");
-    await expect(page.getByRole("heading", {name: "Current month"})).toBeVisible();
-    await expect(page.getByText("Open — not finalized")).toBeVisible();
+    await expect(page.getByRole("heading", {name: "Billing"})).toBeVisible();
+    await expect(page.getByRole("heading", {name: "All months"})).toBeVisible();
     await expect(page.getByRole("heading", {name: "Payment method"})).toBeVisible();
-    await expect(page.getByRole("heading", {name: "Statements"})).toBeVisible();
 
     const addCard = page.getByRole("button", {name: "Add a payment method"});
     if (await addCard.isVisible()) {
@@ -38,8 +37,8 @@ test.describe("current-month usage and discounts", () => {
 
     await page.setViewportSize({width: 390, height: 844});
     await page.goto("/fr/facturation");
-    await expect(page.getByRole("heading", {name: "Mois en cours"})).toBeVisible();
-    await expect(page.getByText("Ouvert — non finalisé")).toBeVisible();
+    await expect(page.getByRole("heading", {name: "Facturation"})).toBeVisible();
+    await expect(page.getByRole("heading", {name: "Tous les mois"})).toBeVisible();
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
     );
