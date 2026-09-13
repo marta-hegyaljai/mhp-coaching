@@ -23,6 +23,7 @@ import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
+import {BackLink} from "@/shared/ui/back-link";
 import {DownloadIcon} from "@/shared/ui/icons";
 import {Eyebrow, Section} from "@/shared/ui/layout";
 import {Panel} from "@/shared/ui/panel";
@@ -110,18 +111,16 @@ export default async function AdminBillingUserPage({params, searchParams}: Admin
           label={t("sectionsNav")}
           labels={adminSectionLabels(t)}
         />
-        <p className="mt-4 text-sm">
-          <Link
-            href={{
-              pathname: "/admin/billing",
-              query: periodSearch,
-            }}
-            className="underline-offset-4 hover:underline"
-          >
-            {t("backToBilling")}
-          </Link>
-        </p>
-        <h1 className="mt-3 font-serif text-heading">{t("billingUserTitle")}</h1>
+        <BackLink
+          href={{
+            pathname: "/admin/billing",
+            query: periodSearch,
+          }}
+          className="mt-6"
+        >
+          {t("backToBilling")}
+        </BackLink>
+        <h1 className="mt-5 font-serif text-heading">{t("billingUserTitle")}</h1>
         <p className="mt-4 font-sans text-lg font-medium break-all">{user.email}</p>
         <p className="mt-2 text-sm leading-7 text-ink-muted">
           {user.firstName} {user.lastName}

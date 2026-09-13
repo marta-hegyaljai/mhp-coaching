@@ -12,8 +12,8 @@ import {bookingWhen} from "@/features/rooms/format";
 import {assertNoPrivateNoteMaterial} from "@/features/rooms/privacy";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
-import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
+import {BackLink} from "@/shared/ui/back-link";
 import {Eyebrow, Section} from "@/shared/ui/layout";
 import {Panel, PanelDivider} from "@/shared/ui/panel";
 import {SectionLabel} from "@/shared/ui/section-label";
@@ -89,12 +89,10 @@ export default async function AdminRequestDetailPage({
           label={t("sectionsNav")}
           labels={adminSectionLabels(t)}
         />
-        <h1 className="mt-6 font-serif text-heading">{t("adminRequestsTitle")}</h1>
-        <p className="mt-4 text-sm">
-          <Link href="/admin/requests" className="underline-offset-4 hover:underline">
-            {t("backToAdminRequests")}
-          </Link>
-        </p>
+        <BackLink href="/admin/requests" className="mt-6">
+          {t("backToAdminRequests")}
+        </BackLink>
+        <h1 className="mt-5 font-serif text-heading">{t("adminRequestsTitle")}</h1>
 
         {notice ? (
           <div className="mt-8 max-w-xl">

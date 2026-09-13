@@ -37,6 +37,7 @@ import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
+import {BackLink} from "@/shared/ui/back-link";
 import {buttonStyles} from "@/shared/ui/button";
 import {Eyebrow, Section} from "@/shared/ui/layout";
 import {Panel, PanelDivider} from "@/shared/ui/panel";
@@ -153,12 +154,10 @@ export default async function AdminBookingDetailPage({
           label={t("sectionsNav")}
           labels={adminSectionLabels(t)}
         />
-        <h1 className="mt-6 font-serif text-heading">{t("detailBookingTitle")}</h1>
-        <p className="mt-4 text-sm">
-          <Link href="/admin/bookings" className="underline-offset-4 hover:underline">
-            {t("backToAdminBookings")}
-          </Link>
-        </p>
+        <BackLink href="/admin/bookings" className="mt-6">
+          {t("backToAdminBookings")}
+        </BackLink>
+        <h1 className="mt-5 font-serif text-heading">{t("detailBookingTitle")}</h1>
 
         {notice ? (
           <div className="mt-8 max-w-xl">
@@ -230,14 +229,9 @@ export default async function AdminBookingDetailPage({
               )}
             </Panel>
           ) : (
-            <p className="text-sm">
-              <Link
-                href={adminBookingDetailHref(booking.id)}
-                className="underline-offset-4 hover:underline"
-              >
-                {t("backToBooking")}
-              </Link>
-            </p>
+            <BackLink href={adminBookingDetailHref(booking.id)}>
+              {t("backToBooking")}
+            </BackLink>
           )}
 
           {decision === "move" ? (

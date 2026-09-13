@@ -147,6 +147,10 @@ primary action behind an ambiguous icon.
   cards under the catalogue form. The record opens on sessions. Session rows
   are calendar-dense: start-day tile, range, place, seats. Past dates stay
   collapsed until asked for.
+- An admin record (course, user, room, booking, request, billing) leads with
+  a visible secondary back control to its list. Do not rely on a quiet
+  underlined “All …” line that can be mistaken for a heading. The selected
+  section tab marks the area; it is not the way back.
 - An operational index shows one list of its records, never a second copy of
   the same rows for a secondary task. The admin catalogue is a single dense row
   list that both manages and reorders courses: position, title, state chips,
@@ -301,6 +305,8 @@ motion, or animated background. Always honor `prefers-reduced-motion`.
   heading cannot carry this functional micro-type.
 - Mutually exclusive views: `<SegmentedLinks>` in
   `src/shared/ui/segmented-links.tsx`.
+- Nested-record exit: `<BackLink>` in `src/shared/ui/back-link.tsx`. Secondary
+  surface, left arrow, 44px target. Use it above the record title.
 - Wall-clock day formatting: `src/shared/format/calendar-date.ts`. Never print
   a raw ISO date in the UI.
 - Shell: `src/features/site-shell`; do not fork per-page headers or switchers.

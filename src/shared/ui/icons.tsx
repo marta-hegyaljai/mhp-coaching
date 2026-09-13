@@ -4,6 +4,24 @@ type IconProps = {
 
 const base = "h-4 w-4 shrink-0";
 
+export function ArrowLeftIcon({className = ""}: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={`${base} ${className}`}
+    >
+      <path d="M13.5 8h-11" />
+      <path d="M6.5 4l-4 4 4 4" />
+    </svg>
+  );
+}
+
 export function ArrowRightIcon({className = ""}: IconProps) {
   return (
     <svg

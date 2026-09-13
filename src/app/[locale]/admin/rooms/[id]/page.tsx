@@ -9,8 +9,8 @@ import {EditRoomForm} from "@/features/rooms/components/admin/edit-room-form";
 import {findRoomById, listBlocksForRoom} from "@/features/rooms/repository";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
-import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
+import {BackLink} from "@/shared/ui/back-link";
 import {Eyebrow, Section} from "@/shared/ui/layout";
 
 type AdminRoomDetailPageProps = {
@@ -58,12 +58,10 @@ export default async function AdminRoomDetailPage({params}: AdminRoomDetailPageP
           label={admin("sectionsNav")}
           labels={adminSectionLabels(admin)}
         />
-        <p className="mt-4 text-sm">
-          <Link href="/admin/rooms" className="underline-offset-4 hover:underline">
-            {t("backToRooms")}
-          </Link>
-        </p>
-        <h1 className="mt-3 font-serif text-heading">{t("editTitle")}</h1>
+        <BackLink href="/admin/rooms" className="mt-6">
+          {t("backToRooms")}
+        </BackLink>
+        <h1 className="mt-5 font-serif text-heading">{t("editTitle")}</h1>
         <p className="mt-3 font-sans text-lg font-medium">{room.name}</p>
         <div className="mt-10">
           <EditRoomForm locale={locale} room={room} />

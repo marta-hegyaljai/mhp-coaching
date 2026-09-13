@@ -15,8 +15,8 @@ import {formatMonthYear} from "@/shared/format/calendar-date";
 import {formatLocalDate} from "@/features/rooms/timezone";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
-import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
+import {BackLink} from "@/shared/ui/back-link";
 import {DownloadIcon} from "@/shared/ui/icons";
 import {Eyebrow, Section} from "@/shared/ui/layout";
 import {Price} from "@/shared/ui/price";
@@ -82,15 +82,13 @@ export default async function AdminStatementPage({params}: AdminStatementPagePro
           label={t("sectionsNav")}
           labels={adminSectionLabels(t)}
         />
-        <p className="mt-6 text-sm">
-          <Link
-            href={{pathname: "/admin/billing/[userId]", params: {userId}}}
-            className="underline-offset-4 hover:underline"
-          >
-            {t("backToUserBilling")}
-          </Link>
-        </p>
-        <h1 className="mt-3 font-serif text-heading capitalize">{monthLabel}</h1>
+        <BackLink
+          href={{pathname: "/admin/billing/[userId]", params: {userId}}}
+          className="mt-6"
+        >
+          {t("backToUserBilling")}
+        </BackLink>
+        <h1 className="mt-5 font-serif text-heading capitalize">{monthLabel}</h1>
         <p className="mt-3 font-sans text-sm break-all">{detail.owner.email}</p>
         <StatusLabel
           className="mt-4"

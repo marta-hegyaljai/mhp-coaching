@@ -12,9 +12,9 @@ import {todayInZurich} from "@/features/rooms/timezone";
 import {RoomError} from "@/features/rooms/errors";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
-import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {isUuid} from "@/lib/uuid";
+import {BackLink} from "@/shared/ui/back-link";
 import {SelectField} from "@/shared/ui/field";
 import {Eyebrow, Section} from "@/shared/ui/layout";
 import {Panel} from "@/shared/ui/panel";
@@ -93,12 +93,10 @@ export default async function AdminNewBookingPage({params, searchParams}: NewBoo
           label={t("sectionsNav")}
           labels={adminSectionLabels(t)}
         />
-        <h1 className="mt-6 font-serif text-heading">{t("createBookingTitle")}</h1>
-        <p className="mt-4 text-sm">
-          <Link href="/admin/bookings" className="underline-offset-4 hover:underline">
-            {t("backToAdminBookings")}
-          </Link>
-        </p>
+        <BackLink href="/admin/bookings" className="mt-6">
+          {t("backToAdminBookings")}
+        </BackLink>
+        <h1 className="mt-5 font-serif text-heading">{t("createBookingTitle")}</h1>
         <p className="mt-6 max-w-2xl text-sm leading-7 text-ink-muted">
           {t("createBookingIntro")}
         </p>

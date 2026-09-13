@@ -24,8 +24,8 @@ import {formatChf} from "@/features/payments/money";
 import {listWaitlistForCourse} from "@/features/waitlist/repository";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
-import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
+import {BackLink} from "@/shared/ui/back-link";
 import {Chip} from "@/shared/ui/chip";
 import {Eyebrow, Section} from "@/shared/ui/layout";
 import {Price} from "@/shared/ui/price";
@@ -113,12 +113,10 @@ export default async function AdminCourseDetailPage({
           label={t("sectionsNav")}
           labels={adminSectionLabels(t)}
         />
-        <p className="mt-4 text-sm">
-          <Link href="/admin/courses" className="underline-offset-4 hover:underline">
-            {t("coursesBack")}
-          </Link>
-        </p>
-        <h1 className="mt-3 font-serif text-heading">{course.title[locale]}</h1>
+        <BackLink href="/admin/courses" className="mt-6">
+          {t("coursesBack")}
+        </BackLink>
+        <h1 className="mt-5 font-serif text-heading">{course.title[locale]}</h1>
         <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5">
           {!isCoursePublished(course) ? (
             <Chip tone="strong">{t("coursesPublishedNo")}</Chip>

@@ -53,7 +53,10 @@ source of truth and overrides generic design preferences.
   lift, <=4px CTA arrow movement, or pending spinner. No entrance or ambient
   animation.
 - Reuse `src/shared/ui` and `src/features/site-shell`; do not make page-specific
-  versions of the shell, buttons, or locale switcher.
+  versions of the shell, buttons, or locale switcher. Admin records lead with
+  `<BackLink>`: a secondary 44px control back to the list, never a quiet
+  underlined “All …” line that can be mistaken for a heading.
+
 - Transactional email is not page HTML. Follow `docs/EMAIL.md` and compose only
   through `composeTransactionalEmail()` in `src/features/email/layout.ts`.
 - Before completion, run `pnpm verify` and inspect desktop plus ~390px in FR,

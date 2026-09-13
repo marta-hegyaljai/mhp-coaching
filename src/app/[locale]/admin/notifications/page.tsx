@@ -6,8 +6,8 @@ import {NotificationEvidenceList} from "@/features/rooms/components/notification
 import {loadRecentNotifications} from "@/features/rooms/notifications";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
-import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
+import {BackLink} from "@/shared/ui/back-link";
 import {Eyebrow, Section} from "@/shared/ui/layout";
 
 type AdminNotificationsPageProps = {
@@ -45,12 +45,10 @@ export default async function AdminNotificationsPage({params}: AdminNotification
           label={t("sectionsNav")}
           labels={adminSectionLabels(t)}
         />
-        <p className="mt-6 text-sm">
-          <Link href="/admin/billing" className="underline-offset-4 hover:underline">
-            {t("backToBilling")}
-          </Link>
-        </p>
-        <h1 className="mt-3 font-serif text-heading">{t("notificationsTitle")}</h1>
+        <BackLink href="/admin/billing" className="mt-6">
+          {t("backToBilling")}
+        </BackLink>
+        <h1 className="mt-5 font-serif text-heading">{t("notificationsTitle")}</h1>
         <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-muted">{t("notificationsIntro")}</p>
         <NotificationEvidenceList rows={rows} empty={t("notificationsEmpty")} />
       </Section>
