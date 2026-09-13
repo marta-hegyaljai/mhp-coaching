@@ -35,6 +35,22 @@ export type CourseEnrolmentQuery = {
   status: (typeof STATUSES)[number];
 };
 
+export const COURSE_RECORD_TABS = [
+  "details",
+  "sessions",
+  "enrolments",
+  "waitlist",
+] as const;
+export const COURSE_SESSION_SHOWS = ["all", "upcoming", "inactive", "past"] as const;
+
+export type CourseRecordTab = (typeof COURSE_RECORD_TABS)[number];
+export type CourseSessionShow = (typeof COURSE_SESSION_SHOWS)[number];
+
+export type CourseRecordQuery = CourseEnrolmentQuery & {
+  tab: CourseRecordTab;
+  show: CourseSessionShow;
+};
+
 function firstString(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] ?? "" : value ?? "";
 }
@@ -89,17 +105,52 @@ export function parseCourseEnrolmentQuery(searchParams: {
   };
 }
 
+export function parseCourseRecordQuery(searchParams: {
+  q?: string | string[];
+  session?: string | string[];
+  status?: string | string[];
+  tab?: string | string[];
+  show?: string | string[];
+}): CourseRecordQuery {
+  const enrolment = parseCourseEnrolmentQuery(searchParams);
+  const tab = firstString(searchParams.tab);
+  const show = firstString(searchParams.show);
+  const hasEnrolmentFilter = Boolean(
+    enrolment.q || enrolment.session || enrolment.status !== "all",
+  );
+
+  return {
+    ...enrolment,
+    tab: COURSE_RECORD_TABS.includes(tab as CourseRecordTab)
+      ? (tab as CourseRecordTab)
+      : hasEnrolmentFilter
+        ? "enrolments"
+        : "sessions",
+    show: COURSE_SESSION_SHOWS.includes(show as CourseSessionShow)
+      ? (show as CourseSessionShow)
+      : "all",
+  };
+}
+
 export function courseDetailHref(
   id: string,
-  query: Partial<CourseEnrolmentQuery> = {},
+  query: Partial<CourseRecordQuery> = {},
 ): PathnameHref {
+  const tab = query.tab ?? "sessions";
+  const show = query.show ?? "all";
+
   return {
     pathname: "/admin/courses/[id]",
     params: {id},
     query: {
-      q: query.q || undefined,
-      session: query.session || undefined,
-      status: query.status && query.status !== "all" ? query.status : undefined,
+      tab: tab === "sessions" ? undefined : tab,
+      show: tab === "sessions" && show !== "all" ? show : undefined,
+      q: tab === "enrolments" ? query.q || undefined : undefined,
+      session: tab === "enrolments" ? query.session || undefined : undefined,
+      status:
+        tab === "enrolments" && query.status && query.status !== "all"
+          ? query.status
+          : undefined,
     },
   };
 }

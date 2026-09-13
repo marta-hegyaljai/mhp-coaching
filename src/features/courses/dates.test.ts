@@ -1,6 +1,11 @@
 import {describe, expect, it} from "vitest";
 
-import {formatDateRange, formatDateParts, eachIsoDateInRange} from "./dates";
+import {
+  formatDateRange,
+  formatDateParts,
+  formatSessionDateMark,
+  eachIsoDateInRange,
+} from "./dates";
 
 describe("formatDateRange", () => {
   it("collapses a range inside one month", () => {
@@ -52,6 +57,17 @@ describe("formatDateParts", () => {
       year: "2026",
       label: "30 octobre 2026 – 1 novembre 2026",
     });
+  });
+});
+
+describe("formatSessionDateMark", () => {
+  it("uses the start day and a short month in each locale", () => {
+    expect(formatSessionDateMark("2026-03-12", "en")).toEqual({
+      day: "12",
+      month: "Mar",
+    });
+    expect(formatSessionDateMark("2026-03-12", "fr").day).toBe("12");
+    expect(formatSessionDateMark("2026-03-12", "de").day).toBe("12");
   });
 });
 

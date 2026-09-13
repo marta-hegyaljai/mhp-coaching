@@ -5,6 +5,7 @@ import {isProgrammeCourse} from "@/features/courses/types";
 import {formatChf} from "@/features/payments/money";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
+import {Chip} from "@/shared/ui/chip";
 import {ChevronRightIcon} from "@/shared/ui/icons";
 import {Price} from "@/shared/ui/price";
 
@@ -102,26 +103,6 @@ export function CourseRow({
         </div>
       </div>
     </li>
-  );
-}
-
-function Chip({
-  children,
-  tone = "outline",
-}: {
-  children: string;
-  tone?: "outline" | "strong";
-}) {
-  return (
-    <span
-      className={`inline-flex items-center rounded-panel px-1.5 py-px text-[0.65rem] font-bold uppercase tracking-[0.12em] ${
-        tone === "strong"
-          ? "bg-ink text-parchment"
-          : "border border-ink text-ink"
-      }`}
-    >
-      {children}
-    </span>
   );
 }
 

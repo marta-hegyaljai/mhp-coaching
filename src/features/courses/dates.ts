@@ -123,6 +123,28 @@ export function formatCourseDateParts(
   return formatDateParts(date.startDate, date.endDate, locale);
 }
 
+export type SessionDateMark = {
+  day: string;
+  month: string;
+};
+
+/**
+ * The compact calendar tile for an operational session row: the start day
+ * and a short month, so a list of dates can be scanned like a phone calendar.
+ */
+export function formatSessionDateMark(
+  isoDate: string,
+  locale: AppLocale,
+): SessionDateMark {
+  const date = parseZurichDate(isoDate);
+  const intl = intlLocale(locale);
+
+  return {
+    day: new Intl.DateTimeFormat(intl, {timeZone: ZURICH, day: "numeric"}).format(date),
+    month: new Intl.DateTimeFormat(intl, {timeZone: ZURICH, month: "short"}).format(date),
+  };
+}
+
 function padDay(day: string): string {
   const digits = day.replace(/\D/g, "");
   return digits.length === 1 ? `${FIGURE_SPACE}${day}` : day;

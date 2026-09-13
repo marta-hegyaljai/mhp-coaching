@@ -142,6 +142,11 @@ primary action behind an ambiguous icon.
 - The admin Courses tab edits catalogue copy, prices, publish state and session
   dates, and lists enrolments and waiting-list entries with filters. Seed data
   must not overwrite those edits.
+- A course record uses mutually exclusive views — details, sessions,
+  enrolments, waitlist — so the schedule is a scannable list, never a stack of
+  cards under the catalogue form. The record opens on sessions. Session rows
+  are calendar-dense: start-day tile, range, place, seats. Past dates stay
+  collapsed until asked for.
 - An operational index shows one list of its records, never a second copy of
   the same rows for a secondary task. The admin catalogue is a single dense row
   list that both manages and reorders courses: position, title, state chips,

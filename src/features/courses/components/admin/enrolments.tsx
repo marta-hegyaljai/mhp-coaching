@@ -50,7 +50,7 @@ export function CourseEnrolmentFilters({
             {labels.filter}
           </Button>
           <Link
-            href={courseDetailHref(courseId)}
+            href={courseDetailHref(courseId, {tab: "enrolments"})}
             className="text-sm underline-offset-4 hover:underline"
           >
             {labels.clear}
@@ -58,14 +58,15 @@ export function CourseEnrolmentFilters({
         </>
       }
     >
+      <input type="hidden" name="tab" value="enrolments" />
       <InputField
-        id="enrolment-q"
-        name="q"
-        size="sm"
-        label={labels.search}
-        defaultValue={query.q}
-        placeholder={labels.searchPlaceholder}
-      />
+          id="enrolment-q"
+          name="q"
+          size="sm"
+          label={labels.search}
+          defaultValue={query.q}
+          placeholder={labels.searchPlaceholder}
+        />
       <SelectField
         id="enrolment-session"
         name="session"

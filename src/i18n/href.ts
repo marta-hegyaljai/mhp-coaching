@@ -41,7 +41,13 @@ export type PathnameHref =
   | {
       pathname: "/admin/courses/[id]";
       params: {id: string};
-      query?: {q?: string; session?: string; status?: string};
+      query?: {
+        q?: string;
+        session?: string;
+        status?: string;
+        tab?: string;
+        show?: string;
+      };
     }
   | {
       pathname: "/courses/[slug]";
