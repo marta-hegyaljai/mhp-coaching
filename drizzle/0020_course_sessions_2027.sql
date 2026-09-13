@@ -19,8 +19,8 @@ INSERT INTO "course_sessions" (
 SELECT
   v."id",
   v."course_id",
-  v."start_date",
-  v."end_date",
+  v."start_date"::date,
+  v."end_date"::date,
   $json${"fr":"Fribourg","de":"Freiburg","en":"Fribourg"}$json$::jsonb,
   NULL,
   16,
@@ -61,6 +61,6 @@ WHERE EXISTS (SELECT 1 FROM "courses" c WHERE c."id" = v."course_id")
     SELECT 1
     FROM "course_sessions" s
     WHERE s."course_id" = v."course_id"
-      AND s."start_date" = v."start_date"
+      AND s."start_date" = v."start_date"::date
   )
 ON CONFLICT ("id") DO NOTHING;
