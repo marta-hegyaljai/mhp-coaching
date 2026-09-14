@@ -10,12 +10,12 @@ import {
   billingPeriodSearch,
 } from "@/features/rooms/components/billing-period-picker";
 import {StatementCardGrid} from "@/features/rooms/components/statement-card-grid";
+import {UsageLineTable} from "@/features/rooms/components/usage-line-table";
 import {
-  UsageLineList,
   UsageMonthBanner,
   UsageRoomGrid,
-  UsageTotals,
 } from "@/features/rooms/components/usage-panels";
+import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
 import {formatPaymentMethodLabel, paymentMethodFromUser} from "@/features/payments/billing-method";
 import {previewFinalize, loadUserStatements} from "@/features/rooms/statements";
 import {emptyUserUsage, loadMonthUsage} from "@/features/rooms/usage";
@@ -172,16 +172,38 @@ export default async function AdminBillingUserPage({params, searchParams}: Admin
             {t("billingPeriodSelected", {from: report.fromKey, to: report.toKey})}
           </p>
         )}
-        {usage.bookingCount > 0 ? (
-          <>
-            <UsageTotals
-              locale={locale}
-              billedMinutes={usage.billedMinutes}
-              billedAmountMinor={usage.billedAmountMinor}
-              bookingCount={usage.bookingCount}
-            />
-            <UsageRoomGrid locale={locale} rooms={usage.rooms} />
-            <UsageLineList
+        <UsageRoomGrid locale={locale} rooms={usage.rooms} />
+
+        <div className="mx-auto mt-8 max-w-5xl overflow-hidden rounded-panel border border-ink bg-white">
+          <div className="flex flex-wrap items-start justify-between gap-4 px-4 py-4">
+            <div className="min-w-0">
+              <h2 className="font-serif text-subheading">{rooms("usageBreakdown")}</h2>
+            </div>
+            {usage.bookingCount > 0 ? (
+              <a
+                href={`/api/admin/billing.xlsx?${periodQuery}`}
+                className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-panel border border-ink bg-white px-5 text-sm font-semibold text-ink transition-colors duration-150 ease-standard hover:bg-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+              >
+                <DownloadIcon />
+                {t("billingUserXlsx")}
+              </a>
+            ) : null}
+          </div>
+
+          {usage.bookingCount > 0 ? (
+            <p className="border-t border-line px-4 py-3 font-sans text-sm tabular-nums text-ink-muted">
+              {rooms("usageMinutes")}: {usage.billedMinutes}
+              {" · "}
+              {rooms("usageAmount")}:{" "}
+              {formatChf(minorUnitsToFrancs(usage.billedAmountMinor), locale)}
+              {" · "}
+              {rooms("usageBookings")}: {usage.bookingCount}
+            </p>
+          ) : null}
+
+          <div className="border-t border-line">
+            <UsageLineTable
+              embedded
               locale={locale}
               lines={usage.lines}
               empty={t("billingUserEmpty")}
@@ -190,22 +212,8 @@ export default async function AdminBillingUserPage({params, searchParams}: Admin
                 params: {id: line.bookingId},
               })}
             />
-          </>
-        ) : (
-          <Panel className="mt-10 max-w-xl">
-            <p className="text-sm leading-7 text-ink-muted">{t("billingUserEmpty")}</p>
-          </Panel>
-        )}
-
-        <p className="mt-10">
-          <a
-            href={`/api/admin/billing.xlsx?${periodQuery}`}
-            className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold underline-offset-4 hover:underline"
-          >
-            <DownloadIcon />
-            {t("billingUserXlsx")}
-          </a>
-        </p>
+          </div>
+        </div>
 
         {preview ? (
         <section className="mt-12 max-w-xl">
