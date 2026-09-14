@@ -67,9 +67,10 @@ dashboard.
   path, and pins personal actions and Sign out to the bottom edge. Escape, a
   completed navigation, or the same button closes it, and the page beneath
   must not scroll while it is open.
-- Header navigation must expose Courses and Contact at every viewport, in the
-  bar on `lg` and above and in the first sheet section below it. Capability
-  sections (Rooms, Admin) appear only once the server granted them.
+- Header navigation must expose Courses, Case Library, Insights, About and
+  Contact at every viewport, in the bar on `lg` and above and in the first
+  sheet section below it. Capability sections (Rooms, Admin) appear only once
+  the server granted them.
 - The shell is installable: the header and the sheet pay back
   `env(safe-area-inset-*)` so a standalone window never puts controls under the
   notch or the home indicator.

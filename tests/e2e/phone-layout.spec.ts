@@ -7,6 +7,9 @@ const phonePaths = [
   "/fr/formations/praticien-hypnose-omni",
   "/fr/formations/praticien-hypnose-omni/inscription",
   "/fr/contact",
+  "/fr/cas-cliniques",
+  "/fr/perspectives",
+  "/fr/a-propos",
   "/de",
   "/de/ausbildungen/omni-hypnose-praktiker",
   "/en",
@@ -31,31 +34,46 @@ test.describe("phone layout", () => {
   }
 
   const phoneHeaderLocales = [
-    {path: "/fr", courses: "Formations", contact: "Contact"},
-    {path: "/de", courses: "Ausbildungen", contact: "Kontakt"},
-    {path: "/en", courses: "Courses", contact: "Contact"},
+    {
+      path: "/fr",
+      openMenu: "Ouvrir le menu",
+      cta: "Réserver",
+      sections: ["Formations", "Cas cliniques", "Perspectives", "À propos", "Contact"],
+    },
+    {
+      path: "/de",
+      openMenu: "Menü öffnen",
+      cta: "Buchen",
+      sections: ["Ausbildungen", "Fallbibliothek", "Einblicke", "Über uns", "Kontakt"],
+    },
+    {
+      path: "/en",
+      openMenu: "Open menu",
+      cta: "Book",
+      sections: ["Courses", "Case Library", "Insights", "About", "Contact"],
+    },
   ] as const;
 
-  for (const {path, courses: coursesLabel, contact: contactLabel} of phoneHeaderLocales) {
+  for (const {path, openMenu, cta, sections} of phoneHeaderLocales) {
     test(`phone header is a single navbar row on ${path}`, async ({page}) => {
       await page.goto(path);
 
       const header = page.locator("header").first();
       const brand = header.getByRole("link", {name: "MHP Coaching"});
-      const courses = header.getByRole("link", {name: coursesLabel});
-      const contact = header.getByRole("link", {name: contactLabel});
+      const menuButton = header.getByRole("button", {name: openMenu});
+      const book = header.getByRole("link", {name: cta});
 
       await expect(brand).toBeVisible();
-      await expect(courses).toBeVisible();
-      await expect(contact).toBeVisible();
-      await expect(header.locator("nav")).toHaveCount(1);
+      await expect(book).toBeVisible();
+      await expect(menuButton).toBeVisible();
+      await expect(header.getByRole("link", {name: sections[0]})).toBeHidden();
       await expect(header.getByRole("button", {name: /langue|sprache|language/i})).toHaveCount(0);
 
-      const [headerBox, brandBox, coursesBox, contactBox] = await Promise.all([
+      const [headerBox, brandBox, bookBox, menuBox] = await Promise.all([
         header.boundingBox(),
         brand.boundingBox(),
-        courses.boundingBox(),
-        contact.boundingBox(),
+        book.boundingBox(),
+        menuButton.boundingBox(),
       ]);
 
       expect(headerBox?.height ?? 999).toBeLessThanOrEqual(58);
@@ -64,8 +82,13 @@ test.describe("phone layout", () => {
         (box?.y ?? 0) + (box?.height ?? 0) / 2;
 
       const brandMid = midY(brandBox);
-      expect(Math.abs(midY(coursesBox) - brandMid)).toBeLessThanOrEqual(4);
-      expect(Math.abs(midY(contactBox) - brandMid)).toBeLessThanOrEqual(4);
+      expect(Math.abs(midY(bookBox) - brandMid)).toBeLessThanOrEqual(4);
+      expect(Math.abs(midY(menuBox) - brandMid)).toBeLessThanOrEqual(4);
+
+      await menuButton.click();
+      for (const label of sections) {
+        await expect(header.getByRole("link", {name: label})).toBeVisible();
+      }
     });
   }
 

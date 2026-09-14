@@ -1,3 +1,4 @@
+import {founderAlumni, founderPortrait, founderSameAs} from "@/features/about/founder";
 import type {AppLocale} from "@/i18n/routing";
 import {getSiteUrl} from "@/lib/site-url";
 import {organization} from "@/features/organization/info";
@@ -29,8 +30,10 @@ export function organizationJsonLd(): JsonLd {
     telephone: organization.phone,
     founder: {
       "@type": "Person",
+      "@id": `${site}/#marta-hegyaljai-python`,
       name: organization.founder,
     },
+    sameAs: [...founderSameAs],
     address: {
       "@type": "PostalAddress",
       streetAddress: office.street,
@@ -39,6 +42,48 @@ export function organizationJsonLd(): JsonLd {
       addressRegion: office.region,
       addressCountry: office.country,
     },
+  };
+}
+
+export function founderPersonJsonLd(input: {
+  locale: AppLocale;
+  jobTitle: string;
+  description: string;
+  awards: string[];
+  pagePath: string;
+}): JsonLd {
+  const site = getSiteUrl().origin;
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Person",
+        "@id": `${site}/#marta-hegyaljai-python`,
+        name: organization.founder,
+        inLanguage: input.locale,
+        jobTitle: input.jobTitle,
+        description: input.description,
+        image: `${site}${founderPortrait.src}`,
+        url: `${site}${input.pagePath}`,
+        worksFor: {"@id": `${site}/#organization`},
+        alumniOf: founderAlumni.map((name) => ({
+          "@type": "CollegeOrUniversity",
+          name,
+        })),
+        award: input.awards,
+        sameAs: [...founderSameAs],
+      },
+      {
+        "@type": "EducationalOrganization",
+        "@id": `${site}/#organization`,
+        name: organization.brandName,
+        legalName: organization.legalName,
+        url: site,
+        founder: {"@id": `${site}/#marta-hegyaljai-python`},
+        sameAs: [...founderSameAs],
+      },
+    ],
   };
 }
 

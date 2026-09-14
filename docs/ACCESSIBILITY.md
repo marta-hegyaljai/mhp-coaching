@@ -9,7 +9,7 @@ keyboard access, contrast from black/white, no information by colour alone,
 | Surface | Result |
 | --- | --- |
 | Skip link | `Skip to content` / FR / DE in `SiteShell`, first in tab order |
-| Public header | Courses + Contact remain on the same row as MHP at ~390px |
+| Public header | Courses, Case Library, Insights and Contact are in the bar on `lg+` and in the sheet below it |
 | Language switcher | Custom listbox, fixed width, does not shift neighbours |
 | Status | `StatusLabel` uppercase text, not pills or colour-only |
 | Prices / minutes | Sans-serif tabular nums |

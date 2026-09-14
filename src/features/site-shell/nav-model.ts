@@ -5,6 +5,9 @@ import type {OriginKind} from "@/lib/origins";
 /** Key inside the `Nav` message namespace. */
 export type NavLabelKey =
   | "courses"
+  | "caseLibrary"
+  | "insights"
+  | "about"
   | "contact"
   | "rooms"
   | "admin"
@@ -29,6 +32,9 @@ export type NavEntry = {
 export function primaryNavEntries(viewer: Viewer | null): NavEntry[] {
   const entries: NavEntry[] = [
     {key: "courses", href: "/courses", origin: "marketing", match: "/courses"},
+    {key: "caseLibrary", href: "/case-library", origin: "marketing", match: "/case-library"},
+    {key: "insights", href: "/insights", origin: "marketing", match: "/insights"},
+    {key: "about", href: "/about", origin: "marketing", match: "/about"},
     {key: "contact", href: "/contact", origin: "marketing", match: "/contact"},
   ];
 

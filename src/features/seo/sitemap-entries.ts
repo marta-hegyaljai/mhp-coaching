@@ -61,6 +61,9 @@ const publicStaticPaths: Array<{
 }> = [
   {href: "/", changeFrequency: "weekly", priority: 1},
   {href: "/courses", changeFrequency: "weekly", priority: 0.9},
+  {href: "/case-library", changeFrequency: "monthly", priority: 0.5},
+  {href: "/insights", changeFrequency: "monthly", priority: 0.5},
+  {href: "/about", changeFrequency: "monthly", priority: 0.7},
   {href: "/contact", changeFrequency: "monthly", priority: 0.6},
   {href: "/legal/privacy", changeFrequency: "yearly", priority: 0.3},
   {href: "/legal/terms", changeFrequency: "yearly", priority: 0.3},

@@ -50,6 +50,21 @@ export const routing = defineRouting({
       de: "/kontakt",
       en: "/contact",
     },
+    "/case-library": {
+      fr: "/cas-cliniques",
+      de: "/fallbibliothek",
+      en: "/case-library",
+    },
+    "/insights": {
+      fr: "/perspectives",
+      de: "/einblicke",
+      en: "/insights",
+    },
+    "/about": {
+      fr: "/a-propos",
+      de: "/ueber-uns",
+      en: "/about",
+    },
     "/legal/privacy": {
       fr: "/mentions-legales/confidentialite",
       de: "/rechtliches/datenschutz",

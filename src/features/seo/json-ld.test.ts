@@ -6,6 +6,7 @@ import {
   courseJsonLd,
   courseListJsonLd,
   eventJsonLd,
+  founderPersonJsonLd,
   homeStatueJsonLd,
   organizationJsonLd,
 } from "./json-ld";
@@ -47,6 +48,31 @@ describe("structured data", () => {
       "Chemin de la Fenetta 42",
     );
     expect(JSON.stringify(json)).not.toMatch(/mhp-hypnose|Partners Sàrl|CHE-459/i);
+    expect((json.founder as {name: string}).name).toBe("Marta Hegyaljai Python");
+    expect(json.sameAs).toEqual(["https://marta-hegyaljai.com/fr/marta-hegyaljai-python"]);
+  });
+
+  it("describes the founder as a Person linked to the school", () => {
+    const json = founderPersonJsonLd({
+      locale: "fr",
+      jobTitle: "Fondatrice de MHP Coaching",
+      description: "Un parcours riche et reconnu en accompagnement et hypnose.",
+      awards: ["Promoting Hypnotism Award, décerné lors du congrès OMNI"],
+      pagePath: "/fr/a-propos",
+    });
+    const graph = json["@graph"] as Array<Record<string, unknown>>;
+    const person = graph.find((node) => node["@type"] === "Person");
+    const school = graph.find((node) => node["@type"] === "EducationalOrganization");
+
+    expect(person?.name).toBe("Marta Hegyaljai Python");
+    expect(person?.jobTitle).toBe("Fondatrice de MHP Coaching");
+    expect(person?.alumniOf).toEqual([
+      {"@type": "CollegeOrUniversity", name: "Universität Zürich"},
+      {"@type": "CollegeOrUniversity", name: "Universität Basel"},
+    ]);
+    expect(person?.award).toContain("Promoting Hypnotism Award, décerné lors du congrès OMNI");
+    expect(person?.sameAs).toEqual(["https://marta-hegyaljai.com/fr/marta-hegyaljai-python"]);
+    expect(school?.founder).toEqual({"@id": expect.stringContaining("#marta-hegyaljai-python")});
   });
 
   it("describes the homepage Obelisk photograph", () => {

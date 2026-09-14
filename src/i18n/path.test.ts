@@ -9,6 +9,15 @@ describe("localizedPathname", () => {
     expect(localizedPathname("de", "/courses")).toBe("/de/ausbildungen");
     expect(localizedPathname("en", "/courses")).toBe("/en/courses");
     expect(localizedPathname("de", "/contact")).toBe("/de/kontakt");
+    expect(localizedPathname("fr", "/case-library")).toBe("/fr/cas-cliniques");
+    expect(localizedPathname("de", "/case-library")).toBe("/de/fallbibliothek");
+    expect(localizedPathname("en", "/case-library")).toBe("/en/case-library");
+    expect(localizedPathname("fr", "/insights")).toBe("/fr/perspectives");
+    expect(localizedPathname("de", "/insights")).toBe("/de/einblicke");
+    expect(localizedPathname("en", "/insights")).toBe("/en/insights");
+    expect(localizedPathname("fr", "/about")).toBe("/fr/a-propos");
+    expect(localizedPathname("de", "/about")).toBe("/de/ueber-uns");
+    expect(localizedPathname("en", "/about")).toBe("/en/about");
     expect(localizedPathname("fr", "/sign-in")).toBe("/fr/connexion");
     expect(localizedPathname("de", "/sign-in")).toBe("/de/anmelden");
     expect(localizedPathname("fr", "/sign-up")).toBe("/fr/creer-un-compte");

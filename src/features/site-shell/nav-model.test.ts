@@ -21,24 +21,42 @@ const keys = (entries: {key: string}[]) => entries.map((entry) => entry.key);
 
 describe("primaryNavEntries", () => {
   it("shows visitors and course-only accounts the public sections only", () => {
-    expect(keys(primaryNavEntries(null))).toEqual(["courses", "contact"]);
-    expect(keys(primaryNavEntries(viewer()))).toEqual(["courses", "contact"]);
+    expect(keys(primaryNavEntries(null))).toEqual([
+      "courses",
+      "caseLibrary",
+      "insights",
+      "about",
+      "contact",
+    ]);
+    expect(keys(primaryNavEntries(viewer()))).toEqual([
+      "courses",
+      "caseLibrary",
+      "insights",
+      "about",
+      "contact",
+    ]);
   });
 
   it("adds a section per granted capability, never a locked decoy", () => {
     expect(keys(primaryNavEntries(viewer({canAccessRooms: true})))).toEqual([
       "courses",
+      "caseLibrary",
+      "insights",
+      "about",
       "contact",
       "rooms",
     ]);
     expect(keys(primaryNavEntries(viewer({isAdmin: true})))).toEqual([
       "courses",
+      "caseLibrary",
+      "insights",
+      "about",
       "contact",
       "admin",
     ]);
     expect(
       keys(primaryNavEntries(viewer({isAdmin: true, canAccessRooms: true}))),
-    ).toEqual(["courses", "contact", "rooms", "admin"]);
+    ).toEqual(["courses", "caseLibrary", "insights", "about", "contact", "rooms", "admin"]);
   });
 
   it("keeps public sections on the marketing origin and capabilities on the app", () => {
@@ -46,6 +64,9 @@ describe("primaryNavEntries", () => {
 
     expect(entries.filter((entry) => entry.origin === "marketing").map((e) => e.key)).toEqual([
       "courses",
+      "caseLibrary",
+      "insights",
+      "about",
       "contact",
     ]);
     expect(entries.filter((entry) => entry.origin === "app").map((e) => e.key)).toEqual([
