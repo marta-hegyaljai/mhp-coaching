@@ -3,7 +3,7 @@
 import {useRouter} from "@/i18n/navigation";
 import type {AdminBookingQuery} from "@/features/rooms/admin-booking-query";
 import {adminBookingListHref} from "@/features/rooms/admin-booking-query";
-import {localizedPath} from "@/features/seo/metadata";
+import {localizedPathname} from "@/i18n/path";
 import type {AppLocale} from "@/i18n/routing";
 import {DateField} from "@/shared/ui/date-field";
 
@@ -21,7 +21,7 @@ export function AdminBookingDayJump({
   return (
     <form
       method="get"
-      action={localizedPath(locale, "/admin/bookings")}
+      action={localizedPathname(locale, "/admin/bookings")}
       className="min-w-[12.5rem]"
       onChange={(event) => {
         const form = event.currentTarget;

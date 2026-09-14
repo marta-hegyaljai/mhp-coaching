@@ -1,5 +1,4 @@
 import type {PathnameHref} from "@/i18n/href";
-import {ADMIN_BOOKING_PAGE_SIZE} from "@/features/rooms/repository";
 import {parseLocalDate, todayInZurich} from "@/features/rooms/timezone";
 
 export const ADMIN_BOOKING_STATUSES = ["all", "CONFIRMED", "CANCELLED"] as const;
@@ -100,5 +99,3 @@ export function adminBookingListHref(query: AdminBookingQuery): PathnameHref {
 export function adminBookingListHrefForPage(query: AdminBookingQuery, page: number) {
   return adminBookingListHref({...query, page});
 }
-
-export {ADMIN_BOOKING_PAGE_SIZE};
