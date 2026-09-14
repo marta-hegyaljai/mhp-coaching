@@ -12,7 +12,12 @@ import {displayName, personInitials} from "./identity";
 import {LanguageSwitcher} from "./language-switcher";
 import {LANGUAGE_SWITCHER_ENABLED} from "./locale-ui";
 import {NavCurrent} from "./nav-current";
-import {accountNavEntries, primaryNavEntries, type NavEntry} from "./nav-model";
+import {
+  accountNavEntries,
+  isNavGroup,
+  primaryNavNodes,
+  type NavEntry,
+} from "./nav-model";
 import {OriginLink} from "./origin-link";
 
 const sectionLabel =
@@ -24,6 +29,8 @@ const row =
 /**
  * Contents of the phone navigation sheet. Product sections sit at the top
  * under the thumb path, personal actions stay grouped at the bottom edge.
+ * The sheet has the room to keep every destination one tap away, so grouped
+ * header entries become a labelled block instead of a second disclosure.
  */
 export async function MenuPanel({
   locale,
@@ -35,6 +42,16 @@ export async function MenuPanel({
   hreflangs?: Partial<Record<AppLocale, PathnameHref>>;
 }) {
   const t = await getTranslations({locale, namespace: "Nav"});
+  const nodes = primaryNavNodes(viewer);
+  const sections = [
+    {
+      key: "sections" as const,
+      entries: nodes.filter((node): node is NavEntry => !isNavGroup(node)),
+    },
+    ...nodes
+      .filter(isNavGroup)
+      .map((group) => ({key: group.key, entries: group.entries})),
+  ];
 
   return (
     <>
@@ -58,14 +75,21 @@ export async function MenuPanel({
       ) : null}
 
       <nav aria-label={t("label")} className="px-2 pt-4">
-        <p className={sectionLabel}>{t("sections")}</p>
-        <ul>
-          {primaryNavEntries(viewer).map((entry) => (
-            <li key={entry.key}>
-              <MenuRow locale={locale} entry={entry} label={t(entry.key)} />
-            </li>
-          ))}
-        </ul>
+        {sections.map((section, index) => (
+          <div key={section.key} className={index === 0 ? "" : "mt-6"}>
+            {/* A lone row is its own label. */}
+            {section.entries.length > 1 ? (
+              <p className={sectionLabel}>{t(section.key)}</p>
+            ) : null}
+            <ul>
+              {section.entries.map((entry) => (
+                <li key={entry.key}>
+                  <MenuRow locale={locale} entry={entry} label={t(entry.key)} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </nav>
 
       <div className="mt-auto px-2 pt-6 pb-[calc(1.25rem+env(safe-area-inset-bottom))]">

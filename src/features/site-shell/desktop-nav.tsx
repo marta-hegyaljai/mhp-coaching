@@ -2,37 +2,69 @@ import {getTranslations} from "next-intl/server";
 
 import type {AppLocale} from "@/i18n/routing";
 
+import {navChipClass} from "./nav-chip";
 import {NavCurrent} from "./nav-current";
-import type {NavEntry} from "./nav-model";
+import {NavGroupMenu} from "./nav-group-menu";
+import {isNavGroup, type NavNode} from "./nav-model";
 import {OriginLink} from "./origin-link";
 
-const navLink =
-  "inline-flex h-9 shrink-0 items-center rounded-panel px-3 text-xs font-semibold tracking-[0.1em] whitespace-nowrap text-ink uppercase transition-colors duration-150 hover:bg-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink";
+const menuRow =
+  "flex min-h-11 flex-col justify-center gap-0.5 rounded-panel px-3 py-2 transition-colors duration-150 hover:bg-hover focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ink";
 
 /** Product sections on wide viewports. Personal account controls sit apart. */
 export async function DesktopNav({
   locale,
-  entries,
+  nodes,
 }: {
   locale: AppLocale;
-  entries: NavEntry[];
+  nodes: NavNode[];
 }) {
   const t = await getTranslations({locale, namespace: "Nav"});
 
   return (
     <nav aria-label={t("label")} className="hidden items-center gap-0.5 lg:flex">
-      {entries.map((entry) => (
-        <NavCurrent key={entry.key} match={entry.match} exact={entry.exact}>
-          <OriginLink
-            locale={locale}
-            origin={entry.origin}
-            href={entry.href}
-            className={navLink}
+      {nodes.map((node) =>
+        isNavGroup(node) ? (
+          <NavGroupMenu
+            key={node.key}
+            label={t(node.key)}
+            matches={node.entries.map((entry) => entry.match)}
           >
-            {t(entry.key)}
-          </OriginLink>
-        </NavCurrent>
-      ))}
+            {node.entries.map((entry) => (
+              <li key={entry.key}>
+                <NavCurrent
+                  match={entry.match}
+                  exact={entry.exact}
+                  activeClassName="[&_a]:font-semibold"
+                >
+                  <OriginLink
+                    locale={locale}
+                    origin={entry.origin}
+                    href={entry.href}
+                    className={menuRow}
+                  >
+                    <span className="text-sm font-medium text-ink">{t(entry.key)}</span>
+                    {entry.hint ? (
+                      <span className="text-xs leading-5 text-ink-muted">{t(entry.hint)}</span>
+                    ) : null}
+                  </OriginLink>
+                </NavCurrent>
+              </li>
+            ))}
+          </NavGroupMenu>
+        ) : (
+          <NavCurrent key={node.key} match={node.match} exact={node.exact}>
+            <OriginLink
+              locale={locale}
+              origin={node.origin}
+              href={node.href}
+              className={navChipClass}
+            >
+              {t(node.key)}
+            </OriginLink>
+          </NavCurrent>
+        ),
+      )}
     </nav>
   );
 }

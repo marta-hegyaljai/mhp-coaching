@@ -9,7 +9,7 @@ keyboard access, contrast from black/white, no information by colour alone,
 | Surface | Result |
 | --- | --- |
 | Skip link | `Skip to content` / FR / DE in `SiteShell`, first in tab order |
-| Public header | Courses, Case Library, Insights and Contact are in the bar on `lg+` and in the sheet below it |
+| Public header | Courses plus the booking action in the bar on `lg+`; the school chip is a disclosure (`aria-expanded`, `aria-controls`, Escape returns focus) and the sheet lists every destination below `lg` |
 | Language switcher | Custom listbox, fixed width, does not shift neighbours |
 | Status | `StatusLabel` uppercase text, not pills or colour-only |
 | Prices / minutes | Sans-serif tabular nums |

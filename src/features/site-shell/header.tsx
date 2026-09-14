@@ -19,14 +19,15 @@ import {LANGUAGE_SWITCHER_ENABLED} from "./locale-ui";
 import {MenuPanel} from "./menu-panel";
 import {MobileMenu} from "./mobile-menu";
 import {NavCurrent} from "./nav-current";
-import {primaryNavEntries} from "./nav-model";
+import {primaryNavNodes} from "./nav-model";
 import {OriginLink} from "./origin-link";
 
 /**
  * One header for visitors, signed-in people and the installed app. Product
  * navigation, the account control and the booking call to action are three
  * distinct zones; below `lg` the navigation collapses into a sheet while the
- * call to action stays in the bar.
+ * call to action stays in the bar. The bar carries the course list and the
+ * booking action only: everything else sits behind the school menu.
  */
 export async function SiteHeader({
   locale,
@@ -37,7 +38,7 @@ export async function SiteHeader({
 }) {
   const t = await getTranslations({locale, namespace: "Nav"});
   const viewer = await getViewer();
-  const entries = primaryNavEntries(viewer);
+  const nodes = primaryNavNodes(viewer);
   // Signed-in people go straight to the bookable list; visitors keep the
   // calendar entry point that the public catalogue is built around.
   const cta = viewer
@@ -73,7 +74,7 @@ export async function SiteHeader({
         </NavCurrent>
 
         <div className="flex min-w-0 shrink-0 items-center gap-2">
-          <DesktopNav locale={locale} entries={entries} />
+          <DesktopNav locale={locale} nodes={nodes} />
 
           <span
             aria-hidden="true"

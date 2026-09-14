@@ -14,6 +14,16 @@ export type NavLabelKey =
   | "account"
   | "myCourses";
 
+/** Key of a header control that opens several destinations at once. */
+export type NavGroupKey = "school";
+
+/** One-line description shown beside a label inside a grouped menu. */
+export type NavHintKey =
+  | "caseLibraryHint"
+  | "insightsHint"
+  | "aboutHint"
+  | "contactHint";
+
 export type NavEntry = {
   key: NavLabelKey;
   href: PathnameHref;
@@ -22,31 +32,82 @@ export type NavEntry = {
   match: string;
   /** Parents of nested routes only count when the route matches exactly. */
   exact?: boolean;
+  /** Grouped destinations explain themselves; single chips do not need it. */
+  hint?: NavHintKey;
+};
+
+export type NavGroup = {
+  key: NavGroupKey;
+  /** Destinations behind one control. Each keeps its own route and label. */
+  entries: NavEntry[];
+};
+
+export type NavNode = NavEntry | NavGroup;
+
+export function isNavGroup(node: NavNode): node is NavGroup {
+  return "entries" in node;
+}
+
+/**
+ * Everything about the school that is not a course: its writing, its founder
+ * and how to reach it. Bundling them keeps the bar down to the two decisions
+ * that matter — browse the courses, or book a place.
+ */
+const schoolGroup: NavGroup = {
+  key: "school",
+  entries: [
+    {
+      key: "caseLibrary",
+      href: "/case-library",
+      origin: "marketing",
+      match: "/case-library",
+      hint: "caseLibraryHint",
+    },
+    {
+      key: "insights",
+      href: "/insights",
+      origin: "marketing",
+      match: "/insights",
+      hint: "insightsHint",
+    },
+    {key: "about", href: "/about", origin: "marketing", match: "/about", hint: "aboutHint"},
+    {
+      key: "contact",
+      href: "/contact",
+      origin: "marketing",
+      match: "/contact",
+      hint: "contactHint",
+    },
+  ],
 };
 
 /**
- * Product sections, in reading order. Capability-gated entries appear only
+ * Header navigation, in reading order. Capability-gated entries appear only
  * when the server already granted the capability, never as disabled decoy
- * links.
+ * links, and stay single chips because they are working destinations.
  */
-export function primaryNavEntries(viewer: Viewer | null): NavEntry[] {
-  const entries: NavEntry[] = [
+export function primaryNavNodes(viewer: Viewer | null): NavNode[] {
+  const nodes: NavNode[] = [
     {key: "courses", href: "/courses", origin: "marketing", match: "/courses"},
-    {key: "caseLibrary", href: "/case-library", origin: "marketing", match: "/case-library"},
-    {key: "insights", href: "/insights", origin: "marketing", match: "/insights"},
-    {key: "about", href: "/about", origin: "marketing", match: "/about"},
-    {key: "contact", href: "/contact", origin: "marketing", match: "/contact"},
+    schoolGroup,
   ];
 
   if (viewer?.canAccessRooms) {
-    entries.push({key: "rooms", href: "/rooms", origin: "app", match: "/rooms"});
+    nodes.push({key: "rooms", href: "/rooms", origin: "app", match: "/rooms"});
   }
 
   if (viewer?.isAdmin) {
-    entries.push({key: "admin", href: "/admin/users", origin: "app", match: "/admin"});
+    nodes.push({key: "admin", href: "/admin/users", origin: "app", match: "/admin"});
   }
 
-  return entries;
+  return nodes;
+}
+
+/** Every product destination, flattened: the phone sheet and the footer map. */
+export function primaryNavEntries(viewer: Viewer | null): NavEntry[] {
+  return primaryNavNodes(viewer).flatMap((node) =>
+    isNavGroup(node) ? node.entries : [node],
+  );
 }
 
 /** Personal destinations. These never sit in the product navigation. */

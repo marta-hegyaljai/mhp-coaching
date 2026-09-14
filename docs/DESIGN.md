@@ -67,10 +67,18 @@ dashboard.
   path, and pins personal actions and Sign out to the bottom edge. Escape, a
   completed navigation, or the same button closes it, and the page beneath
   must not scroll while it is open.
-- Header navigation must expose Courses, Case Library, Insights, About and
-  Contact at every viewport, in the bar on `lg` and above and in the first
-  sheet section below it. Capability sections (Rooms, Admin) appear only once
-  the server granted them.
+- The bar protects two decisions: browse the courses, or book a place. On `lg`
+  and above it therefore carries the Courses chip and the booking action only.
+  Case Library, Insights, About and Contact sit behind one grouped chip (the
+  school), a click disclosure that lists each destination with a one-line
+  description, closes on Escape, on an outside pointer and on arrival, and
+  inverts to black while it owns the open section. Do not add a second grouped
+  chip, a hover-only menu, or a group without a landing purpose.
+- Capability sections (Rooms, Admin) appear only once the server granted them
+  and stay single chips: they are working destinations, not reading material.
+- Below `lg` the sheet has room for the full map, so every destination stays
+  one tap away: product destinations first, then the grouped block under its
+  own uppercase label. Never nest a second disclosure inside the sheet.
 - The shell is installable: the header and the sheet pay back
   `env(safe-area-inset-*)` so a standalone window never puts controls under the
   notch or the home indicator.

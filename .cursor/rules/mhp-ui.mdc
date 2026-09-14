@@ -22,6 +22,9 @@ source of truth and overrides generic design preferences.
 - Keep the header in three zones: product navigation, the account control and
   one call to action. Nav items use square chips: grey hover, black fill when
   selected; never underline the brand or nav links for current-page state.
+  On `lg` and above the bar carries only the Courses chip and the booking
+  action; Case Library, Insights, About and Contact live behind the single
+  grouped school chip in `nav-group-menu.tsx`.
   The account control is a bordered monogram trigger, never a nav chip; signed
   -out visitors get one secondary auth button (Sign in, or Sign up on the
   sign-in page).

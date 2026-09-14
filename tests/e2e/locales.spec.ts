@@ -280,7 +280,7 @@ test("header exposes sign-up and marks the current page", async ({page}) => {
   await header.getByRole("link", {name: "Courses"}).click();
   await expect(page).toHaveURL(/\/en\/courses$/);
   await expect(header.getByRole("link", {name: "Courses"})).toHaveAttribute("aria-current", "page");
-  await expect(header.getByRole("link", {name: "Contact"})).not.toHaveAttribute("aria-current");
+  await expect(header.getByRole("button", {name: "The school"})).not.toHaveAttribute("aria-current");
   await expect(header.getByRole("link", {name: "Sign in"})).not.toHaveAttribute("aria-current");
 
   await page.goto("/fr");
