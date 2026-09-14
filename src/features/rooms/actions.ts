@@ -319,7 +319,7 @@ export async function cancelRoomBookingAction(
   } catch (error) {
     return localizeRoomError(error, resolvedLocale);
   }
-  redirect(`${localizedPathname(resolvedLocale, "/rooms/bookings")}?cancelled=1`);
+  redirect(`${localizedPathname(resolvedLocale, "/rooms/bookings")}?cancelled=1&status=all`);
 }
 
 export async function moveRoomBookingAction(

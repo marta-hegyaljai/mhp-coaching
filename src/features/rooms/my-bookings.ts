@@ -30,9 +30,22 @@ export function splitOwnBookings(
     }
   }
 
-  upcoming.sort((left, right) => left.startsAt.getTime() - right.startsAt.getTime());
+  upcoming.sort((left, right) => right.startsAt.getTime() - left.startsAt.getTime());
   history.sort((left, right) => right.startsAt.getTime() - left.startsAt.getTime());
   return {upcoming, history};
+}
+
+export function visibleOwnBookings(
+  lists: OwnBookingLists,
+  showCancelled: boolean,
+): OwnBookingLists {
+  if (showCancelled) {
+    return lists;
+  }
+  return {
+    upcoming: lists.upcoming,
+    history: lists.history.filter((booking) => booking.status !== "CANCELLED"),
+  };
 }
 
 export async function listMyRoomBookings(

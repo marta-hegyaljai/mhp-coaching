@@ -2,7 +2,7 @@ import {describe, expect, it} from "vitest";
 
 import type {RoomBooking} from "@/db/schema";
 
-import {splitOwnBookings} from "./my-bookings";
+import {splitOwnBookings, visibleOwnBookings} from "./my-bookings";
 
 function booking(partial: Partial<RoomBooking> & Pick<RoomBooking, "id" | "startsAt" | "endsAt" | "status">): RoomBooking {
   return {
@@ -58,7 +58,12 @@ describe("splitOwnBookings", () => {
     });
 
     const lists = splitOwnBookings([past, cancelled, future, current], now);
-    expect(lists.upcoming.map((item) => item.id)).toEqual(["current", "future"]);
+    expect(lists.upcoming.map((item) => item.id)).toEqual(["future", "current"]);
     expect(lists.history.map((item) => item.id)).toEqual(["cancelled", "past"]);
+    expect(visibleOwnBookings(lists, false).history.map((item) => item.id)).toEqual(["past"]);
+    expect(visibleOwnBookings(lists, true).history.map((item) => item.id)).toEqual([
+      "cancelled",
+      "past",
+    ]);
   });
 });

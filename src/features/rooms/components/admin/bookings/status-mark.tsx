@@ -1,12 +1,8 @@
-import {bookingStatusTextClass} from "@/features/rooms/components/admin/bookings/item";
+import {BookingStatusMark} from "@/features/rooms/components/booking-list/status-mark";
 import type {AdminBookingItem} from "@/features/rooms/components/admin/bookings/item";
 
-export function BookingStatusMark({item}: {item: AdminBookingItem}) {
-  return (
-    <p
-      className={`text-[0.7rem] font-bold uppercase tracking-[0.2em] ${bookingStatusTextClass(item.status)}`}
-    >
-      {item.statusLabel}
-    </p>
-  );
+export function AdminBookingStatusMark({item}: {item: AdminBookingItem}) {
+  return <BookingStatusMark status={item.status} label={item.statusLabel} />;
 }
+
+export {AdminBookingStatusMark as BookingStatusMark};

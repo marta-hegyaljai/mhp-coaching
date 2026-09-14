@@ -111,7 +111,7 @@ export type PathnameHref =
     }
   | {
       pathname: "/rooms/bookings";
-      query?: {reserved?: string; cancelled?: string};
+      query?: {reserved?: string; cancelled?: string; status?: string};
     }
   | {
       pathname: "/rooms/bookings/[id]";
