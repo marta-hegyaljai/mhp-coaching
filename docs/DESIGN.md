@@ -26,6 +26,9 @@ dashboard.
   fill, or dense repeated decoration.
 - No bronze, brown, gradients, or additional accent colors. The legacy token
   name `bronze` is a black compatibility alias and must not guide new work.
+  The admin room-booking index is the one operational exception: Confirmed and
+  Cancelled may use a 3px left rail and status type in dark green and dark red,
+  never a filled surface.
 - Geometry is rectangular with `rounded-panel` (2px). The compact language
   trigger is the sole capsule exception. Never use pills for buttons, cards,
   tags, or status displays.
@@ -173,8 +176,11 @@ primary action behind an ambiguous icon.
   visible count against the catalogue total next to them.
 - Reordering swaps neighbours in the full catalogue, so offer the move controls
   only on the unfiltered list and say why they are gone otherwise.
-- Status styles remain monochrome and textual. Gold does not become a semantic
-  success/warning/error color.
+- Status styles remain monochrome and textual on public and therapist
+  surfaces. Gold does not become a semantic success/warning/error color. The
+  admin room-booking index may mark Confirmed and Cancelled with a 3px left
+  rail and matching status type in dark green and dark red. Do not fill cards,
+  rows or buttons with those colours.
 - Collapse consecutive slots that share a state into one continuous labelled
   bar with its start–end time, the same way a multi-day course session renders
   as one bar. Never repeat the same state label in every interval row.

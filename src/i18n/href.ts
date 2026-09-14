@@ -92,7 +92,7 @@ export type PathnameHref =
     }
   | {
       pathname: "/admin/bookings";
-      query?: {q?: string; status?: string; page?: string};
+      query?: {q?: string; status?: string; view?: string; date?: string; page?: string};
     }
   | {
       pathname: "/admin/bookings/new";

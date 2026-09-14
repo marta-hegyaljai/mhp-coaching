@@ -22,7 +22,11 @@ is textual. Amounts use the sans-serif with tabular figures.
 
 ## Bookings and waivers
 
-1. **Bookings** lists every reservation. Filter by status; open one booking.
+1. **Bookings** lists reservations in a dense table on wide screens (cards
+   remain available). Cancelled bookings are hidden until **Show cancelled** is
+   checked. Day view is a Zurich agenda for one date; **Today** jumps to the
+   current day. Status uses a thin green or red rail plus the written label,
+   not a filled colour block.
 2. Admin create/move/cancel from that screen (`?action=`). A late cancel shows
    the retained charge; a waiver zeroes it and is audited.
 3. Private notes are owner-only. They are not in this UI, CSV, email or the
