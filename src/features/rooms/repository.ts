@@ -22,6 +22,7 @@ import {
 import type {BookingEventAction} from "@/features/rooms/billing";
 import {bookingHistorySnapshot} from "@/features/rooms/billing";
 import type {EncryptedNote} from "@/features/rooms/note-crypto";
+import {todayInZurich, zurichDayRange} from "@/features/rooms/timezone";
 
 type RoomTx = Parameters<Parameters<Database["transaction"]>[0]>[0];
 
@@ -637,6 +638,15 @@ export type AdminBookingListQuery = {
   status: "all" | "CONFIRMED" | "CANCELLED";
   page: number;
   pageSize?: number;
+  /** Zurich `YYYY-MM-DD`. When set, only bookings overlapping that day. */
+  day?: string;
+  order?: "asc" | "desc";
+};
+
+export type AdminBookingMetrics = {
+  today: number;
+  confirmed: number;
+  cancelled: number;
 };
 
 export type AdminBookingRow = {
@@ -654,23 +664,7 @@ export async function listAdminBookingsPage(
   pageCount: number;
 }> {
   const pageSize = Math.min(100, Math.max(1, query.pageSize ?? ADMIN_BOOKING_PAGE_SIZE));
-  const filters: SQL[] = [];
-  const needle = query.q.trim().toLowerCase();
-  if (needle) {
-    const match = or(
-      sql`position(${needle} in ${users.emailNormalized}) > 0`,
-      sql`position(${needle} in lower(${users.email})) > 0`,
-      sql`position(${needle} in lower(${users.firstName} || ' ' || ${users.lastName})) > 0`,
-      sql`position(${needle} in lower(${roomBookings.roomName})) > 0`,
-    );
-    if (match) {
-      filters.push(match);
-    }
-  }
-  if (query.status !== "all") {
-    filters.push(eq(roomBookings.status, query.status));
-  }
-  const where = filters.length === 0 ? undefined : filters.length === 1 ? filters[0] : and(...filters);
+  const where = adminBookingWhere(query);
   const db = getDb();
   const [totalRow] = await db
     .select({value: count()})
@@ -681,6 +675,7 @@ export async function listAdminBookingsPage(
   const pageCount = Math.max(1, Math.ceil(total / pageSize));
   const page = Math.min(Math.max(1, query.page), pageCount);
   const offset = (page - 1) * pageSize;
+  const startOrder = query.order === "asc" ? asc(roomBookings.startsAt) : desc(roomBookings.startsAt);
   const rows = await db
     .select({
       booking: roomBookings,
@@ -692,7 +687,7 @@ export async function listAdminBookingsPage(
     .from(roomBookings)
     .innerJoin(users, eq(roomBookings.userId, users.id))
     .where(where)
-    .orderBy(desc(roomBookings.startsAt), desc(roomBookings.createdAt))
+    .orderBy(startOrder, desc(roomBookings.createdAt))
     .limit(pageSize)
     .offset(offset);
 
@@ -711,6 +706,68 @@ export async function listAdminBookingsPage(
     pageSize,
     pageCount,
   };
+}
+
+export async function listAdminBookingMetrics(now = new Date()): Promise<AdminBookingMetrics> {
+  const today = zurichDayRange(todayInZurich(now));
+  const db = getDb();
+  const [statusRows, todayRows] = await Promise.all([
+    db
+      .select({status: roomBookings.status, value: count()})
+      .from(roomBookings)
+      .groupBy(roomBookings.status),
+    db
+      .select({value: count()})
+      .from(roomBookings)
+      .where(
+        and(
+          eq(roomBookings.status, "CONFIRMED"),
+          lt(roomBookings.startsAt, today.endExclusive),
+          gt(roomBookings.endsAt, today.start),
+        ),
+      ),
+  ]);
+
+  const counts = {CONFIRMED: 0, CANCELLED: 0};
+  for (const row of statusRows) {
+    counts[row.status] = Number(row.value);
+  }
+
+  return {
+    today: Number(todayRows[0]?.value ?? 0),
+    confirmed: counts.CONFIRMED,
+    cancelled: counts.CANCELLED,
+  };
+}
+
+function adminBookingWhere(
+  query: Pick<AdminBookingListQuery, "q" | "status" | "day">,
+): SQL | undefined {
+  const filters: SQL[] = [];
+  const needle = query.q.trim().toLowerCase();
+  if (needle) {
+    const match = or(
+      sql`position(${needle} in ${users.emailNormalized}) > 0`,
+      sql`position(${needle} in lower(${users.email})) > 0`,
+      sql`position(${needle} in lower(${users.firstName} || ' ' || ${users.lastName})) > 0`,
+      sql`position(${needle} in lower(${roomBookings.roomName})) > 0`,
+    );
+    if (match) {
+      filters.push(match);
+    }
+  }
+  if (query.status !== "all") {
+    filters.push(eq(roomBookings.status, query.status));
+  }
+  if (query.day) {
+    const range = zurichDayRange(query.day);
+    filters.push(lt(roomBookings.startsAt, range.endExclusive));
+    filters.push(gt(roomBookings.endsAt, range.start));
+  }
+  if (filters.length === 0) {
+    return undefined;
+  }
+  return filters.length === 1 ? filters[0] : and(...filters);
 }
 
 type OccupancyFailure =

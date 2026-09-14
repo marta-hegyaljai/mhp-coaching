@@ -81,19 +81,8 @@ export function DateField({
   const labelText = label ?? ariaLabel ?? t("calendar");
 
   useEffect(() => {
-    if (value !== undefined) {
-      setSelected(isIsoDate(value) ? value : "");
-    }
-  }, [value]);
-
-  useEffect(() => {
     if (!open) {
       return;
-    }
-
-    const next = parseIsoDate(selectedDate) ?? parseIsoDate(todayIsoInZurich());
-    if (next) {
-      setCursor({year: next.year, month: next.month});
     }
 
     function closeOnOutsidePointer(event: PointerEvent) {
@@ -117,7 +106,7 @@ export function DateField({
       document.removeEventListener("pointerdown", closeOnOutsidePointer);
       document.removeEventListener("keydown", closeOnEscape);
     };
-  }, [id, open, selectedDate]);
+  }, [id, open]);
 
   function commit(next: string) {
     setSelected(next);
@@ -158,9 +147,16 @@ export function DateField({
       valueRef={valueRef}
       calendarId={`${id}-calendar`}
       onToggle={() => {
-        if (!disabled) {
-          setOpen((current) => !current);
+        if (disabled) {
+          return;
         }
+        if (!open) {
+          const next = parseIsoDate(selectedDate) ?? parseIsoDate(todayIsoInZurich());
+          if (next) {
+            setCursor({year: next.year, month: next.month});
+          }
+        }
+        setOpen((current) => !current);
       }}
       onCursorChange={setCursor}
       onPick={pick}
@@ -355,7 +351,7 @@ function DatePickerDialog({
   onClear?: () => void;
 }) {
   const t = useTranslations("DateField");
-  const [position, setPosition] = useState(() => popoverPosition(triggerRef.current));
+  const [position, setPosition] = useState({top: 0, left: 0});
 
   useLayoutEffect(() => {
     function update() {

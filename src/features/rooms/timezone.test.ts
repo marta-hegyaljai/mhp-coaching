@@ -10,6 +10,7 @@ import {
   previousZurichMonth,
   rangesOverlap,
   utcToZurich,
+  zurichDayRange,
   zurichLocalToUtc,
   zurichMonthKey,
   zurichMonthOf,
@@ -64,6 +65,16 @@ describe("Europe/Zurich local conversion", () => {
     expect(isoWeekday("2026-09-10")).toBe(4);
     expect(mondayOf("2026-09-10")).toBe("2026-09-07");
     expect(addLocalDays("2026-09-07", 6)).toBe("2026-09-13");
+  });
+});
+
+describe("Zurich calendar days", () => {
+  it("uses half-open Zurich midnight bounds, including summer time", () => {
+    const day = zurichDayRange("2026-09-14");
+    expect(day.start.toISOString()).toBe("2026-09-13T22:00:00.000Z");
+    expect(day.endExclusive.toISOString()).toBe("2026-09-14T22:00:00.000Z");
+    expect(utcToZurich(day.start)).toMatchObject({date: "2026-09-14", time: "00:00"});
+    expect(utcToZurich(day.endExclusive)).toMatchObject({date: "2026-09-15", time: "00:00"});
   });
 });
 

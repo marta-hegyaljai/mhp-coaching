@@ -2,21 +2,28 @@ import {getTranslations, setRequestLocale} from "next-intl/server";
 
 import {AuthNotice} from "@/features/auth/components/auth-field";
 import {requireRoomBooking} from "@/features/auth/require";
-import {RoomBookingCard} from "@/features/rooms/components/booking-card";
+import {OwnBookingCancelledFilter} from "@/features/rooms/components/own-bookings/cancelled-filter";
+import {presentOwnBooking} from "@/features/rooms/components/own-bookings/item";
+import {OwnBookingLists} from "@/features/rooms/components/own-bookings/lists";
 import {RoomsNav} from "@/features/rooms/components/rooms-nav";
-import {listMyRoomBookings} from "@/features/rooms/my-bookings";
+import {listMyRoomBookings, visibleOwnBookings} from "@/features/rooms/my-bookings";
+import {parseOwnBookingQuery} from "@/features/rooms/own-booking-query";
+import {todayInZurich} from "@/features/rooms/timezone";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
-import type {RoomBooking} from "@/db/schema";
 import {buttonStyles} from "@/shared/ui/button";
 import {Eyebrow, Section} from "@/shared/ui/layout";
 import {Panel} from "@/shared/ui/panel";
 
 type BookingsPageProps = {
   params: Promise<{locale: AppLocale}>;
-  searchParams: Promise<{reserved?: string | string[]; cancelled?: string | string[]}>;
+  searchParams: Promise<{
+    reserved?: string | string[];
+    cancelled?: string | string[];
+    status?: string | string[];
+  }>;
 };
 
 export const dynamic = "force-dynamic";
@@ -39,14 +46,24 @@ export default async function RoomBookingsPage({params, searchParams}: BookingsP
   setRequestLocale(locale);
   const user = await requireRoomBooking(locale, localizedPath(locale, "/rooms/bookings"));
   const t = await getTranslations("Rooms");
-  const {upcoming, history} = await listMyRoomBookings(user);
-  const query = await searchParams;
-  const notice = firstString(query.reserved) === "1"
-    ? t("reserved")
-    : firstString(query.cancelled) === "1"
-      ? t("cancelled")
-      : null;
-  const hasBookings = upcoming.length > 0 || history.length > 0;
+  const query = parseOwnBookingQuery(await searchParams);
+  const stored = await listMyRoomBookings(user);
+  const lists = visibleOwnBookings(stored, query.showCancelled);
+  const today = todayInZurich();
+  const copy = {
+    duration: (minutes: number) => t("bookDuration", {minutes}),
+    status: (key: "statusConfirmed" | "statusCancelled") => t(key),
+    billing: (key: "billingUsage" | "billingFree" | "billingLate" | "billingWaived") => t(key),
+  };
+  const upcoming = lists.upcoming.map((booking) => presentOwnBooking(booking, locale, today, copy));
+  const history = lists.history.map((booking) => presentOwnBooking(booking, locale, today, copy));
+  const notice =
+    query.notice === "reserved"
+      ? t("reserved")
+      : query.notice === "cancelled"
+        ? t("cancelled")
+        : null;
+  const hasBookings = stored.upcoming.length > 0 || stored.history.length > 0;
 
   return (
     <SiteShell locale={locale} footerCta={null}>
@@ -63,20 +80,37 @@ export default async function RoomBookingsPage({params, searchParams}: BookingsP
         ) : null}
 
         {hasBookings ? (
-          <div className="mt-10 space-y-12">
-            <BookingGroup
-              title={t("upcomingTitle")}
-              empty={t("upcomingEmpty")}
-              bookings={upcoming}
-              locale={locale}
-            />
-            <BookingGroup
-              title={t("historyTitle")}
-              empty={t("historyEmpty")}
-              bookings={history}
-              locale={locale}
-            />
-          </div>
+          <OwnBookingLists
+            upcoming={upcoming}
+            history={history}
+            upcomingTitle={t("upcomingTitle")}
+            historyTitle={t("historyTitle")}
+            upcomingEmpty={t("upcomingEmpty")}
+            historyEmpty={t("historyEmpty")}
+            openLabel={t("openBooking")}
+            layoutLabel={t("layoutLabel")}
+            tableLabel={t("layoutTable")}
+            cardsLabel={t("layoutCards")}
+            tableLabels={{
+              when: t("bookingWhen"),
+              room: t("bookingRoom"),
+              status: t("bookingStatus"),
+              billing: t("bookingBilling"),
+              amount: t("bookingAmount"),
+              open: t("openBooking"),
+              today: t("today"),
+            }}
+            toolbar={
+              <OwnBookingCancelledFilter
+                action={localizedPath(locale, "/rooms/bookings")}
+                checked={query.showCancelled}
+                label={t("showCancelled")}
+                applyLabel={t("showCancelled")}
+                reserved={query.notice === "reserved"}
+                cancelledNotice={query.notice === "cancelled"}
+              />
+            }
+          />
         ) : (
           <Panel className="mt-10 max-w-xl">
             <p className="text-sm leading-7 text-ink-muted">{t("bookingsEmpty")}</p>
@@ -88,37 +122,4 @@ export default async function RoomBookingsPage({params, searchParams}: BookingsP
       </Section>
     </SiteShell>
   );
-}
-
-function BookingGroup({
-  title,
-  empty,
-  bookings,
-  locale,
-}: {
-  title: string;
-  empty: string;
-  bookings: RoomBooking[];
-  locale: AppLocale;
-}) {
-  return (
-    <section>
-      <h2 className="font-serif text-subheading">{title}</h2>
-      {bookings.length === 0 ? (
-        <p className="mt-4 text-sm leading-7 text-ink-muted">{empty}</p>
-      ) : (
-        <ul className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {bookings.map((booking) => (
-            <li key={booking.id}>
-              <RoomBookingCard booking={booking} locale={locale} />
-            </li>
-          ))}
-        </ul>
-      )}
-    </section>
-  );
-}
-
-function firstString(value: string | string[] | undefined): string | undefined {
-  return Array.isArray(value) ? value[0] : value;
 }

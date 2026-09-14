@@ -17,6 +17,7 @@ import {
 import {RoomError} from "@/features/rooms/errors";
 import {createRoom} from "@/features/rooms/inventory";
 import {listRooms} from "@/features/rooms/repository";
+import {cancelRoomBooking} from "@/features/rooms/lifecycle";
 import {reserveRoom} from "@/features/rooms/reservations";
 import {saveRoomSettings} from "@/features/rooms/settings";
 import {francsToMinorUnits} from "@/features/payments/money";
@@ -306,7 +307,22 @@ async function seedRoomBookings(input: {
     date: string;
     start: string;
     end: string;
+    cancel?: boolean;
   }> = [
+    {
+      user: input.therapists[0]!,
+      roomId: roomA.id,
+      date: "2026-09-14",
+      start: "09:00",
+      end: "10:30",
+    },
+    {
+      user: input.therapists[1] ?? input.therapists[0]!,
+      roomId: roomB.id,
+      date: "2026-09-14",
+      start: "14:00",
+      end: "16:00",
+    },
     {
       user: input.therapists[0]!,
       roomId: roomA.id,
@@ -334,13 +350,14 @@ async function seedRoomBookings(input: {
       date: "2026-10-02",
       start: "13:00",
       end: "15:30",
+      cancel: true,
     },
   ];
 
   let created = 0;
   for (const plan of plans) {
     try {
-      await reserveRoom({
+      const booking = await reserveRoom({
         actor: plan.user,
         roomId: plan.roomId,
         date: plan.date,
@@ -349,6 +366,9 @@ async function seedRoomBookings(input: {
         now,
       });
       created += 1;
+      if (plan.cancel) {
+        await cancelRoomBooking({actor: plan.user, bookingId: booking.id, now});
+      }
     } catch (error) {
       if (error instanceof RoomError && error.code === "slotConflict") {
         continue;

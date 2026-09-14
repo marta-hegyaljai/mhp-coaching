@@ -196,6 +196,19 @@ export function openZurichMonth(now = new Date()): ZurichMonth {
 }
 
 /**
+ * Half-open Zurich calendar-day bounds as UTC instants.
+ * 14 September 2026 00:00 Zurich ≤ t < 15 September 2026 00:00 Zurich.
+ */
+export function zurichDayRange(date: string): {start: Date; endExclusive: Date} {
+  const startLocal = zurichLocalToUtc(date, "00:00");
+  const endLocal = zurichLocalToUtc(addLocalDays(date, 1), "00:00");
+  if (!startLocal.ok || !endLocal.ok) {
+    throw new Error("invalidDate");
+  }
+  return {start: startLocal.instant, endExclusive: endLocal.instant};
+}
+
+/**
  * Half-open Zurich calendar-month bounds as UTC instants.
  * 1 September 2026 00:00 Zurich ≤ t < 1 October 2026 00:00 Zurich.
  */

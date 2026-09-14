@@ -15,6 +15,10 @@ source of truth and overrides generic design preferences.
 - Pure white and black foundation: use existing theme tokens; never add beige,
   cream, bronze, brown, gradients, or another accent color. Use the existing
   gold tokens only for primary CTA hover and small uppercase eyebrow labels.
+  The admin room-booking index may mark Confirmed/Cancelled with a 3px left
+  rail and status type in the `status-ok` / `status-stop` tokens; never fill
+  a card, row or button with those colours. The therapist My bookings list
+  uses the same status rails.
 - Minimalist, mildly brutalist, classy: strong rules, editorial type, compact
   spacing, 2px corners, no shadows, no pills.
 - Present multiple courses or dates as compact equal-height bordered card
