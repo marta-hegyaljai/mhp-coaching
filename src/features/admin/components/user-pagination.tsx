@@ -6,6 +6,7 @@ export function UserListPagination({
   page,
   pageCount,
   labels,
+  className = "mt-6",
 }: {
   query: UserListQuery;
   page: number;
@@ -15,6 +16,7 @@ export function UserListPagination({
     next: string;
     pageStatus: string;
   };
+  className?: string;
 }) {
   if (pageCount <= 1) {
     return null;
@@ -22,7 +24,7 @@ export function UserListPagination({
 
   return (
     <Pagination
-      className="mt-6"
+      className={className}
       previous={page > 1 ? userListHrefForPage(query, page - 1) : null}
       next={page < pageCount ? userListHrefForPage(query, page + 1) : null}
       status={labels.pageStatus}

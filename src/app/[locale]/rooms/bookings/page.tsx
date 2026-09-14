@@ -15,6 +15,7 @@ import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {buttonStyles} from "@/shared/ui/button";
 import {Eyebrow, Section} from "@/shared/ui/layout";
+import {PageHeader} from "@/shared/ui/page-header";
 import {Panel} from "@/shared/ui/panel";
 
 type BookingsPageProps = {
@@ -69,8 +70,7 @@ export default async function RoomBookingsPage({params, searchParams}: BookingsP
     <SiteShell locale={locale} footerCta={null}>
       <Section size="sm" className="pt-10 pb-16">
         <Eyebrow>{t("eyebrow")}</Eyebrow>
-        <h1 className="mt-3 font-serif text-heading">{t("bookingsTitle")}</h1>
-        <p className="mt-4 max-w-2xl text-sm leading-7 text-ink-muted">{t("bookingsIntro")}</p>
+        <PageHeader className="mt-3" title={t("bookingsTitle")} intro={t("bookingsIntro")} />
         <RoomsNav current="bookings" />
 
         {notice ? (
@@ -91,6 +91,8 @@ export default async function RoomBookingsPage({params, searchParams}: BookingsP
             layoutLabel={t("layoutLabel")}
             tableLabel={t("layoutTable")}
             cardsLabel={t("layoutCards")}
+            upcomingCount={t("bookingGroupCount", {count: upcoming.length})}
+            historyCount={t("bookingGroupCount", {count: history.length})}
             tableLabels={{
               when: t("bookingWhen"),
               room: t("bookingRoom"),

@@ -1,7 +1,7 @@
 import {getTranslations, setRequestLocale} from "next-intl/server";
 
 import {AdminSubnav, adminSectionLabels} from "@/features/admin/components/admin-subnav";
-import {InviteUserForm} from "@/features/admin/components/invite-form";
+import {InviteUserDialog} from "@/features/admin/components/invite-user-dialog";
 import {UserListFilters} from "@/features/admin/components/user-filters";
 import {UserListPagination} from "@/features/admin/components/user-pagination";
 import {AdminUserTable} from "@/features/admin/components/user-table";
@@ -14,6 +14,7 @@ import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {Eyebrow, Section} from "@/shared/ui/layout";
+import {PageHeader} from "@/shared/ui/page-header";
 
 type AdminUsersPageProps = {
   params: Promise<{locale: AppLocale}>;
@@ -59,8 +60,7 @@ export default async function AdminUsersPage({params, searchParams}: AdminUsersP
           label={t("sectionsNav")}
           labels={adminSectionLabels(t)}
         />
-        <h1 className="mt-3 font-serif text-heading">{t("title")}</h1>
-        <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-muted">{t("intro")}</p>
+        <PageHeader className="mt-3" title={t("title")} intro={t("intro")} />
         <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-muted">{t("identityNote")}</p>
         <p className="mt-3 text-sm">
           <Link href="/staff/bookings" className="underline-offset-4 hover:underline">
@@ -68,13 +68,20 @@ export default async function AdminUsersPage({params, searchParams}: AdminUsersP
           </Link>
         </p>
 
-        <div className="mt-10">
-          <h2 className="font-serif text-subheading">{t("listTitle")}</h2>
-          <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-muted">{t("listIntro")}</p>
-          <div className="mt-6">
+        <div className="mx-auto mt-8 max-w-5xl overflow-hidden rounded-panel border border-ink bg-white">
+          <div className="flex flex-wrap items-start justify-between gap-4 px-4 py-4">
+            <div className="min-w-0">
+              <h2 className="font-serif text-subheading">{t("listTitle")}</h2>
+              <p className="mt-2 max-w-2xl text-sm leading-7 text-ink-muted">{t("listIntro")}</p>
+            </div>
+            <InviteUserDialog locale={locale} />
+          </div>
+
+          <div className="border-t border-line px-4 py-3">
             <UserListFilters
               locale={locale}
               query={query}
+              frame="inline"
               labels={{
                 search: t("search"),
                 searchPlaceholder: t("searchPlaceholder"),
@@ -93,11 +100,14 @@ export default async function AdminUsersPage({params, searchParams}: AdminUsersP
               }}
             />
           </div>
-          <p className="mt-4 text-sm text-ink-muted">
+
+          <p className="border-t border-line px-4 py-3 font-sans text-sm tabular-nums text-ink-muted">
             {t("resultCount", {shown: users.length, total: listing.total})}
           </p>
-          <div className="mt-4">
+
+          <div className="border-t border-line">
             <AdminUserTable
+              embedded
               users={users}
               labels={{
                 name: t("name"),
@@ -115,25 +125,22 @@ export default async function AdminUsersPage({params, searchParams}: AdminUsersP
               }}
             />
           </div>
-          <UserListPagination
-            query={{...query, page: listing.page}}
-            page={listing.page}
-            pageCount={listing.total === 0 ? 1 : listing.pageCount}
-            labels={{
-              previous: t("previous"),
-              next: t("next"),
-              pageStatus: t("pageStatus", {
-                page: listing.page,
-                pageCount: listing.pageCount,
-              }),
-            }}
-          />
-        </div>
 
-        <div className="mt-16">
-          <h2 className="font-serif text-subheading">{t("invite")}</h2>
-          <div className="mt-6">
-            <InviteUserForm locale={locale} />
+          <div className="border-t border-line px-4 pb-4">
+            <UserListPagination
+              query={{...query, page: listing.page}}
+              page={listing.page}
+              pageCount={listing.total === 0 ? 1 : listing.pageCount}
+              className="border-t-0 pt-4"
+              labels={{
+                previous: t("previous"),
+                next: t("next"),
+                pageStatus: t("pageStatus", {
+                  page: listing.page,
+                  pageCount: listing.pageCount,
+                }),
+              }}
+            />
           </div>
         </div>
       </Section>

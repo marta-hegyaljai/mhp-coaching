@@ -50,6 +50,12 @@ export const fieldLabelClass = "block text-sm font-medium text-ink";
 type FieldFrameProps = {
   id: string;
   label: string;
+  /**
+   * Keeps the label for assistive technology only. Reserved for single-control
+   * toolbars where the placeholder repeats the label; data entry keeps it
+   * visible.
+   */
+  labelHidden?: boolean;
   /** Rendered under the control; also announced through `aria-describedby`. */
   help?: ReactNode;
   error?: string;
@@ -57,17 +63,25 @@ type FieldFrameProps = {
   className?: string;
 };
 
-function FieldFrame({id, label, help, error, children, className = ""}: FieldFrameProps) {
+function FieldFrame({
+  id,
+  label,
+  labelHidden = false,
+  help,
+  error,
+  children,
+  className = "",
+}: FieldFrameProps) {
   const helpId = help ? `${id}-help` : undefined;
   const errorId = error ? `${id}-error` : undefined;
   const describedBy = [helpId, errorId].filter(Boolean).join(" ") || undefined;
 
   return (
     <div className={className}>
-      <label htmlFor={id} className={fieldLabelClass}>
+      <label htmlFor={id} className={labelHidden ? "sr-only" : fieldLabelClass}>
         {label}
       </label>
-      <div className="mt-2">{children(describedBy)}</div>
+      <div className={labelHidden ? "" : "mt-2"}>{children(describedBy)}</div>
       {help ? (
         <p id={helpId} className="mt-2 text-sm leading-6 text-ink-muted">
           {help}
@@ -125,6 +139,7 @@ type InputFieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "id" | "class
   StyleOptions & {
     id: string;
     label: string;
+    labelHidden?: boolean;
     help?: ReactNode;
     error?: string;
     fieldClassName?: string;
@@ -133,6 +148,7 @@ type InputFieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "id" | "class
 export function InputField({
   id,
   label,
+  labelHidden,
   help,
   error,
   size,
@@ -141,7 +157,14 @@ export function InputField({
   ...input
 }: InputFieldProps) {
   return (
-    <FieldFrame id={id} label={label} help={help} error={error} className={fieldClassName}>
+    <FieldFrame
+      id={id}
+      label={label}
+      labelHidden={labelHidden}
+      help={help}
+      error={error}
+      className={fieldClassName}
+    >
       {(describedBy) => (
         <input
           {...input}

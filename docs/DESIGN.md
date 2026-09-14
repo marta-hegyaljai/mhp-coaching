@@ -174,6 +174,11 @@ primary action behind an ambiguous icon.
 - Filters sit directly above the list they narrow and pin to the viewport only
   from `lg`, where the bar is one row and cannot cover the results. State the
   visible count against the catalogue total next to them.
+- Group view, filter and presentation controls in the one hairline toolbar
+  (`<Toolbar>` in `src/shared/ui/toolbar.tsx`) directly above the list; never
+  scatter a segmented control, a checkbox and a layout switch as loose rows.
+  The screen leads with `<PageHeader>`: title, one line of orientation and the
+  single primary action on the title line, so the records stay near the fold.
 - Reordering swaps neighbours in the full catalogue, so offer the move controls
   only on the unfiltered list and say why they are gone otherwise.
 - Status styles remain monochrome and textual on public catalogue and
@@ -184,8 +189,11 @@ primary action behind an ambiguous icon.
   colours.
 - Therapist My bookings keeps Upcoming and History as two lists, both newest
   first. Hide cancelled rows unless Show cancelled is on. Default to a dense
-  table from `lg`; stacked full-width cards below `lg` or when the therapist
-  chooses Cards. Do not add a day view or an owner column.
+  table from `lg`; below `lg`, or when the therapist chooses Cards, use the
+  shared booking card (`booking-list/booking-card.tsx`): full width on a phone,
+  two equal-height columns from `lg`. The staff booking list uses the same card
+  with the therapist as its title. Do not add a day view or an owner column to
+  My bookings.
 - Collapse consecutive slots that share a state into one continuous labelled
   bar with its start–end time, the same way a multi-day course session renders
   as one bar. Never repeat the same state label in every interval row.

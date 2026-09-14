@@ -8,17 +8,37 @@ import {AuthAlert, AuthField, AuthNotice} from "@/features/auth/components/auth-
 import {Button} from "@/shared/ui/button";
 import {SpinnerIcon} from "@/shared/ui/icons";
 
-export function InviteUserForm({locale}: {locale: string}) {
+export function InviteUserForm({
+  locale,
+  onDismiss,
+}: {
+  locale: string;
+  /** Called from the success state when the dialog should close. */
+  onDismiss?: () => void;
+}) {
   const t = useTranslations("Admin");
+  const rooms = useTranslations("Rooms");
   const [state, formAction, pending] = useActionState(
     inviteUserAction.bind(null, locale),
     null,
   );
 
+  if (state?.ok) {
+    return (
+      <div className="space-y-5">
+        <AuthNotice>{t("invited")}</AuthNotice>
+        {onDismiss ? (
+          <Button type="button" onClick={onDismiss}>
+            {rooms("closeDialog")}
+          </Button>
+        ) : null}
+      </div>
+    );
+  }
+
   return (
-    <form action={formAction} className="max-w-xl space-y-5" noValidate aria-busy={pending}>
+    <form action={formAction} className="space-y-5" noValidate aria-busy={pending}>
       {state?.error ? <AuthAlert>{state.error}</AuthAlert> : null}
-      {state?.ok ? <AuthNotice>{t("invited")}</AuthNotice> : null}
       <div className="grid gap-5 sm:grid-cols-2">
         <AuthField name="firstName" label={t("firstName")} autoComplete="given-name" />
         <AuthField name="lastName" label={t("lastName")} autoComplete="family-name" />

@@ -3,16 +3,18 @@ import {localizedPath} from "@/features/seo/metadata";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {Button} from "@/shared/ui/button";
-import {FilterBar} from "@/shared/ui/filter-bar";
+import {FilterBar, type FilterBarFrame} from "@/shared/ui/filter-bar";
 import {InputField, SelectField} from "@/shared/ui/field";
 
 export function UserListFilters({
   locale,
   query,
   labels,
+  frame = "panel",
 }: {
   locale: AppLocale;
   query: UserListQuery;
+  frame?: FilterBarFrame;
   labels: {
     search: string;
     searchPlaceholder: string;
@@ -47,7 +49,8 @@ export function UserListFilters({
     <FilterBar
       action={localizedPath(locale, "/admin/users")}
       label={labels.filter}
-      columnsClassName="sm:grid-cols-[minmax(0,1fr)_11rem_11rem_auto]"
+      frame={frame}
+      columnsClassName="lg:grid-cols-[minmax(0,1fr)_11rem_11rem_auto]"
       actions={
         <>
           <Button type="submit" variant="secondary">

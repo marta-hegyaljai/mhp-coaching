@@ -13,6 +13,7 @@ import {
   type OwnBookingTableLabels,
 } from "@/features/rooms/components/own-bookings/booking-table";
 import type {OwnBookingItem} from "@/features/rooms/components/own-bookings/item";
+import {Toolbar, ToolbarRow, toolbarGroupClass} from "@/shared/ui/toolbar";
 
 export function OwnBookingLists({
   upcoming,
@@ -25,6 +26,8 @@ export function OwnBookingLists({
   layoutLabel,
   tableLabel,
   cardsLabel,
+  upcomingCount,
+  historyCount,
   tableLabels,
   toolbar,
 }: {
@@ -38,45 +41,55 @@ export function OwnBookingLists({
   layoutLabel: string;
   tableLabel: string;
   cardsLabel: string;
+  upcomingCount: string;
+  historyCount: string;
   tableLabels: OwnBookingTableLabels;
   toolbar?: ReactNode;
 }) {
   const [layout, setLayout] = useBookingsLayout(OWN_BOOKINGS_LAYOUT_KEY);
 
   return (
-    <div className="mt-8 space-y-8">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        {toolbar ?? <span />}
-        <BookingsLayoutSwitch
-          label={layoutLabel}
-          tableLabel={tableLabel}
-          cardsLabel={cardsLabel}
-          value={layout}
-          onChange={setLayout}
+    <div className="mt-8">
+      <Toolbar>
+        <ToolbarRow className={`${toolbarGroupClass} justify-between`}>
+          {toolbar ?? <span />}
+          <BookingsLayoutSwitch
+            label={layoutLabel}
+            tableLabel={tableLabel}
+            cardsLabel={cardsLabel}
+            value={layout}
+            onChange={setLayout}
+          />
+        </ToolbarRow>
+      </Toolbar>
+
+      <div className="mt-8 space-y-8">
+        <BookingGroup
+          title={upcomingTitle}
+          count={upcomingCount}
+          empty={upcomingEmpty}
+          items={upcoming}
+          layout={layout}
+          openLabel={openLabel}
+          tableLabels={tableLabels}
+        />
+        <BookingGroup
+          title={historyTitle}
+          count={historyCount}
+          empty={historyEmpty}
+          items={history}
+          layout={layout}
+          openLabel={openLabel}
+          tableLabels={tableLabels}
         />
       </div>
-      <BookingGroup
-        title={upcomingTitle}
-        empty={upcomingEmpty}
-        items={upcoming}
-        layout={layout}
-        openLabel={openLabel}
-        tableLabels={tableLabels}
-      />
-      <BookingGroup
-        title={historyTitle}
-        empty={historyEmpty}
-        items={history}
-        layout={layout}
-        openLabel={openLabel}
-        tableLabels={tableLabels}
-      />
     </div>
   );
 }
 
 function BookingGroup({
   title,
+  count,
   empty,
   items,
   layout,
@@ -84,6 +97,7 @@ function BookingGroup({
   tableLabels,
 }: {
   title: string;
+  count: string;
   empty: string;
   items: OwnBookingItem[];
   layout: "table" | "cards";
@@ -92,14 +106,14 @@ function BookingGroup({
 }) {
   return (
     <section>
-      <div className="flex items-baseline justify-between gap-3">
+      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
         <h2 className="font-serif text-subheading">{title}</h2>
-        <p className="font-sans text-sm tabular-nums text-ink-muted">{items.length}</p>
+        <p className="font-sans text-sm tabular-nums text-ink-muted">{count}</p>
       </div>
       {items.length === 0 ? (
         <p className="mt-3 text-sm leading-7 text-ink-muted">{empty}</p>
       ) : (
-        <div className="mt-3">
+        <div className="mt-4">
           <div className="lg:hidden">
             <OwnBookingCards items={items} openLabel={openLabel} todayLabel={tableLabels.today} />
           </div>

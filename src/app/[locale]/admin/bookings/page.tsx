@@ -6,23 +6,22 @@ import {
   adminBookingListHref,
   adminBookingListHrefForPage,
   parseAdminBookingQuery,
-  showsCancelledBookings,
 } from "@/features/rooms/admin-booking-query";
 import {AdminBookingDayAgenda} from "@/features/rooms/components/admin/bookings/day-agenda";
 import {presentAdminBooking} from "@/features/rooms/components/admin/bookings/item";
+import {AdminBookingsLayoutToggle} from "@/features/rooms/components/admin/bookings/layout-toggle";
 import {AdminBookingListResults} from "@/features/rooms/components/admin/bookings/list-results";
-import {AdminBookingsViewToolbar} from "@/features/rooms/components/admin/bookings/view-toolbar";
+import {AdminBookingsToolbar} from "@/features/rooms/components/admin/bookings/toolbar";
 import {listAdminBookingMetrics, listAdminBookingsPage} from "@/features/rooms/repository";
 import {todayInZurich} from "@/features/rooms/timezone";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
-import {buttonStyles, Button} from "@/shared/ui/button";
-import {InputField} from "@/shared/ui/field";
-import {FilterBar} from "@/shared/ui/filter-bar";
+import {buttonStyles} from "@/shared/ui/button";
 import {Eyebrow, Section} from "@/shared/ui/layout";
 import {MetricStrip} from "@/shared/ui/metric-strip";
+import {PageHeader} from "@/shared/ui/page-header";
 import {Pagination} from "@/shared/ui/pagination";
 
 type AdminBookingsPageProps = {
@@ -89,16 +88,19 @@ export default async function AdminBookingsPage({params, searchParams}: AdminBoo
           label={t("sectionsNav")}
           labels={adminSectionLabels(t)}
         />
-        <h1 className="mt-6 font-serif text-heading">{t("adminBookingsTitle")}</h1>
-        <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-muted">{t("adminBookingsIntro")}</p>
-        <p className="mt-6">
-          <Link href="/admin/bookings/new" className={buttonStyles()}>
-            {t("createBooking")}
-          </Link>
-        </p>
+        <PageHeader
+          className="mt-6"
+          title={t("adminBookingsTitle")}
+          intro={t("adminBookingsIntro")}
+          action={
+            <Link href="/admin/bookings/new" className={buttonStyles()}>
+              {t("createBooking")}
+            </Link>
+          }
+        />
 
         <MetricStrip
-          className="mt-10"
+          className="mt-8"
           density="trio"
           metrics={[
             {
@@ -137,11 +139,20 @@ export default async function AdminBookingsPage({params, searchParams}: AdminBoo
           ]}
         />
 
-        <div className="mt-8">
-          <AdminBookingsViewToolbar
+        <div className="mt-6">
+          <AdminBookingsToolbar
             locale={locale}
             query={query}
             today={today}
+            trailing={
+              isDay ? null : (
+                <AdminBookingsLayoutToggle
+                  label={t("layoutLabel")}
+                  tableLabel={t("layoutTable")}
+                  cardsLabel={t("layoutCards")}
+                />
+              )
+            }
             labels={{
               view: t("bookingsView"),
               list: t("viewList"),
@@ -152,80 +163,29 @@ export default async function AdminBookingsPage({params, searchParams}: AdminBoo
               jumpToDate: t("jumpToDate"),
               includesToday: t("includesToday"),
               timezone: rooms("timezoneLabel"),
+              filter: t("filter"),
+              clearFilters: t("clearFilters"),
+              search: t("searchBookings"),
+              searchPlaceholder: t("searchBookingsPlaceholder"),
+              showCancelled: t("showCancelled"),
             }}
           />
-        </div>
 
-        <div className="mt-6">
-          <FilterBar
-            action={localizedPath(locale, "/admin/bookings")}
-            label={t("filter")}
-            columnsClassName="sm:grid-cols-[minmax(0,1fr)_auto_auto]"
-            actions={
-              <>
-                <Button type="submit" variant="secondary">
-                  {t("filter")}
-                </Button>
-                <Link
-                  href={adminBookingListHref({
-                    q: "",
-                    status: "CONFIRMED",
-                    view: query.view,
-                    date: query.date,
-                    page: 1,
-                  })}
-                  className="text-sm underline-offset-4 hover:underline"
-                >
-                  {t("clearFilters")}
-                </Link>
-              </>
-            }
-          >
-            <InputField
-              id="booking-search"
-              name="q"
-              type="search"
-              size="sm"
-              label={t("searchBookings")}
-              defaultValue={query.q}
-              autoComplete="off"
-            />
-            <label className="flex min-h-11 items-center gap-3 text-sm text-ink sm:mb-0.5">
-              <input
-                type="checkbox"
-                name="status"
-                value="all"
-                defaultChecked={showsCancelledBookings(query.status)}
-                className="h-4 w-4 rounded-panel border-ink"
-              />
-              {t("showCancelled")}
-              {isDay ? (
-                <>
-                  <input type="hidden" name="view" value="day" />
-                  <input type="hidden" name="date" value={query.date} />
-                </>
-              ) : null}
-            </label>
-          </FilterBar>
-
-          <p className="mt-4 font-sans text-sm tabular-nums text-ink-muted">
+          <p className="mt-3 font-sans text-sm tabular-nums text-ink-muted">
             {t("bookingCount", {shown: listing.rows.length, total: listing.total})}
           </p>
 
           {listing.rows.length === 0 ? (
             <p className="mt-6 text-sm leading-7 text-ink-muted">{emptyMessage}</p>
           ) : isDay ? (
-            <div className="mt-6">
+            <div className="mt-4">
               <AdminBookingDayAgenda items={items} openLabel={openLabel} />
             </div>
           ) : (
-            <div className="mt-6">
+            <div className="mt-4">
               <AdminBookingListResults
                 items={items}
                 openLabel={openLabel}
-                layoutLabel={t("layoutLabel")}
-                tableLabel={t("layoutTable")}
-                cardsLabel={t("layoutCards")}
                 tableLabels={{
                   when: t("bookingWhen"),
                   therapist: t("bookingOwner"),

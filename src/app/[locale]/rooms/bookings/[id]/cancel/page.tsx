@@ -14,8 +14,8 @@ import {getBookingSettings} from "@/features/rooms/settings";
 import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
-import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
+import {BackLink} from "@/shared/ui/back-link";
 import {Eyebrow, Section} from "@/shared/ui/layout";
 import {Panel} from "@/shared/ui/panel";
 import {SectionLabel} from "@/shared/ui/section-label";
@@ -75,16 +75,11 @@ export default async function CancelRoomBookingPage({params}: CancelPageProps) {
     >
       <Section size="sm" className="pt-10 pb-16">
         <Eyebrow>{t("eyebrow")}</Eyebrow>
-        <h1 className="mt-3 font-serif text-heading">{t("cancelTitle")}</h1>
-        <p className="mt-4 text-sm">
-          <Link
-            href={{pathname: "/rooms/bookings/[id]", params: {id}}}
-            className="underline-offset-4 hover:underline"
-          >
-            {t("backToBookings")}
-          </Link>
-        </p>
         <RoomsNav current="bookings" />
+        <BackLink href={{pathname: "/rooms/bookings/[id]", params: {id}}} className="mt-6">
+          {t("backToBooking")}
+        </BackLink>
+        <h1 className="mt-5 font-serif text-heading">{t("cancelTitle")}</h1>
         <p className="mt-8 max-w-2xl text-sm leading-7 text-ink-muted">{t("cancelIntro")}</p>
 
         <div className="mt-8 max-w-xl space-y-6">

@@ -23,6 +23,7 @@ import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {availabilityHref} from "@/features/rooms/query";
+import {BackLink} from "@/shared/ui/back-link";
 import {buttonStyles} from "@/shared/ui/button";
 import {Eyebrow, Section} from "@/shared/ui/layout";
 import {Panel, PanelDivider} from "@/shared/ui/panel";
@@ -113,13 +114,11 @@ export default async function RoomBookingDetailPage({params, searchParams}: Book
     >
       <Section size="sm" className="pt-10 pb-16">
         <Eyebrow>{t("eyebrow")}</Eyebrow>
-        <h1 className="mt-3 font-serif text-heading">{t("bookingDetailTitle")}</h1>
-        <p className="mt-4 text-sm">
-          <Link href="/rooms/bookings" className="underline-offset-4 hover:underline">
-            {t("backToBookings")}
-          </Link>
-        </p>
         <RoomsNav current="bookings" />
+        <BackLink href="/rooms/bookings" className="mt-6">
+          {t("backToBookings")}
+        </BackLink>
+        <h1 className="mt-5 font-serif text-heading">{t("bookingDetailTitle")}</h1>
 
         {notice ? (
           <div className="mt-8 max-w-xl">
