@@ -1,6 +1,7 @@
 import {Link} from "@/i18n/navigation";
 import {buttonStyles} from "@/shared/ui/button";
 import {ArrowRightIcon} from "@/shared/ui/icons";
+import {Eyebrow} from "@/shared/ui/layout";
 
 export function CourseAdviceOffer({
   courseSlug,
@@ -23,9 +24,7 @@ export function CourseAdviceOffer({
 }) {
   return (
     <div className={className}>
-      <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-gold">
-        {eyebrow}
-      </p>
+      <Eyebrow>{eyebrow}</Eyebrow>
       <p className="mt-2 text-sm font-medium leading-6 text-ink">{title}</p>
       <p className="mt-1 text-sm leading-6 text-ink-muted">{body}</p>
       <Link

@@ -138,6 +138,18 @@ export default async function BookCoursePage({
           </p>
         </div>
 
+        <aside className="mt-8 max-w-xl border border-line bg-white p-5 sm:p-6">
+          <CourseAdviceOffer
+            courseSlug={course.slug[locale]}
+            eyebrow={adviceT("eyebrow")}
+            title={adviceT("offerTitle")}
+            body={adviceT("offerBody")}
+            callLabel={adviceT("offerCall")}
+            writePrompt={adviceT("offerWritePrompt")}
+            writeLabel={adviceT("offerWrite")}
+          />
+        </aside>
+
         <div className="mt-10 sm:mt-12">
           {showWaitlist ? (
             <WaitlistForm
@@ -157,18 +169,6 @@ export default async function BookCoursePage({
             />
           )}
         </div>
-
-        <aside className="mt-12 max-w-xl border-t border-line pt-8">
-          <CourseAdviceOffer
-            courseSlug={course.slug[locale]}
-            eyebrow={adviceT("eyebrow")}
-            title={adviceT("offerTitle")}
-            body={adviceT("offerBody")}
-            callLabel={adviceT("offerCall")}
-            writePrompt={adviceT("offerWritePrompt")}
-            writeLabel={adviceT("offerWrite")}
-          />
-        </aside>
       </Section>
     </SiteShell>
   );

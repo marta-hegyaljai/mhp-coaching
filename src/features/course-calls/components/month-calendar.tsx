@@ -41,24 +41,30 @@ export function MonthCalendar({
   );
   const weekdays = useMemo(() => weekdayHeadings(locale), [locale]);
   const monthLabel = formatMonthYear(toIsoDate(cursor.year, cursor.month, 1), locale);
+  const prevMonth = shiftMonth(cursor.year, cursor.month, -1);
+  const nextMonth = shiftMonth(cursor.year, cursor.month, 1);
+  const prevDisabled = toIsoDate(prevMonth.year, prevMonth.month + 1, 0) < min;
+  const nextDisabled = toIsoDate(nextMonth.year, nextMonth.month, 1) > max;
 
   return (
     <div className="rounded-panel border border-ink bg-white p-3 sm:p-4">
       <div className="flex items-center justify-between gap-2">
         <button
           type="button"
-          onClick={() => onMonthChange(shiftMonth(cursor.year, cursor.month, -1))}
+          disabled={prevDisabled}
+          onClick={() => onMonthChange(prevMonth)}
           aria-label={t("previousMonth")}
-          className="flex size-11 items-center justify-center rounded-panel border border-line text-ink transition-colors duration-150 hover:bg-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+          className="flex size-11 items-center justify-center rounded-panel border border-line text-ink transition-colors duration-150 hover:bg-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink disabled:cursor-not-allowed disabled:opacity-35"
         >
           <ChevronLeftIcon />
         </button>
         <p className="min-w-0 text-center text-sm font-semibold capitalize">{monthLabel}</p>
         <button
           type="button"
-          onClick={() => onMonthChange(shiftMonth(cursor.year, cursor.month, 1))}
+          disabled={nextDisabled}
+          onClick={() => onMonthChange(nextMonth)}
           aria-label={t("nextMonth")}
-          className="flex size-11 items-center justify-center rounded-panel border border-line text-ink transition-colors duration-150 hover:bg-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+          className="flex size-11 items-center justify-center rounded-panel border border-line text-ink transition-colors duration-150 hover:bg-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink disabled:cursor-not-allowed disabled:opacity-35"
         >
           <ChevronRightIcon />
         </button>

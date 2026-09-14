@@ -1,14 +1,16 @@
 "use client";
 
-import {useActionState, useMemo, useState} from "react";
+import {useActionState, useEffect, useMemo, useState} from "react";
 import {useTranslations} from "next-intl";
 
 import {scheduleCourseCallAction} from "@/features/course-calls/actions";
 import {MonthCalendar} from "@/features/course-calls/components/month-calendar";
+import {formatWeekdayDate} from "@/shared/format/calendar-date";
 import {parseIsoDate} from "@/shared/ui/date-field-calendar";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {InputField, TextareaField} from "@/shared/ui/field";
+import {Eyebrow} from "@/shared/ui/layout";
 import {SubmitButton} from "@/shared/ui/submit-button";
 
 export function CallScheduler({
@@ -51,6 +53,23 @@ export function CallScheduler({
     null,
   );
 
+  useEffect(() => {
+    const draft = state?.draft;
+    if (!draft || state.ok) {
+      return;
+    }
+    if (draft.date && availableDates.includes(draft.date)) {
+      setDate(draft.date);
+      const parsedDate = parseIsoDate(draft.date);
+      if (parsedDate) {
+        setCursor({year: parsedDate.year, month: parsedDate.month});
+      }
+    }
+    if (draft.time) {
+      setTime(draft.time);
+    }
+  }, [availableDates, state]);
+
   if (state?.ok) {
     return (
       <p role="status" className="border border-ink bg-white px-5 py-6 text-sm leading-7 text-ink">
@@ -61,15 +80,18 @@ export function CallScheduler({
 
   const errors = state?.errors;
   const draft = state?.draft;
-  const activeDate = draft?.date && available.has(draft.date) ? draft.date : date;
+  const activeDate = date;
   const slots = slotsByDate[activeDate] ?? [];
-  const selectedTime =
-    draft?.time && slots.some((slot) => slot.time === draft.time) ? draft.time : time;
+  const selectedTime = slots.some((slot) => slot.time === time) ? time : "";
   const selectedSlot = slots.find((slot) => slot.time === selectedTime);
+  const morning = slots.filter((slot) => slot.time < "12:00");
+  const afternoon = slots.filter((slot) => slot.time >= "12:00");
+  const showGroups = morning.length > 0 && afternoon.length > 0;
+  const selectedDayLabel = formatWeekdayDate(activeDate, locale);
 
   return (
     <form action={formAction} noValidate className="space-y-10" aria-busy={pending}>
-      <input type="hidden" name="date" value={draft?.date || activeDate} />
+      <input type="hidden" name="date" value={activeDate} />
       <input type="hidden" name="time" value={selectedTime} />
       <div className="hidden" aria-hidden="true">
         <label htmlFor="company">{t("company")}</label>
@@ -84,9 +106,7 @@ export function CallScheduler({
 
       <div className="grid gap-8 lg:grid-cols-12 lg:items-start lg:gap-10">
         <div className="lg:col-span-5">
-          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-gold">
-            {t("dateEyebrow")}
-          </p>
+          <Eyebrow>{t("dateEyebrow")}</Eyebrow>
           <h2 className="mt-2 font-serif text-subheading">{t("dateTitle")}</h2>
           <p className="mt-2 text-sm leading-6 text-ink-muted">{t("dateHelp")}</p>
           <div className="mt-5">
@@ -106,10 +126,10 @@ export function CallScheduler({
         </div>
 
         <div className="lg:col-span-7">
-          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-gold">
-            {t("slotEyebrow")}
-          </p>
-          <h2 className="mt-2 font-serif text-subheading">{t("slotTitle")}</h2>
+          <Eyebrow>{t("slotEyebrow")}</Eyebrow>
+          <h2 className="mt-2 font-serif text-subheading first-letter:uppercase">
+            {selectedDayLabel}
+          </h2>
           <p className="mt-2 text-sm leading-6 text-ink-muted">{t("slotHelp")}</p>
           {slots.length === 0 ? (
             <p className="mt-5 border border-line bg-white px-4 py-5 text-sm leading-7 text-ink-muted">
@@ -126,30 +146,21 @@ export function CallScheduler({
               </Link>
             </p>
           ) : (
-            <div
-              role="radiogroup"
-              aria-label={t("slotTitle")}
-              className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-3"
-            >
-              {slots.map((slot) => {
-                const selected = slot.time === selectedTime;
-                return (
-                  <button
-                    key={slot.time}
-                    type="button"
-                    role="radio"
-                    aria-checked={selected}
-                    onClick={() => setTime(slot.time)}
-                    className={`flex min-h-11 items-center justify-center rounded-panel border font-sans text-sm tabular-nums transition-colors duration-150 ease-standard focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink ${
-                      selected
-                        ? "border-ink bg-ink text-parchment"
-                        : "border-line bg-white text-ink hover:bg-hover"
-                    }`}
-                  >
-                    {slot.label}
-                  </button>
-                );
-              })}
+            <div role="radiogroup" aria-label={t("slotTitle")} className="mt-5 space-y-5">
+              <SlotGroup
+                label={showGroups ? t("morning") : undefined}
+                slots={showGroups ? morning : slots}
+                selectedTime={selectedTime}
+                onSelect={setTime}
+              />
+              {showGroups ? (
+                <SlotGroup
+                  label={t("afternoon")}
+                  slots={afternoon}
+                  selectedTime={selectedTime}
+                  onSelect={setTime}
+                />
+              ) : null}
             </div>
           )}
           {errors?.date || errors?.time || errors?.slot ? (
@@ -161,13 +172,11 @@ export function CallScheduler({
       </div>
 
       <div className="border-t border-line pt-10">
-        <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-gold">
-          {t("detailsEyebrow")}
-        </p>
+        <Eyebrow>{t("detailsEyebrow")}</Eyebrow>
         <h2 className="mt-2 font-serif text-subheading">{t("detailsTitle")}</h2>
         {selectedSlot ? (
           <p className="mt-2 text-sm leading-6 text-ink-muted">
-            {t("selectedSummary", {time: selectedSlot.label})}
+            {t("selectedSummary", {date: selectedDayLabel, time: selectedSlot.label})}
           </p>
         ) : (
           <p className="mt-2 text-sm leading-6 text-ink-muted">{t("detailsHelp")}</p>
@@ -255,10 +264,52 @@ export function CallScheduler({
             pending={pending}
             label={t("submitCall")}
             pendingLabel={t("submitting")}
-            disabled={!selectedTime}
           />
         </div>
       </div>
     </form>
+  );
+}
+
+function SlotGroup({
+  label,
+  slots,
+  selectedTime,
+  onSelect,
+}: {
+  label?: string;
+  slots: Array<{time: string; label: string}>;
+  selectedTime: string;
+  onSelect: (time: string) => void;
+}) {
+  return (
+    <div>
+      {label ? (
+        <p className="mb-2 text-[0.65rem] font-bold uppercase tracking-[0.14em] text-ink-subtle">
+          {label}
+        </p>
+      ) : null}
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+        {slots.map((slot) => {
+          const selected = slot.time === selectedTime;
+          return (
+            <button
+              key={slot.time}
+              type="button"
+              role="radio"
+              aria-checked={selected}
+              onClick={() => onSelect(slot.time)}
+              className={`flex min-h-11 items-center justify-center rounded-panel border font-sans text-sm tabular-nums transition-colors duration-150 ease-standard focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink ${
+                selected
+                  ? "border-ink bg-ink text-parchment"
+                  : "border-line bg-white text-ink hover:bg-hover"
+              }`}
+            >
+              {slot.label}
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 }

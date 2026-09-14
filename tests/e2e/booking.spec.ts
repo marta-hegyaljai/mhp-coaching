@@ -210,3 +210,54 @@ test("the booking page keeps the advice offer beside enrolment", async ({page}) 
   await page.getByRole("link", {name: "Envoyer un message"}).click();
   await expect(page).toHaveURL(/conseil\?mode=write/);
 });
+
+test("a visitor can reserve a free fifteen-minute call", async ({page}) => {
+  const stamp = Date.now();
+  await page.goto("/fr/formations/praticien-hypnose-omni/conseil");
+
+  const slot = page.getByRole("radio").first();
+  await expect(slot).toBeVisible();
+  await slot.click();
+  await expect(slot).toHaveAttribute("aria-checked", "true");
+
+  await page.getByRole("textbox", {name: "Prénom", exact: true}).fill("Camille");
+  await page.getByRole("textbox", {name: "Nom", exact: true}).fill("Conseil");
+  await page
+    .getByRole("textbox", {name: "E-mail"})
+    .fill(`camille.conseil.${stamp}@example.test`);
+  await page.getByLabel("Téléphone").fill("+41 79 000 11 22");
+  await page.getByRole("checkbox").check();
+  await page.getByRole("button", {name: "Réserver cet appel"}).click();
+
+  await expect(page.getByRole("status")).toContainText("Cet horaire est réservé");
+});
+
+test("a visitor can send a written question instead of a call", async ({page}) => {
+  const stamp = Date.now();
+  await page.goto("/en/courses/omni-hypnosis-practitioner/advice?mode=write");
+
+  await expect(page.getByRole("heading", {level: 1})).toHaveText(
+    "A free fifteen-minute call",
+  );
+  await page.getByLabel("First name").fill("Elena");
+  await page.getByLabel("Last name").fill("Writer");
+  await page.getByLabel("Email").fill(`elena.writer.${stamp}@example.test`);
+  await page.getByLabel("Phone").fill("+41 79 000 33 44");
+  await page
+    .getByLabel("Your question")
+    .fill("Does this course suit a physician who already practises hypnosis?");
+  await page.getByRole("checkbox").check();
+  await page.getByRole("button", {name: "Send the message"}).click();
+
+  await expect(page.getByRole("status")).toContainText("Your message is with us");
+});
+
+test("the German course page still offers advice", async ({page}) => {
+  await page.goto("/de/ausbildungen/omni-hypnose-praktiker");
+  await expect(page.getByText("Eine Frage vor der Anmeldung?")).toBeVisible();
+  await page.getByRole("link", {name: "Zeit wählen"}).click();
+  await expect(page).toHaveURL(/\/beratung/);
+  await expect(page.getByRole("heading", {level: 1})).toHaveText(
+    "Ein kostenloses Gespräch von fünfzehn Minuten",
+  );
+});
