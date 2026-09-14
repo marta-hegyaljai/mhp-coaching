@@ -99,6 +99,8 @@ Initial durable concepts:
 - course bookings (the current table is named `bookings`)
 - optional payment_events
 - waitlist_entries for published courses (undated, or dated when no session fits)
+- course_call_hours, course_calls and course_inquiries for the free
+  fifteen-minute advice call and written questions from course pages
 
 Courses/course dates are seeded into PostgreSQL from the typed TypeScript
 catalogue (`src/features/courses/catalog.ts`) so go-live data is durable. Public

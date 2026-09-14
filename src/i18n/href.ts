@@ -5,6 +5,9 @@ export type PathnameHref =
       AppPathname,
       | "/courses/[slug]"
       | "/courses/[slug]/book"
+      | "/courses/[slug]/advice"
+      | "/admin/calls/[id]"
+      | "/admin/calls/messages/[id]"
       | "/invite/[token]"
       | "/reset-password/[token]"
       | "/verify-email/[token]"
@@ -39,6 +42,19 @@ export type PathnameHref =
       query?: {q?: string; category?: string; published?: string; upcoming?: string};
     }
   | {
+      pathname: "/admin/calls";
+      query?: {tab?: string; when?: string; q?: string; page?: string};
+    }
+  | {
+      pathname: "/admin/calls/[id]";
+      params: {id: string};
+      query?: {cancelled?: string};
+    }
+  | {
+      pathname: "/admin/calls/messages/[id]";
+      params: {id: string};
+    }
+  | {
       pathname: "/admin/courses/[id]";
       params: {id: string};
       query?: {
@@ -57,6 +73,11 @@ export type PathnameHref =
       pathname: "/courses/[slug]/book";
       params: {slug: string};
       query?: {date?: string; waitlist?: string};
+    }
+  | {
+      pathname: "/courses/[slug]/advice";
+      params: {slug: string};
+      query?: {mode?: string; date?: string};
     }
   | {
       pathname: "/invite/[token]";

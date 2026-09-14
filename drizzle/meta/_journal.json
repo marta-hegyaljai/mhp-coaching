@@ -148,6 +148,13 @@
       "when": 1789123000000,
       "tag": "0020_course_sessions_2027",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1789124000000,
+      "tag": "0021_course_calls",
+      "breakpoints": true
     }
   ]
 }

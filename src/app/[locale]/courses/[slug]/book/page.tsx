@@ -3,6 +3,7 @@ import {notFound} from "next/navigation";
 
 import {BookingForm} from "@/features/bookings/components/booking-form";
 import {WaitlistForm} from "@/features/waitlist/components/waitlist-form";
+import {CourseAdviceOffer} from "@/features/course-calls/components/advice-offer";
 import {checkoutDefaultsFromUser} from "@/features/auth/contact";
 import {getCurrentUser} from "@/features/auth/session";
 import {courseLocaleHrefs} from "@/features/courses/locale-hrefs";
@@ -82,6 +83,7 @@ export default async function BookCoursePage({
   }
 
   const t = await getTranslations("BookingForm");
+  const adviceT = await getTranslations("CourseAdvice");
   const waitlistT = await getTranslations("WaitlistForm");
   const coursesT = await getTranslations("CoursesPage");
   const courseT = await getTranslations("CourseDetail");
@@ -155,6 +157,18 @@ export default async function BookCoursePage({
             />
           )}
         </div>
+
+        <aside className="mt-12 max-w-xl border-t border-line pt-8">
+          <CourseAdviceOffer
+            courseSlug={course.slug[locale]}
+            eyebrow={adviceT("eyebrow")}
+            title={adviceT("offerTitle")}
+            body={adviceT("offerBody")}
+            callLabel={adviceT("offerCall")}
+            writePrompt={adviceT("offerWritePrompt")}
+            writeLabel={adviceT("offerWrite")}
+          />
+        </aside>
       </Section>
     </SiteShell>
   );

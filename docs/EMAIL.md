@@ -84,6 +84,10 @@ Add new mail as a function in `src/features/email/` that calls
 | Other payment method (lead) | `sendLeadNotification` | staff |
 | Contact / payment inquiry | `sendInquiryNotification` | staff |
 | Waiting list | `sendWaitlistNotification` | staff |
+| Course advice call reserved | `sendCourseCallConfirmation` | visitor |
+| Course advice call reserved | `sendCourseCallStaffNotification` | `contact@mhp-coaching.ch` |
+| Course written question | `sendCourseInquiryConfirmation` | visitor |
+| Course written question | `sendCourseInquiryStaffNotification` | `contact@mhp-coaching.ch` |
 | Account invitation | `sendAccountInvitation` | invited user |
 | Admin-created room booking | `sendAdminCreatedRoomBooking` | booking owner |
 | Admin-moved room booking | `sendAdminMovedRoomBooking` | booking owner |

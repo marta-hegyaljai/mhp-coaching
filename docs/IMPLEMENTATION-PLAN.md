@@ -33,6 +33,11 @@ landed on main and is merged here. CP-00 through CP-11 are complete. Remaining
 work is production credential attach (Neon restore rehearsal, live Stripe first
 charge, DNS) documented in LAUNCH.md — not a new checkpoint.
 
+Extra-roadmap (2026-09-14): a free 15-minute course advice call and written
+question flow shipped on course detail and booking pages, with admin-managed
+Zurich hours and collision-safe slots. This is course-domain work, not a new
+checkpoint.
+
 ## Status vocabulary
 
 Use exactly one of these values:

@@ -9,7 +9,7 @@ export const privacyDocument = {
   pathname: "/legal/privacy",
   titleKey: "privacyTitle",
   descriptionKey: "privacyDescription",
-  updatedAt: "2026-09-09",
+  updatedAt: "2026-09-14",
   sections: {
     fr: [
       {
@@ -28,6 +28,8 @@ export const privacyDocument = {
         items: [
           "Inscription à une formation : prénom, nom, e-mail, téléphone, adresse postale (rue, code postal, localité, pays), langue, formation et session choisies, montant, monnaie, état du paiement et horodatages associés. L’inscription est enregistrée dès l’envoi du formulaire, y compris si le paiement en ligne n’est pas mené à terme.",
           "Liste d’attente : prénom, nom, e-mail, téléphone, langue, formation concernée.",
+          "Appel conseil de quinze minutes : prénom, nom, e-mail, téléphone, langue, horaire réservé, formation consultée le cas échéant, et message facultatif.",
+          "Question écrite depuis une page de formation : prénom, nom, e-mail, téléphone, langue, message, et formation consultée le cas échéant.",
           "Formulaire de contact et demande d’un autre moyen de paiement : nom, e-mail, téléphone le cas échéant, message, langue, et éventuellement la formation ou la réservation concernée.",
           "Paiement : Stripe nous communique le statut de la transaction, un identifiant de paiement et les métadonnées nécessaires à la comptabilité. Nous ne stockons pas le numéro complet de carte ni le secret TWINT.",
           "Mesure d’audience : Vercel Analytics enregistre des statistiques d’usage agrégées, sans cookie et sans identifier nominativement les visiteurs.",
@@ -36,7 +38,7 @@ export const privacyDocument = {
       {
         heading: "Finalités et bases juridiques",
         paragraphs: [
-          "Les traitements visent à exécuter l’inscription, confirmer le paiement, vous écrire, tenir le registre de l’école, répondre aux messages, vous prévenir lorsqu’une session s’ouvre, et respecter les obligations comptables et légales suisses.",
+          "Les traitements visent à exécuter l’inscription, confirmer le paiement, vous écrire, tenir le registre de l’école, répondre aux messages, vous prévenir lorsqu’une session s’ouvre, honorer un appel conseil réservé, et respecter les obligations comptables et légales suisses.",
           "Bases : exécution du contrat d’inscription ou mesures précontractuelles ; obligations légales (comptabilité, fiscalité) ; intérêt légitime à exploiter un site sûr et à mesurer son audience de façon agrégée ; consentement lorsque vous acceptez cette notice avant d’envoyer un formulaire.",
         ],
       },
@@ -68,7 +70,7 @@ export const privacyDocument = {
         paragraphs: [
           "Les inscriptions, événements de paiement et pièces comptables sont conservés aussi longtemps que les obligations suisses de conservation l’exigent, en principe dix ans.",
           "Les demandes de liste d’attente sont conservées jusqu’à ce que la session soit communiquée ou que vous demandiez la suppression, et au plus tard vingt-quatre mois après l’inscription sur la liste.",
-          "Les messages de contact sont conservés le temps de traiter la demande, puis au plus deux ans, sauf besoin légal plus long.",
+          "Les messages de contact, questions écrites et appels conseil sont conservés le temps de traiter la demande, puis au plus deux ans, sauf besoin légal plus long.",
         ],
       },
       {
@@ -98,6 +100,8 @@ export const privacyDocument = {
         items: [
           "Kursanmeldung: Vorname, Nachname, E-Mail, Telefon, Postadresse (Strasse, PLZ, Ort, Land), Sprache, Kurs und Termin, Betrag, Währung, Zahlungsstatus und zugehörige Zeitstempel. Die Anmeldung wird beim Absenden gespeichert, auch wenn die Online-Zahlung nicht abgeschlossen wird.",
           "Warteliste: Vorname, Nachname, E-Mail, Telefon, Sprache, betroffener Kurs.",
+          "Fünfzehnminütiges Beratungsgespräch: Vorname, Nachname, E-Mail, Telefon, Sprache, reservierte Zeit, gegebenenfalls die betrachtete Ausbildung und eine optionale Nachricht.",
+          "Schriftliche Frage von einer Ausbildungsseite: Vorname, Nachname, E-Mail, Telefon, Sprache, Nachricht und gegebenenfalls die betrachtete Ausbildung.",
           "Kontaktformular und Wunsch nach einem anderen Zahlungsmittel: Name, E-Mail, gegebenenfalls Telefon, Nachricht, Sprache sowie gegebenenfalls Kurs oder Buchung.",
           "Zahlung: Stripe übermittelt Transaktionsstatus, eine Zahlungsreferenz und buchhalterisch nötige Metadaten. Wir speichern keine vollständige Kartennummer und kein TWINT-Geheimnis.",
           "Reichweitenmessung: Vercel Analytics erfasst aggregierte Nutzungsstatistiken ohne Cookies und ohne namentliche Identifikation.",
@@ -106,7 +110,7 @@ export const privacyDocument = {
       {
         heading: "Zwecke und Rechtsgrundlagen",
         paragraphs: [
-          "Die Daten dienen der Anmeldung, der Zahlungsbestätigung, der Korrespondenz, dem internen Register, der Beantwortung von Nachrichten, der Information bei neuen Terminen sowie gesetzlichen Buchführungs- und Aufbewahrungspflichten.",
+          "Die Daten dienen der Anmeldung, der Zahlungsbestätigung, der Korrespondenz, dem internen Register, der Beantwortung von Nachrichten, der Information bei neuen Terminen, der Durchführung eines reservierten Beratungsgesprächs sowie gesetzlichen Buchführungs- und Aufbewahrungspflichten.",
           "Grundlagen: Vertragserfüllung bzw. vorvertragliche Massnahmen; gesetzliche Pflichten; berechtigtes Interesse an einem sicheren Betrieb und einer aggregierten Reichweitenmessung; Einwilligung, wenn Sie diesen Hinweis vor dem Absenden eines Formulars akzeptieren.",
         ],
       },
@@ -138,7 +142,7 @@ export const privacyDocument = {
         paragraphs: [
           "Anmeldungen, Zahlungsereignisse und Buchungsbelege werden so lange aufbewahrt, wie schweizerische Aufbewahrungspflichten es verlangen, in der Regel zehn Jahre.",
           "Wartelisteneinträge bleiben bis zur Information über einen Termin oder bis zu Ihrem Löschantrag, längstens vierundzwanzig Monate nach Eintrag.",
-          "Kontaktnachrichten werden für die Bearbeitung aufbewahrt, danach höchstens zwei Jahre, sofern kein längerer gesetzlicher Grund besteht.",
+          "Kontaktnachrichten, schriftliche Fragen und Beratungsgespräche werden für die Bearbeitung aufbewahrt, danach höchstens zwei Jahre, sofern kein längerer gesetzlicher Grund besteht.",
         ],
       },
       {
@@ -168,6 +172,8 @@ export const privacyDocument = {
         items: [
           "Course booking: first name, last name, email, phone, postal address (street, postcode, city, country), language, selected course and session, amount, currency, payment status and related timestamps. The booking is stored when the form is submitted, including if online payment is not completed.",
           "Waiting list: first name, last name, email, phone, language, course concerned.",
+          "Fifteen-minute advice call: first name, last name, email, phone, language, reserved time, the course being viewed if any, and an optional note.",
+          "Written question from a course page: first name, last name, email, phone, language, message, and the course being viewed if any.",
           "Contact form and request for another payment method: name, email, phone if provided, message, language, and optionally the related course or booking.",
           "Payment: Stripe sends transaction status, a payment reference and metadata needed for accounting. We do not store full card numbers or TWINT secrets.",
           "Audience measurement: Vercel Analytics records aggregated usage statistics without cookies and without naming visitors.",
@@ -176,7 +182,7 @@ export const privacyDocument = {
       {
         heading: "Purposes and legal bases",
         paragraphs: [
-          "We use the data to process enrolment, confirm payment, write to you, keep the school’s register, answer messages, notify you when a session opens, and meet Swiss accounting and legal duties.",
+          "We use the data to process enrolment, confirm payment, write to you, keep the school’s register, answer messages, notify you when a session opens, honour a reserved advice call, and meet Swiss accounting and legal duties.",
           "Bases: performance of the booking contract or pre-contractual steps; legal obligations (accounts, tax); legitimate interest in running a secure site and measuring aggregated traffic; consent when you accept this notice before submitting a form.",
         ],
       },
@@ -208,7 +214,7 @@ export const privacyDocument = {
         paragraphs: [
           "Bookings, payment events and accounting records are kept as long as Swiss retention duties require, generally ten years.",
           "Waiting-list requests are kept until a session is communicated or you ask for deletion, and no longer than twenty-four months after joining the list.",
-          "Contact messages are kept while we handle the request, then at most two years unless a longer legal need applies.",
+          "Contact messages, written questions and advice calls are kept while we handle the request, then at most two years unless a longer legal need applies.",
         ],
       },
       {

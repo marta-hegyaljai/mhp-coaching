@@ -25,6 +25,11 @@ export const routing = defineRouting({
       de: "/ausbildungen/[slug]/anmeldung",
       en: "/courses/[slug]/book",
     },
+    "/courses/[slug]/advice": {
+      fr: "/formations/[slug]/conseil",
+      de: "/ausbildungen/[slug]/beratung",
+      en: "/courses/[slug]/advice",
+    },
     "/book": {
       fr: "/inscription",
       de: "/anmeldung",
@@ -146,6 +151,9 @@ export const routing = defineRouting({
     "/admin/billing/[userId]": "/admin/billing/[userId]",
     "/admin/courses": "/admin/courses",
     "/admin/courses/[id]": "/admin/courses/[id]",
+    "/admin/calls": "/admin/calls",
+    "/admin/calls/[id]": "/admin/calls/[id]",
+    "/admin/calls/messages/[id]": "/admin/calls/messages/[id]",
     "/rooms": {
       fr: "/salles",
       de: "/raeume",

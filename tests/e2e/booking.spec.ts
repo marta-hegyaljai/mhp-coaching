@@ -180,3 +180,33 @@ test("the booking shortcut opens the catalogue in calendar view", async ({page})
   await expect(page.getByRole("grid")).toBeVisible();
   await expect(page.getByRole("button", {name: /OMNI/}).first()).toBeVisible();
 });
+
+test("a course page offers a free call and a written question", async ({page}) => {
+  await page.goto("/fr/formations/praticien-hypnose-omni");
+
+  const card = page.getByRole("complementary");
+  await expect(card.getByText("Une question avant de vous inscrire ?")).toBeVisible();
+  await card.getByRole("link", {name: "Choisir un horaire"}).click();
+  await expect(page).toHaveURL(/\/conseil/);
+  await expect(page.getByRole("heading", {level: 1})).toHaveText(
+    "Un appel de quinze minutes, offert",
+  );
+  await expect(page.getByRole("link", {name: "Appel"})).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
+
+  await page.getByRole("link", {name: "Écrire"}).click();
+  await expect(page).toHaveURL(/mode=write/);
+  await expect(page.getByLabel("Votre question")).toBeVisible();
+  await expect(page.getByRole("button", {name: "Envoyer le message"})).toBeVisible();
+});
+
+test("the booking page keeps the advice offer beside enrolment", async ({page}) => {
+  await page.goto("/fr/formations/praticien-hypnose-omni/inscription");
+
+  await expect(page.getByRole("heading", {name: "Réserver votre place"})).toBeVisible();
+  await expect(page.getByText("Une question avant de vous inscrire ?")).toBeVisible();
+  await page.getByRole("link", {name: "Envoyer un message"}).click();
+  await expect(page).toHaveURL(/conseil\?mode=write/);
+});

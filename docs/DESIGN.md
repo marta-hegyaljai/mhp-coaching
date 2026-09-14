@@ -348,7 +348,9 @@ motion, or animated background. Always honor `prefers-reduced-motion`.
   a raw ISO date in the UI.
 - Shell: `src/features/site-shell`; do not fork per-page headers or switchers.
   `SiteFooter` is black; inverted (white) buttons sit on it.
-- Course decisions: `CourseCard`, `CourseDates`, and `CourseBookingBar`.
+- Course decisions: `CourseCard`, `CourseDates`, `CourseBookingBar`, and the
+  course-page advice offer (`CourseAdviceOffer`) that leads to a compact
+  Monday-first month grid of free 15-minute call slots or a written question.
 - Room booking decisions: `src/features/rooms/components/booking`. `SlotNavigator`
   (room and date; always rendered outside the confirm form so a day with no
   free slot is not a dead end), `SlotFields`, `AmountSummary`, `BookingFacts`,
