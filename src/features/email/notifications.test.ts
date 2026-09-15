@@ -149,6 +149,31 @@ describe("staff email destinations", () => {
     expectSharedChrome(html);
   });
 
+  it("notifies staff of a complimentary Café Supervision registration", async () => {
+    await sendPurchaseNotification(
+      booking({
+        courseId: "cafe-supervision",
+        courseTitle: "Café Supervision",
+        location: "Videoconference",
+        amountMinor: 0,
+        paymentProvider: "complimentary",
+      }),
+      "paid",
+    );
+
+    expect(sendMailMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        to: organization.email,
+        subject: "Registration confirmed — Café Supervision",
+      }),
+    );
+    const html = sendMailMock.mock.calls[0]?.[0].html ?? "";
+    expect(html).toContain("Someone registered for a complimentary session.");
+    expect(html).toContain("Free");
+    expect(html).not.toContain("Payment received");
+    expectSharedChrome(html);
+  });
+
   it("notifies contact@mhp-coaching.ch when a purchase fails", async () => {
     await sendPurchaseNotification(booking({status: "FAILED"}), "failed");
 
@@ -276,6 +301,25 @@ describe("staff email destinations", () => {
     expect(html).toContain(organization.courseVenueAddress);
     expect(html).not.toContain(booking().id);
     expect(sendMailMock.mock.calls[0]?.[0].to).not.toBe(organization.email);
+    expectSharedChrome(html);
+  });
+
+  it("omits the Fribourg venue for a videoconference booking", async () => {
+    await sendBookingConfirmation(
+      booking({
+        courseId: "cafe-supervision",
+        courseTitle: "Café Supervision",
+        location: "Videoconference",
+        amountMinor: 0,
+      }),
+    );
+
+    const html = sendMailMock.mock.calls[0]?.[0].html ?? "";
+    expect(html).toContain("Videoconference");
+    expect(html).toContain("Your registration is confirmed. This session is complimentary.");
+    expect(html).toContain("Free");
+    expect(html).not.toContain("Your payment was received");
+    expect(html).not.toContain(organization.courseVenueAddress);
     expectSharedChrome(html);
   });
 

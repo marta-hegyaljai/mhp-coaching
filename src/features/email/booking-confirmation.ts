@@ -1,7 +1,9 @@
 import {getTranslations} from "next-intl/server";
 
 import {formatDateRange} from "@/features/courses/dates";
-import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
+import {formatCataloguePrice} from "@/features/courses/price";
+import {isComplimentaryCourse} from "@/features/courses/types";
+import {minorUnitsToFrancs} from "@/features/payments/money";
 import {organization} from "@/features/organization/info";
 import type {Booking} from "@/db/schema";
 import {isDateToBeConfirmed} from "@/features/bookings/booking-date";
@@ -21,21 +23,32 @@ export async function sendBookingConfirmation(booking: Booking): Promise<void> {
         booking.courseDateEnd,
         locale,
       );
-  const amount = formatChf(minorUnitsToFrancs(booking.amountMinor), locale);
-  const venueAddress = organization.courseVenueAddress;
+  const complimentary = isComplimentaryCourse({
+    priceChf: minorUnitsToFrancs(booking.amountMinor),
+  });
+  const amount = formatCataloguePrice(
+    minorUnitsToFrancs(booking.amountMinor),
+    locale,
+  );
+  const intro = complimentary ? t("introFree") : t("intro");
+  const amountLine = complimentary
+    ? t("amountLineFree", {amount})
+    : t("amountLine", {amount});
+  const inPerson = /fribourg|freiburg/i.test(booking.location);
+  const venueAddress = inPerson ? organization.courseVenueAddress : null;
   const greeting = t("greeting", {name: booking.firstName});
   const subject = t("subject", {course: booking.courseTitle});
   const text = [
     greeting,
     "",
-    t("intro"),
+    intro,
     "",
     t("detailsTitle"),
     t("courseLine", {course: booking.courseTitle}),
     t("dateLine", {date: dateLabel}),
     t("locationLine", {location: booking.location}),
-    t("amountLine", {amount}),
-    t("addressLine", {address: venueAddress}),
+    amountLine,
+    ...(venueAddress ? [t("addressLine", {address: venueAddress})] : []),
     "",
     t("closing"),
     organization.brandName,
@@ -45,17 +58,20 @@ export async function sendBookingConfirmation(booking: Booking): Promise<void> {
 
   const html = composeTransactionalEmail({
     locale,
-    preheader: t("intro"),
+    preheader: intro,
     eyebrow: t("eyebrow"),
     title: booking.courseTitle,
     greeting,
-    intro: t("intro"),
+    intro,
     details: [
       {label: fields("course"), value: booking.courseTitle},
       {label: fields("dates"), value: dateLabel},
       {label: fields("location"), value: booking.location},
-      {label: fields("amountPaid"), value: amount},
-      {label: fields("address"), value: venueAddress},
+      {
+        label: complimentary ? fields("amount") : fields("amountPaid"),
+        value: amount,
+      },
+      ...(venueAddress ? [{label: fields("address"), value: venueAddress}] : []),
     ],
     closing: t("closing"),
   });

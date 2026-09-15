@@ -12,6 +12,7 @@ import {ProgrammeModulesField} from "@/features/courses/components/admin/program
 import {programmeModuleIds} from "@/features/courses/programme";
 import {
   COURSE_FORMATS,
+  COURSE_CATEGORIES,
   courseFormatOf,
   type Course,
   type CourseCategory,
@@ -21,7 +22,7 @@ import type {AppLocale} from "@/i18n/routing";
 import {fieldLabelClass, fieldStyles} from "@/shared/ui/field";
 import {SubmitButton} from "@/shared/ui/submit-button";
 
-const CATEGORIES: CourseCategory[] = ["foundation", "advanced", "medical", "workshop"];
+const CATEGORIES: CourseCategory[] = [...COURSE_CATEGORIES];
 
 export function AdminCourseForm({
   course,

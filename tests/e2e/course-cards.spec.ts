@@ -153,4 +153,40 @@ test.describe("course cards", () => {
     expect(secondModule).not.toBeNull();
     expect(Math.abs((firstModule!.y ?? 0) - (secondModule!.y ?? 0))).toBeLessThanOrEqual(4);
   });
+
+  test("Café Supervision is a distinct CPD category with visio dates", async ({page}) => {
+    await page.setViewportSize({width: 1280, height: 900});
+    await page.goto("/fr/formations");
+
+    const section = page.locator("[data-catalogue-category=supervision]");
+    await expect(section.getByRole("heading", {level: 2, name: "Café Supervision"})).toBeVisible();
+    await expect(section.getByText(/Formation continue/i).first()).toBeVisible();
+    await expect(
+      section.getByText(/Supervision de groupe en visioconférence/i).first(),
+    ).toBeVisible();
+
+    const card = section.locator("article").filter({hasText: "Café Supervision"}).first();
+    await expect(card.getByText("Visioconférence").first()).toBeVisible();
+    await expect(card.getByText("Gratuit")).toBeVisible();
+    await expect(card.locator("[data-date-part=days]")).toHaveCount(3);
+    await expect(card.getByText("S’inscrire")).toBeVisible();
+  });
+
+  test("Café Supervision keeps visio copy in DE and EN", async ({page}) => {
+    await page.setViewportSize({width: 1280, height: 900});
+
+    await page.goto("/de/ausbildungen");
+    const deSection = page.locator("[data-catalogue-category=supervision]");
+    await expect(deSection.getByRole("heading", {level: 2, name: "Café Supervision"})).toBeVisible();
+    await expect(deSection.getByText(/Fortbildung/i).first()).toBeVisible();
+    await expect(deSection.getByText("Kostenlos")).toBeVisible();
+    await expect(deSection.getByText("Videokonferenz").first()).toBeVisible();
+
+    await page.goto("/en/courses");
+    const enSection = page.locator("[data-catalogue-category=supervision]");
+    await expect(enSection.getByRole("heading", {level: 2, name: "Café Supervision"})).toBeVisible();
+    await expect(enSection.getByText(/Continuing professional development/i).first()).toBeVisible();
+    await expect(enSection.getByText("Free")).toBeVisible();
+    await expect(enSection.getByText("Videoconference").first()).toBeVisible();
+  });
 });

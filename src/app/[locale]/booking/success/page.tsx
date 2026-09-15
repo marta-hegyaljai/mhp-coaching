@@ -5,7 +5,9 @@ import {getBookingById} from "@/features/bookings/repository";
 import {isDateToBeConfirmed} from "@/features/bookings/booking-date";
 import {sendBuyerConfirmationIfNeeded} from "@/features/email/paid-booking";
 import {formatDateRange} from "@/features/courses/dates";
-import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
+import {formatCataloguePrice} from "@/features/courses/price";
+import {isComplimentaryCourse} from "@/features/courses/types";
+import {minorUnitsToFrancs} from "@/features/payments/money";
 import {buildPageMetadata} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
@@ -48,6 +50,9 @@ export default async function BookingSuccessPage({
     booking = (await getBookingById(booking.id)) ?? booking;
   }
   const paid = booking?.status === "PAID";
+  const complimentary = booking
+    ? isComplimentaryCourse({priceChf: minorUnitsToFrancs(booking.amountMinor)})
+    : false;
 
   return (
     <SiteShell locale={locale} footerCta={null}>
@@ -61,14 +66,22 @@ export default async function BookingSuccessPage({
             }`}
           >
             {paid ? <CheckIcon className="h-3.5 w-3.5" /> : null}
-            {paid ? t("statusPaid") : t("statusPending")}
+            {paid
+              ? complimentary
+                ? t("statusConfirmed")
+                : t("statusPaid")
+              : t("statusPending")}
           </p>
 
           <h1 className="mt-6 font-serif text-title">
             {paid ? t("title") : t("pendingTitle")}
           </h1>
           <p className="mt-5 text-lead text-ink-muted">
-            {paid ? t("intro") : t("pendingIntro")}
+            {paid
+              ? complimentary
+                ? t("introFree")
+                : t("intro")
+              : t("pendingIntro")}
           </p>
 
           {booking ? (
@@ -84,8 +97,11 @@ export default async function BookingSuccessPage({
                     )}
               </SummaryRow>
               <SummaryRow label={t("location")}>{booking.location}</SummaryRow>
-              <SummaryRow label={t("amount")}>
-                {formatChf(minorUnitsToFrancs(booking.amountMinor), locale)}
+              <SummaryRow label={complimentary ? t("amountFree") : t("amount")}>
+                {formatCataloguePrice(
+                  minorUnitsToFrancs(booking.amountMinor),
+                  locale,
+                )}
               </SummaryRow>
               <SummaryRow label={t("reference")}>
                 <span className="font-mono text-xs break-all">{booking.id}</span>

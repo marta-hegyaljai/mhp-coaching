@@ -1,14 +1,12 @@
-import type {PathnameHref} from "@/i18n/href";
 import type {BookingStatus} from "@/db/schema";
-import type {CourseCategory} from "@/features/courses/types";
+import {
+  COURSE_CATEGORIES,
+  isCourseCategory,
+  type CourseCategory,
+} from "@/features/courses/types";
+import type {PathnameHref} from "@/i18n/href";
 
-const CATEGORIES: Array<CourseCategory | "all"> = [
-  "all",
-  "foundation",
-  "advanced",
-  "medical",
-  "workshop",
-];
+const CATEGORIES: Array<CourseCategory | "all"> = ["all", ...COURSE_CATEGORIES];
 const PUBLISHED = ["all", "yes", "no"] as const;
 /** Whether a course still has a bookable session ahead of today. */
 const UPCOMING = ["all", "yes", "no"] as const;
@@ -66,9 +64,7 @@ export function parseCourseListQuery(searchParams: {
   const upcoming = firstString(searchParams.upcoming);
   return {
     q: firstString(searchParams.q).trim(),
-    category: CATEGORIES.includes(category as CourseListQuery["category"])
-      ? (category as CourseListQuery["category"])
-      : "all",
+    category: isCourseCategory(category) ? category : "all",
     published: PUBLISHED.includes(published as CourseListQuery["published"])
       ? (published as CourseListQuery["published"])
       : "all",

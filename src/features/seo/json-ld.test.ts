@@ -38,6 +38,23 @@ describe("structured data", () => {
     expect(events[0]?.["@type"]).toBe("Event");
   });
 
+  it("marks Café Supervision as an online event", () => {
+    const course = getCourseById("cafe-supervision");
+    expect(course).toBeDefined();
+
+    const events = eventJsonLd(course!, "fr");
+    expect(events[0]?.eventAttendanceMode).toBe(
+      "https://schema.org/OnlineEventAttendanceMode",
+    );
+    expect(events[0]?.location).toEqual({
+      "@type": "VirtualLocation",
+      name: "Visioconférence",
+    });
+    expect(events[0]?.offers).toEqual(
+      expect.objectContaining({price: "0.00", priceCurrency: "CHF"}),
+    );
+  });
+
   it("publishes the MHP Coaching email and phone", () => {
     const json = organizationJsonLd();
 

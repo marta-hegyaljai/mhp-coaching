@@ -6,25 +6,32 @@ export const courseLocation: LocalizedText = {
   en: "Fribourg",
 };
 
+export const visioLocation: LocalizedText = {
+  fr: "Visioconférence",
+  de: "Videokonferenz",
+  en: "Videoconference",
+};
+
 export function session(
   id: string,
   startDate: string,
   endDate?: string,
-  options?: {capacity?: number; active?: boolean},
+  options?: {capacity?: number; active?: boolean; location?: LocalizedText},
 ): CourseDate {
   return {
     id,
     startDate,
     endDate,
-    location: courseLocation,
+    location: options?.location ?? courseLocation,
     capacity: options?.capacity ?? 16,
     active: options?.active ?? true,
   };
 }
 
 /**
- * Dates transcribed from the historical public agenda. Delivery is Fribourg
- * only; older city names from that agenda are not restored.
+ * Dates transcribed from the historical public agenda. In-person delivery is
+ * Fribourg only; older city names from that agenda are not restored.
+ * Café Supervision is the videoconference exception.
  */
 export const agendaByCourseId: Record<string, CourseDate[]> = {
   "omni-practitioner": [
@@ -66,6 +73,36 @@ export const agendaByCourseId: Record<string, CourseDate[]> = {
   "stripe-payment-test": [
     session("stripe-payment-test-2026-09-21", "2026-09-21", undefined, {
       capacity: 2,
+    }),
+  ],
+  /**
+   * Individual evening sessions. Staff publish or retire dates from the
+   * course record; capacity stays at 10 so the group remains small.
+   */
+  "cafe-supervision": [
+    session("cafe-supervision-2026-10-06", "2026-10-06", undefined, {
+      capacity: 10,
+      location: visioLocation,
+    }),
+    session("cafe-supervision-2026-10-20", "2026-10-20", undefined, {
+      capacity: 10,
+      location: visioLocation,
+    }),
+    session("cafe-supervision-2026-11-03", "2026-11-03", undefined, {
+      capacity: 10,
+      location: visioLocation,
+    }),
+    session("cafe-supervision-2026-11-17", "2026-11-17", undefined, {
+      capacity: 10,
+      location: visioLocation,
+    }),
+    session("cafe-supervision-2026-12-01", "2026-12-01", undefined, {
+      capacity: 10,
+      location: visioLocation,
+    }),
+    session("cafe-supervision-2026-12-15", "2026-12-15", undefined, {
+      capacity: 10,
+      location: visioLocation,
     }),
   ],
 };

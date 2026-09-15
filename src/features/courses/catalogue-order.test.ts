@@ -30,6 +30,7 @@ describe("defaultDisplayOrderForCourse", () => {
     expect(DEFAULT_CATALOGUE_ORDER).toContain("omni-practitioner");
     expect(DEFAULT_CATALOGUE_ORDER).toContain("anxiety-hypnosis");
     expect(DEFAULT_CATALOGUE_ORDER).toContain("stripe-payment-test");
+    expect(DEFAULT_CATALOGUE_ORDER).toContain("cafe-supervision");
   });
 });
 

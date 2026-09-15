@@ -6,8 +6,8 @@ import {CourseArtwork} from "@/features/courses/components/course-artwork";
 import {formatCourseDateRange} from "@/features/courses/dates";
 import {filterCoursesForSearch} from "@/features/courses/course-search";
 import {getBookableDates} from "@/features/courses/queries";
+import {formatCataloguePrice} from "@/features/courses/price";
 import {isProgrammeCourse, type Course, type CourseCategory} from "@/features/courses/types";
-import {formatChf} from "@/features/payments/money";
 import {Link, useRouter} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {controlFocusClass} from "@/shared/ui/field";
@@ -263,7 +263,7 @@ function SuggestionRow({
 }) {
   const dates = getBookableDates(course);
   const nextDate = dates[0] ? formatCourseDateRange(dates[0], locale) : awaitingDateLabel;
-  const price = formatChf(course.priceChf, locale, {compact: true});
+  const price = formatCataloguePrice(course.priceChf, locale);
 
   return (
     <Link

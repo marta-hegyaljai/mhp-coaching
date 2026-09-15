@@ -71,6 +71,7 @@ export default async function AdminCoursesPage({params, searchParams}: AdminCour
     advanced: t("coursesCategory_advanced"),
     medical: t("coursesCategory_medical"),
     workshop: t("coursesCategory_workshop"),
+    supervision: t("coursesCategory_supervision"),
   };
 
   return (

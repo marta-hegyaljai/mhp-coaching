@@ -43,6 +43,13 @@ addition to first name, last name, email and postal address. The date is
 validated as a real past calendar day and stored on the booking snapshot.
 This is course-domain work, not a new checkpoint.
 
+Extra-roadmap (2026-09-15): Café Supervision is a new public catalogue
+category for continuing professional development / group supervision, not a
+standard training module. Content is adapted from the historical Supervision
+de groupe page. Individual visio evening dates are ordinary `course_sessions`
+(capacity 10) so staff can publish or retire each one; complimentary
+registration skips Stripe. This is course-domain work, not a new checkpoint.
+
 ## Status vocabulary
 
 Use exactly one of these values:

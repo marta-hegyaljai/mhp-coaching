@@ -41,6 +41,10 @@ export function getWorkshopCourses(): Course[] {
   return publishedOf("workshop");
 }
 
+export function getSupervisionCourses(): Course[] {
+  return publishedOf("supervision");
+}
+
 export function getCourseById(id: string): Course | undefined {
   return courses.find((course) => course.id === id);
 }

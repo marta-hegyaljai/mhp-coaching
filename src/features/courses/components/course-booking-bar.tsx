@@ -1,5 +1,5 @@
 import type {Course} from "@/features/courses/types";
-import {formatChf} from "@/features/payments/money";
+import {formatCataloguePrice} from "@/features/courses/price";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {buttonStyles} from "@/shared/ui/button";
@@ -29,7 +29,7 @@ export function CourseBookingBar({
             {fromLabel}
           </p>
           <Price size="md" className="mt-1 leading-tight">
-            {formatChf(course.priceChf, locale, {compact: true})}
+            {formatCataloguePrice(course.priceChf, locale)}
           </Price>
         </div>
         <Link

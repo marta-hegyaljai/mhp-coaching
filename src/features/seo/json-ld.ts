@@ -2,9 +2,9 @@ import {founderAlumni, founderPortrait, founderSameAs} from "@/features/about/fo
 import type {AppLocale} from "@/i18n/routing";
 import {getSiteUrl} from "@/lib/site-url";
 import {organization} from "@/features/organization/info";
-import type {Course} from "@/features/courses/types";
 import {toIsoDateTime} from "@/features/courses/dates";
 import {getBookableDates} from "@/features/courses/queries";
+import {isSupervisionCourse, type Course} from "@/features/courses/types";
 import {
   homeStatue,
   homeStatueAlt,
@@ -170,11 +170,7 @@ export function courseJsonLd(course: Course, locale: AppLocale): JsonLd {
         name: course.title[locale],
         startDate: toIsoDateTime(date.startDate),
         endDate: toIsoDateTime(date.endDate ?? date.startDate),
-        location: {
-          "@type": "Place",
-          name: date.location[locale],
-          address: date.venue?.[locale],
-        },
+        ...courseInstanceLocation(course, date, locale),
       })),
   };
 }
@@ -223,13 +219,11 @@ export function eventJsonLd(course: Course, locale: AppLocale): JsonLd[] {
       description: course.shortDescription[locale],
       startDate: toIsoDateTime(date.startDate),
       endDate: toIsoDateTime(date.endDate ?? date.startDate),
-      eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+      eventAttendanceMode: isSupervisionCourse(course)
+        ? "https://schema.org/OnlineEventAttendanceMode"
+        : "https://schema.org/OfflineEventAttendanceMode",
       eventStatus: "https://schema.org/EventScheduled",
-      location: {
-        "@type": "Place",
-        name: date.location[locale],
-        address: date.venue?.[locale],
-      },
+      ...eventLocation(course, date, locale),
       organizer: {"@id": `${site}/#organization`},
       offers: {
         "@type": "Offer",
@@ -240,4 +234,35 @@ export function eventJsonLd(course: Course, locale: AppLocale): JsonLd[] {
       },
       url: `${site}${coursePath}`,
     }));
+}
+
+function courseInstanceLocation(
+  course: Course,
+  date: Course["dates"][number],
+  locale: AppLocale,
+) {
+  if (isSupervisionCourse(course)) {
+    return {
+      location: {
+        "@type": "VirtualLocation",
+        name: date.location[locale],
+      },
+    };
+  }
+
+  return {
+    location: {
+      "@type": "Place",
+      name: date.location[locale],
+      address: date.venue?.[locale],
+    },
+  };
+}
+
+function eventLocation(
+  course: Course,
+  date: Course["dates"][number],
+  locale: AppLocale,
+) {
+  return courseInstanceLocation(course, date, locale);
 }

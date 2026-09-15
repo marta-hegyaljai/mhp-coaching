@@ -21,8 +21,10 @@ import {
   type CourseUpdateInput,
 } from "@/features/courses/repository";
 import {selectProgrammeModuleIds} from "@/features/courses/programme";
-import {parseCourseFormat} from "@/features/courses/types";
-import type {CourseCategory} from "@/features/courses/types";
+import {
+  isCourseCategory,
+  parseCourseFormat,
+} from "@/features/courses/types";
 import type {LocalizedJson} from "@/db/schema";
 
 export type CourseAdminState = {
@@ -40,8 +42,6 @@ export type CourseAdminError =
   | "forbidden";
 
 export type CourseAdminSuccess = "saved" | "session" | "created";
-
-const CATEGORIES: CourseCategory[] = ["foundation", "advanced", "medical", "workshop"];
 
 function readString(formData: FormData, key: string) {
   return String(formData.get(key) ?? "").trim();
@@ -101,9 +101,7 @@ function parseCoursePatch(formData: FormData): CourseUpdateInput | CourseAdminEr
     return "price";
   }
 
-  const category = CATEGORIES.includes(categoryRaw as CourseCategory)
-    ? (categoryRaw as CourseCategory)
-    : "foundation";
+  const category = isCourseCategory(categoryRaw) ? categoryRaw : "foundation";
 
   return {
     slug,

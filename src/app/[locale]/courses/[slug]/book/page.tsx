@@ -8,6 +8,7 @@ import {checkoutDefaultsFromUser} from "@/features/auth/contact";
 import {getCurrentUser} from "@/features/auth/session";
 import {courseLocaleHrefs} from "@/features/courses/locale-hrefs";
 import {loadPublishedCourseBySlug} from "@/features/courses/live";
+import {isComplimentaryCourse} from "@/features/courses/types";
 import {
   getBookableDates,
   getCourseStaticParams,
@@ -90,6 +91,7 @@ export default async function BookCoursePage({
   const navT = await getTranslations("Nav");
   const dates = getBookableDates(course);
   const showWaitlist = dates.length === 0 || waitlist === "1";
+  const complimentary = isComplimentaryCourse(course);
   const signedInUser = await getCurrentUser();
 
   return (
@@ -115,7 +117,7 @@ export default async function BookCoursePage({
               }),
             },
             {
-              name: t("title"),
+              name: complimentary ? t("titleFree") : t("title"),
               path: localizedPath(locale, {
                 pathname: "/courses/[slug]/book",
                 params: {slug: course.slug[locale]},
@@ -127,14 +129,20 @@ export default async function BookCoursePage({
         <div className="mt-8 max-w-2xl">
           <Eyebrow>{course.title[locale]}</Eyebrow>
           <h1 className="mt-4 font-serif text-title">
-            {showWaitlist ? courseT("waitlistCta") : t("title")}
+            {showWaitlist
+              ? courseT("waitlistCta")
+              : complimentary
+                ? t("titleFree")
+                : t("title")}
           </h1>
           <p className="mt-5 text-lead text-ink-muted">
             {showWaitlist
               ? dates.length > 0
-                ? waitlistT("introUnsuitableDates")
-                : waitlistT("intro")
-              : t("intro")}
+                ? waitlistT("introUnsuitableDates", {location: course.location[locale]})
+                : waitlistT("intro", {location: course.location[locale]})
+              : complimentary
+                ? t("introFree")
+                : t("intro")}
           </p>
         </div>
 

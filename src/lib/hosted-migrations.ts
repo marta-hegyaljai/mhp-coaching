@@ -2,7 +2,8 @@ type HostedBuildEnvironment = Readonly<
   Record<string, string | undefined>
 >;
 
-/** Vercel production and preview builds apply committed SQL to Neon. */
+/** Vercel production and preview builds apply committed SQL to Neon.
+ *  drizzle-kit migrate wraps pending files in one transaction; see ARCHITECTURE.md. */
 export function shouldApplyHostedMigrations(
   environment: HostedBuildEnvironment = process.env,
 ): boolean {

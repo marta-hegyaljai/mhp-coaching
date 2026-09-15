@@ -1,4 +1,4 @@
-import {formatChf} from "@/features/payments/money";
+import {formatCataloguePrice} from "@/features/courses/price";
 import type {AppLocale} from "@/i18n/routing";
 
 import {getBookableDates, getPublishedCourses} from "./queries";
@@ -39,7 +39,7 @@ export function toCalendarSession(
     slug: course.slug[locale],
     title: course.title[locale],
     duration: course.duration[locale],
-    priceLabel: formatChf(course.priceChf, locale, {compact: true}),
+    priceLabel: formatCataloguePrice(course.priceChf, locale),
     dateId: date.id,
     startDate: date.startDate,
     endDate: date.endDate,

@@ -3,8 +3,10 @@ import {getTranslations} from "next-intl/server";
 import type {Booking} from "@/db/schema";
 import {isDateToBeConfirmed} from "@/features/bookings/booking-date";
 import {formatDateRange} from "@/features/courses/dates";
+import {formatCataloguePrice} from "@/features/courses/price";
+import {isComplimentaryCourse} from "@/features/courses/types";
 import {organization} from "@/features/organization/info";
-import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
+import {minorUnitsToFrancs} from "@/features/payments/money";
 import {formatLongDate} from "@/shared/format/calendar-date";
 
 import {composeTransactionalEmail} from "./layout";
@@ -26,17 +28,29 @@ export async function sendPurchaseNotification(
   const dateLabel = isDateToBeConfirmed(booking.courseDateStart)
     ? fields("dateToBeConfirmed")
     : formatDateRange(booking.courseDateStart, booking.courseDateEnd, locale);
-  const amount = formatChf(minorUnitsToFrancs(booking.amountMinor), locale);
+  const complimentary = isComplimentaryCourse({
+    priceChf: minorUnitsToFrancs(booking.amountMinor),
+  });
+  const amount = formatCataloguePrice(
+    minorUnitsToFrancs(booking.amountMinor),
+    locale,
+  );
   const address = `${booking.street}, ${booking.postalCode} ${booking.city}, ${booking.country}`;
   const name = `${booking.firstName} ${booking.lastName}`;
   const dateOfBirth = booking.dateOfBirth
     ? formatLongDate(booking.dateOfBirth, locale)
     : null;
+  const paidComplimentary = outcome === "paid" && complimentary;
   const subject =
     outcome === "paid"
-      ? t("subjectPaid", {course: booking.courseTitle})
+      ? t(paidComplimentary ? "subjectPaidFree" : "subjectPaid", {
+          course: booking.courseTitle,
+        })
       : t("subjectFailed", {course: booking.courseTitle});
-  const intro = outcome === "paid" ? t("introPaid") : t("introFailed");
+  const intro =
+    outcome === "paid"
+      ? t(paidComplimentary ? "introPaidFree" : "introPaid")
+      : t("introFailed");
   const statusValue =
     outcome === "paid" ? fields("statusPaid") : fields("statusFailed");
   const text = [
@@ -57,7 +71,11 @@ export async function sendPurchaseNotification(
   const html = composeTransactionalEmail({
     locale,
     preheader: intro,
-    eyebrow: outcome === "paid" ? t("eyebrowPaid") : t("eyebrowFailed"),
+    eyebrow: paidComplimentary
+      ? t("eyebrowPaidFree")
+      : outcome === "paid"
+        ? t("eyebrowPaid")
+        : t("eyebrowFailed"),
     title: booking.courseTitle,
     intro,
     details: [
