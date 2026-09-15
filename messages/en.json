@@ -1672,10 +1672,13 @@
     },
     "purchaseNotification": {
       "subjectPaid": "Payment received — {course}",
+      "subjectPaidFree": "Registration confirmed — {course}",
       "subjectFailed": "Payment failed — {course}",
       "eyebrowPaid": "Payment received",
+      "eyebrowPaidFree": "Complimentary registration",
       "eyebrowFailed": "Payment failed",
       "introPaid": "A course payment succeeded.",
+      "introPaidFree": "Someone registered for a complimentary session.",
       "introFailed": "A course payment failed.",
       "statusPaid": "Status: paid",
       "statusFailed": "Status: failed",

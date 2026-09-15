@@ -149,6 +149,31 @@ describe("staff email destinations", () => {
     expectSharedChrome(html);
   });
 
+  it("notifies staff of a complimentary Café Supervision registration", async () => {
+    await sendPurchaseNotification(
+      booking({
+        courseId: "cafe-supervision",
+        courseTitle: "Café Supervision",
+        location: "Videoconference",
+        amountMinor: 0,
+        paymentProvider: "complimentary",
+      }),
+      "paid",
+    );
+
+    expect(sendMailMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        to: organization.email,
+        subject: "Registration confirmed — Café Supervision",
+      }),
+    );
+    const html = sendMailMock.mock.calls[0]?.[0].html ?? "";
+    expect(html).toContain("Someone registered for a complimentary session.");
+    expect(html).toContain("Free");
+    expect(html).not.toContain("Payment received");
+    expectSharedChrome(html);
+  });
+
   it("notifies contact@mhp-coaching.ch when a purchase fails", async () => {
     await sendPurchaseNotification(booking({status: "FAILED"}), "failed");
 

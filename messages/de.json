@@ -1672,10 +1672,13 @@
     },
     "purchaseNotification": {
       "subjectPaid": "Zahlung eingegangen — {course}",
+      "subjectPaidFree": "Anmeldung bestätigt — {course}",
       "subjectFailed": "Zahlung fehlgeschlagen — {course}",
       "eyebrowPaid": "Zahlung eingegangen",
+      "eyebrowPaidFree": "Kostenlose Anmeldung",
       "eyebrowFailed": "Zahlung fehlgeschlagen",
       "introPaid": "Eine Kurszahlung wurde bestätigt.",
+      "introPaidFree": "Eine Person hat sich für eine kostenlose Session angemeldet.",
       "introFailed": "Eine Kurszahlung ist fehlgeschlagen.",
       "statusPaid": "Status: bezahlt",
       "statusFailed": "Status: fehlgeschlagen",

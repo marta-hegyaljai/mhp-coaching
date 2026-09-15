@@ -1672,10 +1672,13 @@
     },
     "purchaseNotification": {
       "subjectPaid": "Paiement reçu — {course}",
+      "subjectPaidFree": "Inscription confirmée — {course}",
       "subjectFailed": "Paiement échoué — {course}",
       "eyebrowPaid": "Paiement reçu",
+      "eyebrowPaidFree": "Inscription offerte",
       "eyebrowFailed": "Paiement échoué",
       "introPaid": "Un paiement de formation a été confirmé.",
+      "introPaidFree": "Une personne s’est inscrite à une session offerte.",
       "introFailed": "Un paiement de formation a échoué.",
       "statusPaid": "Statut : payé",
       "statusFailed": "Statut : échec",
