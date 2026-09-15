@@ -117,7 +117,6 @@ export default async function AdminCallsPage({params, searchParams}: AdminCallsP
               cancelled: t("callStatusCancelled"),
               previous: t("previous"),
               next: t("next"),
-              pageStatus: t("pageStatus"),
             }}
           />
         ) : null}
@@ -134,7 +133,6 @@ export default async function AdminCallsPage({params, searchParams}: AdminCallsP
               empty: t("inquiriesEmpty"),
               previous: t("previous"),
               next: t("next"),
-              pageStatus: t("pageStatus"),
             }}
           />
         ) : null}
@@ -167,9 +165,9 @@ async function Agenda({
     cancelled: string;
     previous: string;
     next: string;
-    pageStatus: string;
   };
 }) {
+  const t = await getTranslations("Admin");
   const listing = await listAdminCalls({
     q: query.q || undefined,
     when: query.when,
@@ -257,9 +255,7 @@ async function Agenda({
         next={
           query.page < pageCount ? adminCallListHrefForPage(query, query.page + 1) : null
         }
-    status={labels.pageStatus
-          .replace("{page}", String(query.page))
-          .replace("{pageCount}", String(pageCount))}
+        status={t("pageStatus", {page: query.page, pageCount})}
         labels={{previous: labels.previous, next: labels.next}}
       />
     </div>
@@ -282,9 +278,9 @@ async function Messages({
     empty: string;
     previous: string;
     next: string;
-    pageStatus: string;
   };
 }) {
+  const t = await getTranslations("Admin");
   const listing = await listAdminInquiries({
     q: query.q || undefined,
     limit: pageSize,
@@ -348,9 +344,7 @@ async function Messages({
         next={
           query.page < pageCount ? adminCallListHrefForPage(query, query.page + 1) : null
         }
-    status={labels.pageStatus
-          .replace("{page}", String(query.page))
-          .replace("{pageCount}", String(pageCount))}
+        status={t("pageStatus", {page: query.page, pageCount})}
         labels={{previous: labels.previous, next: labels.next}}
       />
     </div>

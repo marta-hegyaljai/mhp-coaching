@@ -1,6 +1,6 @@
 "use client";
 
-import {useActionState, useEffect, useMemo, useState} from "react";
+import {useActionState, useMemo, useState} from "react";
 import {useTranslations} from "next-intl";
 
 import {scheduleCourseCallAction} from "@/features/course-calls/actions";
@@ -52,23 +52,23 @@ export function CallScheduler({
     scheduleCourseCallAction.bind(null, locale, courseId),
     null,
   );
-
-  useEffect(() => {
+  const [seenState, setSeenState] = useState(state);
+  if (state !== seenState) {
+    setSeenState(state);
     const draft = state?.draft;
-    if (!draft || state.ok) {
-      return;
-    }
-    if (draft.date && availableDates.includes(draft.date)) {
-      setDate(draft.date);
-      const parsedDate = parseIsoDate(draft.date);
-      if (parsedDate) {
-        setCursor({year: parsedDate.year, month: parsedDate.month});
+    if (draft && !state?.ok) {
+      if (draft.date && availableDates.includes(draft.date)) {
+        setDate(draft.date);
+        const parsedDate = parseIsoDate(draft.date);
+        if (parsedDate) {
+          setCursor({year: parsedDate.year, month: parsedDate.month});
+        }
+      }
+      if (draft.time) {
+        setTime(draft.time);
       }
     }
-    if (draft.time) {
-      setTime(draft.time);
-    }
-  }, [availableDates, state]);
+  }
 
   if (state?.ok) {
     return (
