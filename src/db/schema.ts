@@ -254,6 +254,7 @@ export const courseCategoryEnum = pgEnum("course_category", [
   "advanced",
   "medical",
   "workshop",
+  "supervision",
 ]);
 
 /**

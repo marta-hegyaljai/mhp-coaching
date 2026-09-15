@@ -8,6 +8,26 @@ async function chooseDateOfBirth(page: Page) {
   await dialog.getByRole("button", {name: /15 mai 1990/i}).click();
 }
 
+test("Café Supervision registers a visio evening without Stripe", async ({
+  page,
+}) => {
+  await page.goto("/fr/formations/cafe-supervision");
+
+  await expect(page.getByRole("heading", {level: 1, name: "Café Supervision"})).toBeVisible();
+  await expect(page.getByText("Formation continue").first()).toBeVisible();
+  await expect(page.getByText("Visioconférence").first()).toBeVisible();
+  await expect(page.getByText("Gratuit").first()).toBeVisible();
+  await expect(page.getByRole("heading", {name: "Le format"})).toBeVisible();
+
+  await page.getByRole("link", {name: "S’inscrire à cette session"}).first().click();
+  await expect(page).toHaveURL(/\/inscription/);
+  await expect(page.getByRole("heading", {level: 1, name: "Confirmer votre inscription"})).toBeVisible();
+  await expect(page.getByText(/aucun paiement n’est demandé/i)).toBeVisible();
+  await expect(page.getByRole("button", {name: "Confirmer l’inscription"})).toBeVisible();
+  await expect(page.getByText(/TWINT/)).toHaveCount(0);
+  await expect(page.getByRole("button", {name: /Continuer vers le paiement/})).toHaveCount(0);
+});
+
 test("a dated course shows exact sessions and a date picker on booking", async ({page}) => {
   await page.goto("/fr/formations/praticien-hypnose-omni");
 

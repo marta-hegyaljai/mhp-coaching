@@ -15,8 +15,8 @@ import {
 } from "@/features/bookings/form-errors";
 import {parseBookingForm, type BookingFormErrors} from "@/features/bookings/validation";
 import {formatCourseDateRange} from "@/features/courses/dates";
-import type {Course, CourseDate} from "@/features/courses/types";
-import {formatChf} from "@/features/payments/money";
+import {formatCataloguePrice} from "@/features/courses/price";
+import {isComplimentaryCourse, type Course, type CourseDate} from "@/features/courses/types";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {Button} from "@/shared/ui/button";
@@ -74,7 +74,8 @@ export function BookingForm({
   );
 
   const selectedDate = dates.find((date) => date.id === selectedDateId);
-  const price = formatChf(course.priceChf, locale, {compact: true});
+  const complimentary = isComplimentaryCourse(course);
+  const price = formatCataloguePrice(course.priceChf, locale);
   const missingKeys = errors ? visibleBookingIssueKeys(errors) : [];
   const missingSignature = missingKeys.join(",");
   const birthBounds = dateOfBirthBounds();
@@ -385,38 +386,46 @@ export function BookingForm({
               {pending && pendingIntent === "checkout" ? (
                 <>
                   <SpinnerIcon />
-                  {t("submitting")}
+                  {complimentary ? t("submittingFree") : t("submitting")}
                 </>
               ) : (
                 <>
-                  <LockIcon />
-                  {t("submit")}
+                  {complimentary ? null : <LockIcon />}
+                  {complimentary ? t("submitFree") : t("submit")}
                 </>
               )}
             </Button>
-            <Button
-              type="submit"
-              name="intent"
-              value="lead"
-              variant="secondary"
-              size="lg"
-              block
-              disabled={pending}
-              className="mt-3"
-              onClick={() => setPendingIntent("lead")}
-            >
-              {pending && pendingIntent === "lead" ? (
-                <>
-                  <SpinnerIcon />
-                  {t("submittingLead")}
-                </>
-              ) : (
-                t("submitLead")
-              )}
-            </Button>
-            <p className="mt-3 text-xs leading-6 text-ink-subtle">
-              {t("chargeNote")}
-            </p>
+            {complimentary ? (
+              <p className="mt-3 text-xs leading-6 text-ink-subtle">
+                {t("freeNote")}
+              </p>
+            ) : (
+              <>
+                <Button
+                  type="submit"
+                  name="intent"
+                  value="lead"
+                  variant="secondary"
+                  size="lg"
+                  block
+                  disabled={pending}
+                  className="mt-3"
+                  onClick={() => setPendingIntent("lead")}
+                >
+                  {pending && pendingIntent === "lead" ? (
+                    <>
+                      <SpinnerIcon />
+                      {t("submittingLead")}
+                    </>
+                  ) : (
+                    t("submitLead")
+                  )}
+                </Button>
+                <p className="mt-3 text-xs leading-6 text-ink-subtle">
+                  {t("chargeNote")}
+                </p>
+              </>
+            )}
           </div>
         </div>
       </aside>

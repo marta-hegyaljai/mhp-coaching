@@ -279,6 +279,25 @@ describe("staff email destinations", () => {
     expectSharedChrome(html);
   });
 
+  it("omits the Fribourg venue for a videoconference booking", async () => {
+    await sendBookingConfirmation(
+      booking({
+        courseId: "cafe-supervision",
+        courseTitle: "Café Supervision",
+        location: "Videoconference",
+        amountMinor: 0,
+      }),
+    );
+
+    const html = sendMailMock.mock.calls[0]?.[0].html ?? "";
+    expect(html).toContain("Videoconference");
+    expect(html).toContain("Your registration is confirmed. This session is complimentary.");
+    expect(html).toContain("Free");
+    expect(html).not.toContain("Your payment was received");
+    expect(html).not.toContain(organization.courseVenueAddress);
+    expectSharedChrome(html);
+  });
+
   it("sends the invitation to the invited user, not staff", async () => {
     await sendAccountInvitation({
       locale: "en",

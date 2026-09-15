@@ -1,4 +1,4 @@
-import {agendaDates, courseLocation as location} from "./sessions";
+import {agendaDates, courseLocation as location, visioLocation} from "./sessions";
 import type {Course} from "./types";
 
 // French editorial content is reproduced/adapted under a CC BY 4.0 licence.
@@ -360,5 +360,38 @@ export const courses: Course[] = [
     category: "workshop",
     published: true,
     dates: agendaDates("stripe-payment-test"),
+  },
+  {
+    id: "cafe-supervision",
+    slug: {
+      fr: "cafe-supervision",
+      de: "supervisions-cafe",
+      en: "cafe-supervision-group",
+    },
+    title: {
+      fr: "Café Supervision",
+      de: "Café Supervision",
+      en: "Café Supervision",
+    },
+    shortDescription: {
+      fr: "Supervision de groupe en visioconférence pour praticien·ne·s : échanger sur la pratique, prendre du recul et rester en lien avec ses pairs.",
+      de: "Gruppensupervision per Videokonferenz für Praktiker·innen: Praxis austauschen, Distanz gewinnen und mit Kolleg·innen in Verbindung bleiben.",
+      en: "Group supervision by videoconference for practitioners: exchange on practice, step back, and stay in contact with peers.",
+    },
+    description: {
+      fr: "Les cafés supervision sont des espaces de parole libre et bienveillante, conçus pour les hypnothérapeutes en formation ou en activité. Il s’agit de supervisions de groupe, distinctes des modules de formation, animées par l’équipe pédagogique dans un cadre confidentiel. Chaque date se réserve séparément.",
+      de: "Die Cafés Supervision sind ein freier, wohlwollender Gesprächsraum für Hypnosetherapeut·innen in Ausbildung oder Praxis. Es handelt sich um Gruppensupervision — keine Standard-Ausbildungsmodule — geleitet vom Lehrteam in einem vertraulichen Rahmen. Jeder Termin wird einzeln gebucht.",
+      en: "Café Supervision sessions are open, supportive spaces for hypnotherapists in training or in practice. They are group supervision, not standard training modules, hosted by the teaching team in a confidential setting. Each date is booked separately.",
+    },
+    audience: {
+      fr: "Réservé aux élèves MHP Coaching ayant complété une formation de base : Praticien·ne en Hypnose OMNI et/ou Praticien·ne en Hypnose Médicale.",
+      de: "Nur für MHP-Coaching-Absolvent·innen mit abgeschlossener Grundausbildung: OMNI®-Hypnosepraktiker·in und/oder Praktiker·in in medizinischer Hypnose.",
+      en: "Reserved for MHP Coaching students who have completed a foundation course: OMNI® Hypnosis Practitioner and/or Medical Hypnosis Practitioner.",
+    },
+    duration: {fr: "2 heures · 18h–20h", de: "2 Stunden · 18–20 Uhr", en: "2 hours · 18:00–20:00"},
+    location: visioLocation,
+    priceChf: 0,
+    category: "supervision",
+    dates: agendaDates("cafe-supervision"),
   },
 ];

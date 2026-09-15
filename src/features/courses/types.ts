@@ -12,7 +12,22 @@ export type CourseDate = {
   active: boolean;
 };
 
-export type CourseCategory = "foundation" | "advanced" | "medical" | "workshop";
+export const COURSE_CATEGORIES = [
+  "foundation",
+  "advanced",
+  "medical",
+  "workshop",
+  "supervision",
+] as const;
+
+export type CourseCategory = (typeof COURSE_CATEGORIES)[number];
+
+export function isCourseCategory(value: unknown): value is CourseCategory {
+  return (
+    typeof value === "string" &&
+    (COURSE_CATEGORIES as readonly string[]).includes(value)
+  );
+}
 
 /**
  * A `module` is booked on its own and listed inside its category. A
@@ -65,4 +80,16 @@ export function isModuleCourse(course: Pick<Course, "format">): boolean {
 
 export function parseCourseFormat(value: unknown): CourseFormat {
   return value === "programme" ? "programme" : "module";
+}
+
+export function isSupervisionCourse(
+  course: Pick<Course, "category">,
+): boolean {
+  return course.category === "supervision";
+}
+
+export function isComplimentaryCourse(
+  course: Pick<Course, "priceChf">,
+): boolean {
+  return course.priceChf === 0;
 }

@@ -286,9 +286,12 @@ purchasable path and is never mixed into that grid.
   descriptions must trace to the historical MHP catalogue. Do not invent copy
   to fill a layout. A missing translation may fall back visibly to the exact
   French source until a faithful translation is added.
-- Legacy references to Lausanne or Geneva must not be restored. The current and
-  only course location is Fribourg. Course dates remain unpublished until the
-  business supplies them.
+- Legacy references to Lausanne or Geneva must not be restored. In-person
+  course delivery is Fribourg. Café Supervision is the videoconference
+  exception: present it as continuing professional development / group
+  supervision, not as a standard training module, in its own catalogue
+  category, with each published evening date independently bookable.
+  Other course dates remain unpublished until the business supplies them.
 
 ## Motion allowlist
 

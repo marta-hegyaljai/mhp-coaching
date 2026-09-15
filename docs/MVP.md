@@ -82,17 +82,19 @@ Minimum:
 Do not delay launch for secondary content.
 
 ## Course data
-The public catalogue still reads the typed TypeScript seed. The same 21 rows and
+The public catalogue still reads the typed TypeScript seed. The same 22 rows and
 their sessions are also stored in PostgreSQL (`courses`, `course_sessions`) with
 stable ids matching existing bookings. A later course-admin slice can switch
 public reads to the database without renaming ids.
 
 The public catalogue covers the original 20 formations, grouped as foundation, advanced,
-medical hypnosis, and practical workshops, plus a temporary internal 10 CHF Stripe
+medical hypnosis, practical workshops, and Café Supervision, plus a temporary internal 10 CHF Stripe
 payment-test course. Workshops and the M.I.A. transgenerational
 course can be paused in catalogue config without deleting them, so a later admin panel
-can republish rows from the same structure. All course delivery locations are
-shown as Fribourg. Dates may remain empty until confirmed; an undated course
+can republish rows from the same structure. In-person courses are shown as Fribourg.
+Café Supervision is the videoconference exception: it is a continuing-professional-development
+group-supervision offering, not a standard training module, and each evening date is
+booked separately. Dates may remain empty until confirmed; an undated course
 cannot be purchased. Visitors join a per-course waiting list (name, email,
 phone) stored in PostgreSQL so staff can contact them when a session opens.
 Confirmed dates are stored on each course and must be chosen explicitly when
@@ -108,7 +110,7 @@ type Course = {
   description: { fr: string; de: string; en: string };
   location: { fr: string; de: string; en: string };
   priceChf: number;
-  category: "foundation" | "advanced" | "medical" | "workshop";
+  category: "foundation" | "advanced" | "medical" | "workshop" | "supervision";
   dates: CourseDate[];
 };
 
@@ -136,6 +138,10 @@ Course page
 → success page
 
 The Stripe webhook is authoritative. Never mark a booking paid just because the success URL was loaded.
+
+Café Supervision is complimentary (CHF 0). Registration still creates a booking
+row, then marks it `PAID` with `paymentProvider: complimentary` without Stripe.
+Staff can publish or retire each visio evening as an ordinary `course_session`.
 
 Undated published courses skip checkout. The course page sends visitors to a
 waiting-list form (first name, last name, email, phone, privacy acceptance).

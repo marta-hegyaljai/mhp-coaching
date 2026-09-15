@@ -876,6 +876,66 @@
       }
     ]
   },
+  "cafe-supervision": {
+    "intro": "Les cafés supervision sont des espaces de parole libre et bienveillante, conçus pour les hypnothérapeutes en formation ou en activité qui souhaitent échanger autour de leur pratique, partager leurs doutes, explorer leurs questionnements ou simplement prendre du recul. Il s’agit de supervisions de groupe, animées et encadrées par des membres de l’équipe pédagogique, dans un cadre structuré, confidentiel et professionnel. Ces rendez-vous renforcent la posture professionnelle, enrichissent les compétences à travers des retours d’expérience concrets, et permettent de rester en lien avec ses pairs formés à l’hypnose OMNI. Chaque rencontre aborde des thématiques issues de la pratique réelle des participants, en respectant confidentialité et éthique professionnelle.",
+    "sections": [
+      {
+        "title": "Un format de formation continue",
+        "items": [
+          "Le Café Supervision n’est pas un module de formation. C’est une supervision de groupe régulière, pensée comme un accompagnement professionnel continu. Chaque date se réserve séparément : vous choisissez les soirées auxquelles vous participez."
+        ]
+      },
+      {
+        "title": "Public cible",
+        "items": [
+          "Les cafés supervision sont exclusivement réservés aux élèves MHP Coaching ayant complété une formation de base, soit : Praticien·ne en Hypnose OMNI et/ou Praticien·ne en Hypnose Médicale."
+        ]
+      },
+      {
+        "title": "Reconnaissance ASCA",
+        "items": [
+          "Chaque participation peut être validée comme heure de formation continue ASCA."
+        ]
+      },
+      {
+        "title": "Format en petit groupe",
+        "items": [
+          "Le nombre de participant·e·s est limité à 10 personnes pour garantir la qualité des échanges."
+        ]
+      },
+      {
+        "title": "Horaire et format",
+        "items": [
+          "Les cafés supervision se déroulent en visioconférence, de 18h00 à 20h00."
+        ]
+      },
+      {
+        "title": "Inscription obligatoire",
+        "items": [
+          "L’inscription préalable est indispensable.",
+          "Si une date n’apparaît pas dans le calendrier, le groupe est complet."
+        ]
+      },
+      {
+        "title": "Règles de participation",
+        "items": [
+          "Ponctualité : en vous inscrivant, vous vous engagez à participer à l’heure et pour l’intégralité de la session. L’accès sera refusé 10 minutes après le début.",
+          "Nom et prénom : votre nom et prénom doivent être renseignés correctement lors de l’inscription et utilisés comme identifiant dans Zoom, afin que le contrôle de présence puisse être effectué.",
+          "Annulation et fair-play : merci de libérer votre place si vous ne pouvez pas participer.",
+          "Non-respect des règles : en cas de non-respect répété de ces consignes, une suspension de 12 mois de participation pourra être appliquée."
+        ]
+      },
+      {
+        "title": "Pourquoi participer ?",
+        "items": [
+          "Pour bénéficier d’une supervision structurée et bienveillante",
+          "Pour prendre du recul sur sa pratique dans un cadre professionnel",
+          "Pour continuer à progresser au-delà de la formation initiale",
+          "Pour rester en lien avec ses pairs et maintenir une dynamique de réflexion partagée"
+        ]
+      }
+    ]
+  },
   "stripe-payment-test": {
     "intro": "Session interne destinée uniquement à vérifier le paiement Stripe en conditions réelles. Ce n’est pas une formation. Le montant de 10 CHF sera remboursé après le test.",
     "sections": [

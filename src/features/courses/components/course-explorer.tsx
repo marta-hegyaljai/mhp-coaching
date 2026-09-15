@@ -21,7 +21,13 @@ import type {ProgrammeCardModel} from "@/features/courses/components/programme/p
 import {courseMatchesQuery} from "@/features/courses/course-search";
 import {fieldStyles} from "@/shared/ui/field";
 
-type ViewMode = "grid" | "calendar";
+export type CatalogueGroup = {
+  title: string;
+  category: Course["category"];
+  eyebrow?: string;
+  intro?: string;
+  courses: Course[];
+};
 
 type ExplorerLabels = {
   search: string;
@@ -69,7 +75,7 @@ export function CourseExplorer({
   initialView = "grid",
 }: {
   locale: AppLocale;
-  groups: Array<{title: string; category: Course["category"]; courses: Course[]}>;
+  groups: CatalogueGroup[];
   /** Pre-formatted programme cards shown at the close of their category. */
   programmes?: ProgrammeCardModel[];
   /** Same programmes as catalogue entries, used for search and the calendar. */
@@ -234,11 +240,25 @@ export function CourseExplorer({
                 data-catalogue-category={group.category}
                 className="mt-10 first:mt-8"
               >
-                <div className="flex items-baseline justify-between gap-4 border-b border-ink/15 pb-3">
-                  <h2 className="font-serif text-subheading">{group.title}</h2>
-                  <p className="text-xs uppercase tracking-[0.16em] text-ink-subtle">
-                    {group.courses.length}
-                  </p>
+                <div className="border-b border-ink/15 pb-3">
+                  {group.eyebrow ? (
+                    <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-gold">
+                      {group.eyebrow}
+                    </p>
+                  ) : null}
+                  <div className="flex items-baseline justify-between gap-4">
+                    <h2 className={`font-serif text-subheading ${group.eyebrow ? "mt-2" : ""}`}>
+                      {group.title}
+                    </h2>
+                    <p className="text-xs uppercase tracking-[0.16em] text-ink-subtle">
+                      {group.courses.length}
+                    </p>
+                  </div>
+                  {group.intro ? (
+                    <p className="mt-3 max-w-2xl text-sm leading-6 text-ink-muted">
+                      {group.intro}
+                    </p>
+                  ) : null}
                 </div>
                 {isEmpty ? (
                   <p className="mt-5 text-sm leading-7 text-ink-muted">{labels.emptyCategory}</p>

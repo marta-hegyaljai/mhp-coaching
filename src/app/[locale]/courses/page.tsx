@@ -2,11 +2,10 @@ import {getTranslations, setRequestLocale} from "next-intl/server";
 
 import {AuthNotice} from "@/features/auth/components/auth-field";
 import {CourseCatalogueLead, CourseCataloguePortrait} from "@/features/courses/components/course-catalogue-masthead";
-import {CourseExplorer} from "@/features/courses/components/course-explorer";
+import {CourseExplorer, type CatalogueGroup} from "@/features/courses/components/course-explorer";
 import {buildProgrammeCardModel} from "@/features/courses/components/programme/programme-card-model";
 import {loadPublishedCourses} from "@/features/courses/live";
 import {resolveProgramme, splitCatalogueByFormat} from "@/features/courses/programme";
-import type {Course} from "@/features/courses/types";
 import {BreadcrumbTrail} from "@/features/seo/breadcrumb-trail";
 import {courseListJsonLd} from "@/features/seo/json-ld";
 import {JsonLd} from "@/features/seo/json-ld-script";
@@ -47,11 +46,18 @@ export default async function CoursesPage({params, searchParams}: CoursesPagePro
   const publishedCourses = await loadPublishedCourses();
   // Bundled paths leave the module grids and close their own category.
   const {modules, programmes} = splitCatalogueByFormat(publishedCourses);
-  const groups: Array<{title: string; category: Course["category"]; courses: Course[]}> = [
+  const groups: CatalogueGroup[] = [
     {title: t("foundation"), category: "foundation", courses: modules.filter((course) => course.category === "foundation")},
     {title: t("advanced"), category: "advanced", courses: modules.filter((course) => course.category === "advanced")},
     {title: t("medical"), category: "medical", courses: modules.filter((course) => course.category === "medical")},
     {title: t("workshops"), category: "workshop", courses: modules.filter((course) => course.category === "workshop")},
+    {
+      title: t("supervision"),
+      category: "supervision",
+      eyebrow: t("supervisionEyebrow"),
+      intro: t("supervisionIntro"),
+      courses: modules.filter((course) => course.category === "supervision"),
+    },
   ];
   const programmeCards = programmes.map((programme) =>
     buildProgrammeCardModel(resolveProgramme(programme, publishedCourses), locale, {
@@ -94,6 +100,7 @@ export default async function CoursesPage({params, searchParams}: CoursesPagePro
             advanced: t("advanced"),
             medical: t("medical"),
             workshop: t("workshops"),
+            supervision: t("supervision"),
           }}
           detailsLabel={t("readMore")}
           lead={

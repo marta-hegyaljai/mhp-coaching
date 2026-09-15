@@ -102,7 +102,10 @@ Add new mail as a function in `src/features/email/` that calls
 
 Buyer confirmation shows the course venue
 (`organization.courseVenueAddress`: Chem. de la Fenetta 42, 1752
-Villars-sur-Glâne), not the booking id.
+Villars-sur-Glâne) for in-person Fribourg courses, not the booking id.
+Videoconference Café Supervision confirmations keep the session location
+(visioconférence), omit the street address, and use the complimentary intro
+(no “payment received” wording) with the free-session tariff.
 
 Paid-course mail is sent when the booking becomes `PAID`: one message to the
 buyer, one to `contact@mhp-coaching.ch`. If the buyer send fails, the Stripe

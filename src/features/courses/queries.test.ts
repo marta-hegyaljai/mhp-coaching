@@ -11,6 +11,7 @@ import {
   getFoundationCourses,
   getMedicalCourses,
   getPublishedCourses,
+  getSupervisionCourses,
   getWorkshopCourses,
 } from "./queries";
 
@@ -31,12 +32,13 @@ describe("course catalogue", () => {
   });
 
   it("keeps paused workshops and the M.I.A. course in the catalogue but off public lists", () => {
-    expect(getCatalogueCourses()).toHaveLength(21);
-    expect(getPublishedCourses()).toHaveLength(15);
+    expect(getCatalogueCourses()).toHaveLength(22);
+    expect(getPublishedCourses()).toHaveLength(16);
     expect(getFoundationCourses()).toHaveLength(1);
     expect(getAdvancedCourses()).toHaveLength(9);
     expect(getMedicalCourses()).toHaveLength(4);
     expect(getWorkshopCourses()).toHaveLength(1);
+    expect(getSupervisionCourses()).toHaveLength(1);
     expect(getCourseById("transgenerational-mia")?.published).toBe(false);
     expect(getCourseBySlug("hypnose-transgenerationnelle-methode-mia")).toBeUndefined();
   });
@@ -86,11 +88,19 @@ describe("course catalogue", () => {
   it("keeps the published prices, Fribourg location, and agenda dates", () => {
     const course = getCourseById("omni-practitioner");
     const medicalExam = getCourseById("medical-hypnosis-exam-m3");
+    const cafe = getCourseById("cafe-supervision");
 
     expect(course).toBeDefined();
     expect(course?.priceChf).toBe(3490);
     expect(medicalExam?.priceChf).toBe(550);
-    expect(getPublishedCourses().every((item) => item.location.fr === "Fribourg")).toBe(true);
+    expect(
+      getPublishedCourses()
+        .filter((item) => item.id !== "cafe-supervision")
+        .every((item) => item.location.fr === "Fribourg"),
+    ).toBe(true);
+    expect(cafe?.location.fr).toBe("Visioconférence");
+    expect(cafe?.category).toBe("supervision");
+    expect(cafe?.priceChf).toBe(0);
     expect(course?.dates.map((date) => date.startDate)).toEqual([
       "2026-09-10",
       "2026-10-08",
@@ -98,9 +108,16 @@ describe("course catalogue", () => {
     ]);
     expect(agendaByCourseId["omni-practitioner"]?.[0]?.endDate).toBe("2026-09-20");
     expect(
-      getPublishedCourses().every((item) =>
-        item.dates.every((date) => date.location.fr === "Fribourg"),
-      ),
+      getPublishedCourses()
+        .filter((item) => item.id !== "cafe-supervision")
+        .every((item) =>
+          item.dates.every((date) => date.location.fr === "Fribourg"),
+        ),
     ).toBe(true);
+    expect(cafe?.dates).toHaveLength(6);
+    expect(cafe?.dates.every((date) => date.location.fr === "Visioconférence")).toBe(
+      true,
+    );
+    expect(cafe?.dates.every((date) => date.capacity === 10)).toBe(true);
   });
 });

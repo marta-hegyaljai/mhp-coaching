@@ -6,9 +6,11 @@ import {hasLocale} from "next-intl";
 
 import {getBookableDates} from "@/features/courses/queries";
 import {loadPublishedCourseById} from "@/features/courses/live";
+import {isComplimentaryCourse} from "@/features/courses/types";
 import {persistCheckoutContact} from "@/features/auth/contact";
 import {getCurrentUser} from "@/features/auth/session";
 import {sendLeadNotification} from "@/features/email/lead-notification";
+import {applyPaymentEvent} from "@/features/payments/apply-event";
 import {getPaymentProvider} from "@/features/payments/get-provider";
 import {francsToMinorUnits} from "@/features/payments/money";
 import {localizedPathname} from "@/i18n/path";
@@ -76,8 +78,13 @@ export async function createBookingAction(
   }
 
   const origin = getSiteUrl().origin;
+  const complimentary = isComplimentaryCourse(course);
   const isLead = values.intent === "lead";
-  const provider = isLead ? {name: "offline"} : getPaymentProvider();
+  const provider = isLead
+    ? {name: "offline"}
+    : complimentary
+      ? {name: "complimentary"}
+      : getPaymentProvider();
   const signedInUser = await getCurrentUser();
 
   let nextUrl: string;
@@ -126,6 +133,18 @@ export async function createBookingAction(
 
       const cancelPath = localizedPathname(resolvedLocale, "/booking/cancelled");
       nextUrl = `${cancelPath}?bookingId=${booking.id}&source=other`;
+    } else if (complimentary) {
+      const paid = await applyPaymentEvent({
+        bookingId: booking.id,
+        provider: "complimentary",
+        providerEventId: `complimentary:${booking.id}`,
+        type: "paid",
+      });
+      if (!paid.ok) {
+        return {errors: {form: t("saveFailedFree")}, draft};
+      }
+      const successPath = localizedPathname(resolvedLocale, "/booking/success");
+      nextUrl = `${origin}${successPath}?bookingId=${booking.id}`;
     } else {
       const checkoutProvider = getPaymentProvider();
       const successPath = localizedPathname(resolvedLocale, "/booking/success");

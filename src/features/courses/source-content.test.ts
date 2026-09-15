@@ -8,7 +8,7 @@ import {getCourseImage, getCourseSourceContent} from "./source-content";
 
 describe("historical course content", () => {
   it("covers every published course with real sections and a local image", () => {
-    expect(courses).toHaveLength(21);
+    expect(courses).toHaveLength(22);
 
     for (const course of courses) {
       const source = getCourseSourceContent(course);

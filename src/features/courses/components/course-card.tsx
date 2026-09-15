@@ -1,9 +1,9 @@
 import {useTranslations} from "next-intl";
 
+import {formatCataloguePrice} from "@/features/courses/price";
 import {getBookableDates} from "@/features/courses/queries";
-import type {Course} from "@/features/courses/types";
+import {isSupervisionCourse, type Course} from "@/features/courses/types";
 import {partitionUpcomingSessions} from "@/features/courses/upcoming-sessions";
-import {formatChf} from "@/features/payments/money";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {ArrowRightIcon} from "@/shared/ui/icons";
@@ -34,6 +34,7 @@ export function CourseCard({
     pathname: "/courses/[slug]",
     params: {slug: course.slug[locale]},
   } as const;
+  const actionLabel = isSupervisionCourse(course) ? t("supervisionReadMore") : detailsLabel;
 
   return (
     <Link
@@ -73,11 +74,11 @@ export function CourseCard({
         <div className="mt-auto pt-6">
           <div className="flex min-h-11 flex-wrap items-center gap-x-4 gap-y-1 border-t border-current pt-3">
             <span className="inline-flex min-w-0 items-center gap-1 text-sm font-bold uppercase tracking-[0.08em]">
-              {detailsLabel}
+              {actionLabel}
               <ArrowRightIcon className="transition-transform duration-150 ease-standard group-hover/card:translate-x-1" />
             </span>
             <Price size="sm" className="ml-auto shrink-0">
-              {formatChf(course.priceChf, locale, {compact: true})}
+              {formatCataloguePrice(course.priceChf, locale)}
             </Price>
           </div>
         </div>

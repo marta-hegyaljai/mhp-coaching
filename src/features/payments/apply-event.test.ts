@@ -103,6 +103,36 @@ describe("applyPaymentEvent mail", () => {
     expect(sendStaffPaidNotificationMock).toHaveBeenCalledWith(paid);
   });
 
+  it("confirms a complimentary booking without Stripe", async () => {
+    const complimentary = booking({
+      courseId: "cafe-supervision",
+      courseTitle: "Café Supervision",
+      location: "Videoconference",
+      amountMinor: 0,
+      paymentProvider: "complimentary",
+      paymentReference: null,
+      status: "PAID",
+      paidAt: new Date(),
+    });
+    getBookingByIdMock.mockResolvedValue(complimentary);
+    markBookingPaidOnceMock.mockResolvedValue({
+      booking: complimentary,
+      alreadyPaid: false,
+    });
+
+    await expect(
+      applyPaymentEvent({
+        bookingId: complimentary.id,
+        provider: "complimentary",
+        providerEventId: `complimentary:${complimentary.id}`,
+        type: "paid",
+      }),
+    ).resolves.toEqual({ok: true, confirmationEmailSent: true});
+
+    expect(sendBuyerConfirmationIfNeededMock).toHaveBeenCalledWith(complimentary);
+    expect(sendStaffPaidNotificationMock).toHaveBeenCalledWith(complimentary);
+  });
+
   it("retries the buyer confirmation when a paid event is replayed", async () => {
     const paid = booking({status: "PAID", paidAt: new Date()});
     recordPaymentEventMock.mockResolvedValue("duplicate");

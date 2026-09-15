@@ -12,13 +12,14 @@ import {ProgrammeNotice} from "@/features/courses/components/programme/programme
 import {courseLocaleHrefs} from "@/features/courses/locale-hrefs";
 import {loadPublishedCourseBySlug, loadPublishedCourses} from "@/features/courses/live";
 import {findProgrammesForModule, resolveProgramme} from "@/features/courses/programme";
-import {isProgrammeCourse} from "@/features/courses/types";
+import {formatCataloguePrice} from "@/features/courses/price";
 import {
   getBookableDates,
   getCourseStaticParams,
 } from "@/features/courses/queries";
-import {UPCOMING_SESSION_PREVIEW_COUNT} from "@/features/courses/upcoming-sessions";
 import {getCourseSourceContent} from "@/features/courses/source-content";
+import {isProgrammeCourse, isSupervisionCourse} from "@/features/courses/types";
+import {UPCOMING_SESSION_PREVIEW_COUNT} from "@/features/courses/upcoming-sessions";
 import {formatChf} from "@/features/payments/money";
 import {BreadcrumbTrail} from "@/features/seo/breadcrumb-trail";
 import {courseJsonLd, eventJsonLd} from "@/features/seo/json-ld";
@@ -94,10 +95,13 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
     pathname: "/courses/[slug]/book",
     params: {slug: course.slug[locale]},
   } as const;
-  const price = formatChf(course.priceChf, locale, {compact: true});
+  const price = formatCataloguePrice(course.priceChf, locale);
   const sourceContent = getCourseSourceContent(course);
   const catalogue = await loadPublishedCourses();
   const isProgramme = isProgrammeCourse(course);
+  const isSupervision = isSupervisionCourse(course);
+  const bookCta = isSupervision ? t("supervisionBookCta") : t("bookCta");
+  const bookShort = isSupervision ? t("supervisionBookShort") : t("bookShort");
   const programmeView = isProgramme ? resolveProgramme(course, catalogue) : null;
   const parentProgrammes = isProgramme
     ? []
@@ -110,13 +114,13 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
       hreflangs={courseLocaleHrefs("/courses/[slug]", course)}
       footerCta={{
         href: bookHref,
-        label: hasDates ? t("bookCta") : t("waitlistCta"),
+        label: hasDates ? bookCta : t("waitlistCta"),
       }}
       bottomBar={
         <CourseBookingBar
           course={course}
           locale={locale}
-          label={hasDates ? t("bookShort") : t("waitlistShort")}
+          label={hasDates ? bookShort : t("waitlistShort")}
           fromLabel={t("price")}
         />
       }
@@ -156,7 +160,9 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
                 <Eyebrow>
                   {isProgramme
                     ? `${coursesT("programmeEyebrow")} · ${course.duration[locale]}`
-                    : course.duration[locale]}
+                    : isSupervision
+                      ? `${coursesT("supervisionEyebrow")} · ${course.duration[locale]}`
+                      : course.duration[locale]}
                 </Eyebrow>
                 <h1 className="mt-4 font-serif text-title">{course.title[locale]}</h1>
               </div>
@@ -202,7 +208,7 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
                 href={bookHref}
                 className={`${buttonStyles({size: "lg", block: true})} mt-6`}
               >
-                {hasDates ? t("bookCta") : t("waitlistCta")}
+                {hasDates ? bookCta : t("waitlistCta")}
                 <ArrowRightIcon className="transition-transform duration-200 ease-standard group-hover/button:translate-x-0.5" />
               </Link>
               {hasDates ? (
@@ -266,7 +272,7 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
         <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-7">
             <h2 id="course-about" className="font-serif text-heading">
-              {t("about")}
+              {isSupervision ? t("supervisionAbout") : t("about")}
             </h2>
             <p className="mt-6 text-base leading-8 text-ink-muted">
               {sourceContent.intro ?? course.description[locale]}
@@ -314,9 +320,9 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
 
       <Section size="sm" tone="shell" ariaLabelledBy="course-content">
         <div className="max-w-4xl">
-          <Eyebrow>{t("sourceEyebrow")}</Eyebrow>
+          <Eyebrow>{isSupervision ? t("supervisionSourceEyebrow") : t("sourceEyebrow")}</Eyebrow>
           <h2 id="course-content" className="mt-3 font-serif text-heading">
-            {t("detailsTitle")}
+            {isSupervision ? t("supervisionDetailsTitle") : t("detailsTitle")}
           </h2>
           <div className="mt-8 overflow-hidden border border-ink bg-white">
             {sourceContent.sections.map((section, index) => (

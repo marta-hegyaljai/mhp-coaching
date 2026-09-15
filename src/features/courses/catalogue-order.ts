@@ -2,8 +2,9 @@ import type {Course} from "@/features/courses/types";
 
 /**
  * Default public catalogue order: foundation first, then the advanced modules
- * (the two priority ones first), medical, workshops, and finally the bundled
- * programmes. Admins may override via `display_order` in PostgreSQL.
+ * (the two priority ones first), medical, workshops, Café Supervision, and
+ * finally the bundled programmes. Admins may override via `display_order` in
+ * PostgreSQL.
  */
 export const DEFAULT_CATALOGUE_ORDER = [
   "omni-practitioner",
@@ -25,6 +26,7 @@ export const DEFAULT_CATALOGUE_ORDER = [
   "weight-loss-hypnosis",
   "healthy-weight-nutrition-hypnosis",
   "sensory-anchors-hypnosis",
+  "cafe-supervision",
   "stripe-payment-test",
   // Programmes close the catalogue: they are an alternative to the modules above.
   "master-practitioner",
