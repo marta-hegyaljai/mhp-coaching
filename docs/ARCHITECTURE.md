@@ -295,6 +295,10 @@ Production and preview Vercel builds (`VERCEL_ENV=production` or `preview`) run
 `pnpm db:migrate` before `next build` so committed SQL is applied to Neon.
 Production builds also re-seed the course catalogue. Local `pnpm build` skips
 those steps.
+`drizzle-kit migrate` applies every pending file in one transaction. PostgreSQL
+cannot use `ALTER TYPE ... ADD VALUE` until that transaction commits, so a new
+enum value that a later pending file must insert has to be introduced by
+recreating the type in the same migrate run.
 New production application domains must not be connected until their release
 acceptance and rollback plan are complete. Follow [`LAUNCH.md`](./LAUNCH.md)
 and [`OPERATIONS.md`](./OPERATIONS.md).

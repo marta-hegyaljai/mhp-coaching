@@ -1,6 +1,8 @@
 -- Café Supervision course and individually bookable visio evenings. Staff can
 -- publish or retire each date from the course record. Preview builds migrate
--- but do not re-seed, so these rows must exist in SQL.
+-- but do not re-seed, so these rows must exist in SQL. Category 'supervision'
+-- is created in 0023 by recreating the enum so this file can run in the same
+-- drizzle-kit transaction.
 
 INSERT INTO "courses" (
   "id",
