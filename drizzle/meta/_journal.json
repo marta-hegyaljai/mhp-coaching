@@ -169,6 +169,13 @@
       "when": 1789126000000,
       "tag": "0023_cafe_supervision",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1789127000000,
+      "tag": "0024_cafe_supervision_course",
+      "breakpoints": true
     }
   ]
 }
