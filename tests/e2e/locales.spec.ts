@@ -3,30 +3,36 @@ import {expect, test} from "@playwright/test";
 const locales = [
   {
     locale: "fr",
-    heading: "La formation en hypnose elmanienne, avec calme et précision.",
+    heading: "L’hypnose simple, moderne et efficace depuis 1979.",
+    whyHeading: "Pourquoi cette méthode ?",
     coursesPath: "/fr/formations",
     coursesHeading: "Formations en hypnose",
   },
   {
     locale: "de",
-    heading: "Ausbildung in elmanischer Hypnose, ruhig und präzise.",
+    heading: "Einfache, moderne und wirksame Hypnose seit 1979.",
+    whyHeading: "Warum diese Methode?",
     coursesPath: "/de/ausbildungen",
     coursesHeading: "Hypnose-Ausbildungen",
   },
   {
     locale: "en",
-    heading: "Elmanian hypnosis training, taught with calm precision.",
+    heading: "Simple, modern and effective hypnosis since 1979.",
+    whyHeading: "Why this method?",
     coursesPath: "/en/courses",
     coursesHeading: "Hypnosis courses",
   },
 ] as const;
 
-for (const {locale, heading, coursesPath, coursesHeading} of locales) {
+for (const {locale, heading, whyHeading, coursesPath, coursesHeading} of locales) {
   test(`${locale} homepage renders its translation and SEO tags`, async ({page}) => {
     await page.goto(`/${locale}`);
 
     await expect(page.locator("html")).toHaveAttribute("lang", locale);
     await expect(page.getByRole("heading", {level: 1})).toHaveText(heading);
+    await expect(page.locator("#why-method").getByRole("heading", {level: 2})).toHaveText(
+      whyHeading,
+    );
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
       "href",
       new RegExp(`/${locale}$`),
@@ -289,6 +295,55 @@ test("header exposes sign-up and marks the current page", async ({page}) => {
   await page.goto("/de");
   await expect(page.locator("header").first().getByRole("link", {name: "Anmelden"})).toBeVisible();
   await expect(page.locator("header").first().getByRole("link", {name: "Registrieren"})).toBeHidden();
+});
+
+test("homepage method reasons read as structured content above the footer", async ({
+  page,
+}) => {
+  await page.goto("/fr");
+
+  const section = page.locator("#why-method");
+  const footer = page.locator("footer");
+
+  await expect(section.getByRole("heading", {level: 2})).toHaveText(
+    "Pourquoi cette méthode ?",
+  );
+  await expect(section.getByRole("heading", {level: 3})).toHaveCount(3);
+  await expect(
+    section.getByRole("heading", {name: "Rapide et immédiatement applicable"}),
+  ).toBeVisible();
+  await expect(section.getByRole("heading", {name: "En présentiel"})).toBeVisible();
+  await expect(section.locator("article")).toHaveCount(3);
+
+  await expect
+    .poll(async () => section.evaluate((node) => getComputedStyle(node).backgroundColor))
+    .toBe("rgba(0, 0, 0, 0)");
+
+  const [sectionBox, footerBox] = await Promise.all([
+    section.boundingBox(),
+    footer.boundingBox(),
+  ]);
+  expect((sectionBox?.y ?? 0) + (sectionBox?.height ?? 0)).toBeLessThanOrEqual(
+    footerBox?.y ?? 0,
+  );
+});
+
+test("foundation course presents NGH and APSH as possibilities", async ({page}) => {
+  await page.goto("/fr/formations/praticien-hypnose-omni");
+
+  await page.locator("summary").filter({hasText: "Diplôme NGH"}).click();
+  await expect(
+    page.getByText(
+      "Vous avez la possibilité de recevoir le diplôme de la National Guild of Hypnotists (NGH).",
+    ),
+  ).toBeVisible();
+
+  await page.locator("summary").filter({hasText: "Association professionnelle"}).click();
+  await expect(
+    page.getByText(
+      "Possibilité de faire partie de l’Association Professionnelle Suisse pour l’Hypnose Thérapeutique (APSH).",
+    ),
+  ).toBeVisible();
 });
 
 test("equivalent localized course slugs remain reachable", async ({page}) => {

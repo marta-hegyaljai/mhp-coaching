@@ -4,6 +4,7 @@ import {CourseCard} from "@/features/courses/components/course-card";
 import {loadPublishedCourses} from "@/features/courses/live";
 import {splitCatalogueByFormat} from "@/features/courses/programme";
 import {HomeHero} from "@/features/home/home-hero";
+import {MethodReasons} from "@/features/home/method-reasons";
 import {homeStatueJsonLd, courseListJsonLd} from "@/features/seo/json-ld";
 import {JsonLd} from "@/features/seo/json-ld-script";
 import {homeStatue, homeStatueAlt} from "@/features/seo/home-statue";
@@ -121,23 +122,11 @@ export default async function HomePage({params}: HomePageProps) {
         </div>
       </Section>
 
-      <Section tone="shell" ariaLabelledBy="why-title">
-        <Eyebrow>{t("whyEyebrow")}</Eyebrow>
-        <h2 id="why-title" className="mt-4 max-w-2xl font-serif text-heading">
-          {t("whyTitle")}
-        </h2>
-        <div className="mt-12 grid gap-10 md:grid-cols-3 md:gap-8">
-          {reasons.map((reason, index) => (
-            <div key={reason.title} className="border-t border-line pt-6">
-              <p className="font-serif text-lg text-bronze">
-                {String(index + 1).padStart(2, "0")}
-              </p>
-              <h3 className="mt-3 font-serif text-subheading">{reason.title}</h3>
-              <p className="mt-3 text-sm leading-7 text-ink-muted">{reason.body}</p>
-            </div>
-          ))}
-        </div>
-      </Section>
+      <MethodReasons
+        eyebrow={t("whyEyebrow")}
+        title={t("whyTitle")}
+        reasons={reasons}
+      />
     </SiteShell>
   );
 }

@@ -28,4 +28,23 @@ describe("historical course content", () => {
 
     expect(detailText).not.toMatch(/Lausanne|Genève|Geneva/i);
   });
+
+  it("states NGH and APSH as possibilities on the foundation course", () => {
+    const practitioner = courses.find((course) => course.id === "omni-practitioner");
+    expect(practitioner).toBeDefined();
+
+    const sections = getCourseSourceContent(practitioner!).sections;
+    const ngh = sections.find((section) => section.title === "Diplôme NGH");
+    const association = sections.find(
+      (section) => section.title === "Association professionnelle",
+    );
+
+    expect(ngh?.items).toEqual([
+      "Vous avez la possibilité de recevoir le diplôme de la National Guild of Hypnotists (NGH).",
+    ]);
+    expect(association?.items).toEqual([
+      "Possibilité de faire partie de l’Association Professionnelle Suisse pour l’Hypnose Thérapeutique (APSH).",
+    ]);
+    expect(JSON.stringify(ngh)).not.toMatch(/automatiquement/i);
+  });
 });
