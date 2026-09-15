@@ -26,6 +26,27 @@ test("Café Supervision registers a visio evening without Stripe", async ({
   await expect(page.getByRole("button", {name: "Confirmer l’inscription"})).toBeVisible();
   await expect(page.getByText(/TWINT/)).toHaveCount(0);
   await expect(page.getByRole("button", {name: /Continuer vers le paiement/})).toHaveCount(0);
+
+  await page.locator("label").filter({has: page.getByRole("radio")}).first().click();
+  await page.getByRole("textbox", {name: "Prénom", exact: true}).fill("Léa");
+  await page.getByRole("textbox", {name: "Nom", exact: true}).fill("Supervision");
+  await chooseDateOfBirth(page);
+  await page
+    .getByRole("textbox", {name: "E-mail"})
+    .fill(`lea.supervision.${Date.now()}@example.com`);
+  await page.getByLabel("Téléphone").fill("+41 79 451 44 92");
+  await page.getByLabel("Adresse").fill("Chemin de la Fenetta 42");
+  await page.getByLabel("Code postal").fill("1752");
+  await page.getByLabel("Ville").fill("Villars-sur-Glâne");
+  await page.getByRole("checkbox").check();
+  await page.getByRole("button", {name: "Confirmer l’inscription"}).click();
+
+  await expect(page).toHaveURL(/\/inscription\/confirmee\?bookingId=/);
+  await expect(page.getByRole("heading", {level: 1})).toContainText("confirmée");
+  await expect(page.getByText("Confirmé")).toBeVisible();
+  await expect(page.getByText("Café Supervision").first()).toBeVisible();
+  await expect(page.getByText("Visioconférence")).toBeVisible();
+  await expect(page.getByText("Gratuit")).toBeVisible();
 });
 
 test("a dated course shows exact sessions and a date picker on booking", async ({page}) => {
