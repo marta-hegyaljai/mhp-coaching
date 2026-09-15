@@ -43,7 +43,7 @@ test("Café Supervision registers a visio evening without Stripe", async ({
 
   await expect(page).toHaveURL(/\/inscription\/succes\?bookingId=/);
   await expect(page.getByRole("heading", {level: 1})).toContainText("confirmée");
-  await expect(page.getByText("Confirmé")).toBeVisible();
+  await expect(page.getByText("Confirmé", {exact: true})).toBeVisible();
   await expect(page.getByText("Café Supervision").first()).toBeVisible();
   await expect(page.getByText("Visioconférence")).toBeVisible();
   await expect(page.getByText("Gratuit")).toBeVisible();
