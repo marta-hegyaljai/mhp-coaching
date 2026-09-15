@@ -41,7 +41,7 @@ test("Café Supervision registers a visio evening without Stripe", async ({
   await page.getByRole("checkbox").check();
   await page.getByRole("button", {name: "Confirmer l’inscription"}).click();
 
-  await expect(page).toHaveURL(/\/inscription\/confirmee\?bookingId=/);
+  await expect(page).toHaveURL(/\/inscription\/succes\?bookingId=/);
   await expect(page.getByRole("heading", {level: 1})).toContainText("confirmée");
   await expect(page.getByText("Confirmé")).toBeVisible();
   await expect(page.getByText("Café Supervision").first()).toBeVisible();
