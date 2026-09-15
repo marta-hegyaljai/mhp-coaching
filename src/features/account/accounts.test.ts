@@ -33,6 +33,7 @@ async function guestBooking(email: string, dates: {start: string; end?: string})
   return createPendingBooking({
     firstName: "Ada",
     lastName: "Guest",
+    dateOfBirth: "1975-12-10",
     email,
     phone: "+41 79 000 00 00",
     street: "Chemin de la Fenetta 42",
@@ -332,6 +333,7 @@ describe.skipIf(!hasDatabase)("CP-01 public accounts", () => {
     const owned = await createPendingBooking({
       firstName: "Book",
       lastName: "Er",
+      dateOfBirth: "1975-12-10",
       email,
       phone: "+41 79 000 00 00",
       street: "Chemin de la Fenetta 42",

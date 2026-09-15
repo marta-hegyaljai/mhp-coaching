@@ -5,6 +5,7 @@ import {isDateToBeConfirmed} from "@/features/bookings/booking-date";
 import {formatDateRange} from "@/features/courses/dates";
 import {organization} from "@/features/organization/info";
 import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
+import {formatLongDate} from "@/shared/format/calendar-date";
 
 import {composeTransactionalEmail} from "./layout";
 import {mailLocale} from "./locale";
@@ -28,6 +29,9 @@ export async function sendPurchaseNotification(
   const amount = formatChf(minorUnitsToFrancs(booking.amountMinor), locale);
   const address = `${booking.street}, ${booking.postalCode} ${booking.city}, ${booking.country}`;
   const name = `${booking.firstName} ${booking.lastName}`;
+  const dateOfBirth = booking.dateOfBirth
+    ? formatLongDate(booking.dateOfBirth, locale)
+    : null;
   const subject =
     outcome === "paid"
       ? t("subjectPaid", {course: booking.courseTitle})
@@ -39,6 +43,7 @@ export async function sendPurchaseNotification(
     intro,
     "",
     t("nameLine", {name}),
+    ...(dateOfBirth ? [t("dateOfBirthLine", {date: dateOfBirth})] : []),
     t("emailLine", {email: booking.email}),
     t("phoneLine", {phone: booking.phone}),
     t("addressLine", {address}),
@@ -57,6 +62,9 @@ export async function sendPurchaseNotification(
     intro,
     details: [
       {label: fields("name"), value: name},
+      ...(dateOfBirth
+        ? [{label: fields("dateOfBirth"), value: dateOfBirth}]
+        : []),
       {label: fields("email"), value: booking.email},
       {label: fields("phone"), value: booking.phone},
       {label: fields("address"), value: address},

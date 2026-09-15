@@ -95,6 +95,7 @@ function booking(overrides: Partial<Booking> = {}): Booking {
     updatedAt: new Date("2026-01-01T00:00:00.000Z"),
     firstName: "Ada",
     lastName: "Lovelace",
+    dateOfBirth: "1975-12-10",
     email: "ada@example.com",
     phone: "+41 79 000 00 00",
     street: "Chemin de la Fenetta 42",
@@ -141,6 +142,9 @@ describe("staff email destinations", () => {
     );
     const html = sendMailMock.mock.calls[0]?.[0].html ?? "";
     expect(sendMailMock.mock.calls[0]?.[0].text).toContain("Status: Paid");
+    expect(sendMailMock.mock.calls[0]?.[0].text).toContain(
+      "Date of birth: 10 December 1975",
+    );
     expect(html).toContain("Payment received");
     expectSharedChrome(html);
   });

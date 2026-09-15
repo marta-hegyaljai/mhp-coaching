@@ -1,4 +1,12 @@
-import {expect, test} from "@playwright/test";
+import {expect, type Page, test} from "@playwright/test";
+
+async function chooseDateOfBirth(page: Page) {
+  await page.getByRole("button", {name: "Date de naissance"}).click();
+  const dialog = page.getByRole("dialog", {name: "Calendrier"});
+  await dialog.getByLabel("Année").selectOption("1990");
+  await dialog.getByLabel("Mois", {exact: true}).selectOption("4");
+  await dialog.getByRole("button", {name: /15 mai 1990/i}).click();
+}
 
 test("a dated course shows exact sessions and a date picker on booking", async ({page}) => {
   await page.goto("/fr/formations/praticien-hypnose-omni");
@@ -11,6 +19,7 @@ test("a dated course shows exact sessions and a date picker on booking", async (
   await expect(page).toHaveURL(/\/inscription$/);
   await expect(page.getByRole("radio", {name: /septembre 2026/}).first()).toBeVisible();
   await expect(page.getByLabel("Adresse")).toBeVisible();
+  await expect(page.getByRole("button", {name: "Date de naissance"})).toBeVisible();
 });
 
 test("course sidebar lists upcoming sessions and books a chosen date", async ({
@@ -134,6 +143,7 @@ test("empty checkout actions list the missing required fields", async ({page}) =
     "Champs obligatoires manquants",
   );
   await expect(page.getByText("Veuillez indiquer votre prénom.").first()).toBeVisible();
+  await expect(page.getByText("Veuillez indiquer votre date de naissance.").first()).toBeVisible();
   await expect(page.getByText("Confidentialité et conditions").first()).toBeVisible();
   await page.getByRole("alert").getByRole("button", {name: "Prénom"}).click();
   await expect(page.getByRole("textbox", {name: "Prénom", exact: true})).toBeFocused();
@@ -149,9 +159,10 @@ test("another payment method opens the cancelled-payment contact form with the c
   page,
 }) => {
   await page.goto("/fr/formations/praticien-hypnose-omni/inscription");
-  await page.locator("label").filter({hasText: "10 – 20 septembre 2026"}).click();
+  await page.locator("label").filter({has: page.getByRole("radio")}).first().click();
   await page.getByRole("textbox", {name: "Prénom", exact: true}).fill("Ada");
   await page.getByRole("textbox", {name: "Nom", exact: true}).fill("Lovelace");
+  await chooseDateOfBirth(page);
   await page
     .getByRole("textbox", {name: "E-mail"})
     .fill(`ada-other-${Date.now()}@example.com`);
@@ -167,7 +178,7 @@ test("another payment method opens the cancelled-payment contact form with the c
   await expect(page).toHaveURL(/source=other/);
   await expect(page.getByRole("heading", {level: 1})).toHaveText("Payer autrement");
   await expect(page.getByText("Praticien·ne en Hypnose OMNI®").first()).toBeVisible();
-  await expect(page.getByText(/septembre 2026/).first()).toBeVisible();
+  await expect(page.getByText(/20(26|27)/).first()).toBeVisible();
   await expect(page.getByRole("textbox", {name: "Message"})).toBeVisible();
 });
 

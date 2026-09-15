@@ -15,6 +15,7 @@ describe("booking form issue helpers", () => {
       "courseDateId",
       "firstName",
       "lastName",
+      "dateOfBirth",
       "email",
       "phone",
       "street",

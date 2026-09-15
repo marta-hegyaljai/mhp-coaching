@@ -9,7 +9,7 @@ export const privacyDocument = {
   pathname: "/legal/privacy",
   titleKey: "privacyTitle",
   descriptionKey: "privacyDescription",
-  updatedAt: "2026-09-14",
+  updatedAt: "2026-09-15",
   sections: {
     fr: [
       {
@@ -26,7 +26,7 @@ export const privacyDocument = {
           "Nous ne créons pas de compte élève. Les données sont collectées uniquement lorsque vous les fournissez ou lorsque le prestataire de paiement nous confirme une transaction.",
         ],
         items: [
-          "Inscription à une formation : prénom, nom, e-mail, téléphone, adresse postale (rue, code postal, localité, pays), langue, formation et session choisies, montant, monnaie, état du paiement et horodatages associés. L’inscription est enregistrée dès l’envoi du formulaire, y compris si le paiement en ligne n’est pas mené à terme.",
+          "Inscription à une formation : prénom, nom, date de naissance, e-mail, téléphone, adresse postale (rue, code postal, localité, pays), langue, formation et session choisies, montant, monnaie, état du paiement et horodatages associés. L’inscription est enregistrée dès l’envoi du formulaire, y compris si le paiement en ligne n’est pas mené à terme.",
           "Liste d’attente : prénom, nom, e-mail, téléphone, langue, formation concernée.",
           "Appel conseil de quinze minutes : prénom, nom, e-mail, téléphone, langue, horaire réservé, formation consultée le cas échéant, et message facultatif.",
           "Question écrite depuis une page de formation : prénom, nom, e-mail, téléphone, langue, message, et formation consultée le cas échéant.",
@@ -98,7 +98,7 @@ export const privacyDocument = {
           "Es gibt kein Schülerkonto. Daten entstehen nur, wenn Sie sie angeben oder der Zahlungsanbieter eine Transaktion bestätigt.",
         ],
         items: [
-          "Kursanmeldung: Vorname, Nachname, E-Mail, Telefon, Postadresse (Strasse, PLZ, Ort, Land), Sprache, Kurs und Termin, Betrag, Währung, Zahlungsstatus und zugehörige Zeitstempel. Die Anmeldung wird beim Absenden gespeichert, auch wenn die Online-Zahlung nicht abgeschlossen wird.",
+          "Kursanmeldung: Vorname, Nachname, Geburtsdatum, E-Mail, Telefon, Postadresse (Strasse, PLZ, Ort, Land), Sprache, Kurs und Termin, Betrag, Währung, Zahlungsstatus und zugehörige Zeitstempel. Die Anmeldung wird beim Absenden gespeichert, auch wenn die Online-Zahlung nicht abgeschlossen wird.",
           "Warteliste: Vorname, Nachname, E-Mail, Telefon, Sprache, betroffener Kurs.",
           "Fünfzehnminütiges Beratungsgespräch: Vorname, Nachname, E-Mail, Telefon, Sprache, reservierte Zeit, gegebenenfalls die betrachtete Ausbildung und eine optionale Nachricht.",
           "Schriftliche Frage von einer Ausbildungsseite: Vorname, Nachname, E-Mail, Telefon, Sprache, Nachricht und gegebenenfalls die betrachtete Ausbildung.",
@@ -170,7 +170,7 @@ export const privacyDocument = {
           "We do not create student accounts. Data is collected only when you provide it or when the payment provider confirms a transaction.",
         ],
         items: [
-          "Course booking: first name, last name, email, phone, postal address (street, postcode, city, country), language, selected course and session, amount, currency, payment status and related timestamps. The booking is stored when the form is submitted, including if online payment is not completed.",
+          "Course booking: first name, last name, date of birth, email, phone, postal address (street, postcode, city, country), language, selected course and session, amount, currency, payment status and related timestamps. The booking is stored when the form is submitted, including if online payment is not completed.",
           "Waiting list: first name, last name, email, phone, language, course concerned.",
           "Fifteen-minute advice call: first name, last name, email, phone, language, reserved time, the course being viewed if any, and an optional note.",
           "Written question from a course page: first name, last name, email, phone, language, message, and the course being viewed if any.",

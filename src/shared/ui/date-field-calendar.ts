@@ -41,6 +41,42 @@ export function shiftMonth(
   return {year: instant.getUTCFullYear(), month: instant.getUTCMonth()};
 }
 
+export function shiftIsoDays(iso: string, days: number): string {
+  const parsed = parseIsoDate(iso);
+  if (!parsed) {
+    return iso;
+  }
+
+  const instant = new Date(Date.UTC(parsed.year, parsed.month, parsed.day + days));
+  return toIsoDate(instant.getUTCFullYear(), instant.getUTCMonth(), instant.getUTCDate());
+}
+
+export function shiftIsoYears(iso: string, years: number): string {
+  const parsed = parseIsoDate(iso);
+  if (!parsed) {
+    return iso;
+  }
+
+  const year = parsed.year + years;
+  const lastDay = new Date(Date.UTC(year, parsed.month + 1, 0)).getUTCDate();
+  return toIsoDate(year, parsed.month, Math.min(parsed.day, lastDay));
+}
+
+export function yearsInRange(
+  min: string | undefined,
+  max: string | undefined,
+  cursorYear: number,
+): number[] {
+  const start = min && isIsoDate(min) ? Number(min.slice(0, 4)) : 1900;
+  const end =
+    max && isIsoDate(max)
+      ? Number(max.slice(0, 4))
+      : Math.max(cursorYear, new Date().getUTCFullYear()) + 5;
+  const from = Math.min(start, end, cursorYear);
+  const to = Math.max(start, end, cursorYear);
+  return Array.from({length: to - from + 1}, (_, index) => from + index);
+}
+
 /** Monday-first weeks. Empty cells stay `null` so adjacent months are not implied. */
 export function monthWeeks(year: number, monthIndex: number): Array<Array<string | null>> {
   const first = new Date(Date.UTC(year, monthIndex, 1));

@@ -24,6 +24,7 @@ import {
   shiftMonth,
   todayIsoInZurich,
   toIsoDate,
+  yearsInRange,
 } from "@/shared/ui/date-field-calendar";
 import {fieldLabelClass, fieldStyles, type FieldSize} from "@/shared/ui/field";
 import {CalendarIcon, ChevronLeftIcon, ChevronRightIcon} from "@/shared/ui/icons";
@@ -42,6 +43,8 @@ type DateFieldProps = {
   value?: string;
   min?: string;
   max?: string;
+  /** Month shown first when the field is empty. */
+  initialView?: string;
   fieldClassName?: string;
 };
 
@@ -59,6 +62,7 @@ export function DateField({
   value,
   min,
   max,
+  initialView,
   fieldClassName = "",
 }: DateFieldProps) {
   const locale = useLocale() as AppLocale;
@@ -66,7 +70,10 @@ export function DateField({
   const initial = isIsoDate(value ?? defaultValue) ? (value ?? defaultValue) : "";
   const [selected, setSelected] = useState(initial);
   const selectedDate = value !== undefined ? (isIsoDate(value) ? value : "") : selected;
-  const parsed = parseIsoDate(selectedDate) ?? parseIsoDate(todayIsoInZurich());
+  const parsed =
+    parseIsoDate(selectedDate) ??
+    parseIsoDate(initialView ?? "") ??
+    parseIsoDate(todayIsoInZurich());
   const [cursor, setCursor] = useState({
     year: parsed?.year ?? 2026,
     month: parsed?.month ?? 0,
@@ -151,7 +158,10 @@ export function DateField({
           return;
         }
         if (!open) {
-          const next = parseIsoDate(selectedDate) ?? parseIsoDate(todayIsoInZurich());
+          const next =
+            parseIsoDate(selectedDate) ??
+            parseIsoDate(initialView ?? "") ??
+            parseIsoDate(todayIsoInZurich());
           if (next) {
             setCursor({year: next.year, month: next.month});
           }
@@ -248,6 +258,10 @@ function DateControl({
   );
   const weekdays = useMemo(() => weekdayHeadings(locale), [locale]);
   const monthLabel = formatMonthYear(toIsoDate(cursor.year, cursor.month, 1), locale);
+  const years = useMemo(
+    () => yearsInRange(min, max, cursor.year),
+    [cursor.year, max, min],
+  );
 
   return (
     <div className="relative">
@@ -301,9 +315,10 @@ function DateControl({
               today={today}
               min={min}
               max={max}
+              cursor={cursor}
+              years={years}
               triggerRef={triggerRef}
-              onPrevious={() => onCursorChange(shiftMonth(cursor.year, cursor.month, -1))}
-              onNext={() => onCursorChange(shiftMonth(cursor.year, cursor.month, 1))}
+              onCursorChange={onCursorChange}
               onPick={onPick}
               onToday={() => onPick(today)}
               onClear={onClear}
@@ -326,9 +341,10 @@ function DatePickerDialog({
   today,
   min,
   max,
+  cursor,
+  years,
   triggerRef,
-  onPrevious,
-  onNext,
+  onCursorChange,
   onPick,
   onToday,
   onClear,
@@ -343,15 +359,18 @@ function DatePickerDialog({
   today: string;
   min?: string;
   max?: string;
+  cursor: {year: number; month: number};
+  years: number[];
   triggerRef: RefObject<HTMLButtonElement | null>;
-  onPrevious: () => void;
-  onNext: () => void;
+  onCursorChange: (cursor: {year: number; month: number}) => void;
   onPick: (iso: string) => void;
   onToday: () => void;
   onClear?: () => void;
 }) {
   const t = useTranslations("DateField");
   const [position, setPosition] = useState({top: 0, left: 0});
+  const todayEnabled = isIsoInRange(today, min, max);
+  const showFooter = todayEnabled || Boolean(onClear);
 
   useLayoutEffect(() => {
     function update() {
@@ -378,7 +397,7 @@ function DatePickerDialog({
       <div className="flex items-center justify-between gap-2">
         <button
           type="button"
-          onClick={onPrevious}
+          onClick={() => onCursorChange(shiftMonth(cursor.year, cursor.month, -1))}
           aria-label={t("previousMonth")}
           className="flex size-11 items-center justify-center rounded-panel border border-line text-ink transition-colors duration-150 hover:bg-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
         >
@@ -387,12 +406,43 @@ function DatePickerDialog({
         <p className="min-w-0 text-center text-sm font-semibold capitalize">{monthLabel}</p>
         <button
           type="button"
-          onClick={onNext}
+          onClick={() => onCursorChange(shiftMonth(cursor.year, cursor.month, 1))}
           aria-label={t("nextMonth")}
           className="flex size-11 items-center justify-center rounded-panel border border-line text-ink transition-colors duration-150 hover:bg-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
         >
           <ChevronRightIcon />
         </button>
+      </div>
+
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        <select
+          aria-label={t("month")}
+          value={cursor.month}
+          onChange={(event) =>
+            onCursorChange({year: cursor.year, month: Number(event.target.value)})
+          }
+          className={`${fieldStyles({size: "sm"})} py-0`}
+        >
+          {monthNames(locale).map((name, month) => (
+            <option key={name} value={month}>
+              {name}
+            </option>
+          ))}
+        </select>
+        <select
+          aria-label={t("year")}
+          value={cursor.year}
+          onChange={(event) =>
+            onCursorChange({year: Number(event.target.value), month: cursor.month})
+          }
+          className={`${fieldStyles({size: "sm", numeric: true})} py-0`}
+        >
+          {years.map((year) => (
+            <option key={year} value={year}>
+              {year}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="mt-3 grid grid-cols-7">
@@ -435,21 +485,24 @@ function DatePickerDialog({
         })}
       </div>
 
-      <div className="mt-3 flex gap-2 border-t border-line-soft pt-3">
-        <button
-          type="button"
-          disabled={!isIsoInRange(today, min, max)}
-          onClick={onToday}
-          className={`${buttonStyles({variant: "secondary", size: "md"})} flex-1`}
-        >
-          {t("today")}
-        </button>
-        {onClear ? (
-          <button type="button" onClick={onClear} className={`${buttonStyles({variant: "quiet", size: "md"})} flex-1`}>
-            {t("clear")}
-          </button>
-        ) : null}
-      </div>
+      {showFooter ? (
+        <div className="mt-3 flex gap-2 border-t border-line-soft pt-3">
+          {todayEnabled ? (
+            <button
+              type="button"
+              onClick={onToday}
+              className={`${buttonStyles({variant: "secondary", size: "md"})} flex-1`}
+            >
+              {t("today")}
+            </button>
+          ) : null}
+          {onClear ? (
+            <button type="button" onClick={onClear} className={`${buttonStyles({variant: "quiet", size: "md"})} flex-1`}>
+              {t("clear")}
+            </button>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -461,7 +514,7 @@ function popoverPosition(trigger: HTMLButtonElement | null): {top: number; left:
 
   const rect = trigger.getBoundingClientRect();
   const width = Math.min(328, window.innerWidth - 32);
-  const estimatedHeight = 380;
+  const estimatedHeight = 460;
   const left = Math.max(16, Math.min(rect.left, window.innerWidth - width - 16));
   const below = rect.bottom + 8;
   const top =
@@ -482,4 +535,15 @@ function weekdayHeadings(locale: AppLocale): string[] {
     // 5 January 2026 is a Monday.
     return formatter.format(new Date(Date.UTC(2026, 0, 5 + index)));
   });
+}
+
+function monthNames(locale: AppLocale): string[] {
+  const formatter = new Intl.DateTimeFormat(intlLocale(locale), {
+    month: "long",
+    timeZone: "UTC",
+  });
+
+  return Array.from({length: 12}, (_, month) =>
+    formatter.format(new Date(Date.UTC(2026, month, 1))),
+  );
 }

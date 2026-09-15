@@ -14,7 +14,8 @@ Implemented today:
 - localized public pages and SEO routes for French, German and English;
 - source-controlled course catalogue, sessions, calendar and waitlists, with the
   same catalogue persisted in PostgreSQL for go-live durability;
-- guest course registration with postal address persisted before payment;
+- guest course registration with postal address and date of birth persisted
+  before payment;
 - fake and Stripe Checkout providers, signed webhook processing and email;
 - alternative-payment inquiries;
 - a free fifteen-minute advice call from each course detail and booking page,
@@ -147,7 +148,8 @@ contact people when a date opens.
 Minimum:
 - first name
 - last name
-- email
+- date of birth (stored as a calendar date, not a changing age)
+- email, with format validation
 - phone if required by the business
 - postal address
 - selected course/date
@@ -167,6 +169,7 @@ Implement a small `PaymentProvider` abstraction and a deterministic `FakePayment
 At least:
 - booking id + timestamps
 - first/last name
+- date of birth
 - email/phone if collected
 - locale
 - course id + course-date id

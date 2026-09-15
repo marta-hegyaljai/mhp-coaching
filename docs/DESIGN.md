@@ -327,7 +327,7 @@ motion, or animated background. Always honor `prefers-reduced-motion`.
   `<SelectField>` in `src/shared/ui/field.tsx`. One geometry for the product;
   `size="sm"` is the compact operational filter bar. Both clear 44px. Dates
   use `<DateField>` in `src/shared/ui/date-field.tsx`: the same field frame,
-  a Monday-first month grid, selected day inverted to black. Never ship a
+  a Monday-first month grid, month and year selects, selected day inverted to black. Never ship a
   native `<input type="date">` picker.
 - Bordered surfaces: `<Panel>` and `<PanelDivider>` in
   `src/shared/ui/panel.tsx`.

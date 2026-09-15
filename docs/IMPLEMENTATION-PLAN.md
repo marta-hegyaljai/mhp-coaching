@@ -22,7 +22,7 @@ later scope forward.
 | Field | Value |
 | --- | --- |
 | Plan revision | 3 |
-| Last updated | 2026-09-11 |
+| Last updated | 2026-09-15 |
 | Last completed checkpoint | CP-11 |
 | Next checkpoint | — |
 | Active checkpoint | — |
@@ -37,6 +37,11 @@ Extra-roadmap (2026-09-14): a free 15-minute course advice call and written
 question flow shipped on course detail and booking pages, with admin-managed
 Zurich hours and collision-safe slots. This is course-domain work, not a new
 checkpoint.
+
+Extra-roadmap (2026-09-15): course registration now requires date of birth in
+addition to first name, last name, email and postal address. The date is
+validated as a real past calendar day and stored on the booking snapshot.
+This is course-domain work, not a new checkpoint.
 
 ## Status vocabulary
 

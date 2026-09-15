@@ -155,6 +155,13 @@
       "when": 1789124000000,
       "tag": "0021_course_calls",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1789125000000,
+      "tag": "0022_booking_date_of_birth",
+      "breakpoints": true
     }
   ]
 }

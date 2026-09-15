@@ -201,6 +201,7 @@ export default async function AdminCourseDetailPage({
                 statusLabels={statusLabels}
                 labels={{
                   name: t("name"),
+                  dateOfBirth: t("coursesDateOfBirth"),
                   email: t("email"),
                   phone: t("coursesPhone"),
                   address: t("coursesAddress"),

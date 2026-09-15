@@ -5,8 +5,11 @@ import {
   isIsoInRange,
   monthWeeks,
   parseIsoDate,
+  shiftIsoDays,
+  shiftIsoYears,
   shiftMonth,
   toIsoDate,
+  yearsInRange,
 } from "./date-field-calendar";
 
 describe("date field calendar", () => {
@@ -37,6 +40,19 @@ describe("date field calendar", () => {
   it("shifts months across a year boundary", () => {
     expect(shiftMonth(2026, 0, -1)).toEqual({year: 2025, month: 11});
     expect(shiftMonth(2026, 11, 1)).toEqual({year: 2027, month: 0});
+  });
+
+  it("shifts ISO days and years without inventing 29 February", () => {
+    expect(shiftIsoDays("2026-09-15", -1)).toBe("2026-09-14");
+    expect(shiftIsoDays("2026-01-01", -1)).toBe("2025-12-31");
+    expect(shiftIsoYears("2026-09-15", -120)).toBe("1906-09-15");
+    expect(shiftIsoYears("2000-02-29", -1)).toBe("1999-02-28");
+  });
+
+  it("lists every year in a bounded picker range", () => {
+    expect(yearsInRange("1906-09-15", "2026-09-14", 1990)).toHaveLength(121);
+    expect(yearsInRange("1906-09-15", "2026-09-14", 1990)[0]).toBe(1906);
+    expect(yearsInRange("1906-09-15", "2026-09-14", 1990).at(-1)).toBe(2026);
   });
 
   it("keeps min and max inclusive", () => {

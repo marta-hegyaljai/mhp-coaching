@@ -2,7 +2,13 @@ import {describe, expect, it} from "vitest";
 
 import type {WaitlistEntry} from "@/db/schema";
 
-import {waitlistToCsv} from "./csv";
+import {bookingsToCsv, waitlistToCsv} from "./csv";
+
+describe("bookingsToCsv", () => {
+  it("includes date of birth in the export header", () => {
+    expect(bookingsToCsv([])).toContain("firstName,lastName,dateOfBirth,email");
+  });
+});
 
 describe("waitlistToCsv", () => {
   it("exports waitlist contacts with course identity", () => {

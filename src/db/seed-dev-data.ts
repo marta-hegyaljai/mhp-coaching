@@ -259,6 +259,7 @@ async function seedCourseBookings(users: User[]) {
     const booking = await createPendingBooking({
       firstName,
       lastName,
+      dateOfBirth: "1975-12-10",
       email,
       phone: "+41 26 123 45 67",
       street: "Rue de Lausanne 12",

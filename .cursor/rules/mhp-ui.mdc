@@ -40,9 +40,9 @@ source of truth and overrides generic design preferences.
   the editorial serif. On a course card, duration leads as the gold eyebrow;
   the price sits on the closing row opposite the details action, never beside
   the duration.
-- Date fields use `<DateField>`: the shared field frame and a Monday-first
-  month grid with the selected day inverted to black. Do not use a native
-  `<input type="date">` picker.
+- Date fields use `<DateField>`: the shared field frame, a Monday-first
+  month grid, month and year selects, and the selected day inverted to black.
+  Do not use a native `<input type="date">` picker.
 - Keep the language control as the custom fixed-width dropdown and preserve
   localized equivalent routes. Switching FR/DE/EN must not move surrounding
   controls.

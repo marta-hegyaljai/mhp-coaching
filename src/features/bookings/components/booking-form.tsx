@@ -5,6 +5,7 @@ import {useTranslations} from "next-intl";
 
 import {createBookingAction} from "@/features/bookings/actions";
 import {unscheduledCourseDateId} from "@/features/bookings/booking-date";
+import {dateOfBirthBounds} from "@/features/bookings/date-of-birth";
 import {
   bookingIssueLabelKeys,
   focusBookingIssue,
@@ -19,6 +20,8 @@ import {formatChf} from "@/features/payments/money";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {Button} from "@/shared/ui/button";
+import {DateField} from "@/shared/ui/date-field";
+import {shiftIsoYears, todayIsoInZurich} from "@/shared/ui/date-field-calendar";
 import {fieldStyles} from "@/shared/ui/field";
 import {CheckIcon, LockIcon, SpinnerIcon} from "@/shared/ui/icons";
 import {Price} from "@/shared/ui/price";
@@ -74,6 +77,8 @@ export function BookingForm({
   const price = formatChf(course.priceChf, locale, {compact: true});
   const missingKeys = errors ? visibleBookingIssueKeys(errors) : [];
   const missingSignature = missingKeys.join(",");
+  const birthBounds = dateOfBirthBounds();
+  const birthView = shiftIsoYears(todayIsoInZurich(), -30);
 
   useEffect(() => {
     if (!missingSignature) {
@@ -215,6 +220,18 @@ export function BookingForm({
             label={t("lastName")}
             error={errors?.lastName}
             defaultValue={draft?.lastName ?? defaults?.lastName}
+          />
+          <DateField
+            id="dateOfBirth"
+            name="dateOfBirth"
+            label={t("dateOfBirth")}
+            error={errors?.dateOfBirth}
+            required
+            min={birthBounds.min}
+            max={birthBounds.max}
+            defaultValue={draft?.dateOfBirth}
+            initialView={birthView}
+            fieldClassName="sm:col-span-2"
           />
           <Field
             name="email"

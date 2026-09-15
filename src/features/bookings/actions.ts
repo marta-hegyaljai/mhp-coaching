@@ -86,6 +86,7 @@ export async function createBookingAction(
     const booking = await createPendingBooking({
       firstName: values.firstName,
       lastName: values.lastName,
+      dateOfBirth: values.dateOfBirth,
       email: values.email,
       phone: values.phone,
       street: values.street,

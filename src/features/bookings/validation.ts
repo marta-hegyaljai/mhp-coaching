@@ -1,8 +1,11 @@
 import {z} from "zod";
 
+import {isValidDateOfBirth} from "./date-of-birth";
+
 const bookingFormSchema = z.object({
   firstName: z.string().trim().min(1).max(80),
   lastName: z.string().trim().min(1).max(80),
+  dateOfBirth: z.string().trim().refine(isValidDateOfBirth),
   email: z.email().max(160),
   phone: z
     .string()
@@ -28,6 +31,7 @@ export type BookingFormErrors = Partial<
 export type BookingFormDraft = {
   firstName: string;
   lastName: string;
+  dateOfBirth: string;
   email: string;
   phone: string;
   street: string;
@@ -45,6 +49,7 @@ export function readBookingDraft(formData: FormData): BookingFormDraft {
   return {
     firstName: readString(formData, "firstName"),
     lastName: readString(formData, "lastName"),
+    dateOfBirth: readString(formData, "dateOfBirth", 10),
     email: readString(formData, "email"),
     phone: readString(formData, "phone"),
     street: readString(formData, "street"),
@@ -70,6 +75,7 @@ export function parseBookingForm(formData: FormData): {
   const parsed = bookingFormSchema.safeParse({
     firstName: formData.get("firstName"),
     lastName: formData.get("lastName"),
+    dateOfBirth: formData.get("dateOfBirth"),
     email: formData.get("email"),
     phone: formData.get("phone"),
     street: formData.get("street"),

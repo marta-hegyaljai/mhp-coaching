@@ -1,5 +1,7 @@
 import type {Booking} from "@/db/schema";
 import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
+import {formatLongDate} from "@/shared/format/calendar-date";
+import type {AppLocale} from "@/i18n/routing";
 
 export function StaffBookingsTable({
   bookings,
@@ -42,6 +44,11 @@ export function StaffBookingsTable({
             <tr key={booking.id} className="border-b border-line/70 align-top">
               <td className="py-3 pr-4">
                 {booking.firstName} {booking.lastName}
+                {booking.dateOfBirth ? (
+                  <div className="text-ink-subtle">
+                    {formatLongDate(booking.dateOfBirth, booking.locale as AppLocale)}
+                  </div>
+                ) : null}
               </td>
               <td className="py-3 pr-4">
                 {booking.email}

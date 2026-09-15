@@ -11,6 +11,7 @@ import type {AppLocale} from "@/i18n/routing";
 import {Button} from "@/shared/ui/button";
 import {FilterBar} from "@/shared/ui/filter-bar";
 import {InputField, SelectField} from "@/shared/ui/field";
+import {formatLongDate} from "@/shared/format/calendar-date";
 import type {CourseDate} from "@/features/courses/types";
 
 export function CourseEnrolmentFilters({
@@ -110,6 +111,7 @@ export function CourseEnrolmentTable({
   statusLabels: Record<string, string>;
   labels: {
     name: string;
+    dateOfBirth: string;
     email: string;
     phone: string;
     address: string;
@@ -130,6 +132,7 @@ export function CourseEnrolmentTable({
         <thead>
           <tr className="border-b border-line text-xs uppercase tracking-[0.14em] text-ink-subtle">
             <th className="py-3 pr-4 font-medium">{labels.name}</th>
+            <th className="py-3 pr-4 font-medium">{labels.dateOfBirth}</th>
             <th className="py-3 pr-4 font-medium">{labels.email}</th>
             <th className="py-3 pr-4 font-medium">{labels.phone}</th>
             <th className="py-3 pr-4 font-medium">{labels.address}</th>
@@ -144,6 +147,11 @@ export function CourseEnrolmentTable({
             <tr key={booking.id} className="border-b border-line/70 align-top">
               <td className="py-3 pr-4">
                 {booking.firstName} {booking.lastName}
+              </td>
+              <td className="py-3 pr-4 font-sans tabular-nums">
+                {booking.dateOfBirth
+                  ? formatLongDate(booking.dateOfBirth, locale)
+                  : "—"}
               </td>
               <td className="py-3 pr-4">{booking.email}</td>
               <td className="py-3 pr-4">{booking.phone}</td>

@@ -7,6 +7,7 @@ import {normalizeEmail} from "@/features/auth/email";
 export type CreateBookingInput = {
   firstName: string;
   lastName: string;
+  dateOfBirth: string;
   email: string;
   phone: string;
   street: string;

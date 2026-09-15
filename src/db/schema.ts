@@ -54,6 +54,7 @@ export const bookings = pgTable("bookings", {
     .notNull(),
   firstName: text("first_name").notNull(),
   lastName: text("last_name").notNull(),
+  dateOfBirth: date("date_of_birth", {mode: "string"}),
   email: text("email").notNull(),
   phone: text("phone").notNull(),
   street: text("street").notNull(),
