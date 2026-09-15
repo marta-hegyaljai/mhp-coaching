@@ -29,6 +29,8 @@ export type CatalogueGroup = {
   courses: Course[];
 };
 
+type ViewMode = "grid" | "calendar";
+
 type ExplorerLabels = {
   search: string;
   searchPlaceholder: string;
