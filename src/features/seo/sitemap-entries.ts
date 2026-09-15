@@ -10,6 +10,10 @@ type StaticPath = Exclude<
   AppPathname,
   | "/courses/[slug]"
   | "/courses/[slug]/book"
+  | "/courses/[slug]/advice"
+  | "/admin/calls"
+  | "/admin/calls/[id]"
+  | "/admin/calls/messages/[id]"
   | "/booking/fake-checkout"
   | "/staff/bookings"
   | "/sign-in"

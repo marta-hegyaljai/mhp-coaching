@@ -3,7 +3,7 @@ import type {PathnameHref} from "@/i18n/href";
 import {routing, type AppLocale} from "@/i18n/routing";
 
 export function courseLocaleHrefs(
-  pathname: "/courses/[slug]" | "/courses/[slug]/book",
+  pathname: "/courses/[slug]" | "/courses/[slug]/book" | "/courses/[slug]/advice",
   course: Course,
 ): Record<AppLocale, PathnameHref> {
   return Object.fromEntries(

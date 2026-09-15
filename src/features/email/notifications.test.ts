@@ -24,6 +24,7 @@ import {sendInquiryNotification} from "./inquiry-notification";
 import {sendLeadNotification} from "./lead-notification";
 import {sendPurchaseNotification} from "./purchase-notification";
 import {sendWaitlistNotification} from "./waitlist-notification";
+import {sendCourseCallConfirmation, sendCourseCallStaffNotification, sendCourseInquiryStaffNotification} from "./course-call";
 import {sendAccountInvitation} from "./invitation";
 import {sendAdminCreatedRoomBooking, sendAdminMovedRoomBooking, sendRoomBookingConfirmed, sendRoomBookingReminder, sendStatementPaymentFailedMail} from "./room-booking";
 import {
@@ -459,5 +460,79 @@ describe("staff email destinations", () => {
     expect(failedHtml).toContain("August 2026");
     expect(failedHtml).not.toContain(booking.id);
     expectSharedChrome(failedHtml);
+  });
+});
+
+describe("course advice emails", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    sendMailMock.mockResolvedValue({provider: "smtp", messageId: "test-message-id"});
+    mockEmailCatalogues();
+  });
+
+  const call = {
+    id: "33333333-3333-4333-8333-333333333333",
+    createdAt: new Date("2026-09-14T08:00:00.000Z"),
+    startsAt: new Date("2026-09-21T07:00:00.000Z"),
+    endsAt: new Date("2026-09-21T07:15:00.000Z"),
+    status: "SCHEDULED" as const,
+    firstName: "Ada",
+    lastName: "Lovelace",
+    email: "ada@example.com",
+    phone: "+41 79 000 00 00",
+    locale: "en",
+    courseId: "omni-practitioner",
+    courseTitle: "OMNI Hypnosis Practitioner",
+    message: "Is this suitable for physicians?",
+    privacyAcceptedAt: new Date("2026-09-14T08:00:00.000Z"),
+  };
+
+  it("confirms the reserved call to the visitor and alerts staff", async () => {
+    await sendCourseCallConfirmation(call);
+    expect(sendMailMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        to: "ada@example.com",
+        subject: "Your call with MHP is reserved",
+      }),
+    );
+    const visitorHtml = sendMailMock.mock.calls[0]?.[0].html ?? "";
+    expect(sendMailMock.mock.calls[0]?.[0].text).toContain("09:00–09:15");
+    expect(visitorHtml).not.toContain(call.id);
+    expectSharedChrome(visitorHtml);
+
+    sendMailMock.mockClear();
+    await sendCourseCallStaffNotification(call);
+    expect(sendMailMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        to: organization.email,
+        replyTo: "ada@example.com",
+      }),
+    );
+    expectSharedChrome(sendMailMock.mock.calls[0]?.[0].html ?? "");
+  });
+
+  it("alerts staff when a written course question arrives", async () => {
+    await sendCourseInquiryStaffNotification({
+      id: "44444444-4444-4444-8444-444444444444",
+      createdAt: new Date("2026-09-14T08:00:00.000Z"),
+      firstName: "Ada",
+      lastName: "Lovelace",
+      email: "ada@example.com",
+      phone: "+41 79 000 00 00",
+      message: "Is this suitable for physicians?",
+      locale: "en",
+      courseId: "omni-practitioner",
+      courseTitle: "OMNI Hypnosis Practitioner",
+      privacyAcceptedAt: new Date("2026-09-14T08:00:00.000Z"),
+    });
+
+    expect(sendMailMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        to: organization.email,
+        replyTo: "ada@example.com",
+        subject: "Course question — Ada Lovelace",
+      }),
+    );
+    expectSharedChrome(sendMailMock.mock.calls[0]?.[0].html ?? "");
   });
 });

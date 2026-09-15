@@ -4,6 +4,7 @@ import {Link} from "@/i18n/navigation";
 export type AdminSection =
   | "users"
   | "courses"
+  | "calls"
   | "bookings"
   | "requests"
   | "rooms"
@@ -13,6 +14,7 @@ export type AdminSection =
 const hrefs: Record<AdminSection, PathnameHref> = {
   users: "/admin/users",
   courses: "/admin/courses",
+  calls: "/admin/calls",
   bookings: "/admin/bookings",
   requests: "/admin/requests",
   rooms: "/admin/rooms",
@@ -23,6 +25,7 @@ const hrefs: Record<AdminSection, PathnameHref> = {
 const order: AdminSection[] = [
   "users",
   "courses",
+  "calls",
   "bookings",
   "requests",
   "rooms",
@@ -38,6 +41,7 @@ export function adminSectionLabels(admin: {
     key:
       | "title"
       | "coursesNav"
+      | "callsNav"
       | "bookingsNav"
       | "requestsNav"
       | "roomsNav"
@@ -48,6 +52,7 @@ export function adminSectionLabels(admin: {
   return {
     users: admin("title"),
     courses: admin("coursesNav"),
+    calls: admin("callsNav"),
     bookings: admin("bookingsNav"),
     requests: admin("requestsNav"),
     rooms: admin("roomsNav"),

@@ -161,6 +161,80 @@ export const waitlistEntries = pgTable(
 export type WaitlistEntry = typeof waitlistEntries.$inferSelect;
 export type NewWaitlistEntry = typeof waitlistEntries.$inferInsert;
 
+export const courseCallHours = pgTable(
+  "course_call_hours",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    weekday: smallint("weekday").notNull(),
+    startMinute: integer("start_minute").notNull(),
+    endMinute: integer("end_minute").notNull(),
+  },
+  (table) => [index("course_call_hours_weekday_idx").on(table.weekday)],
+);
+
+export const courseCallStatusEnum = pgEnum("course_call_status", [
+  "SCHEDULED",
+  "CANCELLED",
+]);
+
+export const courseCalls = pgTable(
+  "course_calls",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    createdAt: timestamp("created_at", {withTimezone: true})
+      .defaultNow()
+      .notNull(),
+    startsAt: timestamp("starts_at", {withTimezone: true}).notNull(),
+    endsAt: timestamp("ends_at", {withTimezone: true}).notNull(),
+    status: courseCallStatusEnum("status").notNull().default("SCHEDULED"),
+    firstName: text("first_name").notNull(),
+    lastName: text("last_name").notNull(),
+    email: text("email").notNull(),
+    phone: text("phone").notNull(),
+    locale: text("locale").notNull(),
+    courseId: text("course_id"),
+    courseTitle: text("course_title"),
+    message: text("message"),
+    privacyAcceptedAt: timestamp("privacy_accepted_at", {
+      withTimezone: true,
+    }).notNull(),
+  },
+  (table) => [
+    index("course_calls_starts_at_idx").on(table.startsAt),
+    index("course_calls_status_idx").on(table.status),
+  ],
+);
+
+export const courseInquiries = pgTable(
+  "course_inquiries",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    createdAt: timestamp("created_at", {withTimezone: true})
+      .defaultNow()
+      .notNull(),
+    firstName: text("first_name").notNull(),
+    lastName: text("last_name").notNull(),
+    email: text("email").notNull(),
+    phone: text("phone").notNull(),
+    message: text("message").notNull(),
+    locale: text("locale").notNull(),
+    courseId: text("course_id"),
+    courseTitle: text("course_title"),
+    privacyAcceptedAt: timestamp("privacy_accepted_at", {
+      withTimezone: true,
+    }).notNull(),
+  },
+  (table) => [index("course_inquiries_created_at_idx").on(table.createdAt)],
+);
+
+export type CourseCallHour = typeof courseCallHours.$inferSelect;
+export type NewCourseCallHour = typeof courseCallHours.$inferInsert;
+export type CourseCall = typeof courseCalls.$inferSelect;
+export type NewCourseCall = typeof courseCalls.$inferInsert;
+export type CourseCallStatus = (typeof courseCallStatusEnum.enumValues)[number];
+export type CourseInquiry = typeof courseInquiries.$inferSelect;
+export type NewCourseInquiry = typeof courseInquiries.$inferInsert;
+
 export type LocalizedJson = {
   fr: string;
   de: string;

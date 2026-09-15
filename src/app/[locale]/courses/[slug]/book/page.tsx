@@ -3,6 +3,7 @@ import {notFound} from "next/navigation";
 
 import {BookingForm} from "@/features/bookings/components/booking-form";
 import {WaitlistForm} from "@/features/waitlist/components/waitlist-form";
+import {CourseAdviceOffer} from "@/features/course-calls/components/advice-offer";
 import {checkoutDefaultsFromUser} from "@/features/auth/contact";
 import {getCurrentUser} from "@/features/auth/session";
 import {courseLocaleHrefs} from "@/features/courses/locale-hrefs";
@@ -82,6 +83,7 @@ export default async function BookCoursePage({
   }
 
   const t = await getTranslations("BookingForm");
+  const adviceT = await getTranslations("CourseAdvice");
   const waitlistT = await getTranslations("WaitlistForm");
   const coursesT = await getTranslations("CoursesPage");
   const courseT = await getTranslations("CourseDetail");
@@ -135,6 +137,18 @@ export default async function BookCoursePage({
               : t("intro")}
           </p>
         </div>
+
+        <aside className="mt-8 max-w-xl border border-line bg-white p-5 sm:p-6">
+          <CourseAdviceOffer
+            courseSlug={course.slug[locale]}
+            eyebrow={adviceT("eyebrow")}
+            title={adviceT("offerTitle")}
+            body={adviceT("offerBody")}
+            callLabel={adviceT("offerCall")}
+            writePrompt={adviceT("offerWritePrompt")}
+            writeLabel={adviceT("offerWrite")}
+          />
+        </aside>
 
         <div className="mt-10 sm:mt-12">
           {showWaitlist ? (

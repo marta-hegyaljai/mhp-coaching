@@ -6,6 +6,7 @@ import {CourseArtwork} from "@/features/courses/components/course-artwork";
 import {CourseDates} from "@/features/courses/components/course-dates";
 import {CourseUpcomingSessions} from "@/features/courses/components/course-upcoming-sessions";
 import {CourseWaitlistLink} from "@/features/courses/components/course-waitlist-link";
+import {CourseAdviceOffer} from "@/features/course-calls/components/advice-offer";
 import {ProgrammeModules} from "@/features/courses/components/programme/programme-modules";
 import {ProgrammeNotice} from "@/features/courses/components/programme/programme-notice";
 import {courseLocaleHrefs} from "@/features/courses/locale-hrefs";
@@ -80,6 +81,7 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
   }
 
   const t = await getTranslations("CourseDetail");
+  const adviceT = await getTranslations("CourseAdvice");
   const coursesT = await getTranslations("CoursesPage");
   const navT = await getTranslations("Nav");
   const dates = getBookableDates(course);
@@ -211,6 +213,16 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
                   className="mt-3"
                 />
               ) : null}
+              <CourseAdviceOffer
+                courseSlug={course.slug[locale]}
+                eyebrow={adviceT("eyebrow")}
+                title={adviceT("offerTitle")}
+                body={adviceT("offerBody")}
+                callLabel={adviceT("offerCall")}
+                writePrompt={adviceT("offerWritePrompt")}
+                writeLabel={adviceT("offerWrite")}
+                className="mt-6 border-t border-line pt-5"
+              />
             </div>
             <ProgrammeNotice
               programmes={parentProgrammes}

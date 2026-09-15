@@ -16,7 +16,10 @@ Implemented today:
   same catalogue persisted in PostgreSQL for go-live durability;
 - guest course registration with postal address persisted before payment;
 - fake and Stripe Checkout providers, signed webhook processing and email;
-- alternative-payment inquiries; and
+- alternative-payment inquiries;
+- a free fifteen-minute advice call from each course detail and booking page,
+  with admin-managed Zurich hours and collision-safe 15-minute slots, or a
+  written question instead;
 - admin-authenticated booking and waitlist lists with CSV export; and
 - public accounts: sign-up, email verification, password recovery, profile
   (name and language; email is permanent), My Courses and verified-email
