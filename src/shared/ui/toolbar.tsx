@@ -1,4 +1,4 @@
-import type {ReactNode} from "react";
+import {Children, type ReactNode} from "react";
 
 /**
  * One hairline control surface that sits directly above the list it drives, so
@@ -21,9 +21,17 @@ export function ToolbarRow({
 }) {
   return (
     <div className={`px-4 py-3 ${divided ? "border-t border-line" : ""} ${className}`}>
-      {children}
+      {Children.map(children, (child, index) => (
+        <ToolbarItem key={index}>{child}</ToolbarItem>
+      ))}
     </div>
   );
+}
+
+// Parent-passed slots keep their original owner; wrapping gives each control a
+// local keyed identity so mixed siblings do not trip React's missing-key warning.
+function ToolbarItem({children}: {children: ReactNode}) {
+  return children;
 }
 
 /** The horizontal control group used inside a toolbar row. */

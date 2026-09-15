@@ -42,6 +42,7 @@ import {
   writeLastRoomPreference,
 } from "./last-room-preference";
 import {mergeSlotRuns, type RunCell} from "./runs";
+import {isHourStart, slotRowClass, slotTrackRows} from "./slot-row";
 import {slotMetaClass, slotSurface, type SlotLabels} from "./slot-styles";
 
 export type GridColumn = {
@@ -213,7 +214,7 @@ export function AvailabilityGrid({
       <p className="text-xs leading-5 text-ink-muted">{t("dragToSelectHint")}</p>
       <div className="overflow-x-auto">
         <table
-          className={`w-full border-separate border-spacing-[3px] text-left ${minWidthClass}`}
+          className={`w-full overflow-visible border-separate border-spacing-x-[3px] border-spacing-y-0 text-left ${minWidthClass}`}
         >
           <caption className="sr-only">{caption}</caption>
           <thead>
@@ -226,7 +227,7 @@ export function AvailabilityGrid({
                   key={column.key}
                   scope="col"
                   aria-current={column.current ? "date" : undefined}
-                  className={`border-b px-2 pb-2 align-bottom text-xs font-semibold ${
+                  className={`border-b px-2 pb-3 align-bottom text-xs font-semibold ${
                     column.current ? "border-ink text-ink" : "border-line text-ink-muted"
                   }`}
                 >
@@ -240,20 +241,21 @@ export function AvailabilityGrid({
               <tr key={time}>
                 <th
                   scope="row"
-                  className={`h-11 whitespace-nowrap pr-2 text-right align-middle font-sans text-[0.7rem] leading-none tabular-nums ${
+                  className={`${slotRowClass} relative whitespace-nowrap p-0 align-top font-sans text-[0.7rem] leading-none tabular-nums ${
                     time.endsWith(":00")
                       ? "font-semibold text-ink"
                       : "font-normal text-ink-subtle"
                   }`}
                 >
-                  {time}
+                  {/* Sit on the interval start line, not the middle of the slot. */}
+                  <span className="absolute right-2 top-0 -translate-y-1/2">{time}</span>
                 </th>
                 {columns.map((column, columnIndex) => {
                   const run = plans[columnIndex].byStart.get(rowIndex);
 
                   if (!run) {
                     return plans[columnIndex].covered.has(rowIndex) ? null : (
-                      <td key={column.key} className="h-11 border border-line bg-shell" />
+                      <td key={column.key} className={`${slotRowClass} border border-line bg-shell`} />
                     );
                   }
 
@@ -266,7 +268,9 @@ export function AvailabilityGrid({
                       </span>
                       {run.meta || run.span > 1 ? (
                         <span
-                          className={`mt-0.5 block font-sans text-[0.62rem] leading-tight tabular-nums ${slotMetaClass(run.state, Boolean(run.href) || selectable)}`}
+                          className={`mt-0.5 block font-sans text-[0.62rem] leading-tight tabular-nums ${
+                            run.span === 1 ? "truncate" : ""
+                          } ${slotMetaClass(run.state, Boolean(run.href) || selectable)}`}
                         >
                           {run.meta ?? `${run.startTime}–${run.endTime}`}
                         </span>
@@ -278,20 +282,22 @@ export function AvailabilityGrid({
                     <td
                       key={column.key}
                       rowSpan={run.span}
-                      className={`relative border px-2 py-1 align-top ${slotSurface[run.state]} ${
-                        run.href || selectable ? "p-0" : ""
-                      }`}
+                      className={`relative border p-0 align-top ${slotSurface[run.state]}`}
                     >
+                      <HourRules
+                        times={times}
+                        startIndex={run.startIndex}
+                        span={run.span}
+                        subtle={run.state === "my-booking"}
+                      />
                       {selectable ? (
-                        <div className="relative" style={{minHeight: `${run.span * 2.75}rem`}}>
-                          <div className="pointer-events-none absolute inset-0 px-2 py-1">
+                        <>
+                          <div className="pointer-events-none absolute inset-0 overflow-hidden px-2 py-1">
                             {body}
                           </div>
                           <div
                             className="absolute inset-0 grid"
-                            style={{
-                              gridTemplateRows: `repeat(${run.span}, minmax(2.75rem, 1fr))`,
-                            }}
+                            style={{gridTemplateRows: slotTrackRows(run.span)}}
                           >
                             {Array.from({length: run.span}, (_, offset) => {
                               const index = run.startIndex + offset;
@@ -302,7 +308,7 @@ export function AvailabilityGrid({
                                 <button
                                   key={`${column.key}-${index}`}
                                   type="button"
-                                  className={`min-h-11 cursor-grab touch-none select-none focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-ink active:cursor-grabbing ${
+                                  className={`h-full w-full cursor-grab touch-none select-none focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-ink active:cursor-grabbing ${
                                     active ? "bg-ink text-parchment" : "bg-transparent"
                                   }`}
                                   aria-label={`${t("selectTime", {time: cell?.startTime ?? time})}. ${t("dragToSelectHint")}`}
@@ -316,11 +322,11 @@ export function AvailabilityGrid({
                               );
                             })}
                           </div>
-                        </div>
+                        </>
                       ) : run.href ? (
                         <Link
                           href={run.href}
-                          className={`block h-full min-h-11 cursor-pointer px-2 py-1 transition-colors duration-150 ease-standard focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-ink ${
+                          className={`absolute inset-0 cursor-pointer overflow-hidden px-2 py-1 transition-colors duration-150 ease-standard focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-ink ${
                             run.state === "my-booking"
                               ? "hover:bg-white hover:text-ink"
                               : "hover:bg-ink hover:text-parchment"
@@ -333,7 +339,7 @@ export function AvailabilityGrid({
                           {body}
                         </Link>
                       ) : (
-                        <div className="px-2 py-1">{body}</div>
+                        <div className="absolute inset-0 overflow-hidden px-2 py-1">{body}</div>
                       )}
                     </td>
                   );
@@ -358,6 +364,43 @@ export function AvailabilityGrid({
           />
         ) : null}
       </dialog>
+    </div>
+  );
+}
+
+/**
+ * A hairline dotted rule on every full hour inside a bar. Long available bars
+ * are otherwise one flat surface, which makes it hard to tell which interval
+ * sits next to which label.
+ */
+function HourRules({
+  times,
+  startIndex,
+  span,
+  subtle,
+}: {
+  times: string[];
+  startIndex: number;
+  span: number;
+  subtle: boolean;
+}) {
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none absolute inset-0 grid"
+      style={{gridTemplateRows: slotTrackRows(span)}}
+    >
+      {Array.from({length: span}, (_, offset) => (
+        <div
+          key={offset}
+          // The bar's own border already draws the line above its first row.
+          className={
+            offset > 0 && isHourStart(times[startIndex + offset])
+              ? `border-t border-dotted ${subtle ? "border-white/40" : "border-line"}`
+              : ""
+          }
+        />
+      ))}
     </div>
   );
 }
