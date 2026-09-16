@@ -17,6 +17,7 @@
     "aboutHint": "Marta Hegyaljai Python, founder",
     "contact": "Contact",
     "contactHint": "Write or call the school in Fribourg",
+    "advice": "Book a call",
     "cta": "Book a place",
     "ctaShort": "Book",
     "datesAndRegistration": "Dates and registration",
@@ -71,7 +72,13 @@
     "whyEyebrow": "The method",
     "trustLocations": "Fribourg",
     "trustGroup": "Groups of sixteen people maximum",
-    "trustRecognition": "ASCA · NGH · APSH · eduQua"
+    "trustRecognition": "ASCA · NGH · APSH · eduQua",
+    "adviceEyebrow": "Advice",
+    "adviceTitle": "Not sure where to start?",
+    "adviceBody": "Book a free fifteen-minute call. We answer your questions about the school, the courses or your own practice.",
+    "adviceCta": "Choose a time",
+    "adviceWritePrompt": "Prefer to write?",
+    "adviceWrite": "Send a message"
   },
   "CoursesPage": {
     "title": "Hypnosis courses",
@@ -119,7 +126,13 @@
     "programmeWaitlistCta": "Join the waiting list",
     "programmeClosedCta": "Registration closed",
     "programmePartOf": "This module is part of the complete {title} pathway.",
-    "programmeViewCta": "View the pathway"
+    "programmeViewCta": "View the pathway",
+    "adviceEyebrow": "Advice",
+    "adviceTitle": "Still deciding which course?",
+    "adviceBody": "Book a free fifteen-minute call and we help you place yourself in the curriculum.",
+    "adviceCta": "Choose a time",
+    "adviceWritePrompt": "Prefer to write?",
+    "adviceWrite": "Send a message"
   },
   "CourseCalendar": {
     "previousMonth": "Previous month",
@@ -241,6 +254,13 @@
       "courseMissing": "This course is no longer available.",
       "saveFailed": "We could not save this. Please try again in a moment."
     }
+  },
+  "GeneralAdvice": {
+    "eyebrow": "Advice",
+    "title": "Book a free call with us",
+    "description": "Book a free fifteen-minute telephone call with mhp-coaching in Fribourg. Choose a time that is still open; no course registration required.",
+    "intro": "Fifteen minutes by telephone, at no cost. Choose a time that is still open and we call you — about a course, about your practice, or about whatever you need to think through.",
+    "writeIntro": "Write to us instead of booking a call. We reply to the email address you give us."
   },
   "BookingForm": {
     "title": "Book your place",
@@ -748,7 +768,7 @@
     "coursesNav": "Courses",
     "callsNav": "Calls",
     "callsTitle": "Course calls",
-    "callsIntro": "Open times for the free fifteen-minute advice call, the reserved slots, and written questions from the course pages.",
+    "callsIntro": "Open times for the free fifteen-minute advice call, the reserved slots, and written questions from the course and advice pages.",
     "callsViews": "Call records",
     "callsAgenda": "Agenda",
     "callsHours": "Hours",
@@ -768,6 +788,7 @@
     "callsBack": "Back to calls",
     "callWhen": "Time",
     "callCourse": "Course",
+    "callGeneral": "General enquiry",
     "callMessage": "Message",
     "callPhone": "Phone",
     "callHoursHelp": "Each open window is split into fifteen-minute slots, Zurich time. Closed days offer no calls.",

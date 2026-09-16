@@ -366,10 +366,10 @@ test("a course page offers a free call and a written question", async ({page}) =
   await expect(page.getByRole("heading", {level: 1})).toHaveText(
     "Un appel de quinze minutes, offert",
   );
-  await expect(page.getByRole("link", {name: "Appel"})).toHaveAttribute(
-    "aria-current",
-    "page",
-  );
+  // `exact` keeps this on the mode switch, away from the footer advice link.
+  await expect(
+    page.getByRole("link", {name: "Appel", exact: true}),
+  ).toHaveAttribute("aria-current", "page");
 
   await page.getByRole("link", {name: "Écrire"}).click();
   await expect(page).toHaveURL(/mode=write/);
@@ -425,6 +425,95 @@ test("a visitor can send a written question instead of a call", async ({page}) =
   await page.getByRole("button", {name: "Send the message"}).click();
 
   await expect(page.getByRole("status")).toContainText("Your message is with us");
+});
+
+test("the home page leads to the standalone advice page", async ({page}) => {
+  await page.goto("/fr");
+
+  const invite = page.getByRole("region", {name: "Vous ne savez pas par où commencer ?"});
+  await expect(invite).toBeVisible();
+  await invite.getByRole("link", {name: "Choisir un horaire"}).click();
+
+  await expect(page).toHaveURL(/\/fr\/conseil$/);
+  await expect(page.getByRole("heading", {level: 1})).toHaveText(
+    "Réservez un appel offert",
+  );
+  await expect(
+    page.getByRole("link", {name: "Appel", exact: true}),
+  ).toHaveAttribute("aria-current", "page");
+});
+
+test("the catalogue closes with a link to the standalone advice page", async ({page}) => {
+  await page.goto("/fr/formations");
+
+  const invite = page.getByRole("region", {
+    name: "Vous hésitez entre plusieurs formations ?",
+  });
+  await expect(invite).toBeVisible();
+  await invite.getByRole("link", {name: "Envoyer un message"}).click();
+
+  await expect(page).toHaveURL(/\/fr\/conseil\?mode=write$/);
+  await expect(page.getByLabel("Votre question")).toBeVisible();
+});
+
+test("the standalone advice page is reachable from the footer in every locale", async ({
+  page,
+}) => {
+  for (const [locale, path, heading] of [
+    ["fr", "/fr/conseil", "Réservez un appel offert"],
+    ["de", "/de/beratung", "Buchen Sie ein kostenloses Gespräch"],
+    ["en", "/en/advice", "Book a free call with us"],
+  ] as const) {
+    await page.goto(`/${locale}`);
+    await page
+      .getByRole("contentinfo")
+      .getByRole("link", {name: /Réserver un appel|Gespräch buchen|Book a call/})
+      .click();
+    await expect(page).toHaveURL(new RegExp(`${path}$`));
+    await expect(page.getByRole("heading", {level: 1})).toHaveText(heading);
+  }
+});
+
+test("a visitor can reserve a general call with no course attached", async ({page}) => {
+  const stamp = Date.now();
+  await page.goto("/en/advice");
+
+  // Take the last free slot: the course-call test claims the first one, and
+  // these specs run in parallel against the same shared availability.
+  const slot = page.getByRole("radio").last();
+  await expect(slot).toBeVisible();
+  await slot.click();
+  await expect(slot).toHaveAttribute("aria-checked", "true");
+
+  await page.getByRole("textbox", {name: "First name", exact: true}).fill("Nadia");
+  await page.getByRole("textbox", {name: "Last name", exact: true}).fill("General");
+  await page.getByLabel("Email").fill(`nadia.general.${stamp}@example.test`);
+  await page.getByLabel("Phone").fill("+41 79 000 55 66");
+  await page.getByRole("checkbox").check();
+  await page.getByRole("button", {name: "Reserve this call"}).click();
+
+  await expect(page.getByRole("status")).toContainText("This time is reserved");
+});
+
+test("the standalone advice page also accepts a written question", async ({page}) => {
+  const stamp = Date.now();
+  await page.goto("/de/beratung?mode=write");
+
+  await expect(page.getByRole("link", {name: "Schreiben"})).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
+  await page.getByLabel("Vorname").fill("Jonas");
+  await page.getByLabel("Nachname").fill("Allgemein");
+  await page.getByLabel("E-Mail").fill(`jonas.allgemein.${stamp}@example.test`);
+  await page.getByLabel("Telefon").fill("+41 79 000 77 88");
+  await page
+    .getByLabel("Ihre Frage")
+    .fill("Welche Ausbildung passt zu einer Praxis ohne Vorkenntnisse?");
+  await page.getByRole("checkbox").check();
+  await page.getByRole("button", {name: "Nachricht senden"}).click();
+
+  await expect(page.getByRole("status")).toBeVisible();
 });
 
 test("the German course page still offers advice", async ({page}) => {

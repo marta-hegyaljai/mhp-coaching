@@ -80,6 +80,10 @@ export type PathnameHref =
       query?: {mode?: string; date?: string};
     }
   | {
+      pathname: "/advice";
+      query?: {mode?: string; date?: string};
+    }
+  | {
       pathname: "/invite/[token]";
       params: {token: string};
     }

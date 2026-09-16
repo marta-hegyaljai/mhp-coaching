@@ -1,22 +1,18 @@
 import {getTranslations, setRequestLocale} from "next-intl/server";
 import {notFound} from "next/navigation";
 
-import {resolveCheckoutDefaults} from "@/features/auth/contact";
-import {getCurrentUser} from "@/features/auth/session";
-import {datesWithSlots, loadCallAvailability, slotsForDate} from "@/features/course-calls/availability";
-import {CallScheduler} from "@/features/course-calls/components/call-scheduler";
-import {InquiryComposer} from "@/features/course-calls/components/inquiry-composer";
-import {adviceHref, parseAdviceQuery} from "@/features/course-calls/query";
+import {adviceHref, courseAdvice, parseAdviceQuery} from "@/features/course-calls/advice-route";
+import {loadAdviceView} from "@/features/course-calls/advice-view";
+import {AdvicePanel} from "@/features/course-calls/components/advice-panel";
 import {courseLocaleHrefs} from "@/features/courses/locale-hrefs";
 import {loadPublishedCourseBySlug} from "@/features/courses/live";
 import {getCourseStaticParams} from "@/features/courses/queries";
 import {BreadcrumbTrail} from "@/features/seo/breadcrumb-trail";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
-import {Link, redirect} from "@/i18n/navigation";
+import {redirect} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {Eyebrow, Section} from "@/shared/ui/layout";
-import {SegmentedLinks} from "@/shared/ui/segmented-links";
 
 type AdvicePageProps = {
   params: Promise<{locale: AppLocale; slug: string}>;
@@ -60,41 +56,17 @@ export default async function CourseAdvicePage({params, searchParams}: AdvicePag
     notFound();
   }
 
+  const target = courseAdvice(course.slug[locale]);
+
   if (course.slug[locale] !== slug) {
-    redirect({
-      href: adviceHref(course.slug[locale], query),
-      locale,
-    });
+    redirect({href: adviceHref(target, query), locale});
   }
 
   const t = await getTranslations("CourseAdvice");
   const coursesT = await getTranslations("CoursesPage");
   const courseT = await getTranslations("CourseDetail");
   const navT = await getTranslations("Nav");
-  const signedInUser = await getCurrentUser();
-  const defaults = await resolveCheckoutDefaults(signedInUser);
-  const availability = await loadCallAvailability();
-  const openDates = datesWithSlots(
-    availability.hours,
-    availability.booked,
-    availability.window,
-  );
-  const selectedDate =
-    query.date &&
-    query.date >= availability.window.minDate &&
-    query.date <= availability.window.maxDate
-      ? query.date
-      : (openDates[0] ?? availability.window.minDate);
-  const slotsByDate = Object.fromEntries(
-    openDates.map((date) => [
-      date,
-      slotsForDate(date, availability.hours, availability.booked, availability.window).map(
-        (slot) => ({time: slot.time, label: slot.time}),
-      ),
-    ]),
-  );
-  const callHref = adviceHref(course.slug[locale], {date: selectedDate});
-  const writeHref = adviceHref(course.slug[locale], {mode: "write"});
+  const view = await loadAdviceView(query.date);
 
   return (
     <SiteShell
@@ -120,7 +92,7 @@ export default async function CourseAdvicePage({params, searchParams}: AdvicePag
             },
             {
               name: t("title"),
-              path: localizedPath(locale, callHref),
+              path: localizedPath(locale, adviceHref(target, {date: view.selectedDate})),
             },
           ]}
         />
@@ -133,59 +105,13 @@ export default async function CourseAdvicePage({params, searchParams}: AdvicePag
           </p>
         </div>
 
-        <div className="mt-8">
-          <SegmentedLinks
-            label={t("modeLabel")}
-            items={[
-              {
-                key: "call",
-                href: callHref,
-                label: t("modeCall"),
-                current: query.mode !== "write",
-              },
-              {
-                key: "write",
-                href: writeHref,
-                label: t("modeWrite"),
-                current: query.mode === "write",
-              },
-            ]}
-          />
-        </div>
-
-        <div className="mt-10 sm:mt-12">
-          {query.mode === "write" ? (
-            <InquiryComposer
-              locale={locale}
-              courseId={course.id}
-              {...(defaults ? {defaults} : {})}
-            />
-          ) : (
-            <CallScheduler
-              locale={locale}
-              courseId={course.id}
-              courseSlug={course.slug[locale]}
-              selectedDate={selectedDate}
-              availableDates={openDates}
-              slotsByDate={slotsByDate}
-              minDate={availability.window.minDate}
-              maxDate={availability.window.maxDate}
-              {...(defaults ? {defaults} : {})}
-            />
-          )}
-        </div>
-
-        {query.mode === "write" ? (
-          <p className="mt-10 max-w-xl text-sm leading-6 text-ink-muted">
-            {t("preferCall")}{" "}
-            <Link
-              href={callHref}
-              className="font-medium text-ink underline underline-offset-4"
-            >
-              {t("modeCall")}
-            </Link>
-          </p>
-        ) : null}
+        <AdvicePanel
+          locale={locale}
+          target={target}
+          query={query}
+          view={view}
+          courseId={course.id}
+        />
       </Section>
     </SiteShell>
   );

@@ -69,6 +69,7 @@ const publicStaticPaths: Array<{
   {href: "/insights", changeFrequency: "monthly", priority: 0.5},
   {href: "/about", changeFrequency: "monthly", priority: 0.7},
   {href: "/contact", changeFrequency: "monthly", priority: 0.6},
+  {href: "/advice", changeFrequency: "monthly", priority: 0.6},
   {href: "/legal/privacy", changeFrequency: "yearly", priority: 0.3},
   {href: "/legal/terms", changeFrequency: "yearly", priority: 0.3},
   {href: "/legal/imprint", changeFrequency: "yearly", priority: 0.3},

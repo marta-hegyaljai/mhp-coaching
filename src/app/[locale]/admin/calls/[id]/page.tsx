@@ -78,7 +78,7 @@ export default async function AdminCallDetailPage({params}: AdminCallPageProps) 
             <Fact label={t("callWhen")} value={`${when.weekdayDate} · ${when.timeLabel}`} />
             <Fact label={t("email")} value={call.email} />
             <Fact label={t("callPhone")} value={call.phone} />
-            {call.courseTitle ? <Fact label={t("callCourse")} value={call.courseTitle} /> : null}
+            <Fact label={t("callCourse")} value={call.courseTitle ?? t("callGeneral")} />
             {call.message ? <Fact label={t("callMessage")} value={call.message} /> : null}
           </dl>
         </Panel>

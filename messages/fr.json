@@ -17,6 +17,7 @@
     "aboutHint": "Marta Hegyaljai Python, fondatrice",
     "contact": "Contact",
     "contactHint": "Écrire ou téléphoner à Fribourg",
+    "advice": "Réserver un appel",
     "cta": "Réserver une place",
     "ctaShort": "Réserver",
     "datesAndRegistration": "Dates et inscriptions",
@@ -71,7 +72,13 @@
     "whyEyebrow": "La méthode",
     "trustLocations": "Fribourg",
     "trustGroup": "Groupes de 16 personnes maximum",
-    "trustRecognition": "ASCA · NGH · APSH · eduQua"
+    "trustRecognition": "ASCA · NGH · APSH · eduQua",
+    "adviceEyebrow": "Conseil",
+    "adviceTitle": "Vous ne savez pas par où commencer ?",
+    "adviceBody": "Réservez un appel offert de quinze minutes. Nous répondons à vos questions sur l’école, les formations ou votre propre pratique.",
+    "adviceCta": "Choisir un horaire",
+    "adviceWritePrompt": "Vous préférez écrire ?",
+    "adviceWrite": "Envoyer un message"
   },
   "CoursesPage": {
     "title": "Formations en hypnose",
@@ -119,7 +126,13 @@
     "programmeWaitlistCta": "Rejoindre la liste d’attente",
     "programmeClosedCta": "Inscriptions closes",
     "programmePartOf": "Ce module fait partie du parcours complet {title}.",
-    "programmeViewCta": "Voir le parcours"
+    "programmeViewCta": "Voir le parcours",
+    "adviceEyebrow": "Conseil",
+    "adviceTitle": "Vous hésitez entre plusieurs formations ?",
+    "adviceBody": "Réservez un appel offert de quinze minutes et nous vous aidons à vous situer dans le cursus.",
+    "adviceCta": "Choisir un horaire",
+    "adviceWritePrompt": "Vous préférez écrire ?",
+    "adviceWrite": "Envoyer un message"
   },
   "CourseCalendar": {
     "previousMonth": "Mois précédent",
@@ -241,6 +254,13 @@
       "courseMissing": "Cette formation n’est plus disponible.",
       "saveFailed": "Enregistrement impossible. Veuillez réessayer dans un instant."
     }
+  },
+  "GeneralAdvice": {
+    "eyebrow": "Conseil",
+    "title": "Réservez un appel offert",
+    "description": "Réservez un appel téléphonique offert de quinze minutes avec mhp-coaching à Fribourg. Choisissez un horaire encore libre, sans inscription à une formation.",
+    "intro": "Quinze minutes par téléphone, sans frais. Choisissez un horaire encore libre et nous vous appelons — à propos d’une formation, de votre pratique, ou de ce que vous souhaitez clarifier.",
+    "writeIntro": "Écrivez-nous plutôt que de réserver un appel. Nous répondons à l’adresse que vous indiquez."
   },
   "BookingForm": {
     "title": "Réserver votre place",
@@ -748,7 +768,7 @@
     "coursesNav": "Formations",
     "callsNav": "Appels",
     "callsTitle": "Appels conseil",
-    "callsIntro": "Horaires du rendez-vous téléphonique de quinze minutes, créneaux réservés, et questions écrites depuis les pages de formation.",
+    "callsIntro": "Horaires du rendez-vous téléphonique de quinze minutes, créneaux réservés, et questions écrites depuis les pages de formation et de conseil.",
     "callsViews": "Dossiers d’appel",
     "callsAgenda": "Agenda",
     "callsHours": "Horaires",
@@ -768,6 +788,7 @@
     "callsBack": "Retour aux appels",
     "callWhen": "Horaire",
     "callCourse": "Formation",
+    "callGeneral": "Demande générale",
     "callMessage": "Message",
     "callPhone": "Téléphone",
     "callHoursHelp": "Chaque plage ouverte est découpée en quarts d’heure, heure de Zurich. Un jour fermé n’offre aucun appel.",

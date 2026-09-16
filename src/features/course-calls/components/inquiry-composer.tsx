@@ -15,7 +15,8 @@ export function InquiryComposer({
   defaults,
 }: {
   locale: AppLocale;
-  courseId: string;
+  /** `null` sends a general question with no course attached. */
+  courseId: string | null;
   defaults?: {
     firstName?: string;
     lastName?: string;

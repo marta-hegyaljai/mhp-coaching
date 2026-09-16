@@ -38,6 +38,12 @@ question flow shipped on course detail and booking pages, with admin-managed
 Zurich hours and collision-safe slots. This is course-domain work, not a new
 checkpoint.
 
+Extra-roadmap (2026-09-16): the advice call is now also offered without a
+course, on the shareable `/advice` (`/fr/conseil`, `/de/beratung`) page reached
+from the home page and the footer. It reuses the same admin-managed hours,
+15-minute slots and emails; `course_calls.course_id` was already nullable, so
+no migration was needed. This is course-domain work, not a new checkpoint.
+
 Extra-roadmap (2026-09-15): course registration now requires date of birth in
 addition to first name, last name, email and postal address. The date is
 validated as a real past calendar day and stored on the booking snapshot.

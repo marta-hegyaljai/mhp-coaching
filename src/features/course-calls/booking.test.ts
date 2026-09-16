@@ -68,6 +68,66 @@ describe.skipIf(!hasDatabase)("course call reservations", () => {
     ).rejects.toMatchObject({code: "slotUnavailable"});
   });
 
+  it("books a general call with no course attached", async () => {
+    await replaceCallHours([{weekday: 1, startMinute: 9 * 60, endMinute: 12 * 60}]);
+    const stamp = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    const now = new Date("2026-09-01T08:00:00.000Z");
+
+    const call = await scheduleCourseCall({
+      date: "2026-09-14",
+      time: "11:00",
+      firstName: "Alan",
+      lastName: "Turing",
+      email: `alan-${stamp}@example.com`,
+      phone: "+41 79 000 00 03",
+      locale: "en",
+      privacyAcceptedAt: now,
+      now,
+    });
+    createdIds.push(call.id);
+
+    expect(call.courseId).toBeNull();
+    expect(call.courseTitle).toBeNull();
+    expect(call.status).toBe("SCHEDULED");
+  });
+
+  it("holds a general call against a later course call on the same slot", async () => {
+    await replaceCallHours([{weekday: 1, startMinute: 9 * 60, endMinute: 12 * 60}]);
+    const stamp = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    const now = new Date("2026-09-01T08:00:00.000Z");
+    const date = "2026-09-14";
+    const time = "09:30";
+
+    const general = await scheduleCourseCall({
+      date,
+      time,
+      firstName: "Alan",
+      lastName: "Turing",
+      email: `general-${stamp}@example.com`,
+      phone: "+41 79 000 00 04",
+      locale: "en",
+      privacyAcceptedAt: now,
+      now,
+    });
+    createdIds.push(general.id);
+
+    await expect(
+      scheduleCourseCall({
+        date,
+        time,
+        firstName: "Grace",
+        lastName: "Hopper",
+        email: `course-${stamp}@example.com`,
+        phone: "+41 79 000 00 05",
+        locale: "en",
+        courseId: "omni-practitioner",
+        courseTitle: "OMNI Hypnosis Practitioner",
+        privacyAcceptedAt: now,
+        now,
+      }),
+    ).rejects.toMatchObject({code: "slotUnavailable"});
+  });
+
   it("rejects concurrent inserts of the same quarter-hour", async () => {
     const date = "2026-09-14";
     const start = zurichLocalToUtc(date, "10:00");

@@ -84,14 +84,14 @@ export default async function AdminInquiryDetailPage({params}: AdminInquiryPageP
               </dt>
               <dd className="mt-1 text-ink">{inquiry.phone}</dd>
             </div>
-            {inquiry.courseTitle ? (
-              <div>
-                <dt className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-ink-subtle">
-                  {t("callCourse")}
-                </dt>
-                <dd className="mt-1 text-ink">{inquiry.courseTitle}</dd>
-              </div>
-            ) : null}
+            <div>
+              <dt className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-ink-subtle">
+                {t("callCourse")}
+              </dt>
+              <dd className="mt-1 text-ink">
+                {inquiry.courseTitle ?? t("callGeneral")}
+              </dd>
+            </div>
             <div>
               <dt className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-ink-subtle">
                 {t("callMessage")}

@@ -232,7 +232,7 @@ async function Agenda({
                       {callPersonName(call.firstName, call.lastName)}
                     </p>
                     <p className="mt-1 text-sm text-ink-muted">
-                      {call.courseTitle ?? call.email}
+                      {call.courseTitle ?? t("callGeneral")}
                     </p>
                   </div>
                   <p className="shrink-0 font-sans text-sm tabular-nums text-ink-muted">
@@ -325,7 +325,7 @@ async function Messages({
                   {callPersonName(inquiry.firstName, inquiry.lastName)}
                 </p>
                 <p className="mt-1 text-sm text-ink-muted">
-                  {inquiry.courseTitle ?? inquiry.email}
+                  {inquiry.courseTitle ?? t("callGeneral")}
                 </p>
                 <p className="mt-2 line-clamp-2 text-sm leading-6 text-ink-muted">
                   {inquiry.message}

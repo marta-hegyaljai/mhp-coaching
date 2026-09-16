@@ -7,6 +7,7 @@ import {scheduleCourseCallAction} from "@/features/course-calls/actions";
 import {MonthCalendar} from "@/features/course-calls/components/month-calendar";
 import {formatWeekdayDate} from "@/shared/format/calendar-date";
 import {parseIsoDate} from "@/shared/ui/date-field-calendar";
+import type {PathnameHref} from "@/i18n/href";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {InputField, TextareaField} from "@/shared/ui/field";
@@ -17,7 +18,7 @@ import {SubmitButton} from "@/shared/ui/submit-button";
 export function CallScheduler({
   locale,
   courseId,
-  courseSlug,
+  writeHref,
   selectedDate,
   availableDates,
   slotsByDate,
@@ -26,8 +27,9 @@ export function CallScheduler({
   defaults,
 }: {
   locale: AppLocale;
-  courseId: string;
-  courseSlug: string;
+  /** `null` books a general call with no course attached. */
+  courseId: string | null;
+  writeHref: PathnameHref;
   selectedDate: string;
   availableDates: string[];
   slotsByDate: Record<string, Array<{time: string; label: string}>>;
@@ -136,11 +138,7 @@ export function CallScheduler({
             <p className="mt-5 border border-line bg-white px-4 py-5 text-sm leading-7 text-ink-muted">
               {available.size === 0 ? t("noHours") : t("noSlots")}{" "}
               <Link
-                href={{
-                  pathname: "/courses/[slug]/advice",
-                  params: {slug: courseSlug},
-                  query: {mode: "write"},
-                }}
+                href={writeHref}
                 className="font-medium text-ink underline underline-offset-4"
               >
                 {t("writeInstead")}

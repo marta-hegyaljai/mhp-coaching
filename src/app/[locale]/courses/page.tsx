@@ -3,6 +3,7 @@ import {getTranslations, setRequestLocale} from "next-intl/server";
 import {countOccupyingEnrolmentsByDate} from "@/features/bookings/repository";
 import {AuthNotice} from "@/features/auth/components/auth-field";
 import {CourseCatalogueLead, CourseCataloguePortrait} from "@/features/courses/components/course-catalogue-masthead";
+import {AdviceInvite} from "@/features/course-calls/components/advice-invite";
 import {catalogueGroupHasOfferings} from "@/features/courses/catalogue-groups";
 import {CourseExplorer, type CatalogueGroup} from "@/features/courses/components/course-explorer";
 import {buildProgrammeCardModel} from "@/features/courses/components/programme/programme-card-model";
@@ -155,6 +156,18 @@ export default async function CoursesPage({params, searchParams}: CoursesPagePro
               sun: calendarT("weekday.sun"),
             },
           }}
+        />
+
+        {/* Closes the catalogue: the page has no footer call to action. */}
+        <AdviceInvite
+          className="mt-12"
+          headingId="catalogue-advice-title"
+          eyebrow={t("adviceEyebrow")}
+          title={t("adviceTitle")}
+          body={t("adviceBody")}
+          writePrompt={t("adviceWritePrompt")}
+          writeLabel={t("adviceWrite")}
+          callLabel={t("adviceCta")}
         />
       </Section>
     </SiteShell>

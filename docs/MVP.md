@@ -19,6 +19,7 @@ Implemented today:
 - fake and Stripe Checkout providers, signed webhook processing and email;
 - alternative-payment inquiries;
 - a free fifteen-minute advice call from each course detail and booking page,
+  and from the standalone shareable `/advice` page with no course attached,
   with admin-managed Zurich hours and collision-safe 15-minute slots, or a
   written question instead;
 - admin-authenticated booking and waitlist lists with CSV export; and

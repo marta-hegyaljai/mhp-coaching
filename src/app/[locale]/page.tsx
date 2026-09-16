@@ -2,6 +2,7 @@ import {getTranslations, setRequestLocale} from "next-intl/server";
 
 import {CourseCard} from "@/features/courses/components/course-card";
 import {loadPublishedCourses} from "@/features/courses/live";
+import {AdviceInvite} from "@/features/course-calls/components/advice-invite";
 import {splitCatalogueByFormat} from "@/features/courses/programme";
 import {HomeHero} from "@/features/home/home-hero";
 import {MethodReasons} from "@/features/home/method-reasons";
@@ -120,6 +121,18 @@ export default async function HomePage({params}: HomePageProps) {
             <ArrowRightIcon className="transition-transform duration-200 ease-standard group-hover/button:translate-x-0.5" />
           </Link>
         </div>
+      </Section>
+
+      <Section size="sm">
+        <AdviceInvite
+          headingId="advice-invite-title"
+          eyebrow={t("adviceEyebrow")}
+          title={t("adviceTitle")}
+          body={t("adviceBody")}
+          writePrompt={t("adviceWritePrompt")}
+          writeLabel={t("adviceWrite")}
+          callLabel={t("adviceCta")}
+        />
       </Section>
 
       <MethodReasons

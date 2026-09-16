@@ -7,12 +7,15 @@ const phonePaths = [
   "/fr/formations/praticien-hypnose-omni",
   "/fr/formations/praticien-hypnose-omni/inscription",
   "/fr/contact",
+  "/fr/conseil",
   "/fr/cas-cliniques",
   "/fr/perspectives",
   "/fr/a-propos",
   "/de",
+  "/de/beratung",
   "/de/ausbildungen/omni-hypnose-praktiker",
   "/en",
+  "/en/advice?mode=write",
   "/en/courses/omni-hypnosis-practitioner",
 ];
 

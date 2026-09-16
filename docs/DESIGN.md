@@ -364,6 +364,11 @@ motion, or animated background. Always honor `prefers-reduced-motion`.
 - Course decisions: `CourseCard`, `CourseDates`, `CourseBookingBar`, and the
   course-page advice offer (`CourseAdviceOffer`) that leads to a compact
   Monday-first month grid of free 15-minute call slots or a written question.
+- Advice: one `AdvicePanel` renders the call/write switch and both forms for
+  the course page and the standalone `/advice` page, so the slot grid and
+  validation cannot drift apart. `AdviceInvite` is the entry point on the home
+  page and as the closing row of the catalogue: one compact bordered panel
+  taking its own copy, never a tall page-level section.
 - Room booking decisions: `src/features/rooms/components/booking`. `SlotNavigator`
   (room and date; always rendered outside the confirm form so a day with no
   free slot is not a dead end), `SlotFields`, `AmountSummary`, `BookingFacts`,

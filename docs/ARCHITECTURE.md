@@ -103,7 +103,10 @@ Initial durable concepts:
   available / full / dates-pending / registration-closed override that drives
   the public CTA while occupancy still blocks overselling)
 - course_call_hours, course_calls and course_inquiries for the free
-  fifteen-minute advice call and written questions from course pages
+  fifteen-minute advice call and written questions. `course_id` and
+  `course_title` stay nullable: the standalone `/advice` page books the same
+  slots with no course attached, and the admin screens label those rows as a
+  general enquiry
 
 Courses/course dates are seeded into PostgreSQL from the typed TypeScript
 catalogue (`src/features/courses/catalog.ts`) so go-live data is durable. Public

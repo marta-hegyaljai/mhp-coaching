@@ -84,10 +84,10 @@ Add new mail as a function in `src/features/email/` that calls
 | Other payment method (lead) | `sendLeadNotification` | staff |
 | Contact / payment inquiry | `sendInquiryNotification` | staff |
 | Waiting list | `sendWaitlistNotification` | staff |
-| Course advice call reserved | `sendCourseCallConfirmation` | visitor |
-| Course advice call reserved | `sendCourseCallStaffNotification` | `contact@mhp-coaching.ch` |
-| Course written question | `sendCourseInquiryConfirmation` | visitor |
-| Course written question | `sendCourseInquiryStaffNotification` | `contact@mhp-coaching.ch` |
+| Advice call reserved | `sendCourseCallConfirmation` | visitor |
+| Advice call reserved | `sendCourseCallStaffNotification` | `contact@mhp-coaching.ch` |
+| Written question | `sendCourseInquiryConfirmation` | visitor |
+| Written question | `sendCourseInquiryStaffNotification` | `contact@mhp-coaching.ch` |
 | Account invitation | `sendAccountInvitation` | invited user |
 | Admin-created room booking | `sendAdminCreatedRoomBooking` | booking owner |
 | Admin-moved room booking | `sendAdminMovedRoomBooking` | booking owner |
@@ -99,6 +99,10 @@ Add new mail as a function in `src/features/email/` that calls
 | Scheduled job failure | `sendOpsAlert` | `OPS_ALERT_EMAIL` |
 | Sign-up verification | `sendEmailVerification` | registering user |
 | Password reset | `sendPasswordRecovery` | account email |
+
+Advice mail carries the course row only when a course prompted the request.
+A call or question booked from the standalone `/advice` page has none, so the
+row is omitted rather than left blank.
 
 Buyer confirmation shows the course venue
 (`organization.courseVenueAddress`: Chem. de la Fenetta 42, 1752

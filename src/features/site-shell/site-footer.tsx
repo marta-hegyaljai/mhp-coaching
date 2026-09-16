@@ -8,7 +8,7 @@ import {buttonStyles} from "@/shared/ui/button";
 import {ArrowRightIcon} from "@/shared/ui/icons";
 import {Container} from "@/shared/ui/layout";
 
-import {primaryNavEntries} from "./nav-model";
+import {footerNavEntries, primaryNavEntries} from "./nav-model";
 import {OriginLink} from "./origin-link";
 
 const footerLink =
@@ -74,7 +74,7 @@ export async function SiteFooter({
           <nav aria-label={t("navigation")}>
             <p className={footerEyebrow}>{t("navigation")}</p>
             <ul className="mt-3 space-y-1">
-              {primaryNavEntries(null).map((entry) => (
+              {[...primaryNavEntries(null), ...footerNavEntries].map((entry) => (
                 <li key={entry.key}>
                   <OriginLink
                     locale={locale}

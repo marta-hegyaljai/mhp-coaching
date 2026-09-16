@@ -50,9 +50,13 @@ export type CancelCallState = {
   error?: string;
 };
 
+/**
+ * `courseId` is `null` on the standalone advice page: the call is booked with
+ * the same rules but is not attributed to a course.
+ */
 export async function scheduleCourseCallAction(
   locale: string,
-  courseId: string,
+  courseId: string | null,
   _previous: ScheduleCallState | null,
   formData: FormData,
 ): Promise<ScheduleCallState> {
@@ -75,8 +79,8 @@ export async function scheduleCourseCallAction(
     };
   }
 
-  const course = await loadPublishedCourseById(courseId);
-  if (!course) {
+  const course = await resolveCourseContext(courseId, resolvedLocale);
+  if (!course.ok) {
     return {errors: {form: t("courseMissing")}, draft};
   }
 
@@ -89,8 +93,7 @@ export async function scheduleCourseCallAction(
       email: parsed.values.email.toLowerCase(),
       phone: parsed.values.phone,
       locale: resolvedLocale,
-      courseId: course.id,
-      courseTitle: course.title[resolvedLocale],
+      ...course.context,
       message: parsed.values.message,
       privacyAcceptedAt: new Date(),
     });
@@ -132,9 +135,10 @@ export async function scheduleCourseCallAction(
   }
 }
 
+/** `courseId` is `null` for a written question that is not about a course. */
 export async function createCourseInquiryAction(
   locale: string,
-  courseId: string,
+  courseId: string | null,
   _previous: CreateCourseInquiryState | null,
   formData: FormData,
 ): Promise<CreateCourseInquiryState> {
@@ -157,8 +161,8 @@ export async function createCourseInquiryAction(
     };
   }
 
-  const course = await loadPublishedCourseById(courseId);
-  if (!course) {
+  const course = await resolveCourseContext(courseId, resolvedLocale);
+  if (!course.ok) {
     return {errors: {form: t("courseMissing")}, draft};
   }
 
@@ -170,8 +174,7 @@ export async function createCourseInquiryAction(
       phone: parsed.values.phone,
       message: parsed.values.message,
       locale: resolvedLocale,
-      courseId: course.id,
-      courseTitle: course.title[resolvedLocale],
+      ...course.context,
       privacyAcceptedAt: new Date(),
     });
 
@@ -269,6 +272,32 @@ export async function cancelCourseCallAction(
 
 function resolveLocale(locale: string): AppLocale {
   return hasLocale(routing.locales, locale) ? locale : routing.defaultLocale;
+}
+
+/** Course attribution stored on the call or inquiry, empty when general. */
+type CourseContext = {courseId?: string; courseTitle?: string};
+
+/**
+ * A missing `courseId` is the standalone page and always valid. A present one
+ * must still resolve to a published course, or the request is stale.
+ */
+async function resolveCourseContext(
+  courseId: string | null,
+  locale: AppLocale,
+): Promise<{ok: true; context: CourseContext} | {ok: false}> {
+  if (!courseId) {
+    return {ok: true, context: {}};
+  }
+
+  const course = await loadPublishedCourseById(courseId);
+  if (!course) {
+    return {ok: false};
+  }
+
+  return {
+    ok: true,
+    context: {courseId: course.id, courseTitle: course.title[locale]},
+  };
 }
 
 const callErrorKeys = [

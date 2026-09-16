@@ -9,6 +9,7 @@ export type NavLabelKey =
   | "insights"
   | "about"
   | "contact"
+  | "advice"
   | "rooms"
   | "admin"
   | "account"
@@ -109,6 +110,15 @@ export function primaryNavEntries(viewer: Viewer | null): NavEntry[] {
     isNavGroup(node) ? node.entries : [node],
   );
 }
+
+/**
+ * Destinations that belong on the footer map but not in the header bar, which
+ * stays limited to the two decisions that matter. The home page and shared
+ * links carry these instead.
+ */
+export const footerNavEntries: readonly NavEntry[] = [
+  {key: "advice", href: "/advice", origin: "marketing", match: "/advice"},
+];
 
 /** Personal destinations. These never sit in the product navigation. */
 export const accountNavEntries: readonly NavEntry[] = [

@@ -17,6 +17,7 @@
     "aboutHint": "Marta Hegyaljai Python, Gründerin",
     "contact": "Kontakt",
     "contactHint": "Schreiben oder anrufen in Freiburg",
+    "advice": "Gespräch buchen",
     "cta": "Platz buchen",
     "ctaShort": "Buchen",
     "datesAndRegistration": "Termine und Anmeldung",
@@ -71,7 +72,13 @@
     "whyEyebrow": "Die Methode",
     "trustLocations": "Freiburg",
     "trustGroup": "Gruppen mit maximal 16 Personen",
-    "trustRecognition": "ASCA · NGH · APSH · eduQua"
+    "trustRecognition": "ASCA · NGH · APSH · eduQua",
+    "adviceEyebrow": "Beratung",
+    "adviceTitle": "Unsicher, wo Sie beginnen sollen?",
+    "adviceBody": "Buchen Sie ein kostenloses Gespräch von fünfzehn Minuten. Wir beantworten Ihre Fragen zur Schule, zu den Ausbildungen oder zu Ihrer eigenen Praxis.",
+    "adviceCta": "Zeit wählen",
+    "adviceWritePrompt": "Lieber schreiben?",
+    "adviceWrite": "Nachricht senden"
   },
   "CoursesPage": {
     "title": "Hypnose-Ausbildungen",
@@ -119,7 +126,13 @@
     "programmeWaitlistCta": "Auf die Warteliste",
     "programmeClosedCta": "Anmeldung geschlossen",
     "programmePartOf": "Dieses Modul ist Teil des kompletten Lehrgangs {title}.",
-    "programmeViewCta": "Lehrgang ansehen"
+    "programmeViewCta": "Lehrgang ansehen",
+    "adviceEyebrow": "Beratung",
+    "adviceTitle": "Unsicher bei der Wahl der Ausbildung?",
+    "adviceBody": "Buchen Sie ein kostenloses Gespräch von fünfzehn Minuten und wir helfen Ihnen, sich im Curriculum einzuordnen.",
+    "adviceCta": "Zeit wählen",
+    "adviceWritePrompt": "Lieber schreiben?",
+    "adviceWrite": "Nachricht senden"
   },
   "CourseCalendar": {
     "previousMonth": "Vorheriger Monat",
@@ -241,6 +254,13 @@
       "courseMissing": "Diese Ausbildung ist nicht mehr verfügbar.",
       "saveFailed": "Speichern nicht möglich. Bitte versuchen Sie es in einem Moment erneut."
     }
+  },
+  "GeneralAdvice": {
+    "eyebrow": "Beratung",
+    "title": "Buchen Sie ein kostenloses Gespräch",
+    "description": "Buchen Sie ein kostenloses fünfzehnminütiges Telefongespräch mit mhp-coaching in Fribourg. Wählen Sie eine noch freie Zeit, ohne Anmeldung zu einer Ausbildung.",
+    "intro": "Fünfzehn Minuten am Telefon, kostenlos. Wählen Sie eine noch freie Zeit und wir rufen Sie an — zu einer Ausbildung, zu Ihrer Praxis oder zu allem, was Sie klären möchten.",
+    "writeIntro": "Schreiben Sie uns, statt ein Gespräch zu buchen. Wir antworten an die angegebene E-Mail-Adresse."
   },
   "BookingForm": {
     "title": "Platz buchen",
@@ -748,7 +768,7 @@
     "coursesNav": "Ausbildungen",
     "callsNav": "Gespräche",
     "callsTitle": "Beratungsgespräche",
-    "callsIntro": "Zeiten für das kostenlose fünfzehnminütige Gespräch, reservierte Slots und schriftliche Fragen von den Ausbildungsseiten.",
+    "callsIntro": "Zeiten für das kostenlose fünfzehnminütige Gespräch, reservierte Slots und schriftliche Fragen von den Ausbildungs- und Beratungsseiten.",
     "callsViews": "Gesprächsakten",
     "callsAgenda": "Agenda",
     "callsHours": "Zeiten",
@@ -768,6 +788,7 @@
     "callsBack": "Zurück zu den Gesprächen",
     "callWhen": "Zeit",
     "callCourse": "Ausbildung",
+    "callGeneral": "Allgemeine Anfrage",
     "callMessage": "Nachricht",
     "callPhone": "Telefon",
     "callHoursHelp": "Jedes offene Fenster wird in Viertelstunden geteilt, Zürcher Zeit. Geschlossene Tage bieten keine Gespräche.",
