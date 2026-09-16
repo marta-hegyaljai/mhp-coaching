@@ -77,6 +77,11 @@ enrolment. Signed-in checkout also hydrates missing address and date of birth
 from the person’s latest booking. This is course-domain work, not a new
 checkpoint.
 
+Extra-roadmap (2026-09-16): Magie, rire & Hypnose is a published Atelier
+pratique (CHF 300, 1 day, capacity 12). The course ships without sessions so
+staff can add dates in admin; the public page stays on dates-coming-soon /
+notify-me until then. This is course-domain work, not a new checkpoint.
+
 
 ## Status vocabulary
 

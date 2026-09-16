@@ -154,6 +154,33 @@ test.describe("course cards", () => {
     expect(Math.abs((firstModule!.y ?? 0) - (secondModule!.y ?? 0))).toBeLessThanOrEqual(4);
   });
 
+  test("Magie, rire & Hypnose is a published undated workshop", async ({page}) => {
+    await page.setViewportSize({width: 1280, height: 900});
+    await page.goto("/fr/formations");
+
+    const section = page.locator("[data-catalogue-category=workshop]");
+    const card = section.locator("article").filter({hasText: "Magie, rire & Hypnose"}).first();
+
+    await expect(section.getByRole("heading", {level: 2, name: "Ateliers pratiques"})).toBeVisible();
+    await expect(card).toBeVisible();
+    await expect(card.getByText(/300\s*CHF/)).toBeVisible();
+    await expect(card.getByText(/1 jour/i).first()).toBeVisible();
+  });
+
+  test("Magie, rire & Hypnose detail stays undated until staff add sessions", async ({
+    page,
+  }) => {
+    await page.setViewportSize({width: 390, height: 844});
+    await page.goto("/fr/formations/magie-rire-hypnose");
+
+    await expect(page.getByRole("heading", {level: 1, name: "Magie, rire & Hypnose"})).toBeVisible();
+    await expect(page.getByText("Prochaines dates à venir").first()).toBeVisible();
+    await expect(page.getByRole("link", {name: /Prévenez-moi/i}).first()).toBeVisible();
+    await page.getByText("Formateur", {exact: true}).click();
+    await expect(page.getByText("Jean Pierre Spack").first()).toBeVisible();
+    await expect(page.getByText("Objectifs pédagogiques")).toBeVisible();
+  });
+
   test("Café Supervision is a distinct CPD category with visio dates", async ({page}) => {
     await page.setViewportSize({width: 1280, height: 900});
     await page.goto("/fr/formations");

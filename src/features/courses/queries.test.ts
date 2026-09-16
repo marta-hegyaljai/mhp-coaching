@@ -32,12 +32,12 @@ describe("course catalogue", () => {
   });
 
   it("keeps paused workshops and the M.I.A. course in the catalogue but off public lists", () => {
-    expect(getCatalogueCourses()).toHaveLength(22);
-    expect(getPublishedCourses()).toHaveLength(16);
+    expect(getCatalogueCourses()).toHaveLength(23);
+    expect(getPublishedCourses()).toHaveLength(17);
     expect(getFoundationCourses()).toHaveLength(1);
     expect(getAdvancedCourses()).toHaveLength(9);
     expect(getMedicalCourses()).toHaveLength(4);
-    expect(getWorkshopCourses()).toHaveLength(1);
+    expect(getWorkshopCourses()).toHaveLength(2);
     expect(getSupervisionCourses()).toHaveLength(1);
     expect(getCourseById("transgenerational-mia")?.published).toBe(false);
     expect(getCourseBySlug("hypnose-transgenerationnelle-methode-mia")).toBeUndefined();
@@ -119,5 +119,18 @@ describe("course catalogue", () => {
       true,
     );
     expect(cafe?.dates.every((date) => date.capacity === 10)).toBe(true);
+  });
+
+  it("publishes Magie, rire & Hypnose as an undated workshop", () => {
+    const course = getCourseById("magic-laughter-hypnosis");
+
+    expect(course?.category).toBe("workshop");
+    expect(course?.published).toBe(true);
+    expect(course?.priceChf).toBe(300);
+    expect(course?.dates).toEqual([]);
+    expect(course?.title.fr).toBe("Magie, rire & Hypnose");
+    expect(getCourseBySlug("magie-rire-hypnose")?.id).toBe("magic-laughter-hypnosis");
+    expect(getCourseBySlug("magie-lachen-hypnose")?.id).toBe("magic-laughter-hypnosis");
+    expect(getCourseBySlug("magic-laughter-hypnosis")?.id).toBe("magic-laughter-hypnosis");
   });
 });

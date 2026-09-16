@@ -26,6 +26,7 @@ export const DEFAULT_CATALOGUE_ORDER = [
   "weight-loss-hypnosis",
   "healthy-weight-nutrition-hypnosis",
   "sensory-anchors-hypnosis",
+  "magic-laughter-hypnosis",
   "cafe-supervision",
   "stripe-payment-test",
   // Programmes close the catalogue: they are an alternative to the modules above.

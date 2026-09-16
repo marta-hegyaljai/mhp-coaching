@@ -876,6 +876,57 @@
       }
     ]
   },
+  "magic-laughter-hypnosis": {
+    "intro": null,
+    "sections": [
+      {
+        "title": "Informations pratiques",
+        "items": [
+          "Durée: 1 jour [8h]",
+          "Horaire: 9h00 - 18h00",
+          "Tarif: CHF 300",
+          "Nombre max. de participants: 12"
+        ]
+      },
+      {
+        "title": "Objectifs pédagogiques",
+        "items": [
+          "Expliquer pourquoi la magie et l’humour facilitent le lien thérapeutique et l’entrée en hypnose chez l’enfant.",
+          "Réaliser plusieurs tours de magie simples adaptés au contexte thérapeutique.",
+          "Utiliser la surprise, le jeu et l’humour de manière intentionnelle pour établir rapidement le contact avec l’enfant et ses parents.",
+          "Intégrer ces outils dans une séquence de séance cohérente et immédiatement reproductible en pratique professionnelle."
+        ]
+      },
+      {
+        "title": "Public cible & pré-requis",
+        "items": [
+          "Public cible: Praticien·ne·s en hypnose ou en thérapie complémentaire travaillant — ou souhaitant travailler — avec des enfants et des adolescents, et désireux·ses d’enrichir leurs séances par des approches ludiques et créatives.",
+          "Aucune expérience en magie n’est nécessaire.",
+          "Prérequis: Formation de base en hypnose (Praticien·ne OMNI® ou équivalent) ou autre approche de thérapie complémentaire."
+        ]
+      },
+      {
+        "title": "Reconnaissances",
+        "items": [
+          "ASCA: cette formation est reconnue comme formation continue ASCA."
+        ]
+      },
+      {
+        "title": "Modalités de certification",
+        "items": [
+          "Attestation de formation continue",
+          "La présence est obligatoire tout au long de l’atelier."
+        ]
+      },
+      {
+        "title": "Formateur",
+        "items": [
+          "Jean Pierre Spack",
+          "Magicien depuis plus de 30 ans, Jean Pierre Spack intervient régulièrement auprès d’enfants, notamment en milieu hospitalier où il exerce également comme clown à l’hôpital. Maître praticien en hypnose, il vous propose dans cet atelier de faire le pont entre magie, humour et hypnose thérapeutique, afin d’apporter des outils concrets, simples et directement utilisables dans votre pratique."
+        ]
+      }
+    ]
+  },
   "cafe-supervision": {
     "intro": "Les cafés supervision sont des espaces de parole libre et bienveillante, conçus pour les hypnothérapeutes en formation ou en activité qui souhaitent échanger autour de leur pratique, partager leurs doutes, explorer leurs questionnements ou simplement prendre du recul. Il s’agit de supervisions de groupe, animées et encadrées par des membres de l’équipe pédagogique, dans un cadre structuré, confidentiel et professionnel. Ces rendez-vous renforcent la posture professionnelle, enrichissent les compétences à travers des retours d’expérience concrets, et permettent de rester en lien avec ses pairs formés à l’hypnose OMNI. Chaque rencontre aborde des thématiques issues de la pratique réelle des participants, en respectant confidentialité et éthique professionnelle.",
     "sections": [
