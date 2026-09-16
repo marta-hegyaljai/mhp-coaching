@@ -1,7 +1,8 @@
-import {asc, eq, inArray} from "drizzle-orm";
+import {and, asc, count, eq, inArray} from "drizzle-orm";
 
 import {getDb} from "@/db";
 import {
+  bookings,
   courseProgrammeModules,
   courseSessions,
   courses,
@@ -19,9 +20,11 @@ import {
 import {programmeModuleIds} from "@/features/courses/programme";
 import type {
   Course,
+  CourseAvailability,
   CourseCategory,
   CourseDate,
   CourseFormat,
+  SessionAvailability,
 } from "@/features/courses/types";
 import {courseFormatOf, isCoursePublished} from "@/features/courses/types";
 
@@ -44,6 +47,7 @@ export function courseFromRows(
     format: course.format,
     moduleIds: course.format === "programme" ? moduleIds : undefined,
     published: course.published,
+    availability: course.availability,
     displayOrder: course.displayOrder,
     dates: sessions.map(sessionFromRow),
   };
@@ -58,6 +62,7 @@ function sessionFromRow(session: CourseSessionRow): CourseDate {
     venue: session.venue ?? undefined,
     capacity: session.capacity,
     active: session.active,
+    availability: session.availability,
   };
 }
 
@@ -217,6 +222,7 @@ export type CourseUpdateInput = {
   category: CourseCategory;
   format: CourseFormat;
   published: boolean;
+  availability?: CourseAvailability;
   displayOrder: number;
 };
 
@@ -227,6 +233,7 @@ export type CourseSessionUpdateInput = {
   venue: LocalizedJson | null;
   capacity: number;
   active: boolean;
+  availability?: SessionAvailability;
 };
 
 export type CourseSessionCreateInput = CourseSessionUpdateInput & {
@@ -288,6 +295,44 @@ export async function createCourseSession(input: CourseSessionCreateInput): Prom
 
   await getDb().insert(courseSessions).values({
     ...input,
+    availability: input.availability ?? "auto",
     displayOrder,
+  });
+}
+
+export type DeleteCourseSessionResult = "deleted" | "missing" | "hasEnrolments";
+
+/**
+ * Removes a session only when it belongs to the given course and no booking
+ * still points at it. Enrolments stay in history; deactivate those dates.
+ */
+export async function deleteCourseSession(input: {
+  id: string;
+  courseId: string;
+}): Promise<DeleteCourseSessionResult> {
+  return getDb().transaction(async (tx) => {
+    const [session] = await tx
+      .select({id: courseSessions.id})
+      .from(courseSessions)
+      .where(
+        and(eq(courseSessions.id, input.id), eq(courseSessions.courseId, input.courseId)),
+      )
+      .limit(1);
+
+    if (!session) {
+      return "missing";
+    }
+
+    const [enrolment] = await tx
+      .select({value: count()})
+      .from(bookings)
+      .where(eq(bookings.courseDateId, input.id));
+
+    if (Number(enrolment?.value ?? 0) > 0) {
+      return "hasEnrolments";
+    }
+
+    await tx.delete(courseSessions).where(eq(courseSessions.id, input.id));
+    return "deleted";
   });
 }

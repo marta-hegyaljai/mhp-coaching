@@ -146,6 +146,11 @@ export function countSessionEntries(groups: SessionGroups): number {
   return groups.upcoming.length + groups.past.length;
 }
 
+/** Empty sessions can be removed; anything with a booking stays in history. */
+export function sessionCanBeDeleted(entry: Pick<SessionEntry, "enrolments">): boolean {
+  return entry.enrolments === 0;
+}
+
 /** Fill for the seat meter; oversold sessions clamp to a full bar. */
 export function occupancyRatio(enrolments: number, capacity: number): number {
   if (capacity <= 0) {

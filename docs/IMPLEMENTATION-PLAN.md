@@ -50,6 +50,25 @@ de groupe page. Individual visio evening dates are ordinary `course_sessions`
 (capacity 10) so staff can publish or retire each one; complimentary
 registration skips Stripe. This is course-domain work, not a new checkpoint.
 
+Extra-roadmap (2026-09-15): admin course sessions can be deleted when they
+have no enrolments; dates with bookings stay in history and can only be
+deactivated. Public catalogue categories with no published courses are
+hidden. This is course-domain work, not a new checkpoint.
+
+Extra-roadmap (2026-09-15): course detail waitlists follow three public states.
+Dated courses with seats keep purchase as the primary action and show remaining
+seats only when one or two are left. A full session switches that date to a
+per-session waiting list and checkout is refused. Undated published courses
+use “dates coming soon” / notify-me copy. Waitlist rows store optional session,
+consent and a staff notified flag. This is course-domain work, not a new
+checkpoint.
+
+Extra-roadmap (2026-09-15): course and session availability is admin-defined
+(`auto`, available, full, dates pending, registration closed). The public CTA
+follows that status so the school can change availability without a developer.
+`auto` keeps the occupancy/dates derivation. Occupancy still refuses checkout
+when seats are gone. This is course-domain work, not a new checkpoint.
+
 ## Status vocabulary
 
 Use exactly one of these values:

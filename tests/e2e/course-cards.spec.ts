@@ -9,17 +9,17 @@ const multiDateCourses = [
   {
     path: "/fr/formations",
     title: "Praticien·ne en Hypnose OMNI®",
-    months: ["septembre", "octobre", "novembre"],
+    months: ["octobre", "novembre", "janvier"],
   },
   {
     path: "/de/ausbildungen",
     title: "OMNI® Hypnosepraktiker·in",
-    months: ["September", "Oktober", "November"],
+    months: ["Oktober", "November", "Januar"],
   },
   {
     path: "/en/courses",
     title: "OMNI® Hypnosis Practitioner",
-    months: ["September", "October", "November"],
+    months: ["October", "November", "January"],
   },
 ] as const;
 
@@ -170,6 +170,21 @@ test.describe("course cards", () => {
     await expect(card.getByText("Gratuit")).toBeVisible();
     await expect(card.locator("[data-date-part=days]")).toHaveCount(3);
     await expect(card.getByText("S’inscrire")).toBeVisible();
+  });
+
+  test("omits empty catalogue categories instead of showing a placeholder", async ({page}) => {
+    await page.setViewportSize({width: 1280, height: 900});
+    await page.goto("/fr/formations");
+
+    await expect(page.getByText("Aucune formation dans cette catégorie pour le moment.")).toHaveCount(0);
+
+    const search = page.getByLabel("Rechercher");
+    await search.fill("Café Supervision");
+
+    await expect(page.locator("[data-catalogue-category=supervision]")).toBeVisible();
+    await expect(page.locator("[data-catalogue-category=foundation]")).toHaveCount(0);
+    await expect(page.locator("[data-catalogue-category=workshop]")).toHaveCount(0);
+    await expect(page.locator("[data-catalogue-category=medical]")).toHaveCount(0);
   });
 
   test("Café Supervision keeps visio copy in DE and EN", async ({page}) => {

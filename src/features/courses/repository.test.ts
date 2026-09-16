@@ -2,12 +2,15 @@ import {afterAll, describe, expect, it} from "vitest";
 import {eq} from "drizzle-orm";
 
 import {closeDb, getDb} from "@/db";
-import {courses} from "@/db/schema";
+import {bookings, courses} from "@/db/schema";
 import {getDatabaseUrl} from "@/lib/database-url";
+import {createPendingBooking} from "@/features/bookings/repository";
 import {courses as seedCourses} from "@/features/courses/catalog";
 import {DEFAULT_CATALOGUE_ORDER} from "@/features/courses/catalogue-order";
 import {
   applyDefaultCatalogueDisplayOrders,
+  createCourseSession,
+  deleteCourseSession,
   listCatalogueFromDatabase,
   setProgrammeModules,
   upsertSeedCatalogue,
@@ -108,5 +111,81 @@ describe.skipIf(!hasDatabase)("course catalogue persistence", () => {
       .update(courses)
       .set({published: true, updatedAt: new Date()})
       .where(eq(courses.id, "omni-practitioner"));
+  });
+
+  it("deletes a session only when nobody has enrolled", async () => {
+    const location = {
+      fr: "Fribourg",
+      de: "Freiburg",
+      en: "Fribourg",
+    };
+    const emptyId = `delete-empty-${Date.now()}`;
+    const enrolledId = `delete-enrolled-${Date.now()}`;
+
+    await createCourseSession({
+      id: emptyId,
+      courseId: "omni-practitioner",
+      startDate: "2030-01-06",
+      endDate: null,
+      location,
+      venue: null,
+      capacity: 16,
+      active: false,
+    });
+    await createCourseSession({
+      id: enrolledId,
+      courseId: "omni-practitioner",
+      startDate: "2030-01-13",
+      endDate: null,
+      location,
+      venue: null,
+      capacity: 16,
+      active: false,
+    });
+
+    const booking = await createPendingBooking({
+      firstName: "Ada",
+      lastName: "Guest",
+      dateOfBirth: "1975-12-10",
+      email: `session-delete-${Date.now()}@example.test`,
+      phone: "+41 79 000 00 00",
+      street: "Chemin de la Fenetta 42",
+      postalCode: "1752",
+      city: "Villars-sur-Glâne",
+      country: "CH",
+      locale: "en",
+      courseId: "omni-practitioner",
+      courseDateId: enrolledId,
+      courseTitle: "OMNI Hypnosis Practitioner",
+      courseDateStart: "2030-01-13",
+      location: "Fribourg",
+      amountMinor: 349000,
+      currency: "chf",
+      paymentProvider: "fake",
+      privacyAcceptedAt: new Date(),
+      status: "PAID",
+    });
+
+    expect(await deleteCourseSession({id: emptyId, courseId: "stripe-payment-test"})).toBe(
+      "missing",
+    );
+    expect(await deleteCourseSession({id: emptyId, courseId: "omni-practitioner"})).toBe(
+      "deleted",
+    );
+    expect(await deleteCourseSession({id: enrolledId, courseId: "omni-practitioner"})).toBe(
+      "hasEnrolments",
+    );
+
+    const course = (await listCatalogueFromDatabase()).find(
+      (item) => item.id === "omni-practitioner",
+    );
+    expect(course?.dates.map((date) => date.id)).not.toContain(emptyId);
+    expect(course?.dates.map((date) => date.id)).toContain(enrolledId);
+
+    const db = getDb();
+    await db.delete(bookings).where(eq(bookings.id, booking.id));
+    expect(await deleteCourseSession({id: enrolledId, courseId: "omni-practitioner"})).toBe(
+      "deleted",
+    );
   });
 });

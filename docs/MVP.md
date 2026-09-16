@@ -95,8 +95,9 @@ can republish rows from the same structure. In-person courses are shown as Fribo
 Café Supervision is the videoconference exception: it is a continuing-professional-development
 group-supervision offering, not a standard training module, and each evening date is
 booked separately. Dates may remain empty until confirmed; an undated course
-cannot be purchased. Visitors join a per-course waiting list (name, email,
-phone) stored in PostgreSQL so staff can contact them when a session opens.
+cannot be purchased. Visitors leave a notify-me waiting-list request (name,
+email, optional phone) stored in PostgreSQL so staff can contact them when
+dates are published. A full session uses the same list against that date.
 Confirmed dates are stored on each course and must be chosen explicitly when
 more than one session is open.
 
@@ -141,14 +142,23 @@ The Stripe webhook is authoritative. Never mark a booking paid just because the 
 
 Café Supervision is complimentary (CHF 0). Registration still creates a booking
 row, then marks it `PAID` with `paymentProvider: complimentary` without Stripe.
-Staff can publish or retire each visio evening as an ordinary `course_session`.
+Staff can publish or retire each visio evening as an ordinary `course_session`,
+or delete a date that has no registrations.
 
-Undated published courses skip checkout. The course page sends visitors to a
-waiting-list form (first name, last name, email, phone, privacy acceptance).
-Dated courses keep purchase as the primary action and offer the same waiting
-list as a quieter secondary option when none of the published dates fit.
-A unique `(courseId, email)` row is stored in `waitlist_entries` so staff can
-contact people when a date opens.
+Undated published courses skip checkout. The course page labels the schedule as
+dates coming soon and the primary action collects a notify-me waiting-list
+request (first name, last name, email, optional phone, privacy acceptance).
+Dated courses keep purchase as the primary action. Remaining seats are shown
+only when one or two are left. A full session switches that date to the waiting
+list and checkout is refused. A quieter waitlist remains under the purchase
+button when published dates do not fit. Waitlist rows store the course, optional
+session, consent time and a staff notified flag so people can be contacted when
+dates open.
+
+Staff can set availability on each course and session (`auto`, available, full,
+dates pending, registration closed) so the public call to action changes without
+a developer. `auto` follows published dates and remaining seats. Occupancy still
+refuses checkout when a session has no seats left.
 
 ## Booking fields
 Minimum:
@@ -228,7 +238,7 @@ Before replacing the old website, map valuable old URLs to 301 redirects.
 - complex roles
 - invoice workflow
 - accounting reconciliation
-- vouchers and CRM-style waitlist tooling beyond the undated-course list
+- vouchers and CRM-style waitlist automation beyond notified/pending and CSV
 
 These exclusions describe the completed course MVP, not a permanent prohibition.
 Accounts, student-owned course history/certificates, roles and room booking are

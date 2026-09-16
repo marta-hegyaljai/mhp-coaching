@@ -22,6 +22,8 @@ import {splitCatalogueByFormat} from "@/features/courses/programme";
 import {isCoursePublished, isProgrammeCourse, type Course} from "@/features/courses/types";
 import {formatChf} from "@/features/payments/money";
 import {listWaitlistForCourse} from "@/features/waitlist/repository";
+import {waitlistSessionLabel} from "@/features/waitlist/session-label";
+import {WaitlistNotifyButton} from "@/features/waitlist/components/waitlist-notify-button";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
@@ -228,6 +230,8 @@ export default async function AdminCourseDetailPage({
                         <th className="py-3 pr-4 font-medium">{t("name")}</th>
                         <th className="py-3 pr-4 font-medium">{t("email")}</th>
                         <th className="py-3 pr-4 font-medium">{t("coursesPhone")}</th>
+                        <th className="py-3 pr-4 font-medium">{t("coursesWaitlistSession")}</th>
+                        <th className="py-3 pr-4 font-medium">{t("coursesWaitlistNotified")}</th>
                         <th className="py-3 font-medium">{t("coursesCreated")}</th>
                       </tr>
                     </thead>
@@ -239,6 +243,25 @@ export default async function AdminCourseDetailPage({
                           </td>
                           <td className="py-3 pr-4">{entry.email}</td>
                           <td className="py-3 pr-4">{entry.phone}</td>
+                          <td className="py-3 pr-4">
+                            {waitlistSessionLabel(
+                              entry,
+                              [course],
+                              locale,
+                              t("coursesWaitlistPendingDates"),
+                            )}
+                          </td>
+                          <td className="py-3 pr-4">
+                            {entry.notifiedAt ? (
+                              entry.notifiedAt.toISOString().slice(0, 10)
+                            ) : (
+                              <WaitlistNotifyButton
+                                courseId={course.id}
+                                entryId={entry.id}
+                                label={t("coursesWaitlistMarkNotified")}
+                              />
+                            )}
+                          </td>
                           <td className="py-3 font-sans tabular-nums text-ink-muted">
                             {entry.createdAt.toISOString().slice(0, 10)}
                           </td>

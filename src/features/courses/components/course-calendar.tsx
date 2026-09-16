@@ -28,6 +28,8 @@ export type CourseCalendarLabels = {
   emptyDay: string;
   sessionsOnDay: string;
   book: string;
+  waitlist: string;
+  closed: string;
   caption: string;
   weekday: Record<(typeof WEEKDAY_KEYS)[number], string>;
 };
@@ -281,19 +283,27 @@ export function CourseCalendar({
                     </div>
                     <div className="flex items-center justify-between gap-3">
                       <Price size="sm">{session.priceLabel}</Price>
-                      <Link
-                        href={{
-                          pathname: "/courses/[slug]/book",
-                          params: {slug: session.slug},
-                          query: {date: session.dateId},
-                        }}
-                        className={buttonStyles({
-                          variant: isActive ? "primary" : "secondary",
-                        })}
-                      >
-                        {labels.book}
-                        <ArrowRightIcon className="transition-transform duration-150 ease-standard group-hover/button:translate-x-1" />
-                      </Link>
+                      {session.closed ? (
+                        <p className="text-sm font-medium text-ink-muted">{labels.closed}</p>
+                      ) : (
+                        <Link
+                          href={{
+                            pathname: "/courses/[slug]/book",
+                            params: {slug: session.slug},
+                            query: session.pending
+                              ? {waitlist: "1"}
+                              : session.full
+                                ? {date: session.dateId, waitlist: "1"}
+                                : {date: session.dateId},
+                          }}
+                          className={buttonStyles({
+                            variant: isActive ? "primary" : "secondary",
+                          })}
+                        >
+                          {session.full || session.pending ? labels.waitlist : labels.book}
+                          <ArrowRightIcon className="transition-transform duration-150 ease-standard group-hover/button:translate-x-1" />
+                        </Link>
+                      )}
                     </div>
                   </article>
                 </li>

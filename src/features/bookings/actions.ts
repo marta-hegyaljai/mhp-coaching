@@ -6,7 +6,12 @@ import {hasLocale} from "next-intl";
 
 import {getBookableDates} from "@/features/courses/queries";
 import {loadPublishedCourseById} from "@/features/courses/live";
-import {isComplimentaryCourse} from "@/features/courses/types";
+import {sessionOffer} from "@/features/courses/occupancy";
+import {
+  courseAvailabilityOf,
+  isComplimentaryCourse,
+  sessionAvailabilityOf,
+} from "@/features/courses/types";
 import {persistCheckoutContact} from "@/features/auth/contact";
 import {getCurrentUser} from "@/features/auth/session";
 import {sendLeadNotification} from "@/features/email/lead-notification";
@@ -20,7 +25,7 @@ import {getSiteUrl} from "@/lib/site-url";
 import {resolveBookingDate} from "./booking-date";
 import {
   attachPaymentReference,
-  createPendingBooking,
+  createOccupyingBooking,
 } from "./repository";
 import {localizeBookingFormErrors} from "./form-errors";
 import {
@@ -67,7 +72,12 @@ export async function createBookingAction(
     return {errors: {form: t("courseMissing")}, draft};
   }
 
-  if (getBookableDates(course).length === 0) {
+  const availability = courseAvailabilityOf(course);
+  if (availability === "registration_closed") {
+    return {errors: {form: t("registrationClosed")}, draft};
+  }
+
+  if (availability === "dates_pending" || getBookableDates(course).length === 0) {
     return {errors: {form: t("waitlistOnly")}, draft};
   }
 
@@ -76,6 +86,17 @@ export async function createBookingAction(
   if (!selectedDate) {
     return {errors: {courseDateId: t("dateUnavailable")}, draft};
   }
+
+  const liveDate = course.dates.find((date) => date.id === selectedDate.id);
+  if (!liveDate || sessionAvailabilityOf(liveDate) === "registration_closed") {
+    return {errors: {courseDateId: t("dateUnavailable")}, draft};
+  }
+
+  if (availability === "full" || sessionOffer(liveDate, {}, availability) === "full") {
+    return {errors: {courseDateId: t("sessionFull")}, draft};
+  }
+
+  const selectedCapacity = liveDate.capacity;
 
   const origin = getSiteUrl().origin;
   const complimentary = isComplimentaryCourse(course);
@@ -90,30 +111,37 @@ export async function createBookingAction(
   let nextUrl: string;
 
   try {
-    const booking = await createPendingBooking({
-      firstName: values.firstName,
-      lastName: values.lastName,
-      dateOfBirth: values.dateOfBirth,
-      email: values.email,
-      phone: values.phone,
-      street: values.street,
-      postalCode: values.postalCode,
-      city: values.city,
-      country: values.country,
-      locale: resolvedLocale,
-      courseId: course.id,
-      courseDateId: selectedDate.id,
-      courseTitle: course.title[resolvedLocale],
-      courseDateStart: selectedDate.startDate,
-      courseDateEnd: selectedDate.endDate,
-      location: selectedDate.location[resolvedLocale],
-      amountMinor: francsToMinorUnits(course.priceChf),
-      currency: "chf",
-      paymentProvider: provider.name,
-      privacyAcceptedAt: new Date(),
-      status: isLead ? "LEAD" : "PENDING",
-      userId: signedInUser?.id ?? null,
-    });
+    const booking = await createOccupyingBooking(
+      {
+        firstName: values.firstName,
+        lastName: values.lastName,
+        dateOfBirth: values.dateOfBirth,
+        email: values.email,
+        phone: values.phone,
+        street: values.street,
+        postalCode: values.postalCode,
+        city: values.city,
+        country: values.country,
+        locale: resolvedLocale,
+        courseId: course.id,
+        courseDateId: selectedDate.id,
+        courseTitle: course.title[resolvedLocale],
+        courseDateStart: selectedDate.startDate,
+        courseDateEnd: selectedDate.endDate,
+        location: selectedDate.location[resolvedLocale],
+        amountMinor: francsToMinorUnits(course.priceChf),
+        currency: "chf",
+        paymentProvider: provider.name,
+        privacyAcceptedAt: new Date(),
+        status: isLead ? "LEAD" : "PENDING",
+        userId: signedInUser?.id ?? null,
+      },
+      selectedCapacity,
+    );
+
+    if (booking === "full") {
+      return {errors: {courseDateId: t("sessionFull")}, draft};
+    }
     await persistCheckoutContact({
       userId: signedInUser?.id,
       email: values.email,

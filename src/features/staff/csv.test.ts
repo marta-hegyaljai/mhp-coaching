@@ -25,12 +25,15 @@ describe("waitlistToCsv", () => {
         phone: "+41 79 451 44 92",
         locale: "fr",
         privacyAcceptedAt: createdAt,
+        courseSessionId: null,
+        notifiedAt: null,
       },
     ];
 
     const csv = waitlistToCsv(rows);
 
-    expect(csv.startsWith("id,createdAt,courseId,courseTitle,")).toBe(true);
+    expect(csv.startsWith("id,createdAt,courseId,courseTitle,courseSessionId,")).toBe(true);
+    expect(csv).toContain("notifiedAt");
     expect(csv).toContain("Ada");
     expect(csv).toContain("ada@example.com");
     expect(csv).toContain("medical-hypnosis-m1");

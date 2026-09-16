@@ -98,7 +98,10 @@ the runtime URL when a provider exposes only one connection string.
 Initial durable concepts:
 - course bookings (the current table is named `bookings`)
 - optional payment_events
-- waitlist_entries for published courses (undated, or dated when no session fits)
+- waitlist_entries for published courses (undated, full sessions, or dated when no session fits), with optional session id and staff notified flag
+- course and session availability status (`auto` by default, or an explicit
+  available / full / dates-pending / registration-closed override that drives
+  the public CTA while occupancy still blocks overselling)
 - course_call_hours, course_calls and course_inquiries for the free
   fifteen-minute advice call and written questions from course pages
 

@@ -272,6 +272,8 @@ describe("staff email destinations", () => {
       phone: "+41 79 000 00 00",
       locale: "en",
       privacyAcceptedAt: new Date("2026-01-01T00:00:00.000Z"),
+      courseSessionId: null,
+      notifiedAt: null,
     };
 
     await sendWaitlistNotification(entry);

@@ -11,8 +11,10 @@ import {LocalizedFields} from "@/features/courses/components/admin/localized-fie
 import {ProgrammeModulesField} from "@/features/courses/components/admin/programme-modules-field";
 import {programmeModuleIds} from "@/features/courses/programme";
 import {
+  COURSE_AVAILABILITIES,
   COURSE_FORMATS,
   COURSE_CATEGORIES,
+  courseAvailabilityOf,
   courseFormatOf,
   type Course,
   type CourseCategory,
@@ -121,6 +123,25 @@ export function AdminCourseForm({
           />
           {t("coursesPublished")}
         </label>
+      </div>
+
+      <div>
+        <label htmlFor="availability" className={fieldLabelClass}>
+          {t("coursesAvailability")}
+        </label>
+        <select
+          id="availability"
+          name="availability"
+          defaultValue={courseAvailabilityOf(course)}
+          className={`mt-2 ${fieldStyles()}`}
+        >
+          {COURSE_AVAILABILITIES.map((option) => (
+            <option key={option} value={option}>
+              {t(`coursesAvailability_${option}`)}
+            </option>
+          ))}
+        </select>
+        <p className="mt-2 text-xs leading-5 text-ink-subtle">{t("coursesAvailabilityHelp")}</p>
       </div>
 
       {format === "programme" ? (

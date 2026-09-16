@@ -14,10 +14,14 @@ import {SpinnerIcon} from "@/shared/ui/icons";
 export function WaitlistForm({
   locale,
   course,
+  courseSessionId,
+  submitLabel,
   defaults,
 }: {
   locale: AppLocale;
   course: Course;
+  courseSessionId?: string;
+  submitLabel?: string;
   defaults?: {
     firstName?: string;
     lastName?: string;
@@ -64,6 +68,10 @@ export function WaitlistForm({
         </p>
       ) : null}
 
+      {courseSessionId ? (
+        <input type="hidden" name="courseSessionId" value={courseSessionId} />
+      ) : null}
+
       <div className="grid gap-5 sm:grid-cols-2">
         <Field
           name="firstName"
@@ -96,6 +104,7 @@ export function WaitlistForm({
           error={errors?.phone}
           defaultValue={draft?.phone ?? defaults?.phone}
           autoComplete="tel"
+          required={false}
         />
       </div>
 
@@ -139,7 +148,7 @@ export function WaitlistForm({
             {t("submitting")}
           </>
         ) : (
-          t("submit")
+          submitLabel ?? t("submit")
         )}
       </Button>
     </form>
@@ -154,6 +163,7 @@ function Field({
   inputMode,
   autoComplete,
   defaultValue,
+  required = true,
 }: {
   name: string;
   label: string;
@@ -162,6 +172,7 @@ function Field({
   inputMode?: "email" | "tel" | "text";
   autoComplete?: string;
   defaultValue?: string;
+  required?: boolean;
 }) {
   const errorId = `${name}-error`;
 
@@ -177,7 +188,7 @@ function Field({
         inputMode={inputMode}
         autoComplete={autoComplete}
         defaultValue={defaultValue}
-        required
+        required={required}
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? errorId : undefined}
         className={`mt-2 ${fieldStyles({invalid: Boolean(error)})}`}

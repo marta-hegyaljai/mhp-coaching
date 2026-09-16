@@ -15,11 +15,13 @@ export function CourseBookingBar({
   locale,
   label,
   fromLabel,
+  query,
 }: {
   course: Course;
   locale: AppLocale;
   label: string;
   fromLabel: string;
+  query?: {date?: string; waitlist?: string};
 }) {
   return (
     <div className="fixed inset-x-0 bottom-0 z-30 border-t border-ink bg-ivory lg:hidden">
@@ -36,6 +38,7 @@ export function CourseBookingBar({
           href={{
             pathname: "/courses/[slug]/book",
             params: {slug: course.slug[locale]},
+            ...(query ? {query} : {}),
           }}
           className={buttonStyles()}
         >

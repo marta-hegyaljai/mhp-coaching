@@ -12,7 +12,9 @@ import {
   type CalendarSession,
 } from "@/features/courses/calendar";
 import {occupiedMonthKeys} from "@/features/courses/calendar-layout";
+import {catalogueGroupHasOfferings} from "@/features/courses/catalogue-groups";
 import {getBookableDates} from "@/features/courses/queries";
+import {type OccupancyByDate} from "@/features/courses/occupancy";
 import type {Course} from "@/features/courses/types";
 import type {AppLocale} from "@/i18n/routing";
 import {CourseSearchAutocomplete} from "@/features/courses/components/course-search-autocomplete";
@@ -43,7 +45,6 @@ type ExplorerLabels = {
   gridView: string;
   calendarView: string;
   noResults: string;
-  emptyCategory: string;
   programmeLabel?: string;
   previousMonth: string;
   nextMonth: string;
@@ -52,6 +53,8 @@ type ExplorerLabels = {
   caption: string;
   awaitingDateLabel: string;
   book: string;
+  waitlist: string;
+  closed: string;
   weekday: {
     mon: string;
     tue: string;
@@ -71,6 +74,7 @@ export function CourseExplorer({
   categoryLabels,
   detailsLabel,
   labels,
+  occupancy = {},
   lead,
   portrait,
   portraitAlt,
@@ -85,6 +89,7 @@ export function CourseExplorer({
   categoryLabels: Record<Course["category"], string>;
   detailsLabel: string;
   labels: ExplorerLabels;
+  occupancy?: OccupancyByDate;
   lead?: ReactNode;
   portrait?: ReactNode;
   portraitAlt?: string;
@@ -97,9 +102,11 @@ export function CourseExplorer({
   const sessions = useMemo(
     () =>
       allCourses.flatMap((course) =>
-        getBookableDates(course).map((date) => toCalendarSession(course, date, locale)),
+        getBookableDates(course).map((date) =>
+          toCalendarSession(course, date, locale, occupancy),
+        ),
       ),
-    [allCourses, locale],
+    [allCourses, locale, occupancy],
   );
   const [query, setQuery] = useState("");
   const [month, setMonth] = useState("");
@@ -121,13 +128,15 @@ export function CourseExplorer({
     }
     return occupiesMonth(session, month);
   });
-  const visibleGroups = groups.map((group) => ({
-    ...group,
-    courses: group.courses.filter((course) => filteredIds.has(course.id)),
-  }));
   const visibleProgrammes = programmes.filter((programme) =>
     filteredIds.has(programme.id),
   );
+  const visibleGroups = groups
+    .map((group) => ({
+      ...group,
+      courses: group.courses.filter((course) => filteredIds.has(course.id)),
+    }))
+    .filter((group) => catalogueGroupHasOfferings(group, visibleProgrammes));
   const hasActiveFilters = Boolean(query.trim() || month);
 
   const toolbar = (
@@ -234,7 +243,6 @@ export function CourseExplorer({
             const categoryProgrammes = visibleProgrammes.filter(
               (programme) => programme.category === group.category,
             );
-            const isEmpty = group.courses.length === 0 && categoryProgrammes.length === 0;
 
             return (
               <section
@@ -262,9 +270,6 @@ export function CourseExplorer({
                     </p>
                   ) : null}
                 </div>
-                {isEmpty ? (
-                  <p className="mt-5 text-sm leading-7 text-ink-muted">{labels.emptyCategory}</p>
-                ) : null}
                 {group.courses.length > 0 ? (
                   <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                     {group.courses.map((course) => (

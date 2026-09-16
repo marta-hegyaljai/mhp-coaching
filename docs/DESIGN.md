@@ -158,7 +158,8 @@ primary action behind an ambiguous icon.
   enrolments, waitlist — so the schedule is a scannable list, never a stack of
   cards under the catalogue form. The record opens on sessions. Session rows
   are calendar-dense: start-day tile, range, place, seats. Past dates stay
-  collapsed until asked for.
+  collapsed until asked for. A session with no enrolments can be deleted from
+  the open row; a session with enrolments can only be deactivated.
 - An admin record (course, user, room, booking, request, billing) leads with
   a visible secondary back control to its list. Do not rely on a quiet
   underlined “All …” line that can be mistaken for a heading. The selected
@@ -213,8 +214,13 @@ primary action behind an ambiguous icon.
   the closing row, opposite the details action: visible without another
   click, set in the sans-serif with tabular numbers, and read after the
   title, description and schedule. An undated course is not sold until a
-  session is published. Label its schedule as awaiting confirmation and route
-  the primary action to a waiting-list form stored in PostgreSQL.
+  session is published. Label its schedule as dates coming soon and route
+  the primary action to a waiting-list form stored in PostgreSQL. Remaining
+  seats are not listed unless one or two are left. A full session keeps the
+  date visible and sends the action to that session’s waiting list. Staff can
+  override that derivation per course or session (available, full, dates
+  pending, registration closed) so the public CTA changes without a developer;
+  remaining seats still refuse checkout when a session is full.
 - When a course has several bookable dates, the card lists up to three of them
   in one grid: days, month and year each occupy a column so months start
   together and years start together. The nearest date stays on the meta line
@@ -228,8 +234,11 @@ primary action behind an ambiguous icon.
   least 44px.
 - One primary action per decision area. Supporting actions are secondary or
   underlined text links. On a dated course page the purchase button stays
-  primary; a quieter waitlist link under it captures visitors whose published
-  dates do not fit.
+  primary while seats remain; a quieter waitlist link under it captures
+  visitors whose published dates do not fit. When every published session is
+  full the primary action becomes the waiting list for that session. Dates
+  pending uses notify-me copy. Registration closed shows a closed notice and
+  no booking or waitlist form.
 - Booking forms use the same bordered, rectangular language and keep the live
   summary visible on desktop. Validation must remain localized and accessible.
 
@@ -256,8 +265,9 @@ purchasable path and is never mixed into that grid.
   contents with each module's duration and price, stating that every module
   stays bookable on its own. A module page that belongs to a pathway shows a
   bordered secondary-surface notice linking to it.
-- An undated programme follows the undated-course rule: schedule awaiting
-  confirmation, primary action to the waiting list.
+- An undated programme follows the undated-course rule: schedule as dates
+  coming soon, primary action to the waiting list. A full programme session
+  follows the full-session waitlist rule.
 
 ## Course imagery and source content
 

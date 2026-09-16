@@ -9,6 +9,7 @@ import {sendMail} from "./transport";
 
 export async function sendWaitlistNotification(
   entry: WaitlistEntry,
+  sessionLabel?: string,
 ): Promise<void> {
   const locale = mailLocale(entry.locale);
   const t = await getTranslations({
@@ -18,14 +19,27 @@ export async function sendWaitlistNotification(
   const fields = await getTranslations({locale, namespace: "Email.fields"});
   const subject = t("subject", {course: entry.courseTitle});
   const name = `${entry.firstName} ${entry.lastName}`;
-  const text = [
+  const textLines = [
     t("intro"),
     "",
     t("nameLine", {name}),
     t("emailLine", {email: entry.email}),
-    t("phoneLine", {phone: entry.phone}),
-    t("courseLine", {course: entry.courseTitle}),
-  ].join("\n");
+  ];
+  if (entry.phone.trim()) {
+    textLines.push(t("phoneLine", {phone: entry.phone}));
+  }
+  textLines.push(t("courseLine", {course: entry.courseTitle}));
+  if (sessionLabel) {
+    textLines.push(t("sessionLine", {date: sessionLabel}));
+  }
+
+  const details = [
+    {label: fields("name"), value: name},
+    {label: fields("email"), value: entry.email},
+    ...(entry.phone.trim() ? [{label: fields("phone"), value: entry.phone}] : []),
+    {label: fields("course"), value: entry.courseTitle},
+    ...(sessionLabel ? [{label: fields("dates"), value: sessionLabel}] : []),
+  ];
 
   const html = composeTransactionalEmail({
     locale,
@@ -33,19 +47,14 @@ export async function sendWaitlistNotification(
     eyebrow: t("eyebrow"),
     title: entry.courseTitle,
     intro: t("intro"),
-    details: [
-      {label: fields("name"), value: name},
-      {label: fields("email"), value: entry.email},
-      {label: fields("phone"), value: entry.phone},
-      {label: fields("course"), value: entry.courseTitle},
-    ],
+    details,
   });
 
   await sendMail({
     to: organization.email,
     replyTo: entry.email,
     subject,
-    text,
+    text: textLines.join("\n"),
     html,
   });
 }

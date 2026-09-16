@@ -7,6 +7,9 @@ import {persistCheckoutContact} from "@/features/auth/contact";
 import {getCurrentUser} from "@/features/auth/session";
 import {sendWaitlistNotification} from "@/features/email/waitlist-notification";
 import {loadPublishedCourseById} from "@/features/courses/live";
+import {formatCourseDateRange} from "@/features/courses/dates";
+import {getBookableDates} from "@/features/courses/queries";
+import {courseAvailabilityOf, sessionAvailabilityOf} from "@/features/courses/types";
 import {routing, type AppLocale} from "@/i18n/routing";
 
 import {createWaitlistEntry} from "./repository";
@@ -57,6 +60,23 @@ export async function createWaitlistAction(
     return {errors: {form: t("unavailable")}, draft};
   }
 
+  if (courseAvailabilityOf(course) === "registration_closed") {
+    return {errors: {form: t("unavailable")}, draft};
+  }
+
+  const requestedSessionId = parsed.values.courseSessionId?.trim() || null;
+  const session = requestedSessionId
+    ? getBookableDates(course).find((date) => date.id === requestedSessionId)
+    : undefined;
+
+  if (requestedSessionId && !session) {
+    return {errors: {form: t("unavailable")}, draft};
+  }
+
+  if (session && sessionAvailabilityOf(session) === "registration_closed") {
+    return {errors: {form: t("unavailable")}, draft};
+  }
+
   let entry: Awaited<ReturnType<typeof createWaitlistEntry>>;
 
   try {
@@ -69,6 +89,7 @@ export async function createWaitlistAction(
       phone: parsed.values.phone,
       locale: resolvedLocale,
       privacyAcceptedAt: new Date(),
+      courseSessionId: session?.id ?? null,
     });
   } catch (error) {
     console.error("Failed to save waitlist entry", error);
@@ -91,7 +112,10 @@ export async function createWaitlistAction(
   }
 
   try {
-    await sendWaitlistNotification(entry);
+    await sendWaitlistNotification(
+      entry,
+      session ? formatCourseDateRange(session, resolvedLocale) : undefined,
+    );
   } catch (error) {
     console.error("Failed to send waitlist notification", error);
   }

@@ -75,11 +75,13 @@ export function waitlistToCsv(rows: WaitlistEntry[]): string {
     "createdAt",
     "courseId",
     "courseTitle",
+    "courseSessionId",
     "firstName",
     "lastName",
     "email",
     "phone",
     "locale",
+    "notifiedAt",
   ];
 
   const lines = [header.join(",")];
@@ -91,11 +93,13 @@ export function waitlistToCsv(rows: WaitlistEntry[]): string {
         row.createdAt.toISOString(),
         row.courseId,
         row.courseTitle,
+        row.courseSessionId ?? "",
         row.firstName,
         row.lastName,
         row.email,
         row.phone,
         row.locale,
+        row.notifiedAt?.toISOString() ?? "",
       ]
         .map(csvCell)
         .join(","),

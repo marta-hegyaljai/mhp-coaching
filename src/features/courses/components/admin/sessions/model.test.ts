@@ -8,6 +8,7 @@ import {
   dayCountOf,
   filterSessionGroups,
   occupancyRatio,
+  sessionCanBeDeleted,
   summarizeSessions,
 } from "./model";
 
@@ -180,5 +181,12 @@ describe("occupancyRatio", () => {
     expect(occupancyRatio(20, 16)).toBe(1);
     expect(occupancyRatio(3, 0)).toBe(1);
     expect(occupancyRatio(0, 0)).toBe(0);
+  });
+});
+
+describe("sessionCanBeDeleted", () => {
+  it("allows delete only when nobody has enrolled", () => {
+    expect(sessionCanBeDeleted({enrolments: 0})).toBe(true);
+    expect(sessionCanBeDeleted({enrolments: 1})).toBe(false);
   });
 });

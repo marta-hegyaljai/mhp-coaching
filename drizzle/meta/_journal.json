@@ -176,6 +176,20 @@
       "when": 1789127000000,
       "tag": "0024_cafe_supervision_course",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1789128000000,
+      "tag": "0025_waitlist_session_and_notified",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1789129000000,
+      "tag": "0026_course_availability",
+      "breakpoints": true
     }
   ]
 }

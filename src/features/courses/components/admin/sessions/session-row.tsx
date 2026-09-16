@@ -3,6 +3,7 @@
 import {useTranslations} from "next-intl";
 
 import {formatCourseDateRange, formatSessionDateMark} from "@/features/courses/dates";
+import {sessionAvailabilityOf} from "@/features/courses/types";
 import type {AppLocale} from "@/i18n/routing";
 import {Chip} from "@/shared/ui/chip";
 import {ChevronDownIcon} from "@/shared/ui/icons";
@@ -35,6 +36,9 @@ export function SessionRow({
   const muted = isPast || !date.active;
   const mark = formatSessionDateMark(date.startDate, locale);
   const full = entry.capacity > 0 && entry.seatsLeft === 0;
+  const availability = sessionAvailabilityOf(date);
+  const markedClosed = availability === "registration_closed";
+  const markedFull = availability === "full" || full;
 
   return (
     <li className="border-b border-line-soft last:border-b-0">
@@ -73,7 +77,12 @@ export function SessionRow({
             </span>
             {!date.active ? <Chip tone="strong">{t("coursesSessionInactive")}</Chip> : null}
             {isPast ? <Chip>{t("coursesSessionPast")}</Chip> : null}
-            {full && date.active && !isPast ? <Chip>{t("coursesSessionFull")}</Chip> : null}
+            {markedClosed && date.active && !isPast ? (
+              <Chip>{t("coursesSessionAvailability_registration_closed")}</Chip>
+            ) : null}
+            {markedFull && !markedClosed && date.active && !isPast ? (
+              <Chip>{t("coursesSessionFull")}</Chip>
+            ) : null}
           </span>
           <span className="mt-0.5 block truncate text-xs text-ink-subtle lg:hidden">
             {placeSummary(date.location, date.venue, locale, t("coursesSessionVenueNone"))}

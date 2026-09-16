@@ -1,8 +1,15 @@
-import {and, desc, eq, sql} from "drizzle-orm";
+import {and, desc, eq, inArray, sql} from "drizzle-orm";
 
 import {getDb} from "@/db";
-import {bookings, paymentEvents, type Booking, type BookingStatus} from "@/db/schema";
+import {
+  bookings,
+  courseSessions,
+  paymentEvents,
+  type Booking,
+  type BookingStatus,
+} from "@/db/schema";
 import {normalizeEmail} from "@/features/auth/email";
+import {OCCUPYING_BOOKING_STATUSES} from "@/features/courses/occupancy";
 
 export type CreateBookingInput = {
   firstName: string;
@@ -43,6 +50,75 @@ export async function createPendingBooking(
     .returning();
 
   return booking;
+}
+
+export async function countOccupyingEnrolmentsByDate(
+  courseDateIds: readonly string[],
+): Promise<Record<string, number>> {
+  if (courseDateIds.length === 0) {
+    return {};
+  }
+
+  const rows = await getDb()
+    .select({
+      courseDateId: bookings.courseDateId,
+      count: sql<number>`count(*)::int`,
+    })
+    .from(bookings)
+    .where(
+      and(
+        inArray(bookings.courseDateId, [...courseDateIds]),
+        inArray(bookings.status, [...OCCUPYING_BOOKING_STATUSES]),
+      ),
+    )
+    .groupBy(bookings.courseDateId);
+
+  return Object.fromEntries(rows.map((row) => [row.courseDateId, row.count]));
+}
+
+/**
+ * Holds the session row so two checkouts cannot take the last seat together.
+ * Leads skip this path; they do not occupy a place.
+ */
+export async function createOccupyingBooking(
+  input: CreateBookingInput,
+  capacity: number,
+): Promise<Booking | "full"> {
+  return getDb().transaction(async (tx) => {
+    await tx
+      .select({id: courseSessions.id})
+      .from(courseSessions)
+      .where(eq(courseSessions.id, input.courseDateId))
+      .for("update");
+
+    const [occupied] = await tx
+      .select({count: sql<number>`count(*)::int`})
+      .from(bookings)
+      .where(
+        and(
+          eq(bookings.courseDateId, input.courseDateId),
+          inArray(bookings.status, [...OCCUPYING_BOOKING_STATUSES]),
+        ),
+      );
+
+    const seats =
+      Number.isFinite(capacity) && capacity > 0 ? Math.floor(capacity) : 0;
+    if (seats <= 0 || (occupied?.count ?? 0) >= seats) {
+      return "full";
+    }
+
+    const [booking] = await tx
+      .insert(bookings)
+      .values({
+        ...input,
+        emailNormalized: normalizeEmail(input.email),
+        userId: input.userId ?? null,
+        status: input.status ?? "PENDING",
+      })
+      .returning();
+
+    return booking;
+  });
 }
 
 export async function getBookingById(id: string): Promise<Booking | undefined> {

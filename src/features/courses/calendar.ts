@@ -3,7 +3,8 @@ import type {AppLocale} from "@/i18n/routing";
 
 import {getBookableDates, getPublishedCourses} from "./queries";
 import {courseOccupiesDate, formatCourseDateRange} from "./dates";
-import type {Course, CourseDate} from "./types";
+import {sessionOffer, type OccupancyByDate} from "./occupancy";
+import {courseAvailabilityOf, type Course, type CourseDate} from "./types";
 
 export type CalendarSession = {
   courseId: string;
@@ -16,15 +17,19 @@ export type CalendarSession = {
   endDate?: string;
   dateLabel: string;
   location: string;
+  full?: boolean;
+  closed?: boolean;
+  pending?: boolean;
 };
 
 export function getPublishedCalendarSessions(
   locale: AppLocale,
   now = new Date(),
+  occupancy: OccupancyByDate = {},
 ): CalendarSession[] {
   return getPublishedCourses().flatMap((course) =>
     getBookableDates(course, now).map((date) =>
-      toCalendarSession(course, date, locale),
+      toCalendarSession(course, date, locale, occupancy),
     ),
   );
 }
@@ -33,7 +38,10 @@ export function toCalendarSession(
   course: Course,
   date: CourseDate,
   locale: AppLocale,
+  occupancy: OccupancyByDate = {},
 ): CalendarSession {
+  const offer = sessionOffer(date, occupancy, courseAvailabilityOf(course));
+
   return {
     courseId: course.id,
     slug: course.slug[locale],
@@ -45,6 +53,9 @@ export function toCalendarSession(
     endDate: date.endDate,
     dateLabel: formatCourseDateRange(date, locale),
     location: date.location[locale],
+    full: offer === "full",
+    closed: offer === "closed",
+    pending: offer === "pending",
   };
 }
 

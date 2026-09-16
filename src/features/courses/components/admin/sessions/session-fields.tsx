@@ -4,11 +4,16 @@ import {useState} from "react";
 import {useTranslations} from "next-intl";
 
 import {LocalizedFields} from "@/features/courses/components/admin/localized-fields";
-import type {CourseDate, LocalizedText} from "@/features/courses/types";
+import {
+  SESSION_AVAILABILITIES,
+  sessionAvailabilityOf,
+  type CourseDate,
+  type LocalizedText,
+} from "@/features/courses/types";
 import type {AppLocale} from "@/i18n/routing";
 import {ChevronDownIcon} from "@/shared/ui/icons";
 import {DateField} from "@/shared/ui/date-field";
-import {InputField} from "@/shared/ui/field";
+import {fieldLabelClass, fieldStyles, InputField} from "@/shared/ui/field";
 
 const EMPTY_TEXT: LocalizedText = {fr: "", de: "", en: ""};
 
@@ -88,6 +93,27 @@ export function SessionFields({
           step={1}
           defaultValue={String(date?.capacity ?? 16)}
         />
+      </div>
+
+      <div>
+        <label htmlFor={`${idPrefix}-availability`} className={fieldLabelClass}>
+          {t("coursesSessionAvailability")}
+        </label>
+        <select
+          id={`${idPrefix}-availability`}
+          name="availability"
+          defaultValue={sessionAvailabilityOf(date ?? {})}
+          className={`mt-2 ${fieldStyles({size: "sm"})}`}
+        >
+          {SESSION_AVAILABILITIES.map((option) => (
+            <option key={option} value={option}>
+              {t(`coursesSessionAvailability_${option}`)}
+            </option>
+          ))}
+        </select>
+        <p className="mt-2 text-xs leading-5 text-ink-subtle">
+          {t("coursesSessionAvailabilityHelp")}
+        </p>
       </div>
 
       <div className="rounded-panel border border-line bg-white">

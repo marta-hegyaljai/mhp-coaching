@@ -1,7 +1,9 @@
 import {getTranslations, setRequestLocale} from "next-intl/server";
 
+import {countOccupyingEnrolmentsByDate} from "@/features/bookings/repository";
 import {AuthNotice} from "@/features/auth/components/auth-field";
 import {CourseCatalogueLead, CourseCataloguePortrait} from "@/features/courses/components/course-catalogue-masthead";
+import {catalogueGroupHasOfferings} from "@/features/courses/catalogue-groups";
 import {CourseExplorer, type CatalogueGroup} from "@/features/courses/components/course-explorer";
 import {buildProgrammeCardModel} from "@/features/courses/components/programme/programme-card-model";
 import {loadPublishedCourses} from "@/features/courses/live";
@@ -44,9 +46,13 @@ export default async function CoursesPage({params, searchParams}: CoursesPagePro
   const calendarT = await getTranslations("CourseCalendar");
 
   const publishedCourses = await loadPublishedCourses();
+  const occupancy =
+    (await countOccupyingEnrolmentsByDate(
+      publishedCourses.flatMap((course) => course.dates.map((date) => date.id)),
+    )) ?? {};
   // Bundled paths leave the module grids and close their own category.
   const {modules, programmes} = splitCatalogueByFormat(publishedCourses);
-  const groups: CatalogueGroup[] = [
+  const allGroups: CatalogueGroup[] = [
     {title: t("foundation"), category: "foundation", courses: modules.filter((course) => course.category === "foundation")},
     {title: t("advanced"), category: "advanced", courses: modules.filter((course) => course.category === "advanced")},
     {title: t("medical"), category: "medical", courses: modules.filter((course) => course.category === "medical")},
@@ -59,6 +65,7 @@ export default async function CoursesPage({params, searchParams}: CoursesPagePro
       courses: modules.filter((course) => course.category === "supervision"),
     },
   ];
+  const groups = allGroups.filter((group) => catalogueGroupHasOfferings(group, programmes));
   const programmeCards = programmes.map((programme) =>
     buildProgrammeCardModel(resolveProgramme(programme, publishedCourses), locale, {
       eyebrow: t("programmeEyebrow"),
@@ -69,8 +76,9 @@ export default async function CoursesPage({params, searchParams}: CoursesPagePro
       savings: (amount) => t("programmeSavings", {amount}),
       bookCta: t("programmeBookCta"),
       waitlistCta: t("programmeWaitlistCta"),
+      closedCta: t("programmeClosedCta"),
       awaitingDates: t("waitlistLabel"),
-    }),
+    }, undefined, occupancy),
   );
 
   return (
@@ -114,6 +122,7 @@ export default async function CoursesPage({params, searchParams}: CoursesPagePro
           portrait={<CourseCataloguePortrait imageAlt={t("instructorImageAlt")} />}
           portraitAlt={t("instructorImageAlt")}
           initialView={view === "calendar" ? "calendar" : "grid"}
+          occupancy={occupancy}
           labels={{
             search: t("search"),
             searchPlaceholder: t("searchPlaceholder"),
@@ -126,7 +135,6 @@ export default async function CoursesPage({params, searchParams}: CoursesPagePro
             gridView: t("gridView"),
             calendarView: t("calendarView"),
             noResults: t("noResults"),
-            emptyCategory: t("emptyCategory"),
             programmeLabel: t("programmeEyebrow"),
             previousMonth: calendarT("previousMonth"),
             nextMonth: calendarT("nextMonth"),
@@ -135,6 +143,8 @@ export default async function CoursesPage({params, searchParams}: CoursesPagePro
             caption: calendarT("caption"),
             awaitingDateLabel: t("waitlistLabel"),
             book: calendarT("book"),
+            waitlist: calendarT("waitlist"),
+            closed: calendarT("closed"),
             weekday: {
               mon: calendarT("weekday.mon"),
               tue: calendarT("weekday.tue"),

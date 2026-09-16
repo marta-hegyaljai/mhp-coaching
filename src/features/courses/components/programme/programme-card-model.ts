@@ -1,7 +1,12 @@
 import {formatCourseDateRange} from "@/features/courses/dates";
 import type {ProgrammeView} from "@/features/courses/programme";
 import {getBookableDates} from "@/features/courses/queries";
-import type {CourseCategory} from "@/features/courses/types";
+import {
+  courseScheduleStatus,
+  publicCourseAction,
+  type OccupancyByDate,
+} from "@/features/courses/occupancy";
+import {courseAvailabilityOf, type CourseCategory} from "@/features/courses/types";
 import {formatChf} from "@/features/payments/money";
 import type {AppLocale} from "@/i18n/routing";
 
@@ -15,6 +20,7 @@ export type ProgrammeCopy = {
   savings: (amount: string) => string;
   bookCta: string;
   waitlistCta: string;
+  closedCta: string;
   awaitingDates: string;
 };
 
@@ -54,10 +60,14 @@ export function buildProgrammeCardModel(
   locale: AppLocale,
   copy: ProgrammeCopy,
   now = new Date(),
+  occupancy: OccupancyByDate = {},
 ): ProgrammeCardModel {
   const {programme, modules, modulesPriceChf, savingsChf} = view;
   const dates = getBookableDates(programme, now);
   const nextDate = dates[0];
+  const action = publicCourseAction(
+    courseScheduleStatus(dates, occupancy, courseAvailabilityOf(programme)),
+  );
   const showComparison = savingsChf > 0;
 
   return {
@@ -86,6 +96,11 @@ export function buildProgrammeCardModel(
       slug: module.slug[locale],
     })),
     schedule: nextDate ? formatCourseDateRange(nextDate, locale) : copy.awaitingDates,
-    ctaLabel: nextDate ? copy.bookCta : copy.waitlistCta,
+    ctaLabel:
+      action === "closed"
+        ? copy.closedCta
+        : action === "book"
+          ? copy.bookCta
+          : copy.waitlistCta,
   };
 }

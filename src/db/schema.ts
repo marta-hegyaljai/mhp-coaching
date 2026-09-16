@@ -1,3 +1,4 @@
+import {sql} from "drizzle-orm";
 import {
   type AnyPgColumn,
   boolean,
@@ -150,12 +151,16 @@ export const waitlistEntries = pgTable(
     privacyAcceptedAt: timestamp("privacy_accepted_at", {
       withTimezone: true,
     }).notNull(),
+    courseSessionId: text("course_session_id"),
+    notifiedAt: timestamp("notified_at", {withTimezone: true}),
   },
   (table) => [
-    unique("waitlist_entries_course_email_unique").on(
-      table.courseId,
-      table.email,
-    ),
+    uniqueIndex("waitlist_entries_course_email_session_uidx")
+      .on(table.courseId, table.email, table.courseSessionId)
+      .where(sql`${table.courseSessionId} is not null`),
+    uniqueIndex("waitlist_entries_course_email_course_uidx")
+      .on(table.courseId, table.email)
+      .where(sql`${table.courseSessionId} is null`),
   ],
 );
 
@@ -262,6 +267,22 @@ export const courseCategoryEnum = pgEnum("course_category", [
  * into one purchasable learning path and is presented separately.
  */
 export const courseFormatEnum = pgEnum("course_format", ["module", "programme"]);
+
+/** Public CTA. `auto` follows dates and remaining seats. */
+export const courseAvailabilityEnum = pgEnum("course_availability", [
+  "auto",
+  "available",
+  "full",
+  "dates_pending",
+  "registration_closed",
+]);
+
+export const sessionAvailabilityEnum = pgEnum("session_availability", [
+  "auto",
+  "available",
+  "full",
+  "registration_closed",
+]);
 
 export const users = pgTable(
   "users",
@@ -412,6 +433,7 @@ export const courses = pgTable(
     category: courseCategoryEnum("category").notNull(),
     format: courseFormatEnum("format").notNull().default("module"),
     published: boolean("published").notNull().default(true),
+    availability: courseAvailabilityEnum("availability").notNull().default("auto"),
     displayOrder: integer("display_order").notNull(),
   },
   (table) => [
@@ -452,6 +474,7 @@ export const courseSessions = pgTable(
     venue: jsonb("venue").$type<LocalizedJson>(),
     capacity: integer("capacity").notNull(),
     active: boolean("active").notNull().default(true),
+    availability: sessionAvailabilityEnum("availability").notNull().default("auto"),
     displayOrder: integer("display_order").notNull(),
   },
   (table) => [index("course_sessions_course_id_idx").on(table.courseId)],

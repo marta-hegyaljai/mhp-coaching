@@ -18,6 +18,20 @@ describe("parseWaitlistForm", () => {
     expect(result.errors).toBeUndefined();
   });
 
+  it("accepts a waitlist request without a phone number", () => {
+    const result = parseWaitlistForm(
+      form({
+        firstName: "Ada",
+        lastName: "Lovelace",
+        email: "ada@example.com",
+        privacyAccepted: "on",
+      }),
+    );
+
+    expect(result.values?.phone).toBe("");
+    expect(result.errors).toBeUndefined();
+  });
+
   it("rejects missing privacy acceptance", () => {
     const result = parseWaitlistForm(
       form({

@@ -2,13 +2,21 @@ import {getTranslations, setRequestLocale} from "next-intl/server";
 import {notFound} from "next/navigation";
 
 import {BookingForm} from "@/features/bookings/components/booking-form";
+import {countOccupyingEnrolmentsByDate} from "@/features/bookings/repository";
 import {WaitlistForm} from "@/features/waitlist/components/waitlist-form";
 import {CourseAdviceOffer} from "@/features/course-calls/components/advice-offer";
 import {checkoutDefaultsFromUser} from "@/features/auth/contact";
 import {getCurrentUser} from "@/features/auth/session";
 import {courseLocaleHrefs} from "@/features/courses/locale-hrefs";
 import {loadPublishedCourseBySlug} from "@/features/courses/live";
-import {isComplimentaryCourse} from "@/features/courses/types";
+import {formatCourseDateRange} from "@/features/courses/dates";
+import {
+  courseScheduleStatus,
+  datesWithOpenSeats,
+  isSessionFull,
+  nearestFullDate,
+} from "@/features/courses/occupancy";
+import {courseAvailabilityOf, isComplimentaryCourse} from "@/features/courses/types";
 import {
   getBookableDates,
   getCourseStaticParams,
@@ -90,9 +98,42 @@ export default async function BookCoursePage({
   const courseT = await getTranslations("CourseDetail");
   const navT = await getTranslations("Nav");
   const dates = getBookableDates(course);
-  const showWaitlist = dates.length === 0 || waitlist === "1";
+  const occupancy =
+    (await countOccupyingEnrolmentsByDate(dates.map((item) => item.id))) ?? {};
+  const courseAvailability = courseAvailabilityOf(course);
+  const scheduleStatus = courseScheduleStatus(dates, occupancy, courseAvailability);
+  const openDates = datesWithOpenSeats(dates, occupancy, courseAvailability);
+  const selectedDate = date ? dates.find((item) => item.id === date) : undefined;
+  const selectedFull = Boolean(
+    selectedDate && isSessionFull(selectedDate, occupancy, courseAvailability),
+  );
+  const showClosed = scheduleStatus === "closed";
+  const courseLevelWaitlist = waitlist === "1" && !selectedFull;
+  const showWaitlist =
+    !showClosed &&
+    (scheduleStatus === "pending" ||
+      courseLevelWaitlist ||
+      selectedFull ||
+      scheduleStatus === "full");
+  const waitlistSession =
+    scheduleStatus === "pending" || courseLevelWaitlist
+      ? undefined
+      : selectedFull
+        ? selectedDate
+        : nearestFullDate(dates, occupancy, courseAvailability);
   const complimentary = isComplimentaryCourse(course);
   const signedInUser = await getCurrentUser();
+  const waitlistHeading =
+    scheduleStatus === "pending" ? courseT("notifyMeCta") : courseT("waitlistCta");
+  const waitlistIntro =
+    scheduleStatus === "pending"
+      ? waitlistT("intro", {location: course.location[locale]})
+      : waitlistSession
+        ? waitlistT("introFullSession", {
+            location: course.location[locale],
+            date: formatCourseDateRange(waitlistSession, locale),
+          })
+        : waitlistT("introUnsuitableDates", {location: course.location[locale]});
 
   return (
     <SiteShell
@@ -129,20 +170,22 @@ export default async function BookCoursePage({
         <div className="mt-8 max-w-2xl">
           <Eyebrow>{course.title[locale]}</Eyebrow>
           <h1 className="mt-4 font-serif text-title">
-            {showWaitlist
-              ? courseT("waitlistCta")
-              : complimentary
-                ? t("titleFree")
-                : t("title")}
+            {showClosed
+              ? courseT("closedCta")
+              : showWaitlist
+                ? waitlistHeading
+                : complimentary
+                  ? t("titleFree")
+                  : t("title")}
           </h1>
           <p className="mt-5 text-lead text-ink-muted">
-            {showWaitlist
-              ? dates.length > 0
-                ? waitlistT("introUnsuitableDates", {location: course.location[locale]})
-                : waitlistT("intro", {location: course.location[locale]})
-              : complimentary
-                ? t("introFree")
-                : t("intro")}
+            {showClosed
+              ? courseT("closedIntro")
+              : showWaitlist
+                ? waitlistIntro
+                : complimentary
+                  ? t("introFree")
+                  : t("intro")}
           </p>
         </div>
 
@@ -159,18 +202,24 @@ export default async function BookCoursePage({
         </aside>
 
         <div className="mt-10 sm:mt-12">
-          {showWaitlist ? (
+          {showClosed ? null : showWaitlist ? (
             <WaitlistForm
               locale={locale}
               course={course}
+              {...(waitlistSession ? {courseSessionId: waitlistSession.id} : {})}
+              {...(scheduleStatus === "pending"
+                ? {submitLabel: courseT("notifyMeCta")}
+                : {})}
               {...(signedInUser ? {defaults: checkoutDefaultsFromUser(signedInUser)} : {})}
             />
           ) : (
             <BookingForm
               locale={locale}
               course={course}
-              dates={dates}
-              {...(date ? {initialDateId: date} : {})}
+              dates={openDates}
+              {...(date && openDates.some((item) => item.id === date)
+                ? {initialDateId: date}
+                : {})}
               {...(signedInUser
                 ? {defaults: checkoutDefaultsFromUser(signedInUser)}
                 : {})}

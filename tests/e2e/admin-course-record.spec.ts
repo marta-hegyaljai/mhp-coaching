@@ -40,6 +40,22 @@ test("the course record has a visible way back to the catalogue list", async ({
   await expect(page).toHaveURL(/\/de\/admin\/courses$/);
 });
 
+test("staff can set course availability without a developer", async ({page}) => {
+  await signIn(page);
+  await page.goto("/en/admin/courses/advanced-techniques");
+
+  const availability = page.getByLabel("Availability");
+  await expect(availability).toBeVisible();
+  await expect(availability).toHaveValue("auto");
+  await expect(availability.locator("option")).toHaveText([
+    "Automatic",
+    "Available",
+    "Full",
+    "Dates pending",
+    "Registration closed",
+  ]);
+});
+
 test("session dates open the product calendar, not the native picker", async ({page}) => {
   await signIn(page);
   await page.goto("/de/admin/courses/advanced-techniques");
@@ -56,4 +72,29 @@ test("session dates open the product calendar, not the native picker", async ({p
   await calendar.getByRole("button", {name: /13/}).first().click();
   await expect(calendar).toHaveCount(0);
   await expect(start).toContainText("13");
+});
+
+test("an empty session can be deleted after a second confirmation", async ({page}) => {
+  await signIn(page);
+  await page.goto("/en/admin/courses/stripe-payment-test");
+  await page.getByRole("button", {name: "Add a session"}).click();
+
+  const start = page.getByRole("button", {name: "Start date"});
+  await start.click();
+  const calendar = page.getByRole("dialog", {name: "Calendar"});
+  await calendar.getByLabel("Year").selectOption("2031");
+  await calendar.getByLabel("Month").selectOption("7");
+  await calendar.getByRole("button", {name: /^27$/}).click();
+  await expect(calendar).toHaveCount(0);
+
+  await page.getByRole("button", {name: "Create session"}).click();
+  await expect(page.getByText("Session created.")).toBeVisible();
+  await page.getByRole("button", {name: "Close"}).click();
+
+  const row = page.getByRole("button", {name: /Edit session: 27 August 2031/});
+  await expect(row).toBeVisible();
+  await row.click();
+  await page.getByRole("button", {name: "Delete session"}).click();
+  await page.getByRole("button", {name: "Confirm delete"}).click();
+  await expect(row).toHaveCount(0);
 });

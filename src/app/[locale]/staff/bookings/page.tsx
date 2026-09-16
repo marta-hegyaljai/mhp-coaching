@@ -5,6 +5,7 @@ import {requireAdmin} from "@/features/auth/require";
 import {StaffBookingsTable} from "@/features/staff/bookings-table";
 import {StaffWaitlistTable} from "@/features/staff/waitlist-table";
 import {listWaitlistEntries} from "@/features/waitlist/repository";
+import {loadCatalogueCourses} from "@/features/courses/live";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
@@ -38,6 +39,7 @@ export default async function StaffBookingsPage({params}: StaffPageProps) {
   const t = await getTranslations("Staff");
   const bookings = await listBookings();
   const waitlist = await listWaitlistEntries();
+  const catalogue = await loadCatalogueCourses();
 
   return (
     <SiteShell locale={locale} footerCta={null}>
@@ -95,11 +97,17 @@ export default async function StaffBookingsPage({params}: StaffPageProps) {
         <div className="mt-8">
           <StaffWaitlistTable
             entries={waitlist}
+            courses={catalogue}
+            locale={locale}
             labels={{
               name: t("name"),
               email: t("email"),
               phone: t("phone"),
               course: t("course"),
+              session: t("waitlistSession"),
+              pendingDates: t("waitlistPendingDates"),
+              notified: t("waitlistNotified"),
+              notifyPending: t("waitlistNotifyPending"),
               created: t("created"),
               empty: t("waitlistEmpty"),
             }}

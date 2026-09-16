@@ -1,17 +1,19 @@
 import {z} from "zod";
 
+const phoneSchema = z
+  .string()
+  .trim()
+  .max(40)
+  .refine((value) => value === "" || (/^[0-9+().\s-]+$/.test(value) && value.length >= 7));
+
 const waitlistFormSchema = z.object({
   firstName: z.string().trim().min(1).max(80),
   lastName: z.string().trim().min(1).max(80),
   email: z.email().max(160),
-  phone: z
-    .string()
-    .trim()
-    .min(7)
-    .max(40)
-    .regex(/^[0-9+().\s-]+$/),
+  phone: phoneSchema,
   privacyAccepted: z.literal(true),
   company: z.string().max(0).optional(),
+  courseSessionId: z.string().trim().max(120).optional(),
 });
 
 export type WaitlistFormValues = z.infer<typeof waitlistFormSchema>;
@@ -52,14 +54,16 @@ export function parseWaitlistForm(formData: FormData): {
   }
 
   const privacyRaw = formData.get("privacyAccepted");
+  const sessionRaw = readString(formData, "courseSessionId", 120);
   const parsed = waitlistFormSchema.safeParse({
     firstName: formData.get("firstName"),
     lastName: formData.get("lastName"),
     email: formData.get("email"),
-    phone: formData.get("phone"),
+    phone: formData.get("phone") ?? "",
     privacyAccepted:
       privacyRaw === "on" || privacyRaw === "true" || privacyRaw === "1",
     company: "",
+    courseSessionId: sessionRaw || undefined,
   });
 
   if (parsed.success) {

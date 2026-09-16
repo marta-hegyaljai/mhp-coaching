@@ -1,6 +1,7 @@
 import {getTranslations, setRequestLocale} from "next-intl/server";
 import {notFound} from "next/navigation";
 
+import {countOccupyingEnrolmentsByDate} from "@/features/bookings/repository";
 import {CourseBookingBar} from "@/features/courses/components/course-booking-bar";
 import {CourseArtwork} from "@/features/courses/components/course-artwork";
 import {CourseDates} from "@/features/courses/components/course-dates";
@@ -11,6 +12,11 @@ import {ProgrammeModules} from "@/features/courses/components/programme/programm
 import {ProgrammeNotice} from "@/features/courses/components/programme/programme-notice";
 import {courseLocaleHrefs} from "@/features/courses/locale-hrefs";
 import {loadPublishedCourseBySlug, loadPublishedCourses} from "@/features/courses/live";
+import {
+  courseScheduleStatus,
+  nearestFullDate,
+  publicCourseAction,
+} from "@/features/courses/occupancy";
 import {findProgrammesForModule, resolveProgramme} from "@/features/courses/programme";
 import {formatCataloguePrice} from "@/features/courses/price";
 import {
@@ -18,7 +24,7 @@ import {
   getCourseStaticParams,
 } from "@/features/courses/queries";
 import {getCourseSourceContent} from "@/features/courses/source-content";
-import {isProgrammeCourse, isSupervisionCourse} from "@/features/courses/types";
+import {isProgrammeCourse, isSupervisionCourse, courseAvailabilityOf} from "@/features/courses/types";
 import {UPCOMING_SESSION_PREVIEW_COUNT} from "@/features/courses/upcoming-sessions";
 import {formatChf} from "@/features/payments/money";
 import {BreadcrumbTrail} from "@/features/seo/breadcrumb-trail";
@@ -86,14 +92,27 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
   const coursesT = await getTranslations("CoursesPage");
   const navT = await getTranslations("Nav");
   const dates = getBookableDates(course);
+  const occupancy = (await countOccupyingEnrolmentsByDate(dates.map((date) => date.id))) ?? {};
+  const courseAvailability = courseAvailabilityOf(course);
+  const scheduleStatus = courseScheduleStatus(dates, occupancy, courseAvailability);
   const hasDates = dates.length > 0;
   const extraSessionCount = Math.max(
     dates.length - UPCOMING_SESSION_PREVIEW_COUNT,
     0,
   );
+  const fullSession = nearestFullDate(dates, occupancy, courseAvailability);
+  const action = publicCourseAction(scheduleStatus);
+  const closed = action === "closed";
+  const bookQuery =
+    action === "waitlist" && fullSession
+      ? {date: fullSession.id, waitlist: "1"}
+      : action === "waitlist" || action === "notify"
+        ? {waitlist: "1"}
+        : undefined;
   const bookHref = {
     pathname: "/courses/[slug]/book",
     params: {slug: course.slug[locale]},
+    ...(bookQuery ? {query: bookQuery} : {}),
   } as const;
   const price = formatCataloguePrice(course.priceChf, locale);
   const sourceContent = getCourseSourceContent(course);
@@ -102,6 +121,22 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
   const isSupervision = isSupervisionCourse(course);
   const bookCta = isSupervision ? t("supervisionBookCta") : t("bookCta");
   const bookShort = isSupervision ? t("supervisionBookShort") : t("bookShort");
+  const primaryCta =
+    action === "closed"
+      ? t("closedCta")
+      : action === "notify"
+        ? t("notifyMeCta")
+        : action === "waitlist"
+          ? t("waitlistCta")
+          : bookCta;
+  const primaryShort =
+    action === "closed"
+      ? t("closedShort")
+      : action === "notify"
+        ? t("notifyMeShort")
+        : action === "waitlist"
+          ? t("waitlistShort")
+          : bookShort;
   const programmeView = isProgramme ? resolveProgramme(course, catalogue) : null;
   const parentProgrammes = isProgramme
     ? []
@@ -112,17 +147,24 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
     <SiteShell
       locale={locale}
       hreflangs={courseLocaleHrefs("/courses/[slug]", course)}
-      footerCta={{
-        href: bookHref,
-        label: hasDates ? bookCta : t("waitlistCta"),
-      }}
+      footerCta={
+        closed
+          ? null
+          : {
+              href: bookHref,
+              label: primaryCta,
+            }
+      }
       bottomBar={
-        <CourseBookingBar
-          course={course}
-          locale={locale}
-          label={hasDates ? bookShort : t("waitlistShort")}
-          fromLabel={t("price")}
-        />
+        closed ? undefined : (
+          <CourseBookingBar
+            course={course}
+            locale={locale}
+            label={primaryShort}
+            fromLabel={t("price")}
+            {...(bookQuery ? {query: bookQuery} : {})}
+          />
+        )
       }
     >
       <JsonLd data={courseJsonLd(course, locale)} />
@@ -193,6 +235,8 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
                   dates={dates}
                   locale={locale}
                   courseSlug={course.slug[locale]}
+                  occupancy={occupancy}
+                  courseAvailability={courseAvailability}
                   heading={
                     dates.length > 1 ? t("upcomingSessions") : t("nextSession")
                   }
@@ -201,17 +245,23 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
                 />
               ) : (
                 <p className="mt-6 text-sm leading-7 text-ink-muted">
-                  {t("dateToBeConfirmed")}
+                  {t("datesComing")}
                 </p>
               )}
-              <Link
-                href={bookHref}
-                className={`${buttonStyles({size: "lg", block: true})} mt-6`}
-              >
-                {hasDates ? bookCta : t("waitlistCta")}
-                <ArrowRightIcon className="transition-transform duration-200 ease-standard group-hover/button:translate-x-0.5" />
-              </Link>
-              {hasDates ? (
+              {closed ? (
+                <p className="mt-6 border border-ink bg-white px-4 py-3 text-sm font-medium text-ink">
+                  {t("closedCta")}
+                </p>
+              ) : (
+                <Link
+                  href={bookHref}
+                  className={`${buttonStyles({size: "lg", block: true})} mt-6`}
+                >
+                  {primaryCta}
+                  <ArrowRightIcon className="transition-transform duration-200 ease-standard group-hover/button:translate-x-0.5" />
+                </Link>
+              )}
+              {scheduleStatus === "open" ? (
                 <CourseWaitlistLink
                   courseSlug={course.slug[locale]}
                   prompt={t("waitlistAltPrompt")}
@@ -361,22 +411,26 @@ export default async function CourseDetailPage({params}: CoursePageProps) {
 
       <Section size="sm" tone="shell" id="dates" ariaLabelledBy="course-dates">
         <h2 id="course-dates" className="font-serif text-heading">
-          {t("upcoming")}
+          {scheduleStatus === "pending" ? t("datesComing") : t("upcoming")}
         </h2>
         {dates.length === 0 ? (
           <p className="mt-4 max-w-xl text-base leading-7 text-ink-muted">
-            {t("dateToBeConfirmed")}
+            {t("notifyMeCta")}
           </p>
         ) : (
           <CourseDates
             course={course}
             dates={dates}
             locale={locale}
+            occupancy={occupancy}
             bookLabel={t("bookDate")}
+            waitlistLabel={t("waitlistCta")}
+            closedLabel={t("closedCta")}
             seatsLabel={(capacity) => coursesT("seats", {count: capacity})}
+            seatsLeftLabel={(count) => t("seatsLeft", {count})}
           />
         )}
-        {dates.length > 0 ? (
+        {scheduleStatus === "open" ? (
           <CourseWaitlistLink
             courseSlug={course.slug[locale]}
             prompt={t("waitlistAltPrompt")}

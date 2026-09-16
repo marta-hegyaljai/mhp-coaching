@@ -11,6 +11,7 @@ import {defaultDisplayOrderForCourse} from "@/features/courses/catalogue-order";
 import {loadCatalogueCourses, loadCourseById} from "@/features/courses/live";
 import {
   createCourseSession,
+  deleteCourseSession,
   listCatalogueFromDatabase,
   setProgrammeModules,
   swapCourseDisplayOrder,
@@ -23,7 +24,9 @@ import {
 import {selectProgrammeModuleIds} from "@/features/courses/programme";
 import {
   isCourseCategory,
+  parseCourseAvailability,
   parseCourseFormat,
+  parseSessionAvailability,
 } from "@/features/courses/types";
 import type {LocalizedJson} from "@/db/schema";
 
@@ -39,9 +42,10 @@ export type CourseAdminError =
   | "session"
   | "dates"
   | "slug"
-  | "forbidden";
+  | "forbidden"
+  | "sessionHasEnrolments";
 
-export type CourseAdminSuccess = "saved" | "session" | "created";
+export type CourseAdminSuccess = "saved" | "session" | "created" | "deleted";
 
 function readString(formData: FormData, key: string) {
   return String(formData.get(key) ?? "").trim();
@@ -115,6 +119,7 @@ function parseCoursePatch(formData: FormData): CourseUpdateInput | CourseAdminEr
     category,
     format: parseCourseFormat(readString(formData, "format")),
     published: formData.get("published") === "on",
+    availability: parseCourseAvailability(readString(formData, "availability")),
     displayOrder: 0,
   };
 }
@@ -151,6 +156,7 @@ function parseSessionPatch(formData: FormData): CourseSessionUpdateInput | Cours
     venue: isEmpty(venue) ? null : venue,
     capacity,
     active: formData.get("active") === "on",
+    availability: parseSessionAvailability(readString(formData, "availability")),
   };
 }
 
@@ -210,6 +216,7 @@ export async function updateCourseAction(
     after: {
       courseId,
       published: patch.published,
+      availability: patch.availability,
       format: patch.format,
       moduleCount: moduleIds.length,
       title: patch.title.en,
@@ -246,6 +253,7 @@ export async function updateCourseSessionAction(
       courseId,
       sessionId,
       active: patch.active,
+      availability: patch.availability,
       startDate: patch.startDate,
     },
   });
@@ -342,4 +350,36 @@ export async function createCourseSessionAction(
   });
   revalidatePath("/", "layout");
   return {success: "created"};
+}
+
+export async function deleteCourseSessionAction(
+  _prev: CourseAdminState | null,
+  formData: FormData,
+): Promise<CourseAdminState> {
+  const admin = await requireAdminActor();
+  if (!admin) {
+    return {error: "forbidden"};
+  }
+
+  const sessionId = readString(formData, "sessionId");
+  const courseId = readString(formData, "courseId");
+  if (!sessionId || !courseId) {
+    return {error: "session"};
+  }
+
+  const result = await deleteCourseSession({id: sessionId, courseId});
+  if (result === "missing") {
+    return {error: "session"};
+  }
+  if (result === "hasEnrolments") {
+    return {error: "sessionHasEnrolments"};
+  }
+
+  await recordAudit({
+    actorUserId: admin.id,
+    action: AUDIT_ACTIONS.COURSE_SESSION_DELETED,
+    after: {courseId, sessionId},
+  });
+  revalidatePath("/", "layout");
+  return {success: "deleted"};
 }
