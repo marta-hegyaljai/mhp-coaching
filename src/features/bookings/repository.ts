@@ -1,4 +1,4 @@
-import {and, desc, eq, inArray, sql} from "drizzle-orm";
+import {and, desc, eq, inArray, or, sql} from "drizzle-orm";
 
 import {getDb} from "@/db";
 import {
@@ -151,10 +151,20 @@ export async function listBookings(): Promise<Booking[]> {
 export async function findLatestBookingForEmail(
   emailNormalized: string,
 ): Promise<Booking | undefined> {
+  return findLatestBookingForPerson({emailNormalized});
+}
+
+export async function findLatestBookingForPerson(input: {
+  emailNormalized: string;
+  userId?: string | null;
+}): Promise<Booking | undefined> {
+  const emailMatch = eq(bookings.emailNormalized, input.emailNormalized);
   const [booking] = await getDb()
     .select()
     .from(bookings)
-    .where(eq(bookings.emailNormalized, emailNormalized))
+    .where(
+      input.userId ? or(emailMatch, eq(bookings.userId, input.userId)) : emailMatch,
+    )
     .orderBy(desc(bookings.createdAt))
     .limit(1);
 

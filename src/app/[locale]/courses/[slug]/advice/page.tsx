@@ -1,7 +1,7 @@
 import {getTranslations, setRequestLocale} from "next-intl/server";
 import {notFound} from "next/navigation";
 
-import {checkoutDefaultsFromUser} from "@/features/auth/contact";
+import {resolveCheckoutDefaults} from "@/features/auth/contact";
 import {getCurrentUser} from "@/features/auth/session";
 import {datesWithSlots, loadCallAvailability, slotsForDate} from "@/features/course-calls/availability";
 import {CallScheduler} from "@/features/course-calls/components/call-scheduler";
@@ -72,6 +72,7 @@ export default async function CourseAdvicePage({params, searchParams}: AdvicePag
   const courseT = await getTranslations("CourseDetail");
   const navT = await getTranslations("Nav");
   const signedInUser = await getCurrentUser();
+  const defaults = await resolveCheckoutDefaults(signedInUser);
   const availability = await loadCallAvailability();
   const openDates = datesWithSlots(
     availability.hours,
@@ -92,7 +93,6 @@ export default async function CourseAdvicePage({params, searchParams}: AdvicePag
       ),
     ]),
   );
-  const defaults = signedInUser ? checkoutDefaultsFromUser(signedInUser) : undefined;
   const callHref = adviceHref(course.slug[locale], {date: selectedDate});
   const writeHref = adviceHref(course.slug[locale], {mode: "write"});
 

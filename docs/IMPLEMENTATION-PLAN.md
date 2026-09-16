@@ -22,7 +22,7 @@ later scope forward.
 | Field | Value |
 | --- | --- |
 | Plan revision | 3 |
-| Last updated | 2026-09-15 |
+| Last updated | 2026-09-16 |
 | Last completed checkpoint | CP-11 |
 | Next checkpoint | — |
 | Active checkpoint | — |
@@ -68,6 +68,15 @@ Extra-roadmap (2026-09-15): course and session availability is admin-defined
 follows that status so the school can change availability without a developer.
 `auto` keeps the occupancy/dates derivation. Occupancy still refuses checkout
 when seats are gone. This is course-domain work, not a new checkpoint.
+
+Extra-roadmap (2026-09-16): course registration drafts persist in sessionStorage
+so a visitor can open AGB/privacy (new tab) or navigate away and return without
+retyping. Drafts expire after 24 hours and per-course drafts are cleared after a
+successful booking. Last known contact stays available to prefill a later
+enrolment. Signed-in checkout also hydrates missing address and date of birth
+from the person’s latest booking. This is course-domain work, not a new
+checkpoint.
+
 
 ## Status vocabulary
 

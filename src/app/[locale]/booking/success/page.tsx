@@ -1,6 +1,7 @@
 import {getTranslations, setRequestLocale} from "next-intl/server";
 import type {ReactNode} from "react";
 
+import {ClearBookingFormDrafts} from "@/features/bookings/components/clear-booking-form-drafts";
 import {getBookingById} from "@/features/bookings/repository";
 import {isDateToBeConfirmed} from "@/features/bookings/booking-date";
 import {sendBuyerConfirmationIfNeeded} from "@/features/email/paid-booking";
@@ -56,6 +57,7 @@ export default async function BookingSuccessPage({
 
   return (
     <SiteShell locale={locale} footerCta={null}>
+      <ClearBookingFormDrafts />
       <Section size="md">
         <div className="max-w-3xl">
           <p

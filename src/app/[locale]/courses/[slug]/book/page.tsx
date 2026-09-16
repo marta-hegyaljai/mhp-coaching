@@ -5,7 +5,7 @@ import {BookingForm} from "@/features/bookings/components/booking-form";
 import {countOccupyingEnrolmentsByDate} from "@/features/bookings/repository";
 import {WaitlistForm} from "@/features/waitlist/components/waitlist-form";
 import {CourseAdviceOffer} from "@/features/course-calls/components/advice-offer";
-import {checkoutDefaultsFromUser} from "@/features/auth/contact";
+import {resolveCheckoutDefaults} from "@/features/auth/contact";
 import {getCurrentUser} from "@/features/auth/session";
 import {courseLocaleHrefs} from "@/features/courses/locale-hrefs";
 import {loadPublishedCourseBySlug} from "@/features/courses/live";
@@ -123,6 +123,7 @@ export default async function BookCoursePage({
         : nearestFullDate(dates, occupancy, courseAvailability);
   const complimentary = isComplimentaryCourse(course);
   const signedInUser = await getCurrentUser();
+  const checkoutDefaults = await resolveCheckoutDefaults(signedInUser);
   const waitlistHeading =
     scheduleStatus === "pending" ? courseT("notifyMeCta") : courseT("waitlistCta");
   const waitlistIntro =
@@ -210,7 +211,7 @@ export default async function BookCoursePage({
               {...(scheduleStatus === "pending"
                 ? {submitLabel: courseT("notifyMeCta")}
                 : {})}
-              {...(signedInUser ? {defaults: checkoutDefaultsFromUser(signedInUser)} : {})}
+              {...(checkoutDefaults ? {defaults: checkoutDefaults} : {})}
             />
           ) : (
             <BookingForm
@@ -220,9 +221,7 @@ export default async function BookCoursePage({
               {...(date && openDates.some((item) => item.id === date)
                 ? {initialDateId: date}
                 : {})}
-              {...(signedInUser
-                ? {defaults: checkoutDefaultsFromUser(signedInUser)}
-                : {})}
+              {...(checkoutDefaults ? {defaults: checkoutDefaults} : {})}
             />
           )}
         </div>

@@ -13,26 +13,31 @@ import {
   visibleBookingIssueKeys,
   type BookingFormIssueKey,
 } from "@/features/bookings/form-errors";
+import {
+  bookingSessionDraftFromFormData,
+  hasBookingContactPrefill,
+  pickFilled,
+  readBookingFormDraft,
+  readLastBookingContact,
+  writeBookingFormDraft,
+  type BookingContactPrefill,
+  type BookingSessionDraft,
+} from "@/features/bookings/form-draft";
 import {parseBookingForm, type BookingFormErrors} from "@/features/bookings/validation";
 import {formatCourseDateRange} from "@/features/courses/dates";
 import {formatCataloguePrice} from "@/features/courses/price";
 import {isComplimentaryCourse, type Course, type CourseDate} from "@/features/courses/types";
-import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {Button} from "@/shared/ui/button";
 import {DateField} from "@/shared/ui/date-field";
 import {shiftIsoYears, todayIsoInZurich} from "@/shared/ui/date-field-calendar";
 import {fieldStyles} from "@/shared/ui/field";
 import {CheckIcon, LockIcon, SpinnerIcon} from "@/shared/ui/icons";
+import {LegalDocLink} from "@/shared/ui/legal-doc-link";
 import {Price} from "@/shared/ui/price";
+import {useHydrated} from "@/shared/use-hydrated";
 
-export function BookingForm({
-  locale,
-  course,
-  dates,
-  initialDateId,
-  defaults,
-}: {
+type BookingFormProps = {
   locale: AppLocale;
   course: Course;
   dates: CourseDate[];
@@ -46,7 +51,36 @@ export function BookingForm({
     postalCode?: string;
     city?: string;
     country?: string;
+    dateOfBirth?: string;
   };
+};
+
+export function BookingForm(props: BookingFormProps) {
+  const hydrated = useHydrated();
+  const sessionDraft = hydrated ? readBookingFormDraft(props.course.id) : null;
+  const lastContact = hydrated ? readLastBookingContact() : null;
+
+  return (
+    <BookingFormFields
+      key={sessionDraft || hasBookingContactPrefill(lastContact) ? "restored" : "live"}
+      {...props}
+      sessionDraft={sessionDraft}
+      lastContact={lastContact}
+    />
+  );
+}
+
+function BookingFormFields({
+  locale,
+  course,
+  dates,
+  initialDateId,
+  defaults,
+  sessionDraft,
+  lastContact,
+}: BookingFormProps & {
+  sessionDraft: BookingSessionDraft | null;
+  lastContact: BookingContactPrefill | null;
 }) {
   const t = useTranslations("BookingForm");
   const [state, formAction, pending] = useActionState(
@@ -63,6 +97,12 @@ export function BookingForm({
   const [selectedDateId, setSelectedDateId] = useState(() => {
     if (schedulePending) {
       return pendingDateId;
+    }
+    if (
+      sessionDraft?.courseDateId &&
+      dates.some((date) => date.id === sessionDraft.courseDateId)
+    ) {
+      return sessionDraft.courseDateId;
     }
     if (initialDateId && dates.some((date) => date.id === initialDateId)) {
       return initialDateId;
@@ -118,10 +158,60 @@ export function BookingForm({
     setClientErrors(null);
   }
 
+  function persistDraft(form: HTMLFormElement) {
+    writeBookingFormDraft(
+      course.id,
+      bookingSessionDraftFromFormData(new FormData(form)),
+    );
+  }
+
+  const firstName = pickFilled(
+    draft?.firstName,
+    sessionDraft?.firstName,
+    defaults?.firstName,
+    lastContact?.firstName,
+  );
+  const lastName = pickFilled(
+    draft?.lastName,
+    sessionDraft?.lastName,
+    defaults?.lastName,
+    lastContact?.lastName,
+  );
+  const dateOfBirth = pickFilled(
+    draft?.dateOfBirth,
+    sessionDraft?.dateOfBirth,
+    defaults?.dateOfBirth,
+    lastContact?.dateOfBirth,
+  );
+  const email = pickFilled(draft?.email, sessionDraft?.email, defaults?.email, lastContact?.email);
+  const phone = pickFilled(draft?.phone, sessionDraft?.phone, defaults?.phone, lastContact?.phone);
+  const street = pickFilled(
+    draft?.street,
+    sessionDraft?.street,
+    defaults?.street,
+    lastContact?.street,
+  );
+  const postalCode = pickFilled(
+    draft?.postalCode,
+    sessionDraft?.postalCode,
+    defaults?.postalCode,
+    lastContact?.postalCode,
+  );
+  const city = pickFilled(draft?.city, sessionDraft?.city, defaults?.city, lastContact?.city);
+  const country =
+    pickFilled(
+      draft?.country,
+      sessionDraft?.country,
+      defaults?.country,
+      lastContact?.country,
+    ) ?? t("countryDefault");
+
   return (
     <form
       action={formAction}
       onSubmit={handleSubmit}
+      onInput={(event) => persistDraft(event.currentTarget)}
+      onChange={(event) => persistDraft(event.currentTarget)}
       aria-busy={pending}
       noValidate
       className="grid gap-10 lg:grid-cols-12 lg:gap-16"
@@ -175,7 +265,13 @@ export function BookingForm({
                       name="courseDateId"
                       value={date.id}
                       checked={isSelected}
-                      onChange={() => setSelectedDateId(date.id)}
+                      onChange={(event) => {
+                        setSelectedDateId(date.id);
+                        const form = event.currentTarget.form;
+                        if (form) {
+                          persistDraft(form);
+                        }
+                      }}
                       className="sr-only"
                     />
                     <span className="flex items-start justify-between gap-3">
@@ -213,14 +309,14 @@ export function BookingForm({
             autoComplete="given-name"
             label={t("firstName")}
             error={errors?.firstName}
-            defaultValue={draft?.firstName ?? defaults?.firstName}
+            defaultValue={firstName}
           />
           <Field
             name="lastName"
             autoComplete="family-name"
             label={t("lastName")}
             error={errors?.lastName}
-            defaultValue={draft?.lastName ?? defaults?.lastName}
+            defaultValue={lastName}
           />
           <DateField
             id="dateOfBirth"
@@ -230,7 +326,7 @@ export function BookingForm({
             required
             min={birthBounds.min}
             max={birthBounds.max}
-            defaultValue={draft?.dateOfBirth}
+            defaultValue={dateOfBirth}
             initialView={birthView}
             fieldClassName="sm:col-span-2"
           />
@@ -241,7 +337,7 @@ export function BookingForm({
             autoComplete="email"
             label={t("email")}
             error={errors?.email}
-            defaultValue={draft?.email ?? defaults?.email}
+            defaultValue={email}
           />
           <Field
             name="phone"
@@ -250,14 +346,14 @@ export function BookingForm({
             autoComplete="tel"
             label={t("phone")}
             error={errors?.phone}
-            defaultValue={draft?.phone ?? defaults?.phone}
+            defaultValue={phone}
           />
           <Field
             name="street"
             autoComplete="street-address"
             label={t("street")}
             error={errors?.street}
-            defaultValue={draft?.street ?? defaults?.street}
+            defaultValue={street}
             className="sm:col-span-2"
           />
           <Field
@@ -265,21 +361,21 @@ export function BookingForm({
             autoComplete="postal-code"
             label={t("postalCode")}
             error={errors?.postalCode}
-            defaultValue={draft?.postalCode ?? defaults?.postalCode}
+            defaultValue={postalCode}
           />
           <Field
             name="city"
             autoComplete="address-level2"
             label={t("city")}
             error={errors?.city}
-            defaultValue={draft?.city ?? defaults?.city}
+            defaultValue={city}
           />
           <Field
             name="country"
             autoComplete="country-name"
             label={t("country")}
             error={errors?.country}
-            defaultValue={draft?.country ?? defaults?.country ?? t("countryDefault")}
+            defaultValue={country}
             className="sm:col-span-2"
           />
         </div>
@@ -291,26 +387,27 @@ export function BookingForm({
               type="checkbox"
               name="privacyAccepted"
               required
+              defaultChecked={sessionDraft?.privacyAccepted}
               aria-invalid={errors?.privacyAccepted ? true : undefined}
               className="mt-0.5 h-5 w-5 shrink-0"
             />
             <span className="text-ink-muted">
               {t.rich("privacy", {
                 privacy: (chunks) => (
-                  <Link
+                  <LegalDocLink
                     href="/legal/privacy"
                     className="text-ink underline underline-offset-2"
                   >
                     {chunks}
-                  </Link>
+                  </LegalDocLink>
                 ),
                 terms: (chunks) => (
-                  <Link
+                  <LegalDocLink
                     href="/legal/terms"
                     className="text-ink underline underline-offset-2"
                   >
                     {chunks}
-                  </Link>
+                  </LegalDocLink>
                 ),
               })}
             </span>

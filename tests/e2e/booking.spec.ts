@@ -38,9 +38,8 @@ test("Café Supervision registers a visio evening without Stripe", async ({
   await page.getByRole("textbox", {name: "Prénom", exact: true}).fill("Léa");
   await page.getByRole("textbox", {name: "Nom", exact: true}).fill("Supervision");
   await chooseDateOfBirth(page);
-  await page
-    .getByRole("textbox", {name: "E-mail"})
-    .fill(`lea.supervision.${Date.now()}@example.com`);
+  const email = `lea.supervision.${Date.now()}@example.com`;
+  await page.getByRole("textbox", {name: "E-mail"}).fill(email);
   await page.getByLabel("Téléphone").fill("+41 79 451 44 92");
   await page.getByLabel("Adresse").fill("Chemin de la Fenetta 42");
   await page.getByLabel("Code postal").fill("1752");
@@ -54,6 +53,17 @@ test("Café Supervision registers a visio evening without Stripe", async ({
   await expect(page.getByText("Café Supervision").first()).toBeVisible();
   await expect(page.getByText("Visioconférence")).toBeVisible();
   await expect(page.getByText("Gratuit")).toBeVisible();
+
+  await page.goto("/fr/formations/praticien-hypnose-omni/inscription");
+  await expect(page.getByRole("textbox", {name: "Prénom", exact: true})).toHaveValue("Léa");
+  await expect(page.getByRole("textbox", {name: "Nom", exact: true})).toHaveValue("Supervision");
+  await expect(page.locator('input[name="dateOfBirth"]')).toHaveValue("1990-05-15");
+  await expect(page.getByRole("textbox", {name: "E-mail"})).toHaveValue(email);
+  await expect(page.getByLabel("Téléphone")).toHaveValue("+41 79 451 44 92");
+  await expect(page.getByLabel("Adresse")).toHaveValue("Chemin de la Fenetta 42");
+  await expect(page.getByLabel("Code postal")).toHaveValue("1752");
+  await expect(page.getByLabel("Ville")).toHaveValue("Villars-sur-Glâne");
+  await expect(page.getByRole("checkbox")).not.toBeChecked();
 });
 
 test("a dated course shows exact sessions and a date picker on booking", async ({page}) => {
@@ -208,6 +218,80 @@ test("an undated course collects a waiting-list request instead of payment", asy
   await page.getByRole("checkbox").check();
   await page.getByRole("button", {name: "Prévenez-moi dès que les nouvelles dates sont publiées."}).click();
   await expect(page.getByRole("status")).toContainText("liste d’attente");
+});
+
+test("booking form keeps entered details after a same-tab legal visit", async ({
+  page,
+}) => {
+  await page.goto("/fr/formations/praticien-hypnose-omni/inscription");
+
+  const privacy = page.getByRole("link", {
+    name: "déclaration de protection des données",
+  });
+  const terms = page.getByRole("link", {
+    name: "conditions générales d’inscription",
+  });
+  await expect(privacy).toHaveAttribute("target", "_blank");
+  await expect(privacy).toHaveAttribute("rel", /noopener/);
+  await expect(terms).toHaveAttribute("target", "_blank");
+  await expect(terms).toHaveAttribute("rel", /noopener/);
+
+  const dateCards = page.locator("label").filter({has: page.getByRole("radio")});
+  await dateCards.nth(1).click();
+  await page.getByRole("textbox", {name: "Prénom", exact: true}).fill("Ada");
+  await page.getByRole("textbox", {name: "Nom", exact: true}).fill("Lovelace");
+  await chooseDateOfBirth(page);
+  await page.getByRole("textbox", {name: "E-mail"}).fill("ada.persist@example.com");
+  await page.getByLabel("Téléphone").fill("+41 79 451 44 92");
+  await page.getByLabel("Adresse").fill("Chemin de la Fenetta 42");
+  await page.getByLabel("Code postal").fill("1752");
+  await page.getByLabel("Ville").fill("Villars-sur-Glâne");
+  await page.getByRole("checkbox").check();
+
+  await page.goto("/fr/mentions-legales/conditions");
+  await expect(page.getByRole("heading", {level: 1})).toBeVisible();
+  await page.goto("/fr/formations/praticien-hypnose-omni/inscription");
+
+  await expect(page.getByRole("textbox", {name: "Prénom", exact: true})).toHaveValue("Ada");
+  await expect(page.getByRole("textbox", {name: "Nom", exact: true})).toHaveValue("Lovelace");
+  await expect(page.locator('input[name="dateOfBirth"]')).toHaveValue("1990-05-15");
+  await expect(page.getByRole("textbox", {name: "E-mail"})).toHaveValue(
+    "ada.persist@example.com",
+  );
+  await expect(page.getByLabel("Téléphone")).toHaveValue("+41 79 451 44 92");
+  await expect(page.getByLabel("Adresse")).toHaveValue("Chemin de la Fenetta 42");
+  await expect(page.getByLabel("Code postal")).toHaveValue("1752");
+  await expect(page.getByLabel("Ville")).toHaveValue("Villars-sur-Glâne");
+  await expect(page.getByRole("checkbox")).toBeChecked();
+  await expect(dateCards.nth(1).getByRole("radio")).toBeChecked();
+});
+
+test("waitlist form keeps entered details after a same-tab privacy visit", async ({
+  page,
+}) => {
+  await page.goto("/fr/formations/maitre-praticien-hypnose-elmanienne/inscription");
+
+  const privacy = page.getByRole("link", {
+    name: "déclaration de protection des données",
+  });
+  await expect(privacy).toHaveAttribute("target", "_blank");
+
+  await page.getByRole("textbox", {name: "Prénom", exact: true}).fill("Ada");
+  await page.getByRole("textbox", {name: "Nom", exact: true}).fill("Lovelace");
+  await page
+    .getByRole("textbox", {name: "E-mail", exact: true})
+    .fill("ada.waitlist@example.com");
+  await page.getByRole("checkbox").check();
+
+  await page.goto("/fr/mentions-legales/confidentialite");
+  await page.goto("/fr/formations/maitre-praticien-hypnose-elmanienne/inscription");
+
+  await expect(page.getByRole("textbox", {name: "Prénom", exact: true})).toHaveValue("Ada");
+  await expect(page.getByRole("textbox", {name: "Nom", exact: true})).toHaveValue("Lovelace");
+  await expect(page.getByRole("textbox", {name: "E-mail", exact: true})).toHaveValue(
+    "ada.waitlist@example.com",
+  );
+  await expect(page.getByRole("checkbox")).toBeChecked();
 });
 
 test("empty checkout actions list the missing required fields", async ({page}) => {

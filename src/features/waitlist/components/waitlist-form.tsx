@@ -1,23 +1,32 @@
 "use client";
 
-import {useActionState} from "react";
+import {useActionState, useEffect, type FormEvent} from "react";
 import {useTranslations} from "next-intl";
 
 import {createWaitlistAction} from "@/features/waitlist/actions";
+import {
+  clearWaitlistFormDraft,
+  readWaitlistFormDraft,
+  waitlistSessionDraftFromFormData,
+  writeWaitlistFormDraft,
+  type WaitlistSessionDraft,
+} from "@/features/waitlist/form-draft";
+import {
+  hasBookingContactPrefill,
+  pickFilled,
+  readLastBookingContact,
+  writeLastBookingContact,
+  type BookingContactPrefill,
+} from "@/features/bookings/form-draft";
 import type {Course} from "@/features/courses/types";
-import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {Button} from "@/shared/ui/button";
 import {fieldLabelClass, fieldStyles} from "@/shared/ui/field";
 import {SpinnerIcon} from "@/shared/ui/icons";
+import {LegalDocLink} from "@/shared/ui/legal-doc-link";
+import {useHydrated} from "@/shared/use-hydrated";
 
-export function WaitlistForm({
-  locale,
-  course,
-  courseSessionId,
-  submitLabel,
-  defaults,
-}: {
+type WaitlistFormProps = {
   locale: AppLocale;
   course: Course;
   courseSessionId?: string;
@@ -28,12 +37,46 @@ export function WaitlistForm({
     email?: string;
     phone?: string;
   };
+};
+
+export function WaitlistForm(props: WaitlistFormProps) {
+  const hydrated = useHydrated();
+  const sessionDraft = hydrated ? readWaitlistFormDraft(props.course.id) : null;
+  const lastContact = hydrated ? readLastBookingContact() : null;
+
+  return (
+    <WaitlistFormFields
+      key={sessionDraft || hasBookingContactPrefill(lastContact) ? "restored" : "live"}
+      {...props}
+      sessionDraft={sessionDraft}
+      lastContact={lastContact}
+    />
+  );
+}
+
+function WaitlistFormFields({
+  locale,
+  course,
+  courseSessionId,
+  submitLabel,
+  defaults,
+  sessionDraft,
+  lastContact,
+}: WaitlistFormProps & {
+  sessionDraft: WaitlistSessionDraft | null;
+  lastContact: BookingContactPrefill | null;
 }) {
   const t = useTranslations("WaitlistForm");
   const [state, formAction, pending] = useActionState(
     createWaitlistAction.bind(null, locale, course.id),
     null,
   );
+
+  useEffect(() => {
+    if (state?.ok || state?.alreadyListed) {
+      clearWaitlistFormDraft(course.id);
+    }
+  }, [course.id, state?.alreadyListed, state?.ok]);
 
   if (state?.ok) {
     return (
@@ -60,8 +103,21 @@ export function WaitlistForm({
   const errors = state?.errors;
   const draft = state?.draft;
 
+  function persistDraft(form: HTMLFormElement) {
+    const next = waitlistSessionDraftFromFormData(new FormData(form));
+    writeWaitlistFormDraft(course.id, next);
+    writeLastBookingContact(next);
+  }
+
   return (
-    <form action={formAction} noValidate className="max-w-xl space-y-5" aria-busy={pending}>
+    <form
+      action={formAction}
+      noValidate
+      className="max-w-xl space-y-5"
+      aria-busy={pending}
+      onInput={(event: FormEvent<HTMLFormElement>) => persistDraft(event.currentTarget)}
+      onChange={(event: FormEvent<HTMLFormElement>) => persistDraft(event.currentTarget)}
+    >
       {errors?.form ? (
         <p role="alert" className="border border-bronze/45 px-4 py-3 text-sm text-bronze">
           {errors.form}
@@ -77,14 +133,24 @@ export function WaitlistForm({
           name="firstName"
           label={t("firstName")}
           error={errors?.firstName}
-          defaultValue={draft?.firstName ?? defaults?.firstName}
+          defaultValue={pickFilled(
+            draft?.firstName,
+            sessionDraft?.firstName,
+            defaults?.firstName,
+            lastContact?.firstName,
+          )}
           autoComplete="given-name"
         />
         <Field
           name="lastName"
           label={t("lastName")}
           error={errors?.lastName}
-          defaultValue={draft?.lastName ?? defaults?.lastName}
+          defaultValue={pickFilled(
+            draft?.lastName,
+            sessionDraft?.lastName,
+            defaults?.lastName,
+            lastContact?.lastName,
+          )}
           autoComplete="family-name"
         />
         <Field
@@ -93,7 +159,12 @@ export function WaitlistForm({
           inputMode="email"
           label={t("email")}
           error={errors?.email}
-          defaultValue={draft?.email ?? defaults?.email}
+          defaultValue={pickFilled(
+            draft?.email,
+            sessionDraft?.email,
+            defaults?.email,
+            lastContact?.email,
+          )}
           autoComplete="email"
         />
         <Field
@@ -102,7 +173,12 @@ export function WaitlistForm({
           inputMode="tel"
           label={t("phone")}
           error={errors?.phone}
-          defaultValue={draft?.phone ?? defaults?.phone}
+          defaultValue={pickFilled(
+            draft?.phone,
+            sessionDraft?.phone,
+            defaults?.phone,
+            lastContact?.phone,
+          )}
           autoComplete="tel"
           required={false}
         />
@@ -118,19 +194,20 @@ export function WaitlistForm({
           type="checkbox"
           name="privacyAccepted"
           required
+          defaultChecked={sessionDraft?.privacyAccepted}
           className="mt-1 h-4 w-4 rounded-panel border-ink"
         />
         <span>
           {t.rich("privacy", {
             privacy: (chunks) => (
-              <Link href="/legal/privacy" className="underline underline-offset-4">
+              <LegalDocLink href="/legal/privacy" className="underline underline-offset-4">
                 {chunks}
-              </Link>
+              </LegalDocLink>
             ),
             terms: (chunks) => (
-              <Link href="/legal/terms" className="underline underline-offset-4">
+              <LegalDocLink href="/legal/terms" className="underline underline-offset-4">
                 {chunks}
-              </Link>
+              </LegalDocLink>
             ),
           })}
         </span>

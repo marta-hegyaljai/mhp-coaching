@@ -1,7 +1,8 @@
 import type {User} from "@/db/schema";
 import {normalizeEmail} from "@/features/auth/email";
 import {findUserById, findUserByNormalizedEmail, updateUser} from "@/features/auth/repository";
-import {findLatestBookingForEmail} from "@/features/bookings/repository";
+import {findLatestBookingForPerson} from "@/features/bookings/repository";
+import {pickFilled} from "@/shared/pick-filled";
 
 export type UserContact = {
   phone: string | null;
@@ -19,7 +20,20 @@ export type CheckoutContact = {
   country: string;
 };
 
+export type CheckoutDefaults = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  dateOfBirth?: string;
+  phone?: string;
+  street?: string;
+  postalCode?: string;
+  city?: string;
+  country?: string;
+};
+
 const PHONE_PATTERN = /^[0-9+().\s-]+$/;
+
 
 export function emptyToNull(value: string | null | undefined): string | null {
   if (typeof value !== "string") {
@@ -32,16 +46,7 @@ export function emptyToNull(value: string | null | undefined): string | null {
 export function checkoutDefaultsFromUser(user: Pick<
   User,
   "firstName" | "lastName" | "email" | "phone" | "street" | "postalCode" | "city" | "country"
->): {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone?: string;
-  street?: string;
-  postalCode?: string;
-  city?: string;
-  country?: string;
-} {
+>): CheckoutDefaults {
   const contact = contactFromUser(user);
   return {
     firstName: user.firstName,
@@ -53,6 +58,82 @@ export function checkoutDefaultsFromUser(user: Pick<
     ...(contact.city ? {city: contact.city} : {}),
     ...(contact.country ? {country: contact.country} : {}),
   };
+}
+
+export function checkoutDefaultsFromBooking(booking: {
+  firstName: string;
+  lastName: string;
+  email: string;
+  dateOfBirth?: string | null;
+  phone: string;
+  street: string;
+  postalCode: string;
+  city: string;
+  country: string;
+}): CheckoutDefaults {
+  return {
+    firstName: booking.firstName,
+    lastName: booking.lastName,
+    email: booking.email,
+    ...(emptyToNull(booking.dateOfBirth) ? {dateOfBirth: booking.dateOfBirth ?? undefined} : {}),
+    ...(emptyToNull(booking.phone) ? {phone: booking.phone} : {}),
+    ...(emptyToNull(booking.street) ? {street: booking.street} : {}),
+    ...(emptyToNull(booking.city) ? {city: booking.city} : {}),
+    ...(emptyToNull(booking.postalCode) ? {postalCode: booking.postalCode} : {}),
+    ...(emptyToNull(booking.country) ? {country: booking.country} : {}),
+  };
+}
+
+export function mergeCheckoutDefaults(
+  ...sources: Array<CheckoutDefaults | undefined>
+): CheckoutDefaults | undefined {
+  const defined = sources.filter((source): source is CheckoutDefaults => Boolean(source));
+  if (defined.length === 0) {
+    return undefined;
+  }
+
+  function fromSources(read: (source: CheckoutDefaults) => string | undefined) {
+    return pickFilled(...defined.map(read));
+  }
+
+  return {
+    firstName: fromSources((source) => source.firstName) ?? "",
+    lastName: fromSources((source) => source.lastName) ?? "",
+    email: fromSources((source) => source.email) ?? "",
+    ...(fromSources((source) => source.dateOfBirth)
+      ? {dateOfBirth: fromSources((source) => source.dateOfBirth)}
+      : {}),
+    ...(fromSources((source) => source.phone) ? {phone: fromSources((source) => source.phone)} : {}),
+    ...(fromSources((source) => source.street)
+      ? {street: fromSources((source) => source.street)}
+      : {}),
+    ...(fromSources((source) => source.postalCode)
+      ? {postalCode: fromSources((source) => source.postalCode)}
+      : {}),
+    ...(fromSources((source) => source.city) ? {city: fromSources((source) => source.city)} : {}),
+    ...(fromSources((source) => source.country)
+      ? {country: fromSources((source) => source.country)}
+      : {}),
+  };
+}
+
+export async function resolveCheckoutDefaults(
+  user: User | null,
+): Promise<CheckoutDefaults | undefined> {
+  if (!user) {
+    return undefined;
+  }
+
+  const hydrated = await hydrateUserContactFromBookings(user);
+  const booking = await findLatestBookingForPerson({
+    emailNormalized: hydrated.emailNormalized,
+    userId: hydrated.id,
+  });
+
+  return mergeCheckoutDefaults(
+    checkoutDefaultsFromUser(hydrated),
+    booking ? checkoutDefaultsFromBooking(booking) : undefined,
+  );
 }
 
 export function contactFromUser(user: Pick<User, keyof UserContact>): UserContact {
@@ -187,7 +268,10 @@ export async function hydrateUserContactFromBookings(user: User): Promise<User> 
     return user;
   }
 
-  const booking = await findLatestBookingForEmail(user.emailNormalized);
+  const booking = await findLatestBookingForPerson({
+    emailNormalized: user.emailNormalized,
+    userId: user.id,
+  });
   if (!booking) {
     return user;
   }

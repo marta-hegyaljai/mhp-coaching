@@ -4,9 +4,9 @@ import {useActionState} from "react";
 import {useTranslations} from "next-intl";
 
 import {createCourseInquiryAction} from "@/features/course-calls/actions";
-import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {InputField, TextareaField} from "@/shared/ui/field";
+import {LegalDocLink} from "@/shared/ui/legal-doc-link";
 import {SubmitButton} from "@/shared/ui/submit-button";
 
 export function InquiryComposer({
@@ -112,9 +112,9 @@ export function InquiryComposer({
         <span>
           {t.rich("privacy", {
             privacy: (chunks) => (
-              <Link href="/legal/privacy" className="underline underline-offset-4">
+              <LegalDocLink href="/legal/privacy" className="underline underline-offset-4">
                 {chunks}
-              </Link>
+              </LegalDocLink>
             ),
           })}
         </span>
