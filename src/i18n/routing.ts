@@ -142,6 +142,7 @@ export const routing = defineRouting({
       en: "/invite/[token]",
     },
     "/admin": "/admin",
+    "/admin/overview": "/admin/overview",
     "/admin/users": "/admin/users",
     "/admin/users/[id]": "/admin/users/[id]",
     "/admin/rooms": "/admin/rooms",

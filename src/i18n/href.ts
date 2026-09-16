@@ -38,6 +38,10 @@ export type PathnameHref =
       query?: {next?: string; verify?: string};
     }
   | {
+      pathname: "/admin/overview";
+      query?: {when?: string; kind?: string; q?: string; page?: string};
+    }
+  | {
       pathname: "/admin/courses";
       query?: {q?: string; category?: string; published?: string; upcoming?: string};
     }
@@ -53,6 +57,8 @@ export type PathnameHref =
   | {
       pathname: "/admin/calls/messages/[id]";
       params: {id: string};
+      /** `contact` reads the contact/payment-help table instead of course questions. */
+      query?: {channel?: string};
     }
   | {
       pathname: "/admin/courses/[id]";

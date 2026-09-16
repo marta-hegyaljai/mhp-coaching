@@ -33,13 +33,41 @@ export async function listWaitlistForCourse(courseId: string): Promise<WaitlistE
     .orderBy(desc(waitlistEntries.createdAt));
 }
 
-export async function markWaitlistNotified(
-  id: string,
-): Promise<WaitlistEntry | undefined> {
+/**
+ * Returns the removed row so the caller can audit exactly what was deleted.
+ * The course is part of the predicate, so a mismatched request deletes nothing.
+ */
+export async function deleteWaitlistEntry(input: {
+  id: string;
+  courseId: string;
+}): Promise<WaitlistEntry | undefined> {
+  const [entry] = await getDb()
+    .delete(waitlistEntries)
+    .where(
+      and(
+        eq(waitlistEntries.id, input.id),
+        eq(waitlistEntries.courseId, input.courseId),
+      ),
+    )
+    .returning();
+
+  return entry;
+}
+
+export async function markWaitlistNotified(input: {
+  id: string;
+  courseId: string;
+}): Promise<WaitlistEntry | undefined> {
   const [entry] = await getDb()
     .update(waitlistEntries)
     .set({notifiedAt: new Date()})
-    .where(and(eq(waitlistEntries.id, id), sql`${waitlistEntries.notifiedAt} is null`))
+    .where(
+      and(
+        eq(waitlistEntries.id, input.id),
+        eq(waitlistEntries.courseId, input.courseId),
+        sql`${waitlistEntries.notifiedAt} is null`,
+      ),
+    )
     .returning();
 
   return entry;

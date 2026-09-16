@@ -88,6 +88,18 @@ pratique (CHF 300, 1 day, capacity 12). The course ships without sessions so
 staff can add dates in admin; the public page stays on dates-coming-soon /
 notify-me until then. This is course-domain work, not a new checkpoint.
 
+Extra-roadmap (2026-09-16): `/admin/overview` is the staff control panel and
+the new `/admin` landing page. It merges six existing record types — course
+registrations, room reservations, advice calls, messages (course enquiries and
+contact form), waiting lists and audit changes — into one Today / Upcoming /
+History timeline with per-channel counts that double as filters, one search
+across names, emails, courses and rooms, and page-2+ paging capped at the depth
+the channels are read to. Every window orders on the date shown in the row, so
+History reads backwards from now. Waiting-list contacts can be marked notified
+or removed in place, removal behind a second click and recorded as
+`WAITLIST_ENTRY_REMOVED`. This is a read-and-act surface over existing data: no
+new domain, no schema change beyond the audit action. Not a new checkpoint.
+
 
 ## Status vocabulary
 

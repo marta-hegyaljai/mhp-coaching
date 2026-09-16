@@ -2,6 +2,7 @@ import type {PathnameHref} from "@/i18n/href";
 import {Link} from "@/i18n/navigation";
 
 export type AdminSection =
+  | "overview"
   | "users"
   | "courses"
   | "calls"
@@ -12,6 +13,7 @@ export type AdminSection =
   | "settings";
 
 const hrefs: Record<AdminSection, PathnameHref> = {
+  overview: "/admin/overview",
   users: "/admin/users",
   courses: "/admin/courses",
   calls: "/admin/calls",
@@ -22,7 +24,9 @@ const hrefs: Record<AdminSection, PathnameHref> = {
   settings: "/admin/settings",
 };
 
+// The control panel leads: it is where an admin starts the day.
 const order: AdminSection[] = [
+  "overview",
   "users",
   "courses",
   "calls",
@@ -40,6 +44,7 @@ export function adminSectionLabels(admin: {
   (
     key:
       | "title"
+      | "overviewNav"
       | "coursesNav"
       | "callsNav"
       | "bookingsNav"
@@ -50,6 +55,7 @@ export function adminSectionLabels(admin: {
   ): string;
 }): Record<AdminSection, string> {
   return {
+    overview: admin("overviewNav"),
     users: admin("title"),
     courses: admin("coursesNav"),
     calls: admin("callsNav"),

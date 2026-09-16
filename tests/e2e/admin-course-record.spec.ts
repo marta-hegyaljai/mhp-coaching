@@ -1,22 +1,14 @@
-import {expect, type Page, test} from "@playwright/test";
+import {expect, test} from "@playwright/test";
 
-const adminEmail = process.env.E2E_ADMIN_EMAIL ?? "qa.admin@example.test";
-const adminPassword = process.env.E2E_ADMIN_PASSWORD ?? "qa-password-12";
+import {replaySession} from "./helpers/session";
+
 const phone = {width: 390, height: 844};
 
-async function signIn(page: Page) {
-  await page.goto("/en/sign-in");
-  await page.getByLabel("Email").fill(adminEmail);
-  await page.getByLabel("Password", {exact: true}).fill(adminPassword);
-  await page.getByRole("button", {name: /sign in/i}).click();
-  await page.waitForURL(/\/en\/(courses|account|rooms|admin)/);
-}
+replaySession("admin");
 
 test("the course record has a visible way back to the catalogue list", async ({
   page,
 }) => {
-  await signIn(page);
-
   await page.goto("/fr/admin/courses/advanced-techniques");
   const back = page.getByRole("link", {name: "Retour aux formations"});
   await expect(back).toBeVisible();
@@ -41,8 +33,7 @@ test("the course record has a visible way back to the catalogue list", async ({
 });
 
 test("staff can set course availability without a developer", async ({page}) => {
-  await signIn(page);
-  await page.goto("/en/admin/courses/advanced-techniques");
+  await page.goto("/en/admin/courses/advanced-techniques?tab=details");
 
   const availability = page.getByLabel("Availability");
   await expect(availability).toBeVisible();
@@ -57,8 +48,7 @@ test("staff can set course availability without a developer", async ({page}) => 
 });
 
 test("session dates open the product calendar, not the native picker", async ({page}) => {
-  await signIn(page);
-  await page.goto("/de/admin/courses/advanced-techniques");
+  await page.goto("/de/admin/courses/advanced-techniques?tab=sessions");
   await page.getByRole("button", {name: "Termin hinzufügen"}).click();
 
   const start = page.getByRole("button", {name: "Startdatum"});
@@ -75,16 +65,16 @@ test("session dates open the product calendar, not the native picker", async ({p
 });
 
 test("an empty session can be deleted after a second confirmation", async ({page}) => {
-  await signIn(page);
-  await page.goto("/en/admin/courses/stripe-payment-test");
+  await page.goto("/en/admin/courses/stripe-payment-test?tab=sessions");
   await page.getByRole("button", {name: "Add a session"}).click();
 
   const start = page.getByRole("button", {name: "Start date"});
   await start.click();
   const calendar = page.getByRole("dialog", {name: "Calendar"});
-  await calendar.getByLabel("Year").selectOption("2031");
-  await calendar.getByLabel("Month").selectOption("7");
-  await calendar.getByRole("button", {name: /^27$/}).click();
+  await calendar.getByLabel("Year", {exact: true}).selectOption("2031");
+  await calendar.getByLabel("Month", {exact: true}).selectOption("7");
+  // Days are announced in full, so match the date rather than the digits.
+  await calendar.getByRole("button", {name: /27 August 2031/}).click();
   await expect(calendar).toHaveCount(0);
 
   await page.getByRole("button", {name: "Create session"}).click();

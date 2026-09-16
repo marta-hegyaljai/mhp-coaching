@@ -10,6 +10,7 @@
 /coverage/
 /playwright-report/
 /test-results/
+/playwright/.auth/
 
 # Local environment files (the documented template is committed)
 .env

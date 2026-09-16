@@ -1,5 +1,7 @@
 import {expect, type Page, test} from "@playwright/test";
 
+import {replaySession} from "./helpers/session";
+
 /**
  * Reviews the polished room-booking surfaces the way a therapist meets them:
  * phone width first, in every locale, asserting the rules DESIGN.md makes
@@ -18,14 +20,6 @@ const artifacts = process.env.E2E_ARTIFACTS_DIR;
 /** A printed ISO instant must never reach the UI. */
 const isoDate = /\d{4}-\d{2}-\d{2}(?:T|\s\d{2}:\d{2}:\d{2}\+)/;
 const untranslated = /MISSING_MESSAGE|Rooms\.[a-z]|Admin\.[a-z]/;
-
-async function signIn(page: Page) {
-  await page.goto("/en/sign-in");
-  await page.getByLabel("Email").fill(email ?? "");
-  await page.getByLabel("Password", {exact: true}).fill(password ?? "");
-  await page.getByRole("button", {name: /sign in/i}).click();
-  await page.waitForURL(/\/en\/(courses|account|rooms|admin)/);
-}
 
 /** The suite reads ids from the UI so it never pins a seeded fixture. */
 async function firstBookingId(page: Page, listPath: string): Promise<string> {
@@ -63,23 +57,18 @@ async function capture(page: Page, name: string, fullPage = false) {
 }
 
 test.describe("polished room booking surfaces", () => {
-  // One sign-in for the suite: repeated attempts trip the auth rate limiter.
+  // The ids are read once and shared, so the tests run in order.
   test.describe.configure({mode: "serial"});
   test.skip(!email || !password, "set E2E_ROOM_EMAIL and E2E_ROOM_PASSWORD");
+  replaySession("therapist");
 
-  let cookies: string | undefined;
   let bookingId = "";
-  let adminBookingId = "";
 
-  test.beforeEach(async ({page, context}) => {
-    if (cookies) {
-      await context.addCookies(JSON.parse(cookies));
+  test.beforeEach(async ({page}) => {
+    if (bookingId) {
       return;
     }
-    await signIn(page);
-    cookies = JSON.stringify(await context.cookies());
     bookingId = await firstBookingId(page, "/en/rooms/bookings");
-    adminBookingId = await firstBookingId(page, "/en/admin/bookings");
   });
 
   test("German phone screens stay in German, in bounds and free of ISO dates", async ({page}) => {
@@ -91,7 +80,6 @@ test.describe("polished room booking surfaces", () => {
       [`/de/raeume/buchungen/${bookingId}`, "de-booking-detail"],
       [`/de/raeume/buchungen/${bookingId}/aendern`, "de-booking-change"],
       [`/de/raeume/buchungen/${bookingId}/stornieren`, "de-booking-cancel"],
-      ["/de/admin/bookings", "de-admin-bookings"],
     ];
 
     for (const [path, name] of pages) {
@@ -131,21 +119,32 @@ test.describe("polished room booking surfaces", () => {
     await page.setViewportSize(phone);
     await page.goto(`/en/rooms/bookings/${bookingId}/change`);
 
-    const showDay = async (date: string) => {
-      await page.getByLabel("Date").fill(date);
+    // The date is the product calendar, never a native picker. The calendar
+    // opens on the booking's own month, so the day is chosen by weekday.
+    const showWeekday = async (weekday: string) => {
+      await page.getByRole("button", {name: "Date"}).click();
+      const day = page
+        .getByRole("dialog", {name: "Calendar"})
+        .locator(`button:not([disabled])[aria-label^="${weekday}, "]`)
+        .first();
+      const label = (await day.getAttribute("aria-label")) ?? "";
+      await day.click();
       await page.getByRole("button", {name: "Show times"}).click();
-      await page.waitForURL(new RegExp(`date=${date}`));
+      await page.waitForURL(/[?&]date=\d{4}-\d{2}-\d{2}/);
+      return label;
     };
 
     // A Sunday sits outside every opening interval, so no slot can be offered.
-    await showDay("2026-09-20");
+    const sunday = await showWeekday("Sunday");
     await expect(page.getByLabel("Start")).toHaveCount(0);
 
     // The navigator survives, so the user can still reach a day that has slots.
     await expect(page.getByRole("button", {name: "Show times"})).toBeVisible();
-    await expect(page.getByLabel("Date")).toHaveValue("2026-09-20");
+    await expect(page.getByRole("button", {name: "Date"})).toContainText(
+      sunday.split(" ")[1],
+    );
 
-    await showDay("2026-09-21");
+    await showWeekday("Monday");
     await expect(page.getByLabel("Start")).toBeVisible();
   });
 
@@ -153,7 +152,7 @@ test.describe("polished room booking surfaces", () => {
     await page.setViewportSize(phone);
     await page.goto(`/en/rooms/bookings/${bookingId}/cancel`);
 
-    const keep = page.getByRole("link", {name: /keep this booking/i});
+    const keep = page.getByRole("button", {name: /keep this booking/i});
     const confirm = page.getByRole("button", {name: /cancel this booking/i});
     await expect(keep).toBeVisible();
     await expect(confirm).toBeVisible();
@@ -166,6 +165,30 @@ test.describe("polished room booking surfaces", () => {
     expect(keepFill).not.toBe(confirmFill);
 
     await capture(page, "E-en-cancel-390x844", true);
+  });
+});
+
+/** Room booking is a therapist capability; the staff views need an admin. */
+test.describe("polished room administration", () => {
+  test.describe.configure({mode: "serial"});
+  replaySession("admin");
+
+  let adminBookingId = "";
+
+  test.beforeEach(async ({page}) => {
+    if (adminBookingId) {
+      return;
+    }
+    adminBookingId = await firstBookingId(page, "/en/admin/bookings");
+  });
+
+  test("the German reservations list fits a phone and reads in German", async ({page}) => {
+    await page.setViewportSize(phone);
+    await page.goto("/de/admin/bookings");
+    await expect(page.locator("main")).toBeVisible();
+    await expectNoOverflow(page, "/de/admin/bookings");
+    await expectCleanCopy(page, "/de/admin/bookings");
+    await capture(page, "E-de-admin-bookings-390x844", true);
   });
 
   test("the admin booking reads correctly in every locale on one header row", async ({page}) => {

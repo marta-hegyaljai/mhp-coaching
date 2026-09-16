@@ -3,9 +3,11 @@ import {notFound} from "next/navigation";
 
 import {AdminSubnav, adminSectionLabels} from "@/features/admin/components/admin-subnav";
 import {requireAdmin} from "@/features/auth/require";
-import {callPersonName} from "@/features/course-calls/format";
 import {adminCallListHref} from "@/features/course-calls/query";
-import {getCourseInquiryById} from "@/features/course-calls/repository";
+import {
+  findAdminMessage,
+  parseAdminMessageChannel,
+} from "@/features/inquiries/admin-message";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
@@ -18,6 +20,7 @@ import {utcToZurich} from "@/features/rooms/timezone";
 
 type AdminInquiryPageProps = {
   params: Promise<{locale: AppLocale; id: string}>;
+  searchParams: Promise<{channel?: string | string[]}>;
 };
 
 export const dynamic = "force-dynamic";
@@ -34,24 +37,31 @@ export async function generateMetadata({params}: AdminInquiryPageProps) {
   });
 }
 
-export default async function AdminInquiryDetailPage({params}: AdminInquiryPageProps) {
+export default async function AdminInquiryDetailPage({
+  params,
+  searchParams,
+}: AdminInquiryPageProps) {
   const {locale, id} = await params;
   setRequestLocale(locale);
+  const channel = parseAdminMessageChannel((await searchParams).channel);
   await requireAdmin(
     locale,
-    localizedPath(locale, {pathname: "/admin/calls/messages/[id]", params: {id}}),
+    localizedPath(locale, {
+      pathname: "/admin/calls/messages/[id]",
+      params: {id},
+      query: channel === "course" ? undefined : {channel},
+    }),
   );
   if (!isUuid(id)) {
     notFound();
   }
-  const inquiry = await getCourseInquiryById(id);
-  if (!inquiry) {
+  const message = await findAdminMessage(id, channel);
+  if (!message) {
     notFound();
   }
 
   const t = await getTranslations("Admin");
-  const name = callPersonName(inquiry.firstName, inquiry.lastName);
-  const received = utcToZurich(inquiry.createdAt);
+  const received = utcToZurich(message.receivedAt);
 
   return (
     <SiteShell locale={locale} footerCta={null}>
@@ -65,9 +75,11 @@ export default async function AdminInquiryDetailPage({params}: AdminInquiryPageP
         <BackLink href={adminCallListHref({tab: "messages"})} className="mt-6">
           {t("callsBack")}
         </BackLink>
-        <h1 className="mt-6 font-serif text-heading">{name}</h1>
+        <h1 className="mt-6 font-serif text-heading">{message.name}</h1>
         <p className="mt-3 text-sm text-ink-muted">
           {formatLongDate(received.date, locale)} · {received.time}
+          <span className="mx-2">·</span>
+          {t(`activityMessageTopics.${message.topic}`)}
         </p>
 
         <Panel className="mt-8 max-w-xl">
@@ -76,27 +88,27 @@ export default async function AdminInquiryDetailPage({params}: AdminInquiryPageP
               <dt className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-ink-subtle">
                 {t("email")}
               </dt>
-              <dd className="mt-1 text-ink">{inquiry.email}</dd>
+              <dd className="mt-1 break-all text-ink">{message.email}</dd>
             </div>
             <div>
               <dt className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-ink-subtle">
                 {t("callPhone")}
               </dt>
-              <dd className="mt-1 text-ink">{inquiry.phone}</dd>
+              <dd className="mt-1 text-ink">{message.phone ?? "—"}</dd>
             </div>
             <div>
               <dt className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-ink-subtle">
                 {t("callCourse")}
               </dt>
               <dd className="mt-1 text-ink">
-                {inquiry.courseTitle ?? t("callGeneral")}
+                {message.courseTitle ?? t("callGeneral")}
               </dd>
             </div>
             <div>
               <dt className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-ink-subtle">
                 {t("callMessage")}
               </dt>
-              <dd className="mt-1 whitespace-pre-wrap text-ink">{inquiry.message}</dd>
+              <dd className="mt-1 whitespace-pre-wrap text-ink">{message.message}</dd>
             </div>
           </dl>
         </Panel>

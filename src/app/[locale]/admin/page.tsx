@@ -9,5 +9,5 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminIndexPage({params}: AdminIndexProps) {
   const {locale} = await params;
-  redirect({href: "/admin/users", locale});
+  redirect({href: "/admin/overview", locale});
 }

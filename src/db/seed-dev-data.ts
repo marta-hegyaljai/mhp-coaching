@@ -4,7 +4,14 @@ import {config} from "dotenv";
 import {and, eq} from "drizzle-orm";
 
 import {closeDb, getDb} from "@/db";
-import {bookings, type User} from "@/db/schema";
+import {
+  bookings,
+  courseCalls,
+  courseInquiries,
+  inquiries,
+  waitlistEntries,
+  type User,
+} from "@/db/schema";
 import {createPendingBooking, markBookingPaidOnce} from "@/features/bookings/repository";
 import {courses as seedCourses} from "@/features/courses/catalog";
 import {upsertSeedCatalogue} from "@/features/courses/repository";
@@ -291,6 +298,170 @@ async function seedCourseBookings(users: User[]) {
   return created;
 }
 
+/**
+ * The admin control panel merges six channels. Without waiting-list, advice-call
+ * and message fixtures, three of them are invisible in local development.
+ */
+async function seedCourseContacts() {
+  const db = getDb();
+  const privacyAcceptedAt = new Date();
+  const course = seedCourses.find((item) => item.id === "omni-practitioner");
+  const sport = seedCourses.find((item) => item.id === "sport-hypnosis");
+  if (!course || !sport) {
+    throw new Error("Expected seeded courses are missing.");
+  }
+
+  const day = 24 * 60 * 60 * 1000;
+  const now = Date.now();
+  let created = 0;
+
+  const waitingList = [
+    {
+      email: "clara.waiting@example.test",
+      firstName: "Clara",
+      lastName: "Attente",
+      locale: "fr",
+      notifiedAt: null,
+    },
+    {
+      email: "tom.waiting@example.test",
+      firstName: "Tom",
+      lastName: "Warte",
+      locale: "de",
+      notifiedAt: new Date(now - 2 * day),
+    },
+  ];
+
+  for (const entry of waitingList) {
+    const [existing] = await db
+      .select({id: waitlistEntries.id})
+      .from(waitlistEntries)
+      .where(
+        and(
+          eq(waitlistEntries.courseId, course.id),
+          eq(waitlistEntries.email, entry.email),
+        ),
+      )
+      .limit(1);
+    if (existing) {
+      continue;
+    }
+
+    await db.insert(waitlistEntries).values({
+      courseId: course.id,
+      courseTitle: course.title.fr,
+      firstName: entry.firstName,
+      lastName: entry.lastName,
+      email: entry.email,
+      phone: "+41 79 000 00 01",
+      locale: entry.locale,
+      privacyAcceptedAt,
+      courseSessionId: null,
+      notifiedAt: entry.notifiedAt,
+    });
+    created += 1;
+  }
+
+  const calls = [
+    {
+      email: "lea.call@example.test",
+      firstName: "Léa",
+      lastName: "Conseil",
+      startsAt: new Date(now + 2 * day),
+      status: "SCHEDULED" as const,
+      courseTitle: course.title.fr as string | null,
+      locale: "fr",
+    },
+    {
+      email: "mark.call@example.test",
+      firstName: "Mark",
+      lastName: "Advice",
+      startsAt: new Date(now - 5 * day),
+      status: "SCHEDULED" as const,
+      courseTitle: null,
+      locale: "en",
+    },
+    {
+      email: "nina.call@example.test",
+      firstName: "Nina",
+      lastName: "Abgesagt",
+      startsAt: new Date(now + 4 * day),
+      status: "CANCELLED" as const,
+      courseTitle: sport.title.de as string | null,
+      locale: "de",
+    },
+  ];
+
+  for (const call of calls) {
+    const [existing] = await db
+      .select({id: courseCalls.id})
+      .from(courseCalls)
+      .where(eq(courseCalls.email, call.email))
+      .limit(1);
+    if (existing) {
+      continue;
+    }
+
+    await db.insert(courseCalls).values({
+      startsAt: call.startsAt,
+      endsAt: new Date(call.startsAt.getTime() + 15 * 60 * 1000),
+      status: call.status,
+      firstName: call.firstName,
+      lastName: call.lastName,
+      email: call.email,
+      phone: "+41 79 000 00 02",
+      locale: call.locale,
+      courseId: call.courseTitle ? course.id : null,
+      courseTitle: call.courseTitle,
+      message: null,
+      privacyAcceptedAt,
+    });
+    created += 1;
+  }
+
+  const [existingQuestion] = await db
+    .select({id: courseInquiries.id})
+    .from(courseInquiries)
+    .where(eq(courseInquiries.email, "paul.question@example.test"))
+    .limit(1);
+  if (!existingQuestion) {
+    await db.insert(courseInquiries).values({
+      firstName: "Paul",
+      lastName: "Question",
+      email: "paul.question@example.test",
+      phone: "+41 79 000 00 03",
+      message:
+        "Bonjour, je souhaite savoir si la formation est reconnue par l'ASCA et si les dates de mars sont confirmées.",
+      locale: "fr",
+      courseId: course.id,
+      courseTitle: course.title.fr,
+      privacyAcceptedAt,
+    });
+    created += 1;
+  }
+
+  const [existingContact] = await db
+    .select({id: inquiries.id})
+    .from(inquiries)
+    .where(eq(inquiries.email, "sara.contact@example.test"))
+    .limit(1);
+  if (!existingContact) {
+    await db.insert(inquiries).values({
+      name: "Sara Contact",
+      email: "sara.contact@example.test",
+      phone: "+41 79 000 00 04",
+      message: "Could I pay the course by bank transfer instead of card?",
+      locale: "en",
+      kind: "payment",
+      courseId: sport.id,
+      courseTitle: sport.title.en,
+    });
+    created += 1;
+  }
+
+  return created;
+}
+
 async function seedRoomBookings(input: {
   admin: User;
   therapists: User[];
@@ -454,6 +625,7 @@ async function seedDevData() {
 
   const allUsers = [...primaryUsers, ...extraUsers];
   const courseBookings = await seedCourseBookings(allUsers);
+  const courseContacts = await seedCourseContacts();
   const rooms = await ensureRoomInfrastructure(admin);
   const roomBookings = await seedRoomBookings({
     admin,
@@ -470,6 +642,7 @@ async function seedDevData() {
   console.log("");
   console.log(`Extra users: ${extraUsers.length}`);
   console.log(`Course bookings: ${courseBookings}`);
+  console.log(`Waiting list, calls and messages: ${courseContacts}`);
   console.log(`Rooms: ${rooms.length}`);
   console.log(`Room bookings: ${roomBookings}`);
 }

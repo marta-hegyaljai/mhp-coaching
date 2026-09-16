@@ -17,6 +17,7 @@ import {
 } from "@/features/courses/components/admin/enrolments";
 import {AdminSessionList} from "@/features/courses/components/admin/sessions/session-list";
 import {todayIsoInZurich} from "@/features/courses/dates";
+import {enrolmentStatusLabels} from "@/features/courses/enrolment-status-labels";
 import {loadCatalogueCourses, loadCourseById} from "@/features/courses/live";
 import {splitCatalogueByFormat} from "@/features/courses/programme";
 import {isCoursePublished, isProgrammeCourse, type Course} from "@/features/courses/types";
@@ -97,14 +98,7 @@ export default async function AdminCourseDetailPage({
       (enrolmentCounts[booking.courseDateId] ?? 0) + 1;
   }
 
-  const statusLabels = {
-    PAID: auth("status.PAID"),
-    PENDING: auth("status.PENDING"),
-    LEAD: auth("status.LEAD"),
-    REFUNDED: auth("status.REFUNDED"),
-    FAILED: t("coursesStatusFailed"),
-    CANCELLED: t("coursesStatusCancelled"),
-  };
+  const statusLabels = enrolmentStatusLabels({auth, admin: t});
 
   return (
     <SiteShell locale={locale} footerCta={null}>
