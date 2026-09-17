@@ -41,10 +41,10 @@ export function StatusLabel({
   className?: string;
 }) {
   return (
-    <p
-      className={`text-[0.7rem] font-bold uppercase tracking-[0.2em] ${statusToneClass[tone]} ${className}`}
+    <span
+      className={`block whitespace-nowrap text-[0.7rem] font-bold uppercase tracking-[0.2em] ${statusToneClass[tone]} ${className}`}
     >
       {children}
-    </p>
+    </span>
   );
 }
