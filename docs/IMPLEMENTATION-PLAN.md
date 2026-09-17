@@ -100,6 +100,12 @@ or removed in place, removal behind a second click and recorded as
 `WAITLIST_ENTRY_REMOVED`. This is a read-and-act surface over existing data: no
 new domain, no schema change beyond the audit action. Not a new checkpoint.
 
+Review pass (2026-09-17): the control panel is now a compact briefing rather
+than a filter-first dashboard. Channel counts sit in a two-row (one-row from
+`lg`) hairline strip; period, search and the visible count share one toolbar;
+the same calendar-dense rows render on phone and desktop, grouped by Zurich day
+in Upcoming and History. No schema or query change.
+
 Extra-roadmap (2026-09-17): public school copy. The homepage method section is
 now “Pourquoi choisir mhp | coaching”: seven equal blocks with stable ids,
 detail pages (curriculum, pedagogy, recognitions, faculty, supervision, method,

@@ -63,6 +63,14 @@ export default async function AdminOverviewPage({
   const feed = await loadActivityFeed({query, locale, copy});
   const {entries, total, page, pageCount, pageSize} = feed.page;
   const firstOnPage = (page - 1) * pageSize + 1;
+  const count =
+    total === 0
+      ? null
+      : t("activityCount", {
+          from: firstOnPage,
+          to: firstOnPage + entries.length - 1,
+          total,
+        });
 
   const emptyMessage =
     query.q !== ""
@@ -75,7 +83,7 @@ export default async function AdminOverviewPage({
 
   return (
     <SiteShell locale={locale} footerCta={null}>
-      <Section size="sm" className="pt-10 pb-16">
+      <Section size="sm" className="pt-8 pb-12">
         <Eyebrow>{t("eyebrow")}</Eyebrow>
         <AdminSubnav
           current="overview"
@@ -83,13 +91,13 @@ export default async function AdminOverviewPage({
           labels={adminSectionLabels(t)}
         />
         <PageHeader
-          className="mt-6"
+          className="mt-5"
           title={t("overviewTitle")}
           intro={t("overviewIntro")}
         />
 
         <ActivityChannelFilter
-          className="mt-8"
+          className="mt-5"
           label={t("activityChannels")}
           items={[
             {
@@ -109,10 +117,11 @@ export default async function AdminOverviewPage({
           ]}
         />
 
-        <div className="mt-6">
+        <div className="mt-4">
           <ActivityToolbar
             action={localizedPath(locale, "/admin/overview")}
             query={query}
+            count={count}
             labels={{
               windowGroup: t("activityWindowGroup"),
               windows: {
@@ -127,27 +136,18 @@ export default async function AdminOverviewPage({
             }}
           />
 
-          <p className="mt-3 font-sans text-sm tabular-nums text-ink-muted">
-            {t("activityCount", {
-              from: firstOnPage,
-              to: firstOnPage + entries.length - 1,
-              total,
-            })}
-          </p>
-
           {entries.length === 0 ? (
-            <p className="mt-6 text-sm leading-7 text-ink-muted">{emptyMessage}</p>
+            <p className="mt-5 text-sm leading-7 text-ink-muted">{emptyMessage}</p>
           ) : (
             <div className="mt-4">
               <ActivityList
                 entries={entries}
+                when={query.when}
+                today={feed.bounds.today}
+                todayLabel={t("activityToday")}
+                locale={locale}
                 labels={{
-                  when: t("activityWhen"),
-                  channel: t("activityChannel"),
-                  who: t("activityWho"),
-                  what: t("activityWhat"),
-                  status: t("status"),
-                  actions: t("bookingActions"),
+                  list: t("activityList"),
                   open: t("activityOpen"),
                   kinds: kindLabels.chip,
                   actionLabels: {
@@ -165,7 +165,7 @@ export default async function AdminOverviewPage({
 
           {pageCount > 1 ? (
             <Pagination
-              className="mt-6"
+              className="mt-5"
               previous={page > 1 ? activityPageHref(query, page - 1) : null}
               next={page < pageCount ? activityPageHref(query, page + 1) : null}
               status={t("pageStatus", {page, pageCount})}

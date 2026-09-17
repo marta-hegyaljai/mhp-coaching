@@ -180,6 +180,13 @@ primary action behind an ambiguous icon.
   scatter a segmented control, a checkbox and a layout switch as loose rows.
   The screen leads with `<PageHeader>`: title, one line of orientation and the
   single primary action on the title line, so the records stay near the fold.
+- The admin control panel is that pattern applied to mixed records: a compact
+  channel-count strip, one toolbar (period, search, visible count) and a single
+  calendar-dense timeline at every breakpoint. Time leads each row; the person
+  or title is the scan target; the channel is an uppercase qualifier, never a
+  bordered chip. Upcoming and History group on the Zurich day so the date is
+  not repeated on every row. Do not split the same entries into a wide table
+  and a stack of cards.
 - Reordering swaps neighbours in the full catalogue, so offer the move controls
   only on the unfiltered list and say why they are gone otherwise.
 - Status styles remain monochrome and textual on public catalogue and

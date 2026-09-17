@@ -10,9 +10,9 @@ export type ChannelFilterItem = {
 };
 
 /**
- * The control panel's primary navigation: one hairline cell per channel that
- * both answers "how much is there?" and filters the list to exactly that
- * count. Selection reads from the inverted surface and `aria-current`.
+ * Compact metric strip: one hairline cell per channel. The count is the
+ * answer; tapping it is the filter. Four columns on a phone so two rows
+ * clear the fold, seven on a wide pane so the strip is one scan line.
  */
 export function ActivityChannelFilter({
   label,
@@ -27,27 +27,28 @@ export function ActivityChannelFilter({
     // The 1px gap over an ink background draws the hairlines between cells.
     <nav
       aria-label={label}
-      className={`grid gap-px overflow-hidden rounded-panel border border-ink bg-ink grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 ${className}`}
+      className={`grid grid-cols-4 gap-px overflow-hidden rounded-panel border border-ink bg-ink lg:grid-cols-7 ${className}`}
     >
-      {items.map((item, index) => (
+      {items.map((item) => (
         <Link
           key={item.key}
           href={item.href}
+          title={`${item.label} ${item.count}`}
           aria-current={item.current ? "page" : undefined}
-          // The leading total spans two cells below `lg` so the odd number of
-          // channels still fills the grid instead of leaving a blank box.
-          className={`flex min-h-11 items-baseline justify-between gap-2 px-3 py-2.5 transition-colors duration-150 ease-standard focus-visible:outline-2 focus-visible:-outline-offset-2 ${
-            index === 0 ? "col-span-2 lg:col-span-1" : ""
+          // The leading total spans two cells below `lg` so seven channels
+          // fill two rows instead of leaving a black empty box.
+          className={`flex min-h-11 min-w-0 flex-col justify-center gap-0.5 px-2 py-1.5 transition-colors duration-150 ease-standard focus-visible:outline-2 focus-visible:-outline-offset-2 sm:px-3 ${
+            item.key === "all" ? "col-span-2 lg:col-span-1" : ""
           } ${
             item.current
               ? "bg-ink text-parchment focus-visible:outline-parchment"
               : "bg-white text-ink hover:bg-hover focus-visible:outline-ink"
           }`}
         >
-          <span className="text-[0.65rem] font-bold uppercase tracking-[0.12em]">
+          <span className="truncate text-[0.6rem] font-bold uppercase tracking-[0.12em] sm:text-[0.65rem]">
             {item.label}
           </span>
-          <span className="font-sans text-sm font-semibold tabular-nums">
+          <span className="font-sans text-sm font-semibold tabular-nums leading-none">
             {item.count}
           </span>
         </Link>

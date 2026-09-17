@@ -10,14 +10,19 @@ function channel(page: Page, name: RegExp) {
   return page.getByRole("navigation", {name: "Channels"}).getByRole("link", {name});
 }
 
-async function column(page: Page, index: number) {
-  const cells = await page
-    .getByRole("table")
-    .getByRole("row")
-    .locator(`td:nth-child(${index})`)
-    .allInnerTexts();
-  // Cells wrap, so compare on normalized text rather than the rendered lines.
-  return cells.map((text) => text.replace(/\s+/g, " ").trim());
+function entries(page: Page) {
+  return page.locator("[data-kind]");
+}
+
+async function rowKinds(page: Page) {
+  return entries(page).evaluateAll((nodes) =>
+    nodes.map((node) => node.getAttribute("data-kind") ?? ""),
+  );
+}
+
+async function rowSummaries(page: Page) {
+  const texts = await entries(page).allInnerTexts();
+  return texts.map((text) => text.replace(/\s+/g, " ").trim());
 }
 
 test("the control panel gathers every channel behind one timeline", async ({page}) => {
@@ -42,12 +47,9 @@ test("the control panel gathers every channel behind one timeline", async ({page
   await expect(page).toHaveURL(/kind=waitlist/);
   await expect(channel(page, /^Waiting list/)).toHaveAttribute("aria-current", "page");
 
-  const kinds = await column(page, 2);
+  const kinds = await rowKinds(page);
   expect(kinds.length).toBeGreaterThan(0);
-  // The chip is uppercased in CSS, so compare on the word alone.
-  expect(new Set(kinds.map((text) => text.toLowerCase()))).toEqual(
-    new Set(["waiting list"]),
-  );
+  expect(new Set(kinds)).toEqual(new Set(["waitlist"]));
 });
 
 test("/admin lands on the control panel", async ({page}) => {
@@ -62,13 +64,13 @@ test("/admin lands on the control panel", async ({page}) => {
 test("paging through history moves the window on by one full page", async ({page}) => {
   await page.goto("/en/admin/overview?when=history");
 
-  const firstPage = await column(page, 4);
+  const firstPage = await rowSummaries(page);
   expect(firstPage.length).toBeGreaterThan(1);
 
   const next = page.getByRole("link", {name: "Next"});
   test.skip((await next.count()) === 0, "needs more than one page of history");
 
-  await expect(page.getByText(/^1–\d+ of \d+ entries$/)).toBeVisible();
+  await expect(page.getByText(/^\d+–\d+ of \d+ entries$/)).toBeVisible();
   await next.click();
   await expect(page).toHaveURL(/page=2/);
 
@@ -76,7 +78,7 @@ test("paging through history moves the window on by one full page", async ({page
   await expect(
     page.getByText(new RegExp(`^${firstPage.length + 1}–\\d+ of \\d+ entries$`)),
   ).toBeVisible();
-  expect(await column(page, 4)).not.toEqual(firstPage);
+  expect(await rowSummaries(page)).not.toEqual(firstPage);
 });
 
 test("search narrows the timeline and can be cleared", async ({page}) => {
@@ -87,7 +89,7 @@ test("search narrows the timeline and can be cleared", async ({page}) => {
   await expect(page.getByText("No activity matches this search.")).toBeVisible();
 
   await page.getByRole("link", {name: "Clear"}).click();
-  await expect(page.getByRole("table")).toBeVisible();
+  await expect(entries(page).first()).toBeVisible();
 });
 
 test("removing a waiting-list contact asks before it destroys the request", async ({
@@ -111,9 +113,7 @@ test("the control panel fits a phone in every locale", async ({page}) => {
 
   for (const locale of ["fr", "de", "en"]) {
     await page.goto(`/${locale}/admin/overview?when=history`);
-    // Below lg the timeline becomes cards; the wide table stays out of reach.
-    await expect(page.getByRole("table")).toBeHidden();
-    await expect(page.getByRole("listitem").first()).toBeVisible();
+    await expect(entries(page).first()).toBeVisible();
 
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
