@@ -25,6 +25,11 @@ function secondaryOf(entry: ActivityEntry): string | null {
   return secondary || null;
 }
 
+const columnsWithLink =
+  "grid-cols-[3.75rem_minmax(0,1fr)] sm:grid-cols-[3.75rem_minmax(0,1fr)_minmax(7.5rem,9.5rem)_1rem]";
+const columnsPlain =
+  "grid-cols-[3.75rem_minmax(0,1fr)] sm:grid-cols-[3.75rem_minmax(0,1fr)_minmax(7.5rem,9.5rem)]";
+
 /**
  * One calendar-dense row: time leads, the person (or title) is the scan
  * target, and the channel sits as a qualifier rather than a bordered chip.
@@ -41,9 +46,7 @@ export function ActivityRow({
   const kind = labels.kinds[entry.kind];
   const actions = hasRowActions(entry);
   const timed = Boolean(entry.when.timeLabel);
-  const columns = entry.href
-    ? "grid-cols-[3.5rem_minmax(0,1fr)] sm:grid-cols-[3.75rem_minmax(0,1fr)_minmax(7.5rem,9.5rem)_1rem]"
-    : "grid-cols-[3.5rem_minmax(0,1fr)] sm:grid-cols-[3.75rem_minmax(0,1fr)_minmax(7.5rem,9.5rem)]";
+  const columns = entry.href ? columnsWithLink : columnsPlain;
 
   const body = (
     <>
@@ -86,7 +89,7 @@ export function ActivityRow({
       {entry.href ? (
         <Link
           href={entry.href}
-          className={`grid min-h-11 items-start gap-x-3 px-3 py-2.5 transition-colors duration-150 ease-standard hover:bg-hover focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ink sm:px-4 ${columns}`}
+          className={`grid min-h-11 items-start gap-x-3 px-3 py-2 transition-colors duration-150 ease-standard hover:bg-hover focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ink sm:px-4 ${columns}`}
         >
           <TimeMark timeLabel={entry.when.timeLabel} timed={timed} />
           {body}
@@ -95,14 +98,14 @@ export function ActivityRow({
           </span>
         </Link>
       ) : (
-        <div className={`grid min-h-11 items-start gap-x-3 px-3 py-2.5 sm:px-4 ${columns}`}>
+        <div className={`grid min-h-11 items-start gap-x-3 px-3 py-2 sm:px-4 ${columns}`}>
           <TimeMark timeLabel={entry.when.timeLabel} timed={timed} />
           {body}
         </div>
       )}
 
       {actions ? (
-        <div className="border-t border-line-soft px-3 py-2 sm:px-4 sm:pl-[4.75rem]">
+        <div className="border-t border-line-soft px-3 py-2 sm:px-4 sm:pl-[5rem]">
           <ActivityRowActions entry={entry} labels={labels.actionLabels} />
         </div>
       ) : null}
@@ -110,6 +113,10 @@ export function ActivityRow({
   );
 }
 
+/**
+ * Same-day ranges stack as start over end, the way a calendar list shows a
+ * span without stealing width from the person column.
+ */
 function TimeMark({
   timeLabel,
   timed,
@@ -117,13 +124,23 @@ function TimeMark({
   timeLabel: string | null;
   timed: boolean;
 }) {
+  if (!timed || !timeLabel) {
+    return <span className="font-sans text-sm tabular-nums text-ink-subtle">—</span>;
+  }
+
+  const [start, end] = timeLabel.split("–").map((part) => part.trim());
+  const stacked = Boolean(start && end && !end.includes(" "));
+
   return (
-    <span
-      className={`font-sans text-sm tabular-nums ${
-        timed ? "font-semibold text-ink" : "text-ink-subtle"
-      }`}
-    >
-      {timed ? timeLabel : "—"}
+    <span className="font-sans text-sm font-semibold tabular-nums leading-5 text-ink">
+      {stacked ? (
+        <>
+          <span className="block">{start}</span>
+          <span className="block font-normal text-ink-muted">{end}</span>
+        </>
+      ) : (
+        timeLabel
+      )}
     </span>
   );
 }

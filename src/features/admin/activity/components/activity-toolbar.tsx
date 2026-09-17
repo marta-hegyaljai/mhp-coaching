@@ -59,7 +59,7 @@ export function ActivityToolbar({
             action={action}
             label={labels.filter}
             frame="inline"
-            columnsClassName="sm:grid-cols-[minmax(0,1fr)_auto]"
+            columnsClassName="grid-cols-[minmax(0,1fr)_auto]"
             actions={
               <>
                 <Button type="submit" variant="secondary">
