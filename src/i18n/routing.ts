@@ -75,6 +75,46 @@ export const routing = defineRouting({
       de: "/ueber-uns",
       en: "/about",
     },
+    "/curriculum": {
+      fr: "/curriculum",
+      de: "/lehrplan",
+      en: "/curriculum",
+    },
+    "/pedagogy": {
+      fr: "/approche-pedagogique",
+      de: "/paedagogischer-ansatz",
+      en: "/pedagogy",
+    },
+    "/recognitions": {
+      fr: "/reconnaissances",
+      de: "/anerkennungen",
+      en: "/recognitions",
+    },
+    "/faculty": {
+      fr: "/equipe",
+      de: "/dozierende",
+      en: "/faculty",
+    },
+    "/supervision": {
+      fr: "/supervision",
+      de: "/supervision",
+      en: "/supervision",
+    },
+    "/method": {
+      fr: "/methode",
+      de: "/methode",
+      en: "/method",
+    },
+    "/publications": {
+      fr: "/publications",
+      de: "/publikationen",
+      en: "/publications",
+    },
+    "/reviews": {
+      fr: "/avis",
+      de: "/stimmen",
+      en: "/reviews",
+    },
     "/legal/privacy": {
       fr: "/mentions-legales/confidentialite",
       de: "/rechtliches/datenschutz",

@@ -11,6 +11,8 @@ const phonePaths = [
   "/fr/cas-cliniques",
   "/fr/perspectives",
   "/fr/a-propos",
+  "/fr/avis",
+  "/fr/curriculum",
   "/de",
   "/de/beratung",
   "/de/ausbildungen/omni-hypnose-praktiker",
@@ -41,19 +43,19 @@ test.describe("phone layout", () => {
       path: "/fr",
       openMenu: "Ouvrir le menu",
       cta: "Réserver",
-      sections: ["Formations", "Cas cliniques", "Perspectives", "À propos", "Contact"],
+      sections: ["Formations", "Bibliothèque de cas", "Pratiques", "À propos", "Contact"],
     },
     {
       path: "/de",
       openMenu: "Menü öffnen",
       cta: "Buchen",
-      sections: ["Ausbildungen", "Fallbibliothek", "Einblicke", "Über uns", "Kontakt"],
+      sections: ["Ausbildungen", "Fallbibliothek", "Praxis", "Über uns", "Kontakt"],
     },
     {
       path: "/en",
       openMenu: "Open menu",
       cta: "Book",
-      sections: ["Courses", "Case Library", "Insights", "About", "Contact"],
+      sections: ["Courses", "Case Library", "Practice", "About", "Contact"],
     },
   ] as const;
 

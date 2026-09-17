@@ -10,6 +10,7 @@ export type NavLabelKey =
   | "about"
   | "contact"
   | "advice"
+  | "reviews"
   | "rooms"
   | "admin"
   | "account"
@@ -118,6 +119,7 @@ export function primaryNavEntries(viewer: Viewer | null): NavEntry[] {
  */
 export const footerNavEntries: readonly NavEntry[] = [
   {key: "advice", href: "/advice", origin: "marketing", match: "/advice"},
+  {key: "reviews", href: "/reviews", origin: "marketing", match: "/reviews"},
 ];
 
 /** Personal destinations. These never sit in the product navigation. */

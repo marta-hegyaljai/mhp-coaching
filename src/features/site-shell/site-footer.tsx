@@ -2,6 +2,7 @@ import {getTranslations} from "next-intl/server";
 
 import {ContactLinks} from "@/features/organization/contact-links";
 import {organization} from "@/features/organization/info";
+import {schoolPagesInOrder} from "@/features/school/pages";
 import type {PathnameHref} from "@/i18n/href";
 import type {AppLocale} from "@/i18n/routing";
 import {buttonStyles} from "@/shared/ui/button";
@@ -64,7 +65,7 @@ export async function SiteFooter({
       ) : null}
 
       <div className={band ? "border-t border-parchment/20" : ""}>
-        <Container className="grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-4">
+        <Container className="grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           <div>
             <p className="font-sans text-subheading font-semibold">MHP Coaching</p>
             <p className="mt-4 max-w-sm text-sm leading-7 text-parchment/70">
@@ -83,6 +84,25 @@ export async function SiteFooter({
                     className={footerLink}
                   >
                     {nav(entry.key)}
+                  </OriginLink>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          {/* Without a sitewide entry the school pages hang off the home page
+              alone, which leaves them a dead end for search traffic. */}
+          <nav aria-label={t("school")}>
+            <p className={footerEyebrow}>{t("school")}</p>
+            <ul className="mt-3 space-y-1">
+              {schoolPagesInOrder.map((page) => (
+                <li key={page.id}>
+                  <OriginLink
+                    locale={locale}
+                    origin="marketing"
+                    href={page.pathname}
+                    className={footerLink}
+                  >
+                    {page.name[locale]}
                   </OriginLink>
                 </li>
               ))}

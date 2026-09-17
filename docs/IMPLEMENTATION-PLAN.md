@@ -22,7 +22,7 @@ later scope forward.
 | Field | Value |
 | --- | --- |
 | Plan revision | 3 |
-| Last updated | 2026-09-16 |
+| Last updated | 2026-09-17 |
 | Last completed checkpoint | CP-11 |
 | Next checkpoint | — |
 | Active checkpoint | — |
@@ -99,6 +99,33 @@ History reads backwards from now. Waiting-list contacts can be marked notified
 or removed in place, removal behind a second click and recorded as
 `WAITLIST_ENTRY_REMOVED`. This is a read-and-act surface over existing data: no
 new domain, no schema change beyond the audit action. Not a new checkpoint.
+
+Extra-roadmap (2026-09-17): public school copy. The homepage method section is
+now “Pourquoi choisir mhp | coaching”: seven equal blocks with stable ids,
+detail pages (curriculum, pedagogy, recognitions, faculty, supervision, method,
+publications), EducationalOrganization JSON-LD (`foundingDate` 2013, ASCA/eduQua
+credentials, Psychoneuroimmunologie / Hypnose Elmanienne), a founder quote, and
+an `/avis` reviews page linked from a homepage teaser. Nav labels: Bibliothèque
+de cas, Pratiques (with the requested subtitle). This is course-domain content
+work, not a new checkpoint.
+
+Review pass (2026-09-17): the section promises verifiable facts, so each detail
+page now carries the evidence rather than restating the card. `/curriculum`
+renders the published catalogue (durations, hours, prices) from
+`CurriculumTable`; `/publications` lists works with type and publisher;
+`/recognitions` states what each body certifies and links its official site.
+Each page owns its H1, lead and meta description (`<= 160` chars, unit-tested),
+carries sibling navigation, and appears in a footer “L’école” column so none is
+a dead end. `/avis` now holds all 113 historical comments. Quote attributions
+went back to `<footer><cite>` inside `<blockquote>`; the two tests that had
+forced the markup now use `getByRole("contentinfo")`.
+
+Open content items for the client, tracked here because the pages are built to
+receive them without a code change: ASCA/eduQua accreditation numbers
+(`SchoolRegistry.memberId`), public URLs for the published works
+(`SchoolWork.href`), and the remaining trainers (`teachingStaff`). The
+`stripe-payment-test` catalogue row is published, so it shows on `/curriculum`
+exactly as it already does on `/formations`; unpublish it before launch.
 
 
 ## Status vocabulary

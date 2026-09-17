@@ -18,6 +18,18 @@ describe("localizedPathname", () => {
     expect(localizedPathname("fr", "/about")).toBe("/fr/a-propos");
     expect(localizedPathname("de", "/about")).toBe("/de/ueber-uns");
     expect(localizedPathname("en", "/about")).toBe("/en/about");
+    expect(localizedPathname("fr", "/curriculum")).toBe("/fr/curriculum");
+    expect(localizedPathname("de", "/curriculum")).toBe("/de/lehrplan");
+    expect(localizedPathname("fr", "/pedagogy")).toBe("/fr/approche-pedagogique");
+    expect(localizedPathname("fr", "/recognitions")).toBe("/fr/reconnaissances");
+    expect(localizedPathname("fr", "/faculty")).toBe("/fr/equipe");
+    expect(localizedPathname("de", "/faculty")).toBe("/de/dozierende");
+    expect(localizedPathname("fr", "/supervision")).toBe("/fr/supervision");
+    expect(localizedPathname("fr", "/method")).toBe("/fr/methode");
+    expect(localizedPathname("de", "/publications")).toBe("/de/publikationen");
+    expect(localizedPathname("fr", "/reviews")).toBe("/fr/avis");
+    expect(localizedPathname("de", "/reviews")).toBe("/de/stimmen");
+    expect(localizedPathname("en", "/reviews")).toBe("/en/reviews");
     expect(localizedPathname("fr", "/sign-in")).toBe("/fr/connexion");
     expect(localizedPathname("de", "/sign-in")).toBe("/de/anmelden");
     expect(localizedPathname("fr", "/sign-up")).toBe("/fr/creer-un-compte");

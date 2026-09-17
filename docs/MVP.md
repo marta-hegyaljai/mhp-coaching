@@ -77,7 +77,8 @@ Minimum:
 - Payment cancelled/failed
 - Privacy/legal pages (imprint, terms of use, booking terms, privacy, copyright)
 - Contact/footer information
-- Case Library and Insights (public nav destinations; first studies and notes forthcoming)
+- Case Library and Practice (public nav destinations; first studies and notes forthcoming)
+- Reviews / avis (participant comments, linked from the homepage)
 - About / founder (Marta Hegyaljai Python)
 
 Do not delay launch for secondary content.

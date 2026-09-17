@@ -15,6 +15,8 @@ export type ComingSoonCopy = {
   navKey: NavLabelKey;
   pathname: Extract<PathnameHref, "/case-library" | "/insights">;
   namespace: "CaseLibraryPage" | "InsightsPage";
+  /** Renders the namespace's `subtitle` as the deck under the H1. */
+  hasSubtitle?: boolean;
 };
 
 type ComingSoonPageProps = {
@@ -61,6 +63,11 @@ export function comingSoonPage(copy: ComingSoonCopy) {
           <div className="mt-8 max-w-3xl">
             <Eyebrow>{t("status")}</Eyebrow>
             <h1 className="mt-4 font-serif text-title">{t("title")}</h1>
+            {copy.hasSubtitle ? (
+              <p className="mt-4 font-serif text-subheading leading-snug text-ink">
+                {t("subtitle")}
+              </p>
+            ) : null}
             <p className="mt-6 text-lead text-ink-muted">{t("lead")}</p>
             <p className="mt-4 text-base leading-8 text-ink-muted">{t("intro")}</p>
             <p className="mt-4 text-base leading-8 text-ink-muted">{t("body")}</p>

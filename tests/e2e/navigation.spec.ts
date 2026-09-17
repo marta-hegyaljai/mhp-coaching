@@ -19,7 +19,7 @@ test("desktop header separates sections, account actions and the call to action"
   // Only the course list and the booking action carry text in the bar.
   await expect(schoolMenu).toBeVisible();
   await expect(schoolMenu).toHaveAttribute("aria-expanded", "false");
-  await expect(header.getByRole("link", {name: "Cas cliniques"})).toBeHidden();
+  await expect(header.getByRole("link", {name: "Bibliothèque de cas"})).toBeHidden();
   await expect(header.getByRole("link", {name: "Contact"})).toBeHidden();
 });
 
@@ -32,14 +32,14 @@ test("the school menu discloses the secondary destinations and closes again", as
 
   await schoolMenu.click();
   await expect(schoolMenu).toHaveAttribute("aria-expanded", "true");
-  await expect(header.getByRole("link", {name: /Cas cliniques/})).toBeVisible();
-  await expect(header.getByRole("link", {name: /Perspectives/})).toBeVisible();
+  await expect(header.getByRole("link", {name: /Bibliothèque de cas/})).toBeVisible();
+  await expect(header.getByRole("link", {name: /Pratiques/})).toBeVisible();
   await expect(header.getByRole("link", {name: /À propos/})).toBeVisible();
   await expect(header.getByRole("link", {name: /Contact/})).toBeVisible();
 
   await page.keyboard.press("Escape");
   await expect(schoolMenu).toHaveAttribute("aria-expanded", "false");
-  await expect(header.getByRole("link", {name: /Cas cliniques/})).toBeHidden();
+  await expect(header.getByRole("link", {name: /Bibliothèque de cas/})).toBeHidden();
 
   await schoolMenu.click();
   await header.getByRole("link", {name: /À propos/}).click();
@@ -62,8 +62,8 @@ test("the phone header keeps the call to action outside the menu", async ({page}
 
   await menuButton.click();
   await expect(header.getByRole("link", {name: "Formations"})).toBeVisible();
-  await expect(header.getByRole("link", {name: "Cas cliniques"})).toBeVisible();
-  await expect(header.getByRole("link", {name: "Perspectives"})).toBeVisible();
+  await expect(header.getByRole("link", {name: "Bibliothèque de cas"})).toBeVisible();
+  await expect(header.getByRole("link", {name: "Pratiques"})).toBeVisible();
   await expect(header.getByRole("link", {name: "À propos"})).toBeVisible();
   await expect(header.getByRole("link", {name: "Contact"})).toBeVisible();
   await expect(header.getByRole("link", {name: "Connexion"})).toBeVisible();
@@ -100,7 +100,7 @@ test("phone menu labels stay localized in DE and EN", async ({page}) => {
   await header.getByRole("button", {name: "Menü öffnen"}).click();
   await expect(header.getByRole("link", {name: "Ausbildungen"})).toBeVisible();
   await expect(header.getByRole("link", {name: "Fallbibliothek"})).toBeVisible();
-  await expect(header.getByRole("link", {name: "Einblicke"})).toBeVisible();
+  await expect(header.getByRole("link", {name: "Praxis"})).toBeVisible();
   await expect(header.getByRole("link", {name: "Über uns"})).toBeVisible();
   await expect(header.getByRole("link", {name: "Anmelden"})).toBeVisible();
   await expect(header.getByRole("link", {name: "Registrieren"})).toBeHidden();
@@ -110,7 +110,7 @@ test("phone menu labels stay localized in DE and EN", async ({page}) => {
   await header.getByRole("button", {name: "Open menu"}).click();
   await expect(header.getByRole("link", {name: "Courses"})).toBeVisible();
   await expect(header.getByRole("link", {name: "Case Library"})).toBeVisible();
-  await expect(header.getByRole("link", {name: "Insights"})).toBeVisible();
+  await expect(header.getByRole("link", {name: "Practice"})).toBeVisible();
   await expect(header.getByRole("link", {name: "About"})).toBeVisible();
   await expect(header.getByRole("link", {name: "Sign in"})).toBeVisible();
   await expect(header.getByRole("link", {name: "Sign up"})).toBeHidden();
@@ -127,7 +127,10 @@ test("case library and insights preview the forthcoming work", async ({page}) =>
   ).toHaveAttribute("aria-current", "true");
 
   await page.goto("/fr/perspectives");
-  await expect(page.getByRole("heading", {level: 1})).toHaveText("Perspectives");
+  await expect(page.getByRole("heading", {level: 1})).toHaveText("Pratiques");
+  await expect(
+    page.getByText("Ce que révèle la pratique en accompagnement thérapeutique"),
+  ).toBeVisible();
   await expect(page.getByText("Prochainement").first()).toBeVisible();
   await expect(page.getByText(/hypno-neuro-imagination/).first()).toBeVisible();
 
@@ -155,10 +158,58 @@ test("the about page publishes the founder portrait, quote and recognitions", as
   await expect(page.getByRole("heading", {name: "Eine anerkannte Expertise über die Schule hinaus"})).toBeVisible();
 });
 
-test("the sign-in page offers sign-up as the single guest auth action", async ({page}) => {
-  await page.goto("/en/sign-in");
-  const header = page.locator("header").first();
+test("the reviews page lists participant comments and is reached from home", async ({
+  page,
+}) => {
+  await page.goto("/fr");
+  await page.getByRole("link", {name: "Lire tous les avis"}).click();
+  await expect(page).toHaveURL(/\/fr\/avis$/);
+  await expect(page.getByRole("heading", {level: 1})).toHaveText("Avis");
+  await expect(page.getByText("Chloé").first()).toBeVisible();
+  await expect(page.getByText(/Super intervenante/)).toBeVisible();
+});
 
-  await expect(header.getByRole("link", {name: "Sign up"})).toBeVisible();
-  await expect(header.getByRole("link", {name: "Sign in"})).toBeHidden();
+test("why-choose blocks open school pages that carry the evidence", async ({page}) => {
+  await page.goto("/fr");
+  await page.locator("#diff-curriculum").getByRole("link", {name: "Voir le curriculum"}).click();
+  await expect(page).toHaveURL(/\/fr\/curriculum$/);
+  await expect(page.getByRole("heading", {level: 1})).toHaveText("Curriculum");
+
+  // The card promises a readable cursus, so the page must list real courses.
+  const catalogue = page.getByRole("heading", {
+    name: "Le cursus, formation par formation",
+  });
+  await expect(catalogue).toBeVisible();
+  // Each row carries the hours and the price, whatever the catalogue holds.
+  const foundationRow = page
+    .getByRole("link", {name: /Praticien·ne en Hypnose OMNI/})
+    .first();
+  await expect(foundationRow).toBeVisible();
+  await expect(foundationRow).toContainText(/heures/);
+  await expect(foundationRow).toContainText(/CHF/);
+
+  await page.goto("/fr/reconnaissances");
+  await expect(page.getByRole("heading", {level: 1})).toHaveText("Reconnaissances");
+  await expect(page.getByRole("link", {name: /ASCA/})).toHaveAttribute(
+    "href",
+    "https://www.asca.ch/",
+  );
+  await expect(page.getByText(/assurances complémentaires/).first()).toBeVisible();
+
+  await page.goto("/fr/publications");
+  await expect(page.getByRole("heading", {name: /Routledge/})).toBeVisible();
+});
+
+test("no school page is a dead end", async ({page}) => {
+  await page.goto("/fr/supervision");
+
+  const siblings = page.getByRole("navigation", {name: "Autres pages sur l’école"});
+  await expect(siblings.getByRole("link")).toHaveCount(6);
+  await siblings.getByRole("link", {name: "Publications"}).click();
+  await expect(page).toHaveURL(/\/fr\/publications$/);
+
+  // The footer carries the same set on every page of the site.
+  await expect(
+    page.getByRole("contentinfo").getByRole("navigation", {name: "L’école"}).getByRole("link"),
+  ).toHaveCount(7);
 });

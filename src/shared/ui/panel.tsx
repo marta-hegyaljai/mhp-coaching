@@ -1,7 +1,7 @@
 import type {ReactNode} from "react";
 
 export type PanelPadding = "sm" | "md";
-export type PanelTone = "white" | "shell";
+export type PanelTone = "white" | "shell" | "ink";
 
 const paddings: Record<PanelPadding, string> = {
   sm: "p-4",
@@ -9,10 +9,12 @@ const paddings: Record<PanelPadding, string> = {
 };
 
 // The neutral grey is the only alternative surface; it marks a consequence
-// without introducing a semantic colour.
+// without introducing a semantic colour. `ink` inverts the card for the one
+// action that closes a grid of claims.
 const tones: Record<PanelTone, string> = {
   white: "bg-white",
   shell: "bg-shell",
+  ink: "bg-ink text-parchment",
 };
 
 /**

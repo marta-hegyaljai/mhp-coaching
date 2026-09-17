@@ -4,21 +4,21 @@ const locales = [
   {
     locale: "fr",
     heading: "L’hypnose simple, moderne et efficace depuis 1979.",
-    whyHeading: "Pourquoi cette méthode ?",
+    whyHeading: "Pourquoi choisir mhp | coaching",
     coursesPath: "/fr/formations",
     coursesHeading: "Formations en hypnose",
   },
   {
     locale: "de",
     heading: "Einfache, moderne und wirksame Hypnose seit 1979.",
-    whyHeading: "Warum diese Methode?",
+    whyHeading: "Warum mhp | coaching",
     coursesPath: "/de/ausbildungen",
     coursesHeading: "Hypnose-Ausbildungen",
   },
   {
     locale: "en",
     heading: "Simple, modern and effective hypnosis since 1979.",
-    whyHeading: "Why this method?",
+    whyHeading: "Why choose mhp | coaching",
     coursesPath: "/en/courses",
     coursesHeading: "Hypnosis courses",
   },
@@ -30,7 +30,7 @@ for (const {locale, heading, whyHeading, coursesPath, coursesHeading} of locales
 
     await expect(page.locator("html")).toHaveAttribute("lang", locale);
     await expect(page.getByRole("heading", {level: 1})).toHaveText(heading);
-    await expect(page.locator("#why-method").getByRole("heading", {level: 2})).toHaveText(
+    await expect(page.locator("#pourquoi-choisir").getByRole("heading", {level: 2})).toHaveText(
       whyHeading,
     );
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
@@ -48,7 +48,7 @@ for (const {locale, heading, whyHeading, coursesPath, coursesHeading} of locales
     const statueBox = await statue.boundingBox();
     expect(statueBox?.width ?? 0).toBeGreaterThan(280);
 
-    const footer = page.locator("footer");
+    const footer = page.getByRole("contentinfo");
     await expect(footer).toBeVisible();
     await expect
       .poll(async () => footer.evaluate((node) => getComputedStyle(node).backgroundColor))
@@ -297,23 +297,27 @@ test("header exposes sign-up and marks the current page", async ({page}) => {
   await expect(page.locator("header").first().getByRole("link", {name: "Registrieren"})).toBeHidden();
 });
 
-test("homepage method reasons read as structured content above the footer", async ({
+test("homepage why-choose blocks and founder quote sit above the footer", async ({
   page,
 }) => {
   await page.goto("/fr");
 
-  const section = page.locator("#why-method");
-  const footer = page.locator("footer");
+  const section = page.locator("#pourquoi-choisir");
+  const footer = page.getByRole("contentinfo");
 
   await expect(section.getByRole("heading", {level: 2})).toHaveText(
-    "Pourquoi cette méthode ?",
+    "Pourquoi choisir mhp | coaching",
   );
-  await expect(section.getByRole("heading", {level: 3})).toHaveCount(3);
+  // Seven claim blocks; the eighth tile is the contact call to action.
+  await expect(section.locator("li[id^='diff-']")).toHaveCount(7);
   await expect(
-    section.getByRole("heading", {name: "Rapide et immédiatement applicable"}),
+    section.getByRole("heading", {name: "Un curriculum documenté et public"}),
   ).toBeVisible();
-  await expect(section.getByRole("heading", {name: "En présentiel"})).toBeVisible();
-  await expect(section.locator("article")).toHaveCount(3);
+  await expect(section.locator("#diff-curriculum")).toBeVisible();
+  await expect(section.getByRole("link", {name: "Poser une question"})).toBeVisible();
+
+  await expect(page.getByText(/soutenir l’individu/)).toBeVisible();
+  await expect(page.getByRole("link", {name: "Lire tous les avis"})).toBeVisible();
 
   await expect
     .poll(async () => section.evaluate((node) => getComputedStyle(node).backgroundColor))

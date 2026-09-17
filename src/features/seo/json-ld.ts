@@ -34,6 +34,30 @@ export function organizationJsonLd(): JsonLd {
       name: organization.founder,
     },
     sameAs: [...founderSameAs],
+    foundingDate: "2013",
+    knowsAbout: ["Psychoneuroimmunologie", "Hypnose Elmanienne"],
+    hasCredential: [
+      {
+        "@type": "EducationalOccupationalCredential",
+        name: "ASCA",
+        credentialCategory: "Recognition",
+        recognizedBy: {
+          "@type": "Organization",
+          name: "Fondation ASCA",
+          url: "https://www.asca.ch/",
+        },
+      },
+      {
+        "@type": "EducationalOccupationalCredential",
+        name: "eduQua",
+        credentialCategory: "QualityLabel",
+        recognizedBy: {
+          "@type": "Organization",
+          name: "eduQua",
+          url: "https://alice.ch/fr/themen/qualitaetslabel-eduqua/",
+        },
+      },
+    ],
     address: {
       "@type": "PostalAddress",
       streetAddress: office.street,

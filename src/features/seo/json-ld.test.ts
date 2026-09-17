@@ -67,6 +67,20 @@ describe("structured data", () => {
     expect(JSON.stringify(json)).not.toMatch(/mhp-hypnose|Partners Sàrl|CHE-459/i);
     expect((json.founder as {name: string}).name).toBe("Marta Hegyaljai Python");
     expect(json.sameAs).toEqual(["https://marta-hegyaljai.com/fr/marta-hegyaljai-python"]);
+    expect(json.foundingDate).toBe("2013");
+    expect(json.knowsAbout).toEqual(["Psychoneuroimmunologie", "Hypnose Elmanienne"]);
+    expect(json.hasCredential).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          "@type": "EducationalOccupationalCredential",
+          name: "ASCA",
+        }),
+        expect.objectContaining({
+          "@type": "EducationalOccupationalCredential",
+          name: "eduQua",
+        }),
+      ]),
+    );
   });
 
   it("describes the founder as a Person linked to the school", () => {

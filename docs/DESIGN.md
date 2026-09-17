@@ -72,7 +72,7 @@ dashboard.
   must not scroll while it is open.
 - The bar protects two decisions: browse the courses, or book a place. On `lg`
   and above it therefore carries the Courses chip and the booking action only.
-  Case Library, Insights, About and Contact sit behind one grouped chip (the
+  Case Library, Practice, About and Contact sit behind one grouped chip (the
   school), a click disclosure that lists each destination with a one-line
   description, closes on Escape, on an outside pointer and on arrival, and
   inverts to black while it owns the open section. Do not add a second grouped

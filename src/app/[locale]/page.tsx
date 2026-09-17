@@ -4,8 +4,10 @@ import {CourseCard} from "@/features/courses/components/course-card";
 import {loadPublishedCourses} from "@/features/courses/live";
 import {AdviceInvite} from "@/features/course-calls/components/advice-invite";
 import {splitCatalogueByFormat} from "@/features/courses/programme";
+import {FounderQuote} from "@/features/home/founder-quote";
 import {HomeHero} from "@/features/home/home-hero";
-import {MethodReasons} from "@/features/home/method-reasons";
+import {ReviewsTeaser} from "@/features/home/reviews-teaser";
+import {WhyChoose} from "@/features/home/why-choose";
 import {homeStatueJsonLd, courseListJsonLd} from "@/features/seo/json-ld";
 import {JsonLd} from "@/features/seo/json-ld-script";
 import {homeStatue, homeStatueAlt} from "@/features/seo/home-statue";
@@ -51,12 +53,6 @@ export default async function HomePage({params}: HomePageProps) {
   const modules = splitCatalogueByFormat(publishedCourses).modules;
   const courses = modules.slice(0, 3);
   const hiddenCourseCount = publishedCourses.length - courses.length;
-
-  const reasons = [
-    {title: t("whyRapidTitle"), body: t("whyRapidBody")},
-    {title: t("whyPracticeTitle"), body: t("whyPracticeBody")},
-    {title: t("whyNetworkTitle"), body: t("whyNetworkBody")},
-  ];
 
   return (
     <SiteShell locale={locale}>
@@ -135,10 +131,27 @@ export default async function HomePage({params}: HomePageProps) {
         />
       </Section>
 
-      <MethodReasons
+      <WhyChoose
+        locale={locale}
         eyebrow={t("whyEyebrow")}
         title={t("whyTitle")}
-        reasons={reasons}
+        intro={t("whyIntro")}
+        askTitle={t("whyAskTitle")}
+        askBody={t("whyAskBody")}
+        askLink={t("whyAskLink")}
+      />
+
+      <FounderQuote
+        eyebrow={t("quoteEyebrow")}
+        quote={t("quote")}
+        name={t("quoteName")}
+        role={t("quoteRole")}
+      />
+
+      <ReviewsTeaser
+        eyebrow={t("reviewsEyebrow")}
+        title={t("reviewsTitle")}
+        linkLabel={t("reviewsLink")}
       />
     </SiteShell>
   );

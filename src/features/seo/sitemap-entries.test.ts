@@ -31,6 +31,13 @@ describe("SEO launch surfaces", () => {
     expect(entries.some((entry) => entry.url.endsWith("/fr/a-propos"))).toBe(
       true,
     );
+    expect(entries.some((entry) => entry.url.endsWith("/fr/avis"))).toBe(true);
+    expect(entries.some((entry) => entry.url.endsWith("/fr/curriculum"))).toBe(
+      true,
+    );
+    expect(entries.some((entry) => entry.url.endsWith("/de/lehrplan"))).toBe(
+      true,
+    );
     expect(urls.some((url) => url.includes("/de/ausbildungen"))).toBe(true);
     expect(urls.some((url) => url.includes("/en/courses/omni-hypnosis-practitioner"))).toBe(true);
     expect(urls.every((url) => !url.includes("/staff"))).toBe(true);
