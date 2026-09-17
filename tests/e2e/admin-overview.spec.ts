@@ -107,16 +107,27 @@ test("the control panel fits a phone in every locale without scrolling the page"
 }) => {
   await page.setViewportSize(phone);
 
+  const historyLabel = {fr: "Historique", de: "Verlauf", en: "History"} as const;
+
   for (const locale of ["fr", "de", "en"] as const) {
     await page.goto(`/${locale}/admin/overview`);
     await expect(entries(page).first()).toBeVisible();
 
-    const overflow = await page.evaluate(() => ({
-      x: document.documentElement.scrollWidth - document.documentElement.clientWidth,
-      y: document.documentElement.scrollHeight - document.documentElement.clientHeight,
-    }));
+    const overflow = await page.evaluate((label) => {
+      const board = document.querySelector(`[aria-label="${label}"]`);
+      const bottom = board?.getBoundingClientRect().bottom ?? Infinity;
+      return {
+        x: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        y: document.documentElement.scrollHeight - document.documentElement.clientHeight,
+        boardBottom: bottom,
+        viewport: window.innerHeight,
+      };
+    }, historyLabel[locale]);
     expect(overflow.x, `horizontal overflow in ${locale}`).toBeLessThanOrEqual(0);
     expect(overflow.y, `page scroll in ${locale}`).toBeLessThanOrEqual(1);
+    expect(overflow.boardBottom, `board clipped to viewport in ${locale}`).toBeLessThanOrEqual(
+      overflow.viewport + 1,
+    );
   }
 });
 
@@ -128,7 +139,7 @@ test("the desktop board fills the viewport without scrolling the page", async ({
   await expect(pane(page, "Upcoming")).toBeVisible();
   await expect(pane(page, "History")).toBeVisible();
 
-  const box = await page.evaluate(() => {
+  const metrics = await page.evaluate(() => {
     const today = document.querySelector('[aria-label="Today"]');
     const history = document.querySelector('[aria-label="History"]');
     if (!today || !history) {
@@ -138,11 +149,14 @@ test("the desktop board fills the viewport without scrolling the page", async ({
     const right = history.getBoundingClientRect();
     return {
       sameRow: Math.abs(left.top - right.top) < 2,
+      boardBottom: Math.max(left.bottom, right.bottom),
+      viewport: window.innerHeight,
       pageScroll: document.documentElement.scrollHeight - document.documentElement.clientHeight,
     };
   });
 
-  expect(box).not.toBeNull();
-  expect(box?.sameRow).toBe(true);
-  expect(box?.pageScroll).toBeLessThanOrEqual(1);
+  expect(metrics).not.toBeNull();
+  expect(metrics?.sameRow).toBe(true);
+  expect(metrics!.boardBottom).toBeLessThanOrEqual(metrics!.viewport + 1);
+  expect(metrics?.pageScroll).toBeLessThanOrEqual(1);
 });

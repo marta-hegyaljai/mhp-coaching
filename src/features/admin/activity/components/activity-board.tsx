@@ -61,7 +61,7 @@ export function ActivityBoard({
   ];
 
   return (
-    <div className="grid min-h-0 flex-1 grid-rows-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] gap-px overflow-hidden rounded-panel border border-ink bg-ink lg:grid-cols-3 lg:grid-rows-1">
+    <div className="grid min-h-0 flex-1 grid-rows-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] gap-px overflow-hidden rounded-panel border border-ink bg-ink lg:grid-cols-3 lg:grid-rows-[minmax(0,1fr)]">
       {panes.map((pane) => (
         <ActivityColumn
           key={pane.when}

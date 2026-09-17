@@ -35,7 +35,7 @@ export async function SiteShell({
     <div
       className={
         fillViewport
-          ? "flex h-dvh max-h-dvh flex-col overflow-hidden overscroll-none"
+          ? "fixed inset-0 flex flex-col overflow-hidden overscroll-none bg-ivory"
           : `flex min-h-screen flex-col overflow-x-clip ${bottomBar ? "pb-24 lg:pb-0" : ""}`
       }
     >
