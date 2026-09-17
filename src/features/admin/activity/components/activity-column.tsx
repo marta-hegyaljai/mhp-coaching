@@ -30,6 +30,7 @@ export function ActivityColumn({
   query,
   locale,
   title,
+  todayLabel,
   empty,
   labels,
   paginate = false,
@@ -39,6 +40,8 @@ export function ActivityColumn({
   query: ActivityQuery;
   locale: AppLocale;
   title: string;
+  /** Name for rows that fall on the Zurich day; never the pane title. */
+  todayLabel: string;
   empty: string;
   labels: ActivityColumnLabels;
   paginate?: boolean;
@@ -95,7 +98,7 @@ export function ActivityColumn({
             entries={entries}
             when={when}
             today={feed.bounds.today}
-            todayLabel={title}
+            todayLabel={todayLabel}
             locale={locale}
             framed={false}
             compact

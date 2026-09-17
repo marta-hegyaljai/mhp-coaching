@@ -70,6 +70,7 @@ export function ActivityBoard({
           query={query}
           locale={locale}
           title={pane.title}
+          todayLabel={labels.today}
           empty={pane.empty}
           paginate={pane.paginate}
           labels={labels}

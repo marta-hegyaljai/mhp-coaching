@@ -85,7 +85,7 @@ export default async function AdminOverviewPage({
           <ActivitySearch
             action={localizedPath(locale, "/admin/overview")}
             query={query}
-            className="lg:w-80 lg:shrink-0"
+            className="lg:w-[26rem] lg:shrink-0"
             labels={{
               filter: t("filter"),
               search: t("activitySearch"),

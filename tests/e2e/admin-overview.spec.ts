@@ -38,7 +38,7 @@ test("the control panel shows today, upcoming and history at once", async ({page
   expect(kinds.includes("change")).toBe(false);
 
   const log = pane(page, "History").getByRole("link", {name: /\d+ log/i});
-  test.skip((await log.count()) === 0, "needs audit-log rows in history");
+  await expect(log).toBeVisible();
   await log.click();
   await expect(page).toHaveURL(/kind=change/);
   await expect(pane(page, "History").getByRole("link", {name: /\d+ log/i})).toHaveAttribute(
@@ -61,6 +61,7 @@ test("/admin lands on the control panel", async ({page}) => {
 });
 
 test("paging through history moves only that pane", async ({page}) => {
+  await page.setViewportSize({width: 1440, height: 900});
   await page.goto("/en/admin/overview?kind=change");
 
   const history = pane(page, "History");
@@ -68,7 +69,7 @@ test("paging through history moves only that pane", async ({page}) => {
   expect(firstPage.length).toBeGreaterThan(1);
 
   const next = history.getByRole("link", {name: "Next"});
-  test.skip((await next.count()) === 0, "needs more than one page of history");
+  await expect(next).toBeVisible();
 
   await next.click();
   await expect(page).toHaveURL(/hp=2/);
