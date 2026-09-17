@@ -28,7 +28,6 @@ import {Eyebrow, Section} from "@/shared/ui/layout";
 import {Panel} from "@/shared/ui/panel";
 import {Price} from "@/shared/ui/price";
 import {StatusLabel, statusRailClass} from "@/shared/ui/status-label";
-import {statementStatusTone} from "@/features/rooms/components/statement-status";
 
 type AdminBillingPageProps = {
   params: Promise<{locale: AppLocale}>;
