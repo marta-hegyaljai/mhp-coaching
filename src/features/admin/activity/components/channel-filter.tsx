@@ -30,7 +30,7 @@ export function ActivityChannelFilter({
       className={`snap-x snap-proximity overflow-x-auto overscroll-x-contain rounded-panel border border-ink ${className}`}
     >
       {/* The 1px gap over an ink background draws the hairlines between cells. */}
-      <div className="grid min-w-[48rem] grid-cols-7 gap-px bg-ink lg:min-w-full">
+      <div className="grid min-w-[58rem] grid-cols-7 gap-px bg-ink lg:min-w-full">
         {items.map((item) => (
           <Link
             key={item.key}

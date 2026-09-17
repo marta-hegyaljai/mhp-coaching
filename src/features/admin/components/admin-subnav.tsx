@@ -67,6 +67,10 @@ export function adminSectionLabels(admin: {
   };
 }
 
+/**
+ * Admin destinations stay one row on a phone: the tabs scroll under the thumb
+ * instead of wrapping into a three-line block that hides the records.
+ */
 export function AdminSubnav({
   current,
   label,
@@ -78,7 +82,10 @@ export function AdminSubnav({
   labels: Record<AdminSection, string>;
 }) {
   return (
-    <nav aria-label={label} className="mt-6 flex flex-wrap gap-5 border-b border-line">
+    <nav
+      aria-label={label}
+      className="mt-6 flex gap-5 overflow-x-auto overscroll-x-contain border-b border-line [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+    >
       {order.map((section) => {
         const active = section === current;
 
@@ -87,7 +94,7 @@ export function AdminSubnav({
             key={section}
             href={hrefs[section]}
             aria-current={active ? "page" : undefined}
-            className={`${itemClass} ${
+            className={`${itemClass} shrink-0 ${
               active
                 ? "border-ink text-ink"
                 : "border-transparent text-ink-muted hover:text-ink"
