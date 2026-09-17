@@ -1,5 +1,4 @@
 import {Link} from "@/i18n/navigation";
-import {ChevronRightIcon} from "@/shared/ui/icons";
 import {StatusLabel} from "@/shared/ui/status-label";
 
 import type {ActivityEntry, ActivityKind} from "../types";
@@ -25,11 +24,6 @@ function secondaryOf(entry: ActivityEntry): string | null {
   return secondary || null;
 }
 
-const columnsWithLink =
-  "grid-cols-[3.75rem_minmax(0,1fr)] sm:grid-cols-[3.75rem_minmax(0,1fr)_minmax(7.5rem,9.5rem)_1rem]";
-const columnsPlain =
-  "grid-cols-[3.75rem_minmax(0,1fr)] sm:grid-cols-[3.75rem_minmax(0,1fr)_minmax(7.5rem,9.5rem)]";
-
 /**
  * One calendar-dense row: time leads, the person (or title) is the scan
  * target, and the channel sits as a qualifier rather than a bordered chip.
@@ -37,79 +31,94 @@ const columnsPlain =
 export function ActivityRow({
   entry,
   labels,
+  compact = false,
 }: {
   entry: ActivityEntry;
   labels: ActivityRowLabels;
+  compact?: boolean;
 }) {
   const primary = primaryOf(entry);
   const secondary = secondaryOf(entry);
   const kind = labels.kinds[entry.kind];
   const actions = hasRowActions(entry);
   const timed = Boolean(entry.when.timeLabel);
-  const columns = entry.href ? columnsWithLink : columnsPlain;
-
-  const body = (
-    <>
-      <div className="min-w-0">
-        <p className="truncate font-medium text-ink">
-          {entry.href ? <span className="sr-only">{labels.open}: </span> : null}
-          {primary}
-        </p>
-        {secondary ? (
-          <p className="mt-0.5 truncate text-xs leading-5 text-ink-muted">{secondary}</p>
-        ) : null}
-        <div className="mt-0.5 flex min-w-0 items-baseline gap-x-2 sm:hidden">
-          <span className="shrink-0 text-[0.65rem] font-bold uppercase tracking-[0.12em] text-ink-subtle">
-            {kind}
-          </span>
-          {entry.status ? (
-            <StatusLabel tone={entry.status.tone} className="min-w-0 truncate">
-              {entry.status.label}
-            </StatusLabel>
-          ) : null}
-        </div>
-      </div>
-      <div className="hidden min-w-0 overflow-hidden sm:block">
-        <p className="truncate text-[0.65rem] font-bold uppercase tracking-[0.12em] text-ink">
-          {kind}
-        </p>
-        {entry.status ? (
-          <StatusLabel tone={entry.status.tone} className="mt-0.5 truncate">
-            {entry.status.label}
-          </StatusLabel>
-        ) : (
-          <p className="mt-0.5 text-[0.7rem] uppercase tracking-[0.2em] text-ink-subtle">—</p>
-        )}
-      </div>
-    </>
-  );
 
   return (
     <li data-kind={entry.kind} className="border-b border-line-soft last:border-b-0">
       {entry.href ? (
         <Link
           href={entry.href}
-          className={`grid min-h-11 items-start gap-x-3 px-3 py-2 transition-colors duration-150 ease-standard hover:bg-hover focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ink sm:px-4 ${columns}`}
+          className={`grid min-h-11 grid-cols-[3.5rem_minmax(0,1fr)] items-start gap-x-3 px-3 transition-colors duration-150 ease-standard hover:bg-hover focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ink ${
+            compact ? "py-1.5" : "py-2"
+          }`}
         >
           <TimeMark timeLabel={entry.when.timeLabel} timed={timed} />
-          {body}
-          <span className="hidden self-center text-ink-subtle sm:block" aria-hidden="true">
-            <ChevronRightIcon />
-          </span>
+          <RowCopy
+            primary={primary}
+            secondary={secondary}
+            kind={kind}
+            status={entry.status}
+            openLabel={labels.open}
+          />
         </Link>
       ) : (
-        <div className={`grid min-h-11 items-start gap-x-3 px-3 py-2 sm:px-4 ${columns}`}>
+        <div
+          className={`grid min-h-11 grid-cols-[3.5rem_minmax(0,1fr)] items-start gap-x-3 px-3 ${
+            compact ? "py-1.5" : "py-2"
+          }`}
+        >
           <TimeMark timeLabel={entry.when.timeLabel} timed={timed} />
-          {body}
+          <RowCopy
+            primary={primary}
+            secondary={secondary}
+            kind={kind}
+            status={entry.status}
+          />
         </div>
       )}
 
       {actions ? (
-        <div className="border-t border-line-soft px-3 py-2 sm:px-4 sm:pl-[5rem]">
+        <div className="border-t border-line-soft px-3 py-2 sm:pl-[4.75rem]">
           <ActivityRowActions entry={entry} labels={labels.actionLabels} />
         </div>
       ) : null}
     </li>
+  );
+}
+
+function RowCopy({
+  primary,
+  secondary,
+  kind,
+  status,
+  openLabel,
+}: {
+  primary: string;
+  secondary: string | null;
+  kind: string;
+  status: ActivityEntry["status"];
+  openLabel?: string;
+}) {
+  return (
+    <div className="min-w-0">
+      <p className="truncate font-medium text-ink">
+        {openLabel ? <span className="sr-only">{openLabel}: </span> : null}
+        {primary}
+      </p>
+      {secondary ? (
+        <p className="mt-0.5 truncate text-xs leading-5 text-ink-muted">{secondary}</p>
+      ) : null}
+      <div className="mt-0.5 flex min-w-0 items-baseline gap-x-2">
+        <span className="shrink-0 text-[0.65rem] font-bold uppercase tracking-[0.12em] text-ink-subtle">
+          {kind}
+        </span>
+        {status ? (
+          <StatusLabel tone={status.tone} className="min-w-0 truncate">
+            {status.label}
+          </StatusLabel>
+        ) : null}
+      </div>
+    </div>
   );
 }
 

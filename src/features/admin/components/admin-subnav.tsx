@@ -75,16 +75,18 @@ export function AdminSubnav({
   current,
   label,
   labels,
+  className = "mt-6",
 }: {
   current: AdminSection;
   /** Names the landmark itself; the tab labels name the destinations. */
   label: string;
   labels: Record<AdminSection, string>;
+  className?: string;
 }) {
   return (
     <nav
       aria-label={label}
-      className="mt-6 flex gap-5 overflow-x-auto overscroll-x-contain border-b border-line [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      className={`flex min-w-0 gap-5 overflow-x-auto overscroll-x-contain border-b border-line [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${className}`}
     >
       {order.map((section) => {
         const active = section === current;

@@ -100,11 +100,14 @@ or removed in place, removal behind a second click and recorded as
 `WAITLIST_ENTRY_REMOVED`. This is a read-and-act surface over existing data: no
 new domain, no schema change beyond the audit action. Not a new checkpoint.
 
-Review pass (2026-09-17): the control panel is now a compact briefing rather
-than a filter-first dashboard. Channel counts sit in a two-row (one-row from
-`lg`) hairline strip; period, search and the visible count share one toolbar;
-the same calendar-dense rows render on phone and desktop, grouped by Zurich day
-in Upcoming and History. No schema or query change.
+Review pass (2026-09-17): the control panel is one viewport board. Today,
+Upcoming and History read in parallel and render as three simultaneous panes
+(equal columns from `lg`; stacked on a phone with Today larger). The shell
+locks to `100dvh` and drops the footer so the page does not scroll; each pane
+scrolls internally. The default list is live activity — `kind=all` excludes the
+audit log, which remains a quieter spotlight. Search and an optional channel
+narrow every pane at once; History pages with `hp`. Legacy `when=history&page=`
+still maps onto that page. No schema change.
 
 Extra-roadmap (2026-09-17): public school copy. The homepage method section is
 now “Pourquoi choisir mhp | coaching”: seven equal blocks with stable ids,

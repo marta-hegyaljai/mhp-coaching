@@ -3,48 +3,50 @@ import {describe, expect, it} from "vitest";
 import {
   ACTIVITY_MAX_PAGE,
   activityFilterHref,
+  activityHistoryPageHref,
   activityHref,
-  activityPageHref,
   parseActivityQuery,
 } from "./query";
 
 describe("parseActivityQuery", () => {
-  it("defaults to today across every channel", () => {
+  it("defaults to the live board with History on its first page", () => {
     expect(parseActivityQuery({})).toEqual({
-      when: "today",
       kind: "all",
       q: "",
-      page: 1,
+      historyPage: 1,
     });
   });
 
-  it("reads a valid window, channel, search and page", () => {
+  it("reads a channel, search and History page", () => {
     expect(
-      parseActivityQuery({when: "history", kind: "waitlist", q: "  ada  ", page: "3"}),
-    ).toEqual({when: "history", kind: "waitlist", q: "ada", page: 3});
+      parseActivityQuery({kind: "waitlist", q: "  ada  ", hp: "3"}),
+    ).toEqual({kind: "waitlist", q: "ada", historyPage: 3});
   });
 
-  it("falls back on unknown windows and channels instead of throwing", () => {
-    expect(parseActivityQuery({when: "tomorrow", kind: "invoices"})).toMatchObject({
-      when: "today",
-      kind: "all",
+  it("maps a legacy History deep link onto the History page", () => {
+    expect(parseActivityQuery({when: "history", page: "4"})).toMatchObject({
+      historyPage: 4,
     });
+  });
+
+  it("falls back on unknown channels instead of throwing", () => {
+    expect(parseActivityQuery({kind: "invoices"})).toMatchObject({kind: "all"});
   });
 
   it("takes the first value of a repeated parameter", () => {
-    expect(
-      parseActivityQuery({when: ["upcoming", "history"], kind: ["call", "message"]}),
-    ).toMatchObject({when: "upcoming", kind: "call"});
+    expect(parseActivityQuery({kind: ["call", "message"]})).toMatchObject({
+      kind: "call",
+    });
   });
 
-  it("rejects non-positive, fractional and non-numeric pages", () => {
-    for (const page of ["0", "-2", "abc", "", "1.5e400"]) {
-      expect(parseActivityQuery({page}).page).toBe(1);
+  it("rejects non-positive, fractional and non-numeric History pages", () => {
+    for (const hp of ["0", "-2", "abc", "", "1.5e400"]) {
+      expect(parseActivityQuery({hp}).historyPage).toBe(1);
     }
   });
 
   it("caps the page so the per-channel read depth stays bounded", () => {
-    expect(parseActivityQuery({page: "999999"}).page).toBe(ACTIVITY_MAX_PAGE);
+    expect(parseActivityQuery({hp: "999999"}).historyPage).toBe(ACTIVITY_MAX_PAGE);
   });
 
   it("caps the search length", () => {
@@ -53,32 +55,32 @@ describe("parseActivityQuery", () => {
 });
 
 describe("activityHref", () => {
-  it("keeps the default view on a clean path", () => {
+  it("keeps the default board on a clean path", () => {
     expect(activityHref()).toEqual({pathname: "/admin/overview", query: {}});
   });
 
   it("serializes only what differs from the default", () => {
-    expect(activityHref({when: "history", kind: "message", q: "ada", page: 2})).toEqual({
+    expect(activityHref({kind: "message", q: "ada", historyPage: 2})).toEqual({
       pathname: "/admin/overview",
-      query: {when: "history", kind: "message", q: "ada", page: "2"},
+      query: {kind: "message", q: "ada", hp: "2"},
     });
   });
 
-  it("returns to the first page when the window or channel changes", () => {
-    const query = {when: "history", kind: "message", q: "ada", page: 4} as const;
+  it("returns History to the first page when the channel changes", () => {
+    const query = {kind: "message", q: "ada", historyPage: 4} as const;
 
-    expect(activityFilterHref(query, {when: "upcoming"})).toEqual({
+    expect(activityFilterHref(query, {kind: "waitlist"})).toEqual({
       pathname: "/admin/overview",
-      query: {when: "upcoming", kind: "message", q: "ada"},
+      query: {kind: "waitlist", q: "ada"},
     });
   });
 
-  it("keeps the window, channel and search while paging", () => {
-    const query = {when: "history", kind: "waitlist", q: "ada", page: 1} as const;
+  it("keeps the channel and search while paging History", () => {
+    const query = {kind: "waitlist", q: "ada", historyPage: 1} as const;
 
-    expect(activityPageHref(query, 3)).toEqual({
+    expect(activityHistoryPageHref(query, 3)).toEqual({
       pathname: "/admin/overview",
-      query: {when: "history", kind: "waitlist", q: "ada", page: "3"},
+      query: {kind: "waitlist", q: "ada", hp: "3"},
     });
   });
 });

@@ -180,13 +180,17 @@ primary action behind an ambiguous icon.
   scatter a segmented control, a checkbox and a layout switch as loose rows.
   The screen leads with `<PageHeader>`: title, one line of orientation and the
   single primary action on the title line, so the records stay near the fold.
-- The admin control panel is that pattern applied to mixed records: a compact
-  channel-count strip, one toolbar (period, search, visible count) and a single
-  calendar-dense timeline at every breakpoint. Time leads each row; the person
-  or title is the scan target; the channel is an uppercase qualifier, never a
-  bordered chip. Upcoming and History group on the Zurich day so the date is
-  not repeated on every row. Do not split the same entries into a wide table
-  and a stack of cards.
+- The admin control panel is one viewport board, not a filter-first timeline.
+  Today, Upcoming and History are three simultaneous panes: equal columns from
+  `lg`, a stacked board on a phone with Today given the larger share. The page
+  itself does not scroll; each pane does. Default rows are live school activity
+  (registrations, reservations, calls, messages, waiting lists). The audit log
+  is a quieter spotlight in the pane header, never the thing that buries the
+  day. One search covers every pane. Time leads each row; the person or title
+  is the scan target; the channel is an uppercase qualifier, never a bordered
+  chip. Upcoming and History group on the Zurich day so the date is not
+  repeated on every row. Do not split the same entries into a wide table and a
+  stack of cards.
 - Reordering swaps neighbours in the full catalogue, so offer the move controls
   only on the unfiltered list and say why they are gone otherwise.
 - Status styles remain monochrome and textual on public catalogue and

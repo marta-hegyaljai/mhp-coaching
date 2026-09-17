@@ -3,8 +3,8 @@ import type {StatusTone} from "@/shared/ui/status-label";
 
 /**
  * One operational channel on the control panel. Every admin-visible record in
- * the product normalizes into exactly one of these so the panel can present a
- * single chronological list instead of six separate screens.
+ * the product normalizes into exactly one of these so Today, Upcoming and
+ * History can share one briefing instead of six separate screens.
  */
 export const ACTIVITY_KINDS = [
   "registration",
@@ -17,7 +17,9 @@ export const ACTIVITY_KINDS = [
 
 export type ActivityKind = (typeof ACTIVITY_KINDS)[number];
 
-/** Which slice of time the panel is showing. */
+export type ActivityKindFilter = ActivityKind | "all";
+
+/** Which slice of time a column on the board is showing. */
 export const ACTIVITY_WINDOWS = ["today", "upcoming", "history"] as const;
 
 export type ActivityWindow = (typeof ACTIVITY_WINDOWS)[number];

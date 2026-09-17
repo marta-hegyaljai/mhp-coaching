@@ -9,9 +9,8 @@ export type ActivityListLabels = ActivityRowLabels & {
 };
 
 /**
- * One timeline at every breakpoint: day headings when the window spans more
- * than today, then calendar-dense rows. The same records used to split into a
- * wide table and a stack of cards; both hid the next row behind scrolling.
+ * Day headings when the window spans more than today, then calendar-dense
+ * rows. The board supplies the frame; a standalone list can keep its own.
  */
 export function ActivityList({
   entries,
@@ -20,6 +19,9 @@ export function ActivityList({
   todayLabel,
   locale,
   labels,
+  framed = true,
+  compact = false,
+  stickyHeadings = false,
 }: {
   entries: ActivityEntry[];
   when: ActivityWindow;
@@ -27,24 +29,36 @@ export function ActivityList({
   todayLabel: string;
   locale: AppLocale;
   labels: ActivityListLabels;
+  framed?: boolean;
+  compact?: boolean;
+  stickyHeadings?: boolean;
 }) {
   const groups = groupActivityEntries(entries, when, locale, today, todayLabel);
 
   return (
     <ul
       aria-label={labels.list}
-      className="overflow-hidden rounded-panel border border-ink"
+      className={framed ? "overflow-hidden rounded-panel border border-ink" : ""}
     >
       {groups.map((group, index) => (
         <li key={group.key} className={index > 0 ? "border-t border-ink" : ""}>
           {group.label ? (
-            <h2 className="border-b border-line bg-white px-3 py-1.5 font-sans text-[0.65rem] font-bold uppercase leading-4 tracking-[0.12em] text-ink-subtle sm:px-4">
+            <h3
+              className={`border-b border-line px-3 py-1.5 font-sans text-[0.65rem] font-bold uppercase leading-4 tracking-[0.12em] text-ink-subtle ${
+                stickyHeadings ? "sticky top-0 z-10 bg-white" : "bg-white"
+              }`}
+            >
               {group.label}
-            </h2>
+            </h3>
           ) : null}
           <ul>
             {group.entries.map((entry) => (
-              <ActivityRow key={entry.id} entry={entry} labels={labels} />
+              <ActivityRow
+                key={entry.id}
+                entry={entry}
+                labels={labels}
+                compact={compact}
+              />
             ))}
           </ul>
         </li>
