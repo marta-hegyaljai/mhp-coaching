@@ -19,6 +19,7 @@ import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {BackLink} from "@/shared/ui/back-link";
 import {Eyebrow, Section} from "@/shared/ui/layout";
+import {StatusLabel} from "@/shared/ui/status-label";
 
 type AdminUserDetailPageProps = {
   params: Promise<{locale: AppLocale; id: string}>;
@@ -81,13 +82,17 @@ export default async function AdminUserDetailPage({
         <p className="mt-4 font-sans text-lg font-medium break-all">{view.email}</p>
         <p className="mt-2 text-sm leading-7 text-ink-muted">
           {view.firstName} {view.lastName}
-          {" · "}
+        </p>
+        <StatusLabel
+          className="mt-3"
+          tone={view.disabled ? "stop" : view.pendingInvite ? "gold" : "ok"}
+        >
           {view.disabled
             ? t("statusDisabled")
             : view.pendingInvite
               ? t("statusPending")
               : t("statusActive")}
-        </p>
+        </StatusLabel>
         <p className="mt-3">
           <Link
             href={{pathname: "/admin/billing/[userId]", params: {userId: user.id}}}

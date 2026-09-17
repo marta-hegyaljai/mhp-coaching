@@ -1,5 +1,6 @@
 import type {AdminUserView} from "@/features/admin/user-view";
 import {Link} from "@/i18n/navigation";
+import {StatusLabel, statusRailClass, type StatusTone} from "@/shared/ui/status-label";
 
 export function AdminUserTable({
   users,
@@ -51,21 +52,20 @@ export function AdminUserTable({
           </tr>
         </thead>
         <tbody>
-          {users.map((user) => (
+          {users.map((user) => {
+            const status = userStatus(user, labels);
+
+            return (
             <tr
               key={user.id}
-              className="border-b border-line-soft last:border-b-0 transition-colors duration-150 ease-standard hover:bg-hover"
+              className={`border-b border-line-soft last:border-b-0 transition-colors duration-150 ease-standard hover:bg-hover ${statusRailClass(status.tone)}`}
             >
               <td className="px-4 py-3 align-top font-medium break-all text-ink">{user.email}</td>
               <td className="px-4 py-3 align-top text-ink">
                 {user.firstName} {user.lastName}
               </td>
-              <td className="px-4 py-3 align-top text-ink">
-                {user.disabled
-                  ? labels.statusDisabled
-                  : user.pendingInvite
-                    ? labels.statusPending
-                    : labels.statusActive}
+              <td className="px-4 py-3 align-top">
+                <StatusLabel tone={status.tone}>{status.label}</StatusLabel>
               </td>
               <td className="px-4 py-3 align-top text-ink">{accessLabel(user, labels)}</td>
               <td className="px-4 py-3 align-top">
@@ -77,11 +77,29 @@ export function AdminUserTable({
                 </Link>
               </td>
             </tr>
-          ))}
+            );
+          })}
         </tbody>
       </table>
     </div>
   );
+}
+
+function userStatus(
+  user: AdminUserView,
+  labels: {
+    statusActive: string;
+    statusDisabled: string;
+    statusPending: string;
+  },
+): {label: string; tone: StatusTone} {
+  if (user.disabled) {
+    return {label: labels.statusDisabled, tone: "stop"};
+  }
+  if (user.pendingInvite) {
+    return {label: labels.statusPending, tone: "gold"};
+  }
+  return {label: labels.statusActive, tone: "ok"};
 }
 
 function accessLabel(

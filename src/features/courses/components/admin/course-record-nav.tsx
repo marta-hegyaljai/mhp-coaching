@@ -76,7 +76,15 @@ export function CourseRecordNav({
           >
             <span className="min-w-0">{item.label}</span>
             {item.count !== undefined ? (
-              <span className="font-sans tabular-nums tracking-normal">{item.count}</span>
+              <span
+                className={`font-sans tabular-nums tracking-normal ${
+                  !selected && item.key === "waitlist" && item.count > 0
+                    ? "text-gold-deep"
+                    : ""
+                }`}
+              >
+                {item.count}
+              </span>
             ) : null}
           </Link>
         );

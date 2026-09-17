@@ -107,6 +107,7 @@ export default async function AdminBookingsPage({params, searchParams}: AdminBoo
               key: "today",
               label: t("metricToday"),
               value: metrics.today,
+              tone: "gold",
               href: adminBookingListHref({
                 ...query,
                 view: "day",
@@ -118,6 +119,7 @@ export default async function AdminBookingsPage({params, searchParams}: AdminBoo
               key: "confirmed",
               label: t("filterConfirmed"),
               value: metrics.confirmed,
+              tone: "ok",
               href: adminBookingListHref({
                 ...query,
                 status: "CONFIRMED",
@@ -129,6 +131,7 @@ export default async function AdminBookingsPage({params, searchParams}: AdminBoo
               key: "cancelled",
               label: t("filterCancelled"),
               value: metrics.cancelled,
+              tone: "stop",
               href: adminBookingListHref({
                 ...query,
                 status: "all",

@@ -116,7 +116,7 @@ function toEntry(
     detail: formatChf(minorUnitsToFrancs(chargeable), locale),
     status: {
       label: copy.reservationStatus(row.booking.status),
-      tone: row.booking.status === "CONFIRMED" ? "strong" : "muted",
+      tone: row.booking.status === "CONFIRMED" ? "ok" : "stop",
     },
     href: {pathname: "/admin/bookings/[id]", params: {id: row.booking.id}},
     source: {kind: "reservation", bookingId: row.booking.id},

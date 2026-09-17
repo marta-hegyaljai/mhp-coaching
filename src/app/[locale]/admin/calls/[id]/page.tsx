@@ -68,7 +68,7 @@ export default async function AdminCallDetailPage({params}: AdminCallPageProps) 
         <h1 className="mt-6 font-serif text-heading">{name}</h1>
         <StatusLabel
           className="mt-3"
-          tone={call.status === "SCHEDULED" ? "strong" : "muted"}
+          tone={call.status === "SCHEDULED" ? "ok" : "stop"}
         >
           {call.status === "SCHEDULED" ? t("callStatusScheduled") : t("callStatusCancelled")}
         </StatusLabel>

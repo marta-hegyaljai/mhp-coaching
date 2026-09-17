@@ -32,6 +32,7 @@ import {BackLink} from "@/shared/ui/back-link";
 import {Chip} from "@/shared/ui/chip";
 import {Eyebrow, Section} from "@/shared/ui/layout";
 import {Price} from "@/shared/ui/price";
+import {StatusLabel, statusRailClass} from "@/shared/ui/status-label";
 
 type AdminCourseDetailPageProps = {
   params: Promise<{locale: AppLocale; id: string}>;
@@ -115,7 +116,7 @@ export default async function AdminCourseDetailPage({
         <h1 className="mt-5 font-serif text-heading">{course.title[locale]}</h1>
         <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5">
           {!isCoursePublished(course) ? (
-            <Chip tone="strong">{t("coursesPublishedNo")}</Chip>
+            <StatusLabel tone="stop">{t("coursesPublishedNo")}</StatusLabel>
           ) : null}
           {isProgrammeCourse(course) ? <Chip>{t("coursesFormat_programme")}</Chip> : null}
           <Price size="sm">{formatChf(course.priceChf, locale, {compact: true})}</Price>
@@ -231,7 +232,10 @@ export default async function AdminCourseDetailPage({
                     </thead>
                     <tbody>
                       {waitlist.map((entry) => (
-                        <tr key={entry.id} className="border-b border-line/70">
+                        <tr
+                          key={entry.id}
+                          className={`border-b border-line/70 ${statusRailClass(entry.notifiedAt ? "ok" : "gold")}`}
+                        >
                           <td className="py-3 pr-4">
                             {entry.firstName} {entry.lastName}
                           </td>
@@ -247,7 +251,9 @@ export default async function AdminCourseDetailPage({
                           </td>
                           <td className="py-3 pr-4">
                             {entry.notifiedAt ? (
-                              entry.notifiedAt.toISOString().slice(0, 10)
+                              <StatusLabel tone="ok">
+                                {entry.notifiedAt.toISOString().slice(0, 10)}
+                              </StatusLabel>
                             ) : (
                               <WaitlistNotifyButton
                                 courseId={course.id}

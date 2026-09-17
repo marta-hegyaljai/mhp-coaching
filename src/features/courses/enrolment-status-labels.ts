@@ -1,4 +1,5 @@
 import type {BookingStatus} from "@/db/schema";
+import type {StatusTone} from "@/shared/ui/status-label";
 
 /**
  * One localized name per course-enrolment status, shared by the course record
@@ -16,4 +17,18 @@ export function enrolmentStatusLabels(copy: {
     FAILED: copy.admin("coursesStatusFailed"),
     CANCELLED: copy.admin("coursesStatusCancelled"),
   };
+}
+
+/** Paid is healthy, pending needs attention, failed/cancelled stop the row. */
+export function enrolmentStatusTone(status: BookingStatus): StatusTone {
+  if (status === "PAID") {
+    return "ok";
+  }
+  if (status === "PENDING" || status === "LEAD" || status === "REFUNDED") {
+    return "gold";
+  }
+  if (status === "FAILED" || status === "CANCELLED") {
+    return "stop";
+  }
+  return "muted";
 }

@@ -1,5 +1,5 @@
 import {Link} from "@/i18n/navigation";
-import {StatusLabel} from "@/shared/ui/status-label";
+import {StatusLabel, statusRailClass} from "@/shared/ui/status-label";
 
 import type {ActivityEntry, ActivityKind} from "../types";
 import {
@@ -44,7 +44,10 @@ export function ActivityRow({
   const timed = Boolean(entry.when.timeLabel);
 
   return (
-    <li data-kind={entry.kind} className="border-b border-line-soft last:border-b-0">
+    <li
+      data-kind={entry.kind}
+      className={`border-b border-line-soft last:border-b-0 ${statusRailClass(entry.status?.tone)}`}
+    >
       {entry.href ? (
         <Link
           href={entry.href}

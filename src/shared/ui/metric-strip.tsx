@@ -9,6 +9,8 @@ export type Metric = {
   value: number | string;
   /** Set when the metric narrows the list below to exactly what it counts. */
   href?: ComponentProps<typeof Link>["href"];
+  /** Colour the figure when it needs scanning: ok, stop or gold. */
+  tone?: "ok" | "stop" | "gold";
 };
 
 export type MetricStripDensity = "card" | "compact" | "trio";
@@ -64,7 +66,13 @@ export function MetricStrip({
               : ""
           }`}
         >
-          <dt className="text-[0.7rem] font-bold uppercase tracking-[0.18em] text-ink-subtle">
+          <dt
+            className={`text-[0.7rem] font-bold uppercase tracking-[0.18em] ${
+              metric.tone === "gold" && hasAttentionValue(metric.value)
+                ? "text-gold-deep"
+                : "text-ink-subtle"
+            }`}
+          >
             {metric.href ? (
               <Link
                 href={metric.href}
@@ -77,7 +85,7 @@ export function MetricStrip({
             )}
           </dt>
           <dd
-            className={`mt-1 flex items-center gap-2 font-sans font-semibold tabular-nums text-ink ${style.value}`}
+            className={`mt-1 flex items-center gap-2 font-sans font-semibold tabular-nums ${style.value} ${metricToneClass(metric)}`}
           >
             {metric.value}
             {metric.href ? <ChevronRightIcon className="text-ink-subtle" /> : null}
@@ -86,4 +94,22 @@ export function MetricStrip({
       ))}
     </dl>
   );
+}
+
+function metricToneClass(metric: Metric): string {
+  if (!metric.tone || !hasAttentionValue(metric.value)) {
+    return "text-ink";
+  }
+
+  if (metric.tone === "ok") {
+    return "text-status-ok";
+  }
+  if (metric.tone === "stop") {
+    return "text-status-stop";
+  }
+  return "text-gold-deep";
+}
+
+function hasAttentionValue(value: number | string): boolean {
+  return typeof value === "number" ? value > 0 : value !== "0";
 }

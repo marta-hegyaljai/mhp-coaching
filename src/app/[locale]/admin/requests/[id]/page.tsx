@@ -102,7 +102,7 @@ export default async function AdminRequestDetailPage({
 
         <div className="mt-8 max-w-xl space-y-6">
           <Panel as="article">
-            <StatusLabel tone={request.status === "OPEN" ? "strong" : "muted"}>
+            <StatusLabel tone={request.status === "OPEN" ? "gold" : request.status === "DECLINED" ? "stop" : "ok"}>
               {statusLabel}
             </StatusLabel>
             <div className="mt-3">

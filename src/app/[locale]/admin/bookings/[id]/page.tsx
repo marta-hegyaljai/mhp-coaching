@@ -167,7 +167,7 @@ export default async function AdminBookingDetailPage({
 
         <div className="mt-8 max-w-xl space-y-6">
           <Panel as="article">
-            <StatusLabel tone={booking.status === "CANCELLED" ? "muted" : "strong"}>
+            <StatusLabel tone={booking.status === "CANCELLED" ? "stop" : "ok"}>
               {roomsCopy(keys.status)}
             </StatusLabel>
             <div className="mt-3">

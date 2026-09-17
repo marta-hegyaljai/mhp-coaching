@@ -59,7 +59,7 @@ export function ActivityColumn({
     >
       <header className="shrink-0 border-b border-line px-3 py-2">
         <div className="flex items-baseline justify-between gap-3">
-          <h2 className="font-sans text-[0.7rem] font-bold uppercase tracking-[0.16em] text-ink">
+          <h2 className="font-sans text-[0.7rem] font-bold uppercase tracking-[0.16em] text-gold-deep">
             {title}
           </h2>
           <p className="font-sans text-sm font-semibold tabular-nums text-ink">{listed}</p>
@@ -153,7 +153,11 @@ function Spotlight({
       href={activityFilterHref(query, {kind: current ? "all" : kind})}
       aria-current={current ? "page" : undefined}
       className={`underline-offset-4 hover:underline ${
-        current ? "text-ink" : "text-ink-subtle"
+        current
+          ? "text-ink"
+          : kind === "waitlist" || kind === "message"
+            ? "text-gold-deep"
+            : "text-ink-subtle"
       }`}
     >
       {count} {label}

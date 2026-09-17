@@ -109,6 +109,14 @@ audit log, which remains a quieter spotlight. Search and an optional channel
 narrow every pane at once; History pages with `hp`. Legacy `when=history&page=`
 still maps onto that page. No schema change.
 
+Extra-roadmap (2026-09-17): admin operational screens use the existing
+`gold-deep`, `status-ok` and `status-stop` tokens for status type and a 3px
+left rail. Gold marks selected admin subnav, pane titles, attention metrics
+and pending / waitlist / open / no-date states; green is healthy; red is
+stopped. Public catalogue and calendar stay monochrome. Shared through
+`StatusLabel`, `statusRailClass` and optional `MetricStrip` tones. Not a new
+checkpoint.
+
 Extra-roadmap (2026-09-17): public school copy. The homepage method section is
 now “Pourquoi choisir mhp | coaching”: seven equal blocks with stable ids,
 detail pages (curriculum, pedagogy, recognitions, faculty, supervision, method,

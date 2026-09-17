@@ -2,6 +2,7 @@ import {and, asc, desc, gte, lt, or, sql, type SQL} from "drizzle-orm";
 
 import {getDb} from "@/db";
 import {bookings, type Booking} from "@/db/schema";
+import {enrolmentStatusTone} from "@/features/courses/enrolment-status-labels";
 import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
 import {todayInZurich, zurichDayRange} from "@/features/rooms/timezone";
 import type {AppLocale} from "@/i18n/routing";
@@ -52,10 +53,6 @@ function scheduledDay(booking: Booking): string | null {
   return /^\d{4}-\d{2}-\d{2}$/.test(booking.courseDateStart)
     ? booking.courseDateStart
     : null;
-}
-
-function statusTone(status: Booking["status"]) {
-  return status === "PAID" || status === "PENDING" ? "strong" : "muted";
 }
 
 function where(bounds: ActivityBounds, q: string): SQL | undefined {
@@ -159,7 +156,7 @@ function toEntry(
     detail: [booking.location, amount].filter(Boolean).join(" · "),
     status: {
       label: copy.registrationStatus(booking.status),
-      tone: statusTone(booking.status),
+      tone: enrolmentStatusTone(booking.status),
     },
     href: {
       pathname: "/admin/courses/[id]",

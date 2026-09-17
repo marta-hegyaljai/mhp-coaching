@@ -7,9 +7,10 @@ import {formatLocalDate} from "@/features/rooms/timezone";
 import type {AppLocale} from "@/i18n/routing";
 import {Link} from "@/i18n/navigation";
 import type {PathnameHref} from "@/i18n/href";
+import {statementStatusTone} from "@/features/rooms/components/statement-status";
 import {Panel} from "@/shared/ui/panel";
 import {Price} from "@/shared/ui/price";
-import {StatusLabel} from "@/shared/ui/status-label";
+import {StatusLabel, statusRailClass} from "@/shared/ui/status-label";
 
 export async function StatementCardGrid({
   locale,
@@ -43,15 +44,9 @@ export async function StatementCardGrid({
             <Link
               href={hrefFor(statement)}
               aria-label={`${t(`statementStatus.${statement.status}`)} ${label}`}
-              className="block h-full rounded-panel border border-ink bg-white p-5 transition-colors duration-150 ease-standard hover:bg-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+              className={`block h-full rounded-panel border border-ink bg-white p-5 transition-colors duration-150 ease-standard hover:bg-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink ${statusRailClass(statementStatusTone(statement.status))}`}
             >
-              <StatusLabel
-                tone={
-                  statement.status === "OPEN"
-                    ? "muted"
-                    : "strong"
-                }
-              >
+              <StatusLabel tone={statementStatusTone(statement.status)}>
                 {t(`statementStatus.${statement.status}`)}
               </StatusLabel>
               <p className="mt-3 font-serif text-[clamp(1.15rem,1.4vw,1.35rem)] capitalize leading-[1.15]">

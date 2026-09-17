@@ -98,7 +98,7 @@ export function AdminSubnav({
             aria-current={active ? "page" : undefined}
             className={`${itemClass} shrink-0 ${
               active
-                ? "border-ink text-ink"
+                ? "border-gold-deep text-gold-deep"
                 : "border-transparent text-ink-muted hover:text-ink"
             }`}
           >

@@ -11,7 +11,7 @@ import {
 import type {CertificateCardView} from "@/features/certificates/views";
 import {buttonStyles, Button} from "@/shared/ui/button";
 import {DownloadIcon} from "@/shared/ui/icons";
-import {StatusLabel} from "@/shared/ui/status-label";
+import {StatusLabel, statusRailClass, type StatusTone} from "@/shared/ui/status-label";
 
 export function AdminCertificateRow({
   locale,
@@ -34,7 +34,7 @@ export function AdminCertificateRow({
   const editable = certificate.status === "ACTIVE";
 
   return (
-    <li className="rounded-panel border border-ink bg-white p-5">
+    <li className={`rounded-panel border border-ink bg-white p-5 ${statusRailClass(certificateTone(certificate.documentState))}`}>
       <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
         <div>
           <p className="font-medium leading-tight">{certificate.courseTitle}</p>
@@ -42,7 +42,7 @@ export function AdminCertificateRow({
             {t("issuedOn")}: {certificate.issuedOnLabel}
           </p>
         </div>
-        <StatusLabel tone={certificate.documentState === "available" ? "strong" : "muted"}>
+        <StatusLabel tone={certificateTone(certificate.documentState)}>
           {statusLabel(certificate.documentState, t)}
         </StatusLabel>
       </div>
@@ -104,6 +104,16 @@ export function AdminCertificateRow({
       ) : null}
     </li>
   );
+}
+
+function certificateTone(state: CertificateCardView["documentState"]): StatusTone {
+  if (state === "available") {
+    return "ok";
+  }
+  if (state === "revoked") {
+    return "stop";
+  }
+  return "gold";
 }
 
 function statusLabel(

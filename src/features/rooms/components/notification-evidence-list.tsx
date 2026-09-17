@@ -2,7 +2,7 @@ import {getTranslations} from "next-intl/server";
 
 import {publicNotificationProjection} from "@/features/rooms/notifications";
 import {Panel} from "@/shared/ui/panel";
-import {StatusLabel} from "@/shared/ui/status-label";
+import {StatusLabel, statusRailClass, type StatusTone} from "@/shared/ui/status-label";
 
 type NotificationRow = ReturnType<typeof publicNotificationProjection>;
 
@@ -26,9 +26,9 @@ export async function NotificationEvidenceList({
     <ul className="mt-5 grid gap-3">
       {rows.map((row) => (
         <li key={row.id}>
-          <Panel padding="sm">
+          <Panel padding="sm" className={statusRailClass(notificationStatusTone(row.status))}>
             <div className="flex flex-wrap items-baseline justify-between gap-3">
-              <StatusLabel tone={row.status === "SENT" ? "strong" : "muted"}>
+              <StatusLabel tone={notificationStatusTone(row.status)}>
                 {t(`notificationStatus.${row.status}`)}
               </StatusLabel>
               <p className="font-sans text-xs tabular-nums text-ink-muted">
@@ -52,4 +52,17 @@ export async function NotificationEvidenceList({
       ))}
     </ul>
   );
+}
+
+function notificationStatusTone(status: NotificationRow["status"]): StatusTone {
+  if (status === "SENT") {
+    return "ok";
+  }
+  if (status === "FAILED") {
+    return "stop";
+  }
+  if (status === "PENDING") {
+    return "gold";
+  }
+  return "muted";
 }

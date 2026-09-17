@@ -66,6 +66,7 @@ export function AdminSessionList({
         summary.upcoming > 0
           ? courseDetailHref(course.id, {tab: "sessions", show: "upcoming"})
           : undefined,
+      tone: "ok",
     },
     {
       key: "inactive",
@@ -75,6 +76,7 @@ export function AdminSessionList({
         summary.inactive > 0
           ? courseDetailHref(course.id, {tab: "sessions", show: "inactive"})
           : undefined,
+      tone: "stop",
     },
     {
       key: "past",
