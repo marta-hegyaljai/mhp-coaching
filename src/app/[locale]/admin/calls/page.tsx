@@ -24,7 +24,7 @@ import {Eyebrow, Section} from "@/shared/ui/layout";
 import {PageHeader} from "@/shared/ui/page-header";
 import {Pagination} from "@/shared/ui/pagination";
 import {SegmentedLinks} from "@/shared/ui/segmented-links";
-import {StatusLabel} from "@/shared/ui/status-label";
+import {StatusLabel, statusRailClass} from "@/shared/ui/status-label";
 
 type AdminCallsPageProps = {
   params: Promise<{locale: AppLocale}>;
@@ -222,10 +222,10 @@ async function Agenda({
               <li key={call.id}>
                 <Link
                   href={{pathname: "/admin/calls/[id]", params: {id: call.id}}}
-                  className="flex flex-col gap-2 rounded-panel border border-ink bg-white px-5 py-4 transition-colors duration-150 hover:bg-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink sm:flex-row sm:items-center sm:justify-between"
+                  className={`flex flex-col gap-2 rounded-panel border border-ink bg-white px-5 py-4 transition-colors duration-150 hover:bg-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink sm:flex-row sm:items-center sm:justify-between ${statusRailClass(call.status === "SCHEDULED" ? "ok" : "stop")}`}
                 >
                   <div className="min-w-0">
-                    <StatusLabel tone={call.status === "SCHEDULED" ? "strong" : "muted"}>
+                    <StatusLabel tone={call.status === "SCHEDULED" ? "ok" : "stop"}>
                       {call.status === "SCHEDULED" ? labels.scheduled : labels.cancelled}
                     </StatusLabel>
                     <p className="mt-2 font-medium text-ink">
@@ -319,7 +319,7 @@ async function Messages({
             <li key={inquiry.id}>
               <Link
                 href={{pathname: "/admin/calls/messages/[id]", params: {id: inquiry.id}}}
-                className="block rounded-panel border border-ink bg-white px-5 py-4 transition-colors duration-150 hover:bg-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+                className={`block rounded-panel border border-ink bg-white px-5 py-4 transition-colors duration-150 hover:bg-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink ${statusRailClass("gold")}`}
               >
                 <p className="font-medium text-ink">
                   {callPersonName(inquiry.firstName, inquiry.lastName)}

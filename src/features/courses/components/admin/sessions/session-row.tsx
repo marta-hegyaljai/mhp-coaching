@@ -7,6 +7,7 @@ import {sessionAvailabilityOf} from "@/features/courses/types";
 import type {AppLocale} from "@/i18n/routing";
 import {Chip} from "@/shared/ui/chip";
 import {ChevronDownIcon} from "@/shared/ui/icons";
+import {statusRailClass, statusToneClass} from "@/shared/ui/status-label";
 
 import {occupancyRatio, type SessionEntry} from "./model";
 import {SessionEditor} from "./session-editor";
@@ -41,7 +42,7 @@ export function SessionRow({
   const markedFull = availability === "full" || full;
 
   return (
-    <li className="border-b border-line-soft last:border-b-0">
+    <li className={`border-b border-line-soft last:border-b-0 ${statusRailClass(sessionRowTone(entry, markedFull, markedClosed))}`}>
       <button
         type="button"
         onClick={() => onToggle(!open)}
@@ -75,13 +76,21 @@ export function SessionRow({
             >
               {formatCourseDateRange(date, locale)}
             </span>
-            {!date.active ? <Chip tone="strong">{t("coursesSessionInactive")}</Chip> : null}
+            {!date.active ? (
+              <span className={`text-[0.65rem] font-bold uppercase tracking-[0.12em] ${statusToneClass.stop}`}>
+                {t("coursesSessionInactive")}
+              </span>
+            ) : null}
             {isPast ? <Chip>{t("coursesSessionPast")}</Chip> : null}
             {markedClosed && date.active && !isPast ? (
-              <Chip>{t("coursesSessionAvailability_registration_closed")}</Chip>
+              <span className={`text-[0.65rem] font-bold uppercase tracking-[0.12em] ${statusToneClass.stop}`}>
+                {t("coursesSessionAvailability_registration_closed")}
+              </span>
             ) : null}
             {markedFull && !markedClosed && date.active && !isPast ? (
-              <Chip>{t("coursesSessionFull")}</Chip>
+              <span className={`text-[0.65rem] font-bold uppercase tracking-[0.12em] ${statusToneClass.gold}`}>
+                {t("coursesSessionFull")}
+              </span>
             ) : null}
           </span>
           <span className="mt-0.5 block truncate text-xs text-ink-subtle lg:hidden">
@@ -153,7 +162,34 @@ function SeatMeter({ratio, label}: {ratio: number; label: string}) {
       title={label}
       className="block h-1 w-10 overflow-hidden rounded-panel border border-ink bg-white"
     >
-      <span className="block h-full bg-ink" style={{width}} />
+      <span className={`block h-full ${seatFillClass(ratio)}`} style={{width}} />
     </span>
   );
+}
+
+function sessionRowTone(
+  entry: SessionEntry,
+  markedFull: boolean,
+  markedClosed: boolean,
+) {
+  if (!entry.date.active || markedClosed) {
+    return "stop" as const;
+  }
+  if (markedFull) {
+    return "gold" as const;
+  }
+  if (entry.isPast) {
+    return "muted" as const;
+  }
+  return "ok" as const;
+}
+
+function seatFillClass(ratio: number): string {
+  if (ratio >= 1) {
+    return "bg-status-stop";
+  }
+  if (ratio >= 0.8) {
+    return "bg-gold-deep";
+  }
+  return "bg-ink";
 }

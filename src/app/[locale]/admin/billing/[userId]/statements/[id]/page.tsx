@@ -8,6 +8,7 @@ import {ChargeStatementForm} from "@/features/rooms/components/charge-statement-
 import {NotificationEvidenceList} from "@/features/rooms/components/notification-evidence-list";
 import {StatementAdjustmentForm} from "@/features/rooms/components/statement-adjustment-form";
 import {StatementLineList} from "@/features/rooms/components/statement-line-list";
+import {statementStatusTone} from "@/features/rooms/components/statement-status";
 import {RoomError} from "@/features/rooms/errors";
 import {loadStatementNotifications} from "@/features/rooms/notifications";
 import {loadStatementDetail} from "@/features/rooms/statements";
@@ -92,7 +93,7 @@ export default async function AdminStatementPage({params}: AdminStatementPagePro
         <p className="mt-3 font-sans text-sm break-all">{detail.owner.email}</p>
         <StatusLabel
           className="mt-4"
-          tone={detail.statement.status === "OPEN" ? "muted" : "strong"}
+          tone={statementStatusTone(detail.statement.status)}
         >
           {rooms(`statementStatus.${detail.statement.status}`)}
         </StatusLabel>

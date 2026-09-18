@@ -1,10 +1,11 @@
 import type {AppLocale} from "@/i18n/routing";
 
+import {isListedActivityKind} from "./listed";
 import type {ActivityCopy} from "./labels";
 import {mergeActivityPage} from "./paginate";
 import {
+  ACTIVITY_BOARD_SIZE,
   ACTIVITY_MAX_PAGE,
-  ACTIVITY_PAGE_SIZE,
   type ActivityQuery,
 } from "./query";
 import {callChannel} from "./sources/calls";
@@ -14,7 +15,7 @@ import {messageChannel} from "./sources/messages";
 import {registrationChannel} from "./sources/registrations";
 import {reservationChannel} from "./sources/reservations";
 import {waitlistChannel} from "./sources/waitlist";
-import type {ActivityKind, ActivityKindCounts, ActivityPage} from "./types";
+import type {ActivityKind, ActivityKindCounts, ActivityPage, ActivityWindow} from "./types";
 import {activityBounds, type ActivityBounds} from "./window";
 
 const defaultChannels: ActivityChannel[] = [
@@ -28,31 +29,38 @@ const defaultChannels: ActivityChannel[] = [
 
 export type ActivityFeed = {
   page: ActivityPage;
-  /** Totals for every channel in this window, so the filter can show counts. */
   counts: ActivityKindCounts;
-  /** Rows across every channel in this window, regardless of the filter. */
   windowTotal: number;
   bounds: ActivityBounds;
 };
 
+export type ActivityBriefing = {
+  today: ActivityFeed;
+  upcoming: ActivityFeed;
+  history: ActivityFeed;
+};
+
 /**
- * Reads every channel for the selected window and returns one merged page.
- * Counts always cover all channels, so the filter stays informative even while
- * a single channel is selected.
+ * Reads every channel for one window and returns one merged page. Counts
+ * always cover all channels, so a column can show the live total and the log
+ * even while only live rows are listed.
  */
 export async function loadActivityFeed(input: {
   query: ActivityQuery;
+  when: ActivityWindow;
   locale: AppLocale;
   copy: ActivityCopy;
   now?: Date;
+  page?: number;
   pageSize?: number;
   channels?: ActivityChannel[];
 }): Promise<ActivityFeed> {
-  const pageSize = Math.max(1, input.pageSize ?? ACTIVITY_PAGE_SIZE);
-  const bounds = activityBounds(input.query.when, input.now);
+  const pageSize = Math.max(1, input.pageSize ?? ACTIVITY_BOARD_SIZE);
+  const page = input.page ?? 1;
+  const bounds = activityBounds(input.when, input.now);
   const channels = input.channels ?? defaultChannels;
   const isSelected = (kind: ActivityKind) =>
-    input.query.kind === "all" || input.query.kind === kind;
+    isListedActivityKind(input.query.kind, kind);
 
   const results = await Promise.all(
     channels.map(async (channel) => ({
@@ -60,8 +68,7 @@ export async function loadActivityFeed(input: {
       result: await channel.load({
         bounds,
         q: input.query.q,
-        // Unselected channels answer with a count only.
-        limit: isSelected(channel.kind) ? input.query.page * pageSize : 0,
+        limit: isSelected(channel.kind) ? page * pageSize : 0,
         locale: input.locale,
         copy: input.copy,
       }),
@@ -71,11 +78,44 @@ export async function loadActivityFeed(input: {
   const merged = mergeActivityPage({
     results,
     isSelected,
-    when: input.query.when,
-    page: input.query.page,
+    when: input.when,
+    page,
     pageSize,
     maxPage: ACTIVITY_MAX_PAGE,
   });
 
   return {...merged, bounds};
+}
+
+/**
+ * The control panel is three windows at once. Each is an independent read so
+ * Today, Upcoming and History can fill the same viewport.
+ */
+export async function loadActivityBriefing(input: {
+  query: ActivityQuery;
+  locale: AppLocale;
+  copy: ActivityCopy;
+  now?: Date;
+  channels?: ActivityChannel[];
+}): Promise<ActivityBriefing> {
+  const shared = {
+    query: input.query,
+    locale: input.locale,
+    copy: input.copy,
+    now: input.now,
+    channels: input.channels,
+    pageSize: ACTIVITY_BOARD_SIZE,
+  };
+
+  const [today, upcoming, history] = await Promise.all([
+    loadActivityFeed({...shared, when: "today", page: 1}),
+    loadActivityFeed({...shared, when: "upcoming", page: 1}),
+    loadActivityFeed({
+      ...shared,
+      when: "history",
+      page: input.query.historyPage,
+    }),
+  ]);
+
+  return {today, upcoming, history};
 }

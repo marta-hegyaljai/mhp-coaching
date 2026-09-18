@@ -1,7 +1,7 @@
 import {utcToZurich} from "@/features/rooms/timezone";
 import type {OpsHeartbeat} from "@/db/schema";
 import {Panel} from "@/shared/ui/panel";
-import {StatusLabel} from "@/shared/ui/status-label";
+import {StatusLabel, statusRailClass} from "@/shared/ui/status-label";
 
 export function HeartbeatList({
   rows,
@@ -28,8 +28,8 @@ export function HeartbeatList({
         const zurich = utcToZurich(row.createdAt);
         return (
         <li key={row.id}>
-          <Panel padding="sm" className="h-full">
-            <StatusLabel tone={row.ok ? "muted" : "strong"}>
+          <Panel padding="sm" className={`h-full ${statusRailClass(row.ok ? "ok" : "stop")}`}>
+            <StatusLabel tone={row.ok ? "ok" : "stop"}>
               {row.ok ? okLabel : failedLabel}
             </StatusLabel>
             <p className="mt-3 font-sans text-sm font-semibold uppercase tracking-[0.08em]">

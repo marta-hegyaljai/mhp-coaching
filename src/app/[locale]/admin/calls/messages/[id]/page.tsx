@@ -17,6 +17,7 @@ import {Panel} from "@/shared/ui/panel";
 import {isUuid} from "@/lib/uuid";
 import {formatLongDate} from "@/shared/format/calendar-date";
 import {utcToZurich} from "@/features/rooms/timezone";
+import {StatusLabel, statusRailClass} from "@/shared/ui/status-label";
 
 type AdminInquiryPageProps = {
   params: Promise<{locale: AppLocale; id: string}>;
@@ -76,13 +77,14 @@ export default async function AdminInquiryDetailPage({
           {t("callsBack")}
         </BackLink>
         <h1 className="mt-6 font-serif text-heading">{message.name}</h1>
+        <StatusLabel className="mt-4" tone="gold">
+          {t(`activityMessageTopics.${message.topic}`)}
+        </StatusLabel>
         <p className="mt-3 text-sm text-ink-muted">
           {formatLongDate(received.date, locale)} · {received.time}
-          <span className="mx-2">·</span>
-          {t(`activityMessageTopics.${message.topic}`)}
         </p>
 
-        <Panel className="mt-8 max-w-xl">
+        <Panel className={`mt-8 max-w-xl ${statusRailClass("gold")}`}>
           <dl className="space-y-5 text-sm">
             <div>
               <dt className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-ink-subtle">

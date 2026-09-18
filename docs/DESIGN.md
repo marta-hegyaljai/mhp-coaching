@@ -21,14 +21,18 @@ dashboard.
   tabular numbers, never the editorial serif.
 - Gold is a scarce behavioral and editorial accent: it appears when
   high-priority CTA buttons are hovered and on selected small uppercase eyebrow
-  labels, including course duration (days/hours). Never use gold as a resting
-  button color, selected control state, large background, body-copy color, card
-  fill, or dense repeated decoration.
+  labels, including course duration (days/hours). On admin screens it may also
+  mark the selected subnav tab, pane titles, attention metrics and pending /
+  waitlist / open / no-date status type. Never use gold as a resting button
+  color, large background, body-copy color, card fill, or dense repeated
+  decoration.
 - No bronze, brown, gradients, or additional accent colors. The legacy token
   name `bronze` is a black compatibility alias and must not guide new work.
-  The admin room-booking index and the therapist My bookings list may mark
-  Confirmed and Cancelled with a 3px left rail and status type in dark green
-  and dark red, never a filled surface.
+  Admin operational screens may colour status type and a 3px left rail with
+  `status-ok` (dark green), `status-stop` (dark red) and `gold-deep`
+  (attention). Never fill a card, row or button with those colours. Public
+  catalogue and calendar stay monochrome. The therapist My bookings list keeps
+  the same Confirmed/Cancelled rails.
 - Geometry is rectangular with `rounded-panel` (2px). The compact language
   trigger is the sole capsule exception. Never use pills for buttons, cards,
   tags, or status displays.
@@ -110,7 +114,9 @@ primary action behind an ambiguous icon.
 - Keep the authenticated experience coherent with the public site: white
   surfaces, black rules, restrained gold, square geometry, no shadows and the
   same type hierarchy. Dense operational screens may use tighter functional
-  sans-serif text while editorial headings retain the serif.
+  sans-serif text while editorial headings retain the serif. Admin screens may
+  add dark green, dark red and gold status type plus a 3px left rail; they
+  still never fill a card or row.
 - Account, profile and My Courses use the public header. The header shows the
   signed-in person's name, a menu with Profile, My courses and Sign out, and
   marks the current section with a square filled chip (black on white). Nav
@@ -180,14 +186,25 @@ primary action behind an ambiguous icon.
   scatter a segmented control, a checkbox and a layout switch as loose rows.
   The screen leads with `<PageHeader>`: title, one line of orientation and the
   single primary action on the title line, so the records stay near the fold.
+- The admin control panel is one viewport board, not a filter-first timeline.
+  Today, Upcoming and History are three simultaneous panes: equal columns from
+  `lg`, a stacked board on a phone with Today given the larger share. The page
+  itself does not scroll; each pane does. Default rows are live school activity
+  (registrations, reservations, calls, messages, waiting lists). The audit log
+  is a quieter spotlight in the pane header, never the thing that buries the
+  day. One search covers every pane. Time leads each row; the person or title
+  is the scan target; the channel is an uppercase qualifier, never a bordered
+  chip. Upcoming and History group on the Zurich day so the date is not
+  repeated on every row. Do not split the same entries into a wide table and a
+  stack of cards.
 - Reordering swaps neighbours in the full catalogue, so offer the move controls
   only on the unfiltered list and say why they are gone otherwise.
 - Status styles remain monochrome and textual on public catalogue and
   calendar surfaces. Gold does not become a semantic success/warning/error
-  color. The admin room-booking index and the therapist My bookings list may
-  mark Confirmed and Cancelled with a 3px left rail and matching status type
-  in dark green and dark red. Do not fill cards, rows or buttons with those
-  colours.
+  color there. Admin lists, metrics and the control panel use `StatusLabel`
+  tones `ok` (dark green), `stop` (dark red) and `gold` (attention) plus a 3px
+  left rail via `statusRailClass`. Do not fill cards, rows or buttons with
+  those colours. Therapist My bookings keeps Confirmed/Cancelled rails.
 - Therapist My bookings keeps Upcoming and History as two lists, both newest
   first. Hide cancelled rows unless Show cancelled is on. Default to a dense
   table from `lg`; below `lg`, or when the therapist chooses Cards, use the

@@ -4,6 +4,7 @@ import {
   courseDetailHref,
   type CourseEnrolmentQuery,
 } from "@/features/courses/admin-query";
+import {enrolmentStatusTone} from "@/features/courses/enrolment-status-labels";
 import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
 import {localizedPath} from "@/features/seo/metadata";
 import {Link} from "@/i18n/navigation";
@@ -13,6 +14,7 @@ import {FilterBar} from "@/shared/ui/filter-bar";
 import {InputField, SelectField} from "@/shared/ui/field";
 import {formatLongDate} from "@/shared/format/calendar-date";
 import type {CourseDate} from "@/features/courses/types";
+import {StatusLabel, statusRailClass} from "@/shared/ui/status-label";
 
 export function CourseEnrolmentFilters({
   locale,
@@ -144,7 +146,10 @@ export function CourseEnrolmentTable({
         </thead>
         <tbody>
           {bookings.map((booking) => (
-            <tr key={booking.id} className="border-b border-line/70 align-top">
+            <tr
+              key={booking.id}
+              className={`border-b border-line/70 align-top ${statusRailClass(enrolmentStatusTone(booking.status))}`}
+            >
               <td className="py-3 pr-4">
                 {booking.firstName} {booking.lastName}
               </td>
@@ -170,8 +175,10 @@ export function CourseEnrolmentTable({
               <td className="py-3 pr-4 font-sans tabular-nums">
                 {formatChf(minorUnitsToFrancs(booking.amountMinor), locale)}
               </td>
-              <td className="py-3 pr-4 font-medium">
-                {statusLabels[booking.status] ?? booking.status}
+              <td className="py-3 pr-4">
+                <StatusLabel tone={enrolmentStatusTone(booking.status)}>
+                  {statusLabels[booking.status] ?? booking.status}
+                </StatusLabel>
               </td>
               <td className="py-3 font-sans text-ink-muted tabular-nums">
                 {booking.createdAt.toISOString().slice(0, 10)}

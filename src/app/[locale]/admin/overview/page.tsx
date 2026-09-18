@@ -1,25 +1,15 @@
 import {getTranslations, setRequestLocale} from "next-intl/server";
 
-import {ActivityChannelFilter} from "@/features/admin/activity/components/channel-filter";
-import {ActivityList} from "@/features/admin/activity/components/activity-list";
-import {ActivityToolbar} from "@/features/admin/activity/components/activity-toolbar";
+import {ActivityBoard} from "@/features/admin/activity/components/activity-board";
+import {ActivitySearch} from "@/features/admin/activity/components/activity-search";
 import {activityCopy, activityKindLabels} from "@/features/admin/activity/copy";
-import {loadActivityFeed} from "@/features/admin/activity/feed";
-import {
-  activityFilterHref,
-  activityHref,
-  activityPageHref,
-  parseActivityQuery,
-} from "@/features/admin/activity/query";
-import {ACTIVITY_KINDS} from "@/features/admin/activity/types";
+import {loadActivityBriefing} from "@/features/admin/activity/feed";
+import {activityHref, parseActivityQuery} from "@/features/admin/activity/query";
 import {AdminSubnav, adminSectionLabels} from "@/features/admin/components/admin-subnav";
 import {requireAdmin} from "@/features/auth/require";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
-import {Eyebrow, Section} from "@/shared/ui/layout";
-import {PageHeader} from "@/shared/ui/page-header";
-import {Pagination} from "@/shared/ui/pagination";
 
 type AdminOverviewPageProps = {
   params: Promise<{locale: AppLocale}>;
@@ -28,6 +18,7 @@ type AdminOverviewPageProps = {
     kind?: string | string[];
     q?: string | string[];
     page?: string | string[];
+    hp?: string | string[];
   }>;
 };
 
@@ -60,120 +51,64 @@ export default async function AdminOverviewPage({
     activityCopy(locale),
     activityKindLabels(locale),
   ]);
-  const feed = await loadActivityFeed({query, locale, copy});
-  const {entries, total, page, pageCount, pageSize} = feed.page;
-  const firstOnPage = (page - 1) * pageSize + 1;
-
-  const emptyMessage =
-    query.q !== ""
-      ? t("activityEmptySearch")
-      : query.when === "today"
-        ? t("activityEmptyToday")
-        : query.when === "upcoming"
-          ? t("activityEmptyUpcoming")
-          : t("activityEmptyHistory");
+  const briefing = await loadActivityBriefing({query, locale, copy});
+  const listLabels = {
+    list: t("activityList"),
+    open: t("activityOpen"),
+    kinds: kindLabels.chip,
+    actionLabels: {
+      waitlist: {
+        notify: t("coursesWaitlistMarkNotified"),
+        remove: t("activityWaitlistRemove"),
+        confirmRemove: t("activityWaitlistConfirmRemove"),
+        keep: t("activityWaitlistKeep"),
+      },
+    },
+    emptySearch: t("activityEmptySearch"),
+    log: t("activityLog"),
+    pageStatus: (page: number, pageCount: number) => t("pageStatus", {page, pageCount}),
+    previous: t("previous"),
+    next: t("next"),
+  };
 
   return (
-    <SiteShell locale={locale} footerCta={null}>
-      <Section size="sm" className="pt-10 pb-16">
-        <Eyebrow>{t("eyebrow")}</Eyebrow>
-        <AdminSubnav
-          current="overview"
-          label={t("sectionsNav")}
-          labels={adminSectionLabels(t)}
-        />
-        <PageHeader
-          className="mt-6"
-          title={t("overviewTitle")}
-          intro={t("overviewIntro")}
-        />
-
-        <ActivityChannelFilter
-          className="mt-8"
-          label={t("activityChannels")}
-          items={[
-            {
-              key: "all",
-              label: t("filterAll"),
-              count: feed.windowTotal,
-              href: activityFilterHref(query, {kind: "all"}),
-              current: query.kind === "all",
-            },
-            ...ACTIVITY_KINDS.map((kind) => ({
-              key: kind,
-              label: kindLabels.filter[kind],
-              count: feed.counts[kind],
-              href: activityFilterHref(query, {kind}),
-              current: query.kind === kind,
-            })),
-          ]}
-        />
-
-        <div className="mt-6">
-          <ActivityToolbar
+    <SiteShell locale={locale} footerCta={null} fillViewport>
+      <div className="flex min-h-0 flex-1 flex-col gap-2 px-3 py-2 sm:gap-3 sm:px-5 sm:py-3 lg:px-8">
+        <h1 className="sr-only">{t("overviewTitle")}</h1>
+        <div className="flex shrink-0 flex-col gap-2 lg:flex-row lg:items-end lg:gap-6">
+          <AdminSubnav
+            current="overview"
+            label={t("sectionsNav")}
+            labels={adminSectionLabels(t)}
+            className="mt-0 min-w-0 flex-1"
+          />
+          <ActivitySearch
             action={localizedPath(locale, "/admin/overview")}
             query={query}
+            className="lg:w-[26rem] lg:shrink-0"
             labels={{
-              windowGroup: t("activityWindowGroup"),
-              windows: {
-                today: t("activityToday"),
-                upcoming: t("activityUpcoming"),
-                history: t("activityHistory"),
-              },
               filter: t("filter"),
               search: t("activitySearch"),
               searchPlaceholder: t("activitySearchPlaceholder"),
               clear: t("clearFilters"),
             }}
           />
-
-          <p className="mt-3 font-sans text-sm tabular-nums text-ink-muted">
-            {t("activityCount", {
-              from: firstOnPage,
-              to: firstOnPage + entries.length - 1,
-              total,
-            })}
-          </p>
-
-          {entries.length === 0 ? (
-            <p className="mt-6 text-sm leading-7 text-ink-muted">{emptyMessage}</p>
-          ) : (
-            <div className="mt-4">
-              <ActivityList
-                entries={entries}
-                labels={{
-                  when: t("activityWhen"),
-                  channel: t("activityChannel"),
-                  who: t("activityWho"),
-                  what: t("activityWhat"),
-                  status: t("status"),
-                  actions: t("bookingActions"),
-                  open: t("activityOpen"),
-                  kinds: kindLabels.chip,
-                  actionLabels: {
-                    waitlist: {
-                      notify: t("coursesWaitlistMarkNotified"),
-                      remove: t("activityWaitlistRemove"),
-                      confirmRemove: t("activityWaitlistConfirmRemove"),
-                      keep: t("activityWaitlistKeep"),
-                    },
-                  },
-                }}
-              />
-            </div>
-          )}
-
-          {pageCount > 1 ? (
-            <Pagination
-              className="mt-6"
-              previous={page > 1 ? activityPageHref(query, page - 1) : null}
-              next={page < pageCount ? activityPageHref(query, page + 1) : null}
-              status={t("pageStatus", {page, pageCount})}
-              labels={{previous: t("previous"), next: t("next")}}
-            />
-          ) : null}
         </div>
-      </Section>
+        <ActivityBoard
+          briefing={briefing}
+          query={query}
+          locale={locale}
+          labels={{
+            ...listLabels,
+            today: t("activityToday"),
+            upcoming: t("activityUpcoming"),
+            history: t("activityHistory"),
+            emptyToday: t("activityEmptyToday"),
+            emptyUpcoming: t("activityEmptyUpcoming"),
+            emptyHistory: t("activityEmptyHistory"),
+          }}
+        />
+      </div>
     </SiteShell>
   );
 }

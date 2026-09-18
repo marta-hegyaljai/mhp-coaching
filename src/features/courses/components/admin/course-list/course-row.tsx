@@ -8,6 +8,7 @@ import type {AppLocale} from "@/i18n/routing";
 import {Chip} from "@/shared/ui/chip";
 import {ChevronRightIcon} from "@/shared/ui/icons";
 import {Price} from "@/shared/ui/price";
+import {StatusLabel, statusRailClass} from "@/shared/ui/status-label";
 
 export type CourseRowLabels = {
   manage: string;
@@ -38,7 +39,7 @@ export function CourseRow({
   const {course, position, published, nextDate} = entry;
 
   return (
-    <li className="relative border-b border-line-soft last:border-b-0 transition-colors duration-150 ease-standard hover:bg-hover has-[a:focus-visible]:bg-hover">
+    <li className={`relative border-b border-line-soft last:border-b-0 transition-colors duration-150 ease-standard hover:bg-hover has-[a:focus-visible]:bg-hover ${statusRailClass(courseRowTone(published, Boolean(nextDate)))}`}>
       <div className="grid grid-cols-[1.75rem_minmax(0,1fr)] items-start gap-x-3 gap-y-2 px-4 py-4 sm:px-5 lg:grid-cols-[2.5rem_minmax(0,1fr)_8rem_auto] lg:items-center lg:gap-x-5">
         <p className="pt-1 font-sans text-xs font-semibold tabular-nums text-ink-subtle lg:pt-0">
           {position}
@@ -57,7 +58,7 @@ export function CourseRow({
                 {course.title[locale]}
               </Link>
             </h2>
-            {!published ? <Chip tone="strong">{labels.unpublished}</Chip> : null}
+            {!published ? <StatusLabel tone="stop">{labels.unpublished}</StatusLabel> : null}
             {isProgrammeCourse(course) ? <Chip>{labels.programme}</Chip> : null}
           </div>
 
@@ -76,7 +77,7 @@ export function CourseRow({
               {nextDate ? (
                 <span className="tabular-nums">{formatCourseDateRange(nextDate, locale)}</span>
               ) : (
-                <Chip>{labels.noUpcoming}</Chip>
+                <StatusLabel tone="gold">{labels.noUpcoming}</StatusLabel>
               )}
             </span>
           </p>
@@ -112,4 +113,14 @@ function Separator({className = ""}: {className?: string}) {
       ·
     </span>
   );
+}
+
+function courseRowTone(published: boolean, hasUpcoming: boolean) {
+  if (!published) {
+    return "stop" as const;
+  }
+  if (!hasUpcoming) {
+    return "gold" as const;
+  }
+  return "ok" as const;
 }

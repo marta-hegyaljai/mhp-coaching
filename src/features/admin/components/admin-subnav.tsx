@@ -67,18 +67,27 @@ export function adminSectionLabels(admin: {
   };
 }
 
+/**
+ * Admin destinations stay one row on a phone: the tabs scroll under the thumb
+ * instead of wrapping into a three-line block that hides the records.
+ */
 export function AdminSubnav({
   current,
   label,
   labels,
+  className = "mt-6",
 }: {
   current: AdminSection;
   /** Names the landmark itself; the tab labels name the destinations. */
   label: string;
   labels: Record<AdminSection, string>;
+  className?: string;
 }) {
   return (
-    <nav aria-label={label} className="mt-6 flex flex-wrap gap-5 border-b border-line">
+    <nav
+      aria-label={label}
+      className={`flex min-w-0 gap-5 overflow-x-auto overscroll-x-contain border-b border-line [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${className}`}
+    >
       {order.map((section) => {
         const active = section === current;
 
@@ -87,9 +96,9 @@ export function AdminSubnav({
             key={section}
             href={hrefs[section]}
             aria-current={active ? "page" : undefined}
-            className={`${itemClass} ${
+            className={`${itemClass} shrink-0 ${
               active
-                ? "border-ink text-ink"
+                ? "border-gold-deep text-gold-deep"
                 : "border-transparent text-ink-muted hover:text-ink"
             }`}
           >

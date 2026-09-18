@@ -137,7 +137,7 @@ export default async function AdminBillingUserPage({params, searchParams}: Admin
           </Link>
         </p>
         <Panel className="mt-8 max-w-xl" padding="sm">
-          <StatusLabel>
+          <StatusLabel tone={paymentMethod ? "ok" : "gold"}>
             {paymentMethod ? t("paymentMethodSaved") : t("paymentMethodMissing")}
           </StatusLabel>
           <p className="mt-3 font-sans text-sm tabular-nums leading-6">

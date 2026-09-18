@@ -27,12 +27,14 @@ export function CatalogueOverview({
       label: labels.published,
       value: summary.published,
       href: summary.published > 0 ? courseListHref({published: "yes"}) : undefined,
+      tone: "ok",
     },
     {
       key: "withoutUpcoming",
       label: labels.withoutUpcoming,
       value: summary.withoutUpcoming,
       href: summary.withoutUpcoming > 0 ? courseListHref({upcoming: "no"}) : undefined,
+      tone: "gold",
     },
     {key: "enrolments", label: labels.enrolments, value: summary.enrolments},
   ];

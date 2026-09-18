@@ -2,12 +2,13 @@ import {getTranslations} from "next-intl/server";
 
 import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
 import type {BillingMonthRow} from "@/features/rooms/billing-overview";
+import {statementStatusTone} from "@/features/rooms/components/statement-status";
 import {formatMonthYear} from "@/shared/format/calendar-date";
 import {formatLocalDate} from "@/features/rooms/timezone";
 import type {AppLocale} from "@/i18n/routing";
 import {Link} from "@/i18n/navigation";
 import {Price} from "@/shared/ui/price";
-import {StatusLabel} from "@/shared/ui/status-label";
+import {StatusLabel, statusRailClass, type StatusTone} from "@/shared/ui/status-label";
 
 const rowGridClass =
   "grid w-full grid-cols-[minmax(0,2fr)_minmax(0,1.25fr)_4.5rem_4.5rem_6.5rem] items-center gap-x-3 px-3 py-3";
@@ -33,15 +34,12 @@ function statusLabel(
   return t("billingMonthAwaiting");
 }
 
-function statusTone(row: BillingMonthRow): "strong" | "muted" {
-  if (row.statementStatus === "PAID") {
-    return "muted";
-  }
-  if (row.statementStatus === "PAYMENT_FAILED") {
-    return "strong";
+function statusTone(row: BillingMonthRow): StatusTone {
+  if (row.statementStatus) {
+    return statementStatusTone(row.statementStatus);
   }
   if (row.kind === "open" || row.kind === "projected") {
-    return "strong";
+    return "gold";
   }
   return "muted";
 }
@@ -90,7 +88,7 @@ export async function BillingMonthTable({
                   <Link
                     href={row.href}
                     aria-label={`${monthLabel} · ${statusLabel(row, t)}`}
-                    className={`${rowGridClass} transition-colors duration-150 ease-standard hover:bg-hover focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ink`}
+                    className={`${rowGridClass} ${statusRailClass(statusTone(row))} transition-colors duration-150 ease-standard hover:bg-hover focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ink`}
                   >
                     <span>
                       <span className="block font-serif text-base capitalize leading-tight">

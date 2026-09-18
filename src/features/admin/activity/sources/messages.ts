@@ -91,7 +91,7 @@ function fromCourseInquiry(
     personDetail: row.email,
     title: row.courseTitle ?? copy.noCourse,
     detail: excerpt(row.message),
-    status: {label: copy.messageTopic("course"), tone: "muted"},
+    status: {label: copy.messageTopic("course"), tone: "gold"},
     href: {pathname: "/admin/calls/messages/[id]", params: {id: row.id}},
     source: {kind: "message", messageId: row.id, channel: "course"},
   };
@@ -115,7 +115,7 @@ function fromContactInquiry(
     personDetail: row.email,
     title: row.courseTitle ?? copy.noCourse,
     detail: excerpt(row.message),
-    status: {label: copy.messageTopic(topic), tone: "muted"},
+    status: {label: copy.messageTopic(topic), tone: "gold"},
     href: {
       pathname: "/admin/calls/messages/[id]",
       params: {id: row.id},

@@ -13,17 +13,22 @@ export function Pagination({
   status,
   labels,
   className = "",
+  compact = false,
 }: {
   previous: PathnameHref | null;
   next: PathnameHref | null;
   status: string;
   labels: {previous: string; next: string};
   className?: string;
+  /** Tighter chrome for a pane footer that already has a hairline. */
+  compact?: boolean;
 }) {
   return (
     <nav
       aria-label={status}
-      className={`flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4 text-sm ${className}`}
+      className={`flex flex-wrap items-center justify-between gap-3 border-t border-line text-sm ${
+        compact ? "px-3 py-0" : "pt-4"
+      } ${className}`}
     >
       {previous ? (
         <Link href={previous} className={stepClass} rel="prev">

@@ -100,6 +100,23 @@ or removed in place, removal behind a second click and recorded as
 `WAITLIST_ENTRY_REMOVED`. This is a read-and-act surface over existing data: no
 new domain, no schema change beyond the audit action. Not a new checkpoint.
 
+Review pass (2026-09-17): the control panel is one viewport board. Today,
+Upcoming and History read in parallel and render as three simultaneous panes
+(equal columns from `lg`; stacked on a phone with Today larger). The shell
+locks to `100dvh` and drops the footer so the page does not scroll; each pane
+scrolls internally. The default list is live activity — `kind=all` excludes the
+audit log, which remains a quieter spotlight. Search and an optional channel
+narrow every pane at once; History pages with `hp`. Legacy `when=history&page=`
+still maps onto that page. No schema change.
+
+Extra-roadmap (2026-09-17): admin operational screens use the existing
+`gold-deep`, `status-ok` and `status-stop` tokens for status type and a 3px
+left rail. Gold marks selected admin subnav, pane titles, attention metrics
+and pending / waitlist / open / no-date states; green is healthy; red is
+stopped. Public catalogue and calendar stay monochrome. Shared through
+`StatusLabel`, `statusRailClass` and optional `MetricStrip` tones. Not a new
+checkpoint.
+
 Extra-roadmap (2026-09-17): public school copy. The homepage method section is
 now “Pourquoi choisir mhp | coaching”: seven equal blocks with stable ids,
 detail pages (curriculum, pedagogy, recognitions, faculty, supervision, method,

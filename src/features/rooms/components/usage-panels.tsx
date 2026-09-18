@@ -11,7 +11,7 @@ import {Link} from "@/i18n/navigation";
 import {Price} from "@/shared/ui/price";
 import {Panel} from "@/shared/ui/panel";
 import {SectionLabel} from "@/shared/ui/section-label";
-import {StatusLabel} from "@/shared/ui/status-label";
+import {StatusLabel, statusRailClass} from "@/shared/ui/status-label";
 
 export async function UsageMonthBanner({
   locale,
@@ -28,8 +28,12 @@ export async function UsageMonthBanner({
   const label = formatMonthYear(formatLocalDate(year, month, 1), locale);
 
   return (
-    <Panel tone="shell" padding="sm" className="mt-8 max-w-2xl">
-      <StatusLabel tone={open ? "strong" : "muted"}>
+    <Panel
+      tone="shell"
+      padding="sm"
+      className={`mt-8 max-w-2xl ${statusRailClass(open ? "gold" : "ok")}`}
+    >
+      <StatusLabel tone={open ? "gold" : "ok"}>
         {open ? t("usageOpenLabel") : t("usageClosedLabel")}
       </StatusLabel>
       <p className="mt-2 font-serif text-subheading capitalize">{label}</p>

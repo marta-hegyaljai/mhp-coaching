@@ -27,7 +27,7 @@ import {DownloadIcon} from "@/shared/ui/icons";
 import {Eyebrow, Section} from "@/shared/ui/layout";
 import {Panel} from "@/shared/ui/panel";
 import {Price} from "@/shared/ui/price";
-import {StatusLabel} from "@/shared/ui/status-label";
+import {StatusLabel, statusRailClass} from "@/shared/ui/status-label";
 
 type AdminBillingPageProps = {
   params: Promise<{locale: AppLocale}>;
@@ -193,9 +193,9 @@ export default async function AdminBillingPage({params, searchParams}: AdminBill
                       pathname: "/admin/billing/[userId]/statements/[id]",
                       params: {userId: statement.userId, id: statement.id},
                     }}
-                    className="block h-full rounded-panel border border-ink bg-white p-5 transition-colors duration-150 ease-standard hover:bg-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+                    className={`block h-full rounded-panel border border-ink bg-white p-5 transition-colors duration-150 ease-standard hover:bg-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink ${statusRailClass("stop")}`}
                   >
-                    <StatusLabel>{rooms(`statementStatus.${statement.status}`)}</StatusLabel>
+                    <StatusLabel tone="stop">{rooms(`statementStatus.${statement.status}`)}</StatusLabel>
                     <p className="mt-3 font-serif text-[clamp(1.15rem,1.4vw,1.35rem)] capitalize leading-[1.15]">
                       {formatMonthYear(formatLocalDate(statement.year, statement.month, 1), locale)}
                     </p>

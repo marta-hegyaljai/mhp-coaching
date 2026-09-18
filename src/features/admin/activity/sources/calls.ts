@@ -104,7 +104,7 @@ function toEntry(
     detail: call.phone || null,
     status: {
       label: copy.callStatus(call.status),
-      tone: call.status === "SCHEDULED" ? "strong" : "muted",
+      tone: call.status === "SCHEDULED" ? "ok" : "stop",
     },
     href: {pathname: "/admin/calls/[id]", params: {id: call.id}},
     source: {kind: "call", callId: call.id},

@@ -20,7 +20,7 @@
   --color-bronze-deep: #090909;
   --color-line: #9d9d98;
   --color-line-soft: #d5d5d1;
-  /* Admin booking index only: a 3px rail and status type, never a fill. */
+  /* Admin operational screens: a 3px rail and status type, never a fill. */
   --color-status-ok: #1b6b45;
   --color-status-stop: #a32020;
 

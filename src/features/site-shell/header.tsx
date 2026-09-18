@@ -50,7 +50,7 @@ export async function SiteHeader({
     : {href: catalogueCalendarHref, label: t("cta"), shortLabel: t("ctaShort")};
 
   return (
-    <header className="sticky top-0 z-40 border-b border-ink bg-ivory/95 pt-[env(safe-area-inset-top)] backdrop-blur-sm [--mhp-header-height:calc(3.5rem+env(safe-area-inset-top))] sm:[--mhp-header-height:calc(4rem+env(safe-area-inset-top))]">
+    <header className="sticky top-0 z-40 shrink-0 border-b border-ink bg-ivory/95 pt-[env(safe-area-inset-top)] backdrop-blur-sm [--mhp-header-height:calc(3.5rem+env(safe-area-inset-top))] sm:[--mhp-header-height:calc(4rem+env(safe-area-inset-top))]">
       <Container className="flex h-14 flex-nowrap items-center justify-between gap-2 overflow-x-clip sm:h-16 sm:gap-4">
         <NavCurrent match="/" activeClassName="">
           <OriginLink

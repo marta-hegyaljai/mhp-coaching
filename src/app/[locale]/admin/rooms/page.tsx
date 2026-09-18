@@ -12,7 +12,7 @@ import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {buttonStyles} from "@/shared/ui/button";
 import {Price} from "@/shared/ui/price";
-import {StatusLabel} from "@/shared/ui/status-label";
+import {StatusLabel, statusRailClass} from "@/shared/ui/status-label";
 import {Eyebrow, Section} from "@/shared/ui/layout";
 
 type AdminRoomsPageProps = {
@@ -64,10 +64,10 @@ export default async function AdminRoomsPage({params}: AdminRoomsPageProps) {
               {rooms.map((room, index) => (
                 <li
                   key={room.id}
-                  className="flex h-full flex-col rounded-panel border border-ink bg-white p-5"
+                  className={`flex h-full flex-col rounded-panel border border-ink bg-white p-5 ${statusRailClass(room.active ? "ok" : "stop")}`}
                 >
                   <div className="flex items-start justify-between gap-4">
-                    <StatusLabel tone={room.active ? "strong" : "muted"}>
+                    <StatusLabel tone={room.active ? "ok" : "stop"}>
                       {room.active ? t("active") : t("inactive")}
                     </StatusLabel>
                     <span className="font-sans text-xs font-semibold tabular-nums text-ink-subtle">

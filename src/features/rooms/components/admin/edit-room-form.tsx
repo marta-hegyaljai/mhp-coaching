@@ -54,7 +54,7 @@ export function EditRoomForm({locale, room}: {locale: string; room: EditableRoom
       >
         <input type="hidden" name="intent" value={room.active ? "disable" : "enable"} />
         <div>
-          <StatusLabel tone={room.active ? "strong" : "muted"}>
+          <StatusLabel tone={room.active ? "ok" : "stop"}>
             {room.active ? t("active") : t("inactive")}
           </StatusLabel>
           <p className="mt-2 text-sm leading-6 text-ink-muted">{t("availabilityHelp")}</p>

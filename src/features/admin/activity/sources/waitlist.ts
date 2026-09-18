@@ -64,7 +64,7 @@ function toEntry(
     detail: entry.phone || null,
     status: {
       label: copy.waitlistStatus(notified),
-      tone: notified ? "muted" : "strong",
+      tone: notified ? "ok" : "gold",
     },
     href: {
       pathname: "/admin/courses/[id]",
