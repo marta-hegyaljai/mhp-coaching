@@ -38,6 +38,7 @@ describe("primaryNavNodes", () => {
       "caseLibrary",
       "insights",
       "about",
+      "gallery",
       "contact",
     ]);
   });
@@ -65,6 +66,7 @@ describe("primaryNavEntries", () => {
       "caseLibrary",
       "insights",
       "about",
+      "gallery",
       "contact",
     ]);
     expect(keys(primaryNavEntries(viewer()))).toEqual([
@@ -72,6 +74,7 @@ describe("primaryNavEntries", () => {
       "caseLibrary",
       "insights",
       "about",
+      "gallery",
       "contact",
     ]);
   });
@@ -82,6 +85,7 @@ describe("primaryNavEntries", () => {
       "caseLibrary",
       "insights",
       "about",
+      "gallery",
       "contact",
       "rooms",
     ]);
@@ -90,12 +94,22 @@ describe("primaryNavEntries", () => {
       "caseLibrary",
       "insights",
       "about",
+      "gallery",
       "contact",
       "admin",
     ]);
     expect(
       keys(primaryNavEntries(viewer({isAdmin: true, canAccessRooms: true}))),
-    ).toEqual(["courses", "caseLibrary", "insights", "about", "contact", "rooms", "admin"]);
+    ).toEqual([
+      "courses",
+      "caseLibrary",
+      "insights",
+      "about",
+      "gallery",
+      "contact",
+      "rooms",
+      "admin",
+    ]);
   });
 
   it("keeps public sections on the marketing origin and capabilities on the app", () => {
@@ -106,6 +120,7 @@ describe("primaryNavEntries", () => {
       "caseLibrary",
       "insights",
       "about",
+      "gallery",
       "contact",
     ]);
     expect(entries.filter((entry) => entry.origin === "app").map((e) => e.key)).toEqual([

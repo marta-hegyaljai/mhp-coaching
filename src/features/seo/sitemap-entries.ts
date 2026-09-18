@@ -78,6 +78,7 @@ const publicStaticPaths: Array<{
   {href: "/method", changeFrequency: "monthly", priority: 0.5},
   {href: "/publications", changeFrequency: "monthly", priority: 0.5},
   {href: "/reviews", changeFrequency: "monthly", priority: 0.6},
+  {href: "/gallery", changeFrequency: "monthly", priority: 0.6},
   {href: "/legal/privacy", changeFrequency: "yearly", priority: 0.3},
   {href: "/legal/terms", changeFrequency: "yearly", priority: 0.3},
   {href: "/legal/imprint", changeFrequency: "yearly", priority: 0.3},

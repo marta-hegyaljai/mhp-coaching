@@ -30,6 +30,9 @@ describe("localizedPathname", () => {
     expect(localizedPathname("fr", "/reviews")).toBe("/fr/avis");
     expect(localizedPathname("de", "/reviews")).toBe("/de/stimmen");
     expect(localizedPathname("en", "/reviews")).toBe("/en/reviews");
+    expect(localizedPathname("fr", "/gallery")).toBe("/fr/galerie");
+    expect(localizedPathname("de", "/gallery")).toBe("/de/galerie");
+    expect(localizedPathname("en", "/gallery")).toBe("/en/gallery");
     expect(localizedPathname("fr", "/sign-in")).toBe("/fr/connexion");
     expect(localizedPathname("de", "/sign-in")).toBe("/de/anmelden");
     expect(localizedPathname("fr", "/sign-up")).toBe("/fr/creer-un-compte");

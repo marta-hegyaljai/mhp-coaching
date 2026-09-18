@@ -289,9 +289,10 @@ purchasable path and is never mixed into that grid.
 ## Course imagery and source content
 
 - The course catalogue opens with a compact editorial portrait of the
-  instructor beside the page title, not a full-bleed banner that hides the
-  course grid. Keep the photograph high-contrast and structurally separate
-  from the cards; do not replace it with generic stock imagery.
+  instructor beside the page title at every viewport, not a full-bleed banner
+  that delays the course grid. Keep the photograph high-contrast and
+  structurally separate from the cards; do not replace it with generic stock
+  imagery.
 - Every course card and detail page uses its corresponding historical course
   image from `public/images/courses`. Images support recognition and hierarchy;
   they must not become decorative full-page backgrounds or introduce new accent
@@ -301,6 +302,18 @@ purchasable path and is never mixed into that grid.
   above the photograph in a light grey overlay panel, in the same register as
   the hypnomeditation overlay on the legacy site. Do not cover the artwork with
   a black scrim.
+- Human-presence photography is documentary, credited and taken from the
+  school's own archive—never generic stock. The homepage carries a compact
+  album of that archive: one swipeable frame on phones, three equal frames on
+  larger screens, cycling through the set on a timer. Next and previous turn a
+  whole spread (one photograph on phones, three from `md`), then loop to the
+  first spread; the counter is the page, never a leftover trailing frame.
+  The timed change pauses on hover, focus, interaction and
+  `prefers-reduced-motion`. A dedicated
+  gallery then edits the photographs into a varied story of teaching, paired
+  practice, conversation and place; it does not dump every historical image
+  into an unstructured wall. Use real localized alt text and preserve natural
+  skin tones without filters.
 - Course-card artwork is a compact square thumbnail beside the title. Never
   split a card into two tall columns or give artwork half the card width: that
   creates narrow text measures, oversized headings, and excessive empty height.
@@ -327,7 +340,10 @@ Motion exists only to reinforce something clickable:
 - buttons/linked cards: 150ms tonal change or at most a 2px lift;
 - arrow inside a call to action: at most 4px horizontal movement;
 - pressed controls: at most 1px vertical movement;
-- loading spinner: rotation while work is pending.
+- loading spinner: rotation while work is pending;
+- home gallery album: photographic frames may replace each other on a timer
+  or swipe. Scroll or opacity only; no Ken Burns, parallax or decorative
+  motion. Pause on hover, focus, interaction and `prefers-reduced-motion`.
 
 No entrance animation, scroll animation, parallax, pulsing decoration, ambient
 motion, or animated background. Always honor `prefers-reduced-motion`.
@@ -381,11 +397,19 @@ motion, or animated background. Always honor `prefers-reduced-motion`.
 - Course decisions: `CourseCard`, `CourseDates`, `CourseBookingBar`, and the
   course-page advice offer (`CourseAdviceOffer`) that leads to a compact
   Monday-first month grid of free 15-minute call slots or a written question.
+- Home photography: `GalleryTeaser` and `GalleryAlbum` in
+  `src/features/home`. One swipeable frame on phones, three equal frames from
+  `md`, cycling through `homeGalleryPhotos`. Next replaces the whole spread
+  and loops; the status is the page (`01 / 06` on desktop, `01 / 18` on phones).
 - Advice: one `AdvicePanel` renders the call/write switch and both forms for
   the course page and the standalone `/advice` page, so the slot grid and
   validation cannot drift apart. `AdviceInvite` is the entry point on the home
-  page and as the closing row of the catalogue: one compact bordered panel
-  taking its own copy, never a tall page-level section.
+  page and as a compact fixed decision aid at the bottom-right of the home and
+  catalogue pages: one bordered panel taking its own copy, never a tall
+  page-level section. On phones it contracts to a narrow call chip with a short
+  label. People can minimize either floating version to a small labelled
+  launcher and restore it with one tap. The catalogue reserves enough closing
+  space that the fixed panel cannot obscure its final course or footer action.
 - Room booking decisions: `src/features/rooms/components/booking`. `SlotNavigator`
   (room and date; always rendered outside the confirm form so a day with no
   free slot is not a dead end), `SlotFields`, `AmountSummary`, `BookingFacts`,

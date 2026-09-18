@@ -121,7 +121,23 @@ export default async function CoursesPage({params, searchParams}: CoursesPagePro
             />
           }
           portrait={<CourseCataloguePortrait imageAlt={t("instructorImageAlt")} />}
-          portraitAlt={t("instructorImageAlt")}
+          advice={
+            <AdviceInvite
+              headingId="catalogue-advice-title"
+              eyebrow={t("adviceEyebrow")}
+              title={t("adviceTitle")}
+              body={t("adviceBody")}
+              writePrompt={t("adviceWritePrompt")}
+              writeLabel={t("adviceWrite")}
+              callLabel={t("adviceCta")}
+              mobileCallLabel={t("adviceFloatingCta")}
+              minimizeLabel={t("adviceMinimize")}
+              expandLabel={t("adviceExpand")}
+              collapsedLabel={t("adviceCollapsed")}
+              compact
+              floating
+            />
+          }
           initialView={view === "calendar" ? "calendar" : "grid"}
           occupancy={occupancy}
           labels={{
@@ -158,17 +174,6 @@ export default async function CoursesPage({params, searchParams}: CoursesPagePro
           }}
         />
 
-        {/* Closes the catalogue: the page has no footer call to action. */}
-        <AdviceInvite
-          className="mt-12"
-          headingId="catalogue-advice-title"
-          eyebrow={t("adviceEyebrow")}
-          title={t("adviceTitle")}
-          body={t("adviceBody")}
-          writePrompt={t("adviceWritePrompt")}
-          writeLabel={t("adviceWrite")}
-          callLabel={t("adviceCta")}
-        />
       </Section>
     </SiteShell>
   );

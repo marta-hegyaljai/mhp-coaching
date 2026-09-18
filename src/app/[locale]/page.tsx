@@ -5,10 +5,12 @@ import {loadPublishedCourses} from "@/features/courses/live";
 import {AdviceInvite} from "@/features/course-calls/components/advice-invite";
 import {splitCatalogueByFormat} from "@/features/courses/programme";
 import {FounderQuote} from "@/features/home/founder-quote";
+import {GalleryTeaser} from "@/features/home/gallery-teaser";
 import {HomeHero} from "@/features/home/home-hero";
 import {ReviewsTeaser} from "@/features/home/reviews-teaser";
 import {WhyChoose} from "@/features/home/why-choose";
-import {homeStatueJsonLd, courseListJsonLd} from "@/features/seo/json-ld";
+import {testimonials} from "@/features/school/testimonials";
+import {courseListJsonLd, homeStatueJsonLd} from "@/features/seo/json-ld";
 import {JsonLd} from "@/features/seo/json-ld-script";
 import {homeStatue, homeStatueAlt} from "@/features/seo/home-statue";
 import {buildPageMetadata} from "@/features/seo/metadata";
@@ -119,17 +121,23 @@ export default async function HomePage({params}: HomePageProps) {
         </div>
       </Section>
 
-      <Section size="sm">
-        <AdviceInvite
-          headingId="advice-invite-title"
-          eyebrow={t("adviceEyebrow")}
-          title={t("adviceTitle")}
-          body={t("adviceBody")}
-          writePrompt={t("adviceWritePrompt")}
-          writeLabel={t("adviceWrite")}
-          callLabel={t("adviceCta")}
-        />
-      </Section>
+      <GalleryTeaser locale={locale} />
+
+      <AdviceInvite
+        headingId="advice-invite-title"
+        eyebrow={t("adviceEyebrow")}
+        title={t("adviceTitle")}
+        body={t("adviceBody")}
+        writePrompt={t("adviceWritePrompt")}
+        writeLabel={t("adviceWrite")}
+        callLabel={t("adviceCta")}
+        mobileCallLabel={t("adviceFloatingCta")}
+        minimizeLabel={t("adviceMinimize")}
+        expandLabel={t("adviceExpand")}
+        collapsedLabel={t("adviceCollapsed")}
+        compact
+        floating
+      />
 
       <WhyChoose
         locale={locale}
@@ -152,6 +160,9 @@ export default async function HomePage({params}: HomePageProps) {
         eyebrow={t("reviewsEyebrow")}
         title={t("reviewsTitle")}
         linkLabel={t("reviewsLink")}
+        countLabel={t("reviewsCount", {count: testimonials.length})}
+        anonymousLabel={t("reviewsAnonymous")}
+        participantLabel={t("reviewsParticipant")}
       />
     </SiteShell>
   );

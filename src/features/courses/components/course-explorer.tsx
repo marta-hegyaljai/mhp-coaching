@@ -1,12 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import {useMemo, useState} from "react";
 import type {ReactNode} from "react";
 
 import {CourseCalendar} from "@/features/courses/components/course-calendar";
 import {CourseCard} from "@/features/courses/components/course-card";
-import {CATALOGUE_INSTRUCTOR_IMAGE} from "@/features/courses/components/course-catalogue-masthead";
 import {
   toCalendarSession,
   type CalendarSession,
@@ -77,7 +75,7 @@ export function CourseExplorer({
   occupancy = {},
   lead,
   portrait,
-  portraitAlt,
+  advice,
   initialView = "grid",
 }: {
   locale: AppLocale;
@@ -92,7 +90,8 @@ export function CourseExplorer({
   occupancy?: OccupancyByDate;
   lead?: ReactNode;
   portrait?: ReactNode;
-  portraitAlt?: string;
+  /** Decision support shown before filters, while the visitor is still orienting. */
+  advice?: ReactNode;
   initialView?: ViewMode;
 }) {
   const allCourses = useMemo(
@@ -140,7 +139,8 @@ export function CourseExplorer({
   const hasActiveFilters = Boolean(query.trim() || month);
 
   const toolbar = (
-      <div className="grid gap-3 border border-ink bg-white p-4 sm:grid-cols-[minmax(0,1fr)_12rem_auto] sm:items-end">
+      <div className="grid grid-cols-2 gap-3 border border-ink bg-white p-3 sm:grid-cols-[minmax(0,1fr)_12rem_auto] sm:items-end">
+        <div className="col-span-2 sm:col-span-1">
         <CourseSearchAutocomplete
           locale={locale}
           courses={allCourses}
@@ -159,6 +159,7 @@ export function CourseExplorer({
             programme: labels.programmeLabel,
           }}
         />
+        </div>
         <div>
           <label htmlFor="course-month" className="block text-sm font-medium text-ink">
             {labels.month}
@@ -199,29 +200,16 @@ export function CourseExplorer({
   );
 
   return (
-    <div>
+    <div className={advice ? "pb-40 sm:pb-48" : ""}>
       {lead && portrait ? (
-        <div className="mt-8 grid lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-stretch lg:gap-x-10 lg:gap-y-6 xl:grid-cols-[minmax(0,1fr)_20rem]">
-          <div className="relative isolate overflow-hidden rounded-panel border border-ink lg:overflow-visible lg:rounded-none lg:border-0">
-            <div className="relative z-10 flex min-h-52 flex-col justify-end p-5 sm:min-h-56 sm:p-6 lg:min-h-0 lg:justify-start lg:p-0">
-              {lead}
-            </div>
-            {portraitAlt ? (
-              <div className="absolute inset-0 -z-10 lg:hidden">
-                <Image
-                  src={CATALOGUE_INSTRUCTOR_IMAGE}
-                  alt={portraitAlt}
-                  fill
-                  priority
-                  sizes="100vw"
-                  className="object-cover object-[62%_18%]"
-                />
-                <div className="absolute inset-0 bg-black/45" />
-              </div>
-            ) : null}
+        <div className="mt-8">
+          <div className="grid grid-cols-[minmax(0,1fr)_10rem] items-start gap-4 sm:grid-cols-[minmax(0,1fr)_14rem] sm:gap-8 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-center lg:gap-10">
+            <div>{lead}</div>
+            <div>{portrait}</div>
           </div>
-          <div className="hidden lg:row-span-2 lg:block">{portrait}</div>
-          <div className="mt-6 lg:mt-0">{toolbar}</div>
+
+          {advice ? <div data-floating-advice>{advice}</div> : null}
+          <div className="mt-5">{toolbar}</div>
         </div>
       ) : (
         toolbar
@@ -248,7 +236,7 @@ export function CourseExplorer({
               <section
                 key={group.category}
                 data-catalogue-category={group.category}
-                className="mt-10 first:mt-8"
+                className="mt-8 first:mt-6"
               >
                 <div className="border-b border-ink/15 pb-3">
                   {group.eyebrow ? (
@@ -271,7 +259,7 @@ export function CourseExplorer({
                   ) : null}
                 </div>
                 {group.courses.length > 0 ? (
-                  <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                  <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                     {group.courses.map((course) => (
                       <CourseCard
                         key={course.id}

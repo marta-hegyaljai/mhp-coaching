@@ -8,6 +8,7 @@ export type NavLabelKey =
   | "caseLibrary"
   | "insights"
   | "about"
+  | "gallery"
   | "contact"
   | "advice"
   | "reviews"
@@ -24,6 +25,7 @@ export type NavHintKey =
   | "caseLibraryHint"
   | "insightsHint"
   | "aboutHint"
+  | "galleryHint"
   | "contactHint";
 
 export type NavEntry = {
@@ -73,6 +75,13 @@ const schoolGroup: NavGroup = {
       hint: "insightsHint",
     },
     {key: "about", href: "/about", origin: "marketing", match: "/about", hint: "aboutHint"},
+    {
+      key: "gallery",
+      href: "/gallery",
+      origin: "marketing",
+      match: "/gallery",
+      hint: "galleryHint",
+    },
     {
       key: "contact",
       href: "/contact",

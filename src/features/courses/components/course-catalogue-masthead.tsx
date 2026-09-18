@@ -18,14 +18,14 @@ export function CourseCatalogueLead({
 }) {
   return (
     <>
-      <Eyebrow className="max-lg:text-gold">{eyebrow}</Eyebrow>
-      <h1 className="mt-3 font-serif text-heading text-parchment lg:mt-4 lg:text-title lg:text-ink">
+      <Eyebrow>{eyebrow}</Eyebrow>
+      <h1 className="mt-2 font-serif text-heading text-ink lg:mt-3 lg:text-title">
         {title}
       </h1>
-      <p className="mt-3 max-w-2xl text-sm leading-6 text-parchment/85 lg:mt-4 lg:text-base lg:leading-7 lg:text-ink-muted">
+      <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-muted max-sm:hidden lg:mt-3 lg:text-base lg:leading-7">
         {intro}
       </p>
-      <p className="mt-3 text-xs font-semibold uppercase tracking-[0.16em] text-parchment/70 lg:mt-5 lg:text-ink-subtle">
+      <p className="mt-2 text-xs font-semibold uppercase tracking-[0.16em] text-ink-subtle lg:mt-3">
         {courseCount}
       </p>
     </>
@@ -34,18 +34,18 @@ export function CourseCatalogueLead({
 
 export function CourseCataloguePortrait({imageAlt}: {imageAlt: string}) {
   return (
-    <figure className="flex h-full flex-col">
-      <div className="relative min-h-[22rem] flex-1 overflow-hidden border border-ink">
+    <figure className="relative">
+      <div className="relative aspect-square overflow-hidden border border-ink lg:aspect-[3/2]">
         <Image
           src={CATALOGUE_INSTRUCTOR_IMAGE}
           alt={imageAlt}
           fill
           priority
-          sizes="(min-width: 1280px) 320px, 288px"
-          className="object-cover object-[62%_18%]"
+          sizes="(min-width: 1024px) 352px, (min-width: 640px) 224px, 160px"
+          className="object-cover object-[60%_center] max-lg:scale-110"
         />
       </div>
-      <figcaption className="mt-2 text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-ink-subtle">
+      <figcaption className="absolute bottom-px left-px max-w-[calc(100%-2px)] border-r border-t border-ink bg-white px-2 py-1.5 text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-ink-subtle sm:px-3 sm:text-[0.65rem] sm:tracking-[0.14em]">
         {organization.founder}
       </figcaption>
     </figure>

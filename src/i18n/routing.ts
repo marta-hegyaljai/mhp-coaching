@@ -115,6 +115,11 @@ export const routing = defineRouting({
       de: "/stimmen",
       en: "/reviews",
     },
+    "/gallery": {
+      fr: "/galerie",
+      de: "/galerie",
+      en: "/gallery",
+    },
     "/legal/privacy": {
       fr: "/mentions-legales/confidentialite",
       de: "/rechtliches/datenschutz",

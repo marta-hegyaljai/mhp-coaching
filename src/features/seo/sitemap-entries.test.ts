@@ -32,6 +32,7 @@ describe("SEO launch surfaces", () => {
       true,
     );
     expect(entries.some((entry) => entry.url.endsWith("/fr/avis"))).toBe(true);
+    expect(entries.some((entry) => entry.url.endsWith("/fr/galerie"))).toBe(true);
     expect(entries.some((entry) => entry.url.endsWith("/fr/curriculum"))).toBe(
       true,
     );

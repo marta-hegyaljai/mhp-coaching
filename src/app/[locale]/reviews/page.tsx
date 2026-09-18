@@ -9,6 +9,7 @@ import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {buttonStyles} from "@/shared/ui/button";
 import {Eyebrow, Section} from "@/shared/ui/layout";
+import {Panel} from "@/shared/ui/panel";
 
 type ReviewsPageProps = {
   params: Promise<{locale: AppLocale}>;
@@ -45,21 +46,39 @@ export default async function ReviewsPage({params}: ReviewsPageProps) {
           ]}
         />
 
-        <div className="mt-8 max-w-3xl">
-          <Eyebrow>{t("eyebrow")}</Eyebrow>
-          <h1 className="mt-4 font-serif text-title">{t("title")}</h1>
-          <p className="mt-6 text-lead text-ink-muted">{t("lead")}</p>
+        <div className="mt-8 grid gap-8 border-b border-ink pb-10 lg:grid-cols-[minmax(0,1fr)_17rem] lg:items-end">
+          <div className="max-w-3xl">
+            <Eyebrow>{t("eyebrow")}</Eyebrow>
+            <h1 className="mt-4 font-serif text-title">{t("title")}</h1>
+            <p className="mt-6 text-lead text-ink-muted">{t("lead")}</p>
+          </div>
+
+          <div className="border-l-4 border-ink pl-5">
+            <p className="font-serif text-[3.5rem] leading-none tracking-[-0.04em] text-ink">
+              {testimonials.length}
+            </p>
+            <p className="mt-2 text-xs font-bold uppercase tracking-[0.16em] text-ink-subtle">
+              {t("countLabel")}
+            </p>
+          </div>
         </div>
 
-        <ul className="mt-12 max-w-3xl">
+        <ul className="mt-8 columns-1 gap-4 md:columns-2 xl:columns-3">
           {testimonials.map((entry) => (
-            <li key={entry.id} className="border-t border-line py-6 last:border-b">
-              <TestimonialQuote testimonial={entry} variant="list" />
+            <li key={entry.id} className="mb-4 break-inside-avoid">
+              <Panel as="article" padding="sm">
+                <TestimonialQuote
+                  testimonial={entry}
+                  variant="archive"
+                  anonymousLabel={t("anonymousLabel")}
+                  participantLabel={t("participantLabel")}
+                />
+              </Panel>
             </li>
           ))}
         </ul>
 
-        <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+        <div className="mt-8 flex flex-col gap-3 border-t border-ink pt-8 sm:flex-row">
           <Link href="/courses" className={buttonStyles()}>
             {t("coursesCta")}
           </Link>
