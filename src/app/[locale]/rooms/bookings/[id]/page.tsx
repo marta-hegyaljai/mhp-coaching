@@ -25,9 +25,9 @@ import type {AppLocale} from "@/i18n/routing";
 import {availabilityHref} from "@/features/rooms/query";
 import {BackLink} from "@/shared/ui/back-link";
 import {buttonStyles} from "@/shared/ui/button";
-import {Eyebrow, Section} from "@/shared/ui/layout";
 import {Panel, PanelDivider} from "@/shared/ui/panel";
 import {StatusLabel} from "@/shared/ui/status-label";
+import {WorkspacePage} from "@/shared/ui/workspace-page";
 
 type BookingDetailPageProps = {
   params: Promise<{locale: AppLocale; id: string}>;
@@ -112,13 +112,12 @@ export default async function RoomBookingDetailPage({params, searchParams}: Book
         en: {pathname: "/rooms/bookings/[id]", params: {id}},
       }}
     >
-      <Section size="sm" className="pt-10 pb-16">
-        <Eyebrow>{t("eyebrow")}</Eyebrow>
-        <RoomsNav current="bookings" />
-        <BackLink href="/rooms/bookings" className="mt-6">
-          {t("backToBookings")}
-        </BackLink>
-        <h1 className="mt-5 font-serif text-heading">{t("bookingDetailTitle")}</h1>
+      <WorkspacePage
+        eyebrow={t("eyebrow")}
+        nav={<RoomsNav current="bookings" />}
+        back={<BackLink href="/rooms/bookings">{t("backToBookings")}</BackLink>}
+        title={t("bookingDetailTitle")}
+      >
 
         {notice ? (
           <div className="mt-8 max-w-xl">
@@ -207,7 +206,7 @@ export default async function RoomBookingDetailPage({params, searchParams}: Book
             </Link>
           </p>
         </div>
-      </Section>
+      </WorkspacePage>
     </SiteShell>
   );
 }

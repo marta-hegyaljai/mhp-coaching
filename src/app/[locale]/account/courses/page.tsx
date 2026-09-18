@@ -13,7 +13,7 @@ import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {buttonStyles} from "@/shared/ui/button";
-import {Eyebrow, Section} from "@/shared/ui/layout";
+import {WorkspacePage} from "@/shared/ui/workspace-page";
 
 type MyCoursesPageProps = {
   params: Promise<{locale: AppLocale}>;
@@ -52,20 +52,21 @@ export default async function MyCoursesPage({params}: MyCoursesPageProps) {
 
   return (
     <SiteShell locale={locale} footerCta={null}>
-      <Section size="sm" className="pt-10 pb-16">
-        <Eyebrow>{t("eyebrow")}</Eyebrow>
-        <h1 className="mt-3 font-serif text-heading">{t("myCoursesTitle")}</h1>
-        <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-muted">
-          {t("myCoursesIntro")}
-        </p>
-        <AccountNav
-          locale={locale}
-          labels={{
-            profile: t("profileTitle"),
-            courses: t("myCoursesLink"),
-            signOut: navT("signOut"),
-          }}
-        />
+      <WorkspacePage
+        eyebrow={t("eyebrow")}
+        nav={
+          <AccountNav
+            locale={locale}
+            labels={{
+              profile: t("profileTitle"),
+              courses: t("myCoursesLink"),
+              signOut: navT("signOut"),
+            }}
+          />
+        }
+        title={t("myCoursesTitle")}
+        intro={t("myCoursesIntro")}
+      >
 
         {hasRegistrations ? (
           <>
@@ -120,7 +121,7 @@ export default async function MyCoursesPage({params}: MyCoursesPageProps) {
           </p>
           <CertificateLibrary certificates={certificates} />
         </section>
-      </Section>
+      </WorkspacePage>
     </SiteShell>
   );
 }

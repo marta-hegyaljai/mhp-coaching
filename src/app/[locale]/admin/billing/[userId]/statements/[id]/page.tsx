@@ -19,9 +19,9 @@ import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
 import {BackLink} from "@/shared/ui/back-link";
 import {DownloadIcon} from "@/shared/ui/icons";
-import {Eyebrow, Section} from "@/shared/ui/layout";
 import {Price} from "@/shared/ui/price";
 import {StatusLabel} from "@/shared/ui/status-label";
+import {WorkspacePage} from "@/shared/ui/workspace-page";
 
 type AdminStatementPageProps = {
   params: Promise<{locale: AppLocale; userId: string; id: string}>;
@@ -76,21 +76,23 @@ export default async function AdminStatementPage({params}: AdminStatementPagePro
 
   return (
     <SiteShell locale={locale} footerCta={null}>
-      <Section size="sm" className="pt-10 pb-16">
-        <Eyebrow>{t("eyebrow")}</Eyebrow>
-        <AdminSubnav
-          current="billing"
-          label={t("sectionsNav")}
-          labels={adminSectionLabels(t)}
-        />
-        <BackLink
-          href={{pathname: "/admin/billing/[userId]", params: {userId}}}
-          className="mt-6"
-        >
-          {t("backToUserBilling")}
-        </BackLink>
-        <h1 className="mt-5 font-serif text-heading capitalize">{monthLabel}</h1>
-        <p className="mt-3 font-sans text-sm break-all">{detail.owner.email}</p>
+      <WorkspacePage
+        eyebrow={t("eyebrow")}
+        nav={
+          <AdminSubnav
+            current="billing"
+            label={t("sectionsNav")}
+            labels={adminSectionLabels(t)}
+          />
+        }
+        back={
+          <BackLink href={{pathname: "/admin/billing/[userId]", params: {userId}}}>
+            {t("backToUserBilling")}
+          </BackLink>
+        }
+        title={monthLabel}
+      >
+        <p className="mt-2 font-sans text-sm break-all">{detail.owner.email}</p>
         <StatusLabel
           className="mt-4"
           tone={statementStatusTone(detail.statement.status)}
@@ -168,7 +170,7 @@ export default async function AdminStatementPage({params}: AdminStatementPagePro
             empty={t("notificationEvidenceEmpty")}
           />
         </section>
-      </Section>
+      </WorkspacePage>
     </SiteShell>
   );
 }

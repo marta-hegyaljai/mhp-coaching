@@ -16,8 +16,8 @@ import type {AppLocale} from "@/i18n/routing";
 import {isUuid} from "@/lib/uuid";
 import {BackLink} from "@/shared/ui/back-link";
 import {SelectField} from "@/shared/ui/field";
-import {Eyebrow, Section} from "@/shared/ui/layout";
 import {Panel} from "@/shared/ui/panel";
+import {WorkspacePage} from "@/shared/ui/workspace-page";
 
 type NewBookingPageProps = {
   params: Promise<{locale: AppLocale}>;
@@ -86,20 +86,19 @@ export default async function AdminNewBookingPage({params, searchParams}: NewBoo
 
   return (
     <SiteShell locale={locale} footerCta={null}>
-      <Section size="sm" className="pt-10 pb-16">
-        <Eyebrow>{t("eyebrow")}</Eyebrow>
-        <AdminSubnav
-          current="bookings"
-          label={t("sectionsNav")}
-          labels={adminSectionLabels(t)}
-        />
-        <BackLink href="/admin/bookings" className="mt-6">
-          {t("backToAdminBookings")}
-        </BackLink>
-        <h1 className="mt-5 font-serif text-heading">{t("createBookingTitle")}</h1>
-        <p className="mt-6 max-w-2xl text-sm leading-7 text-ink-muted">
-          {t("createBookingIntro")}
-        </p>
+      <WorkspacePage
+        eyebrow={t("eyebrow")}
+        nav={
+          <AdminSubnav
+            current="bookings"
+            label={t("sectionsNav")}
+            labels={adminSectionLabels(t)}
+          />
+        }
+        back={<BackLink href="/admin/bookings">{t("backToAdminBookings")}</BackLink>}
+        title={t("createBookingTitle")}
+        intro={t("createBookingIntro")}
+      >
 
         <div className="mt-8 max-w-xl space-y-6">
           {ready ? (
@@ -148,7 +147,7 @@ export default async function AdminNewBookingPage({params, searchParams}: NewBoo
             </Panel>
           )}
         </div>
-      </Section>
+      </WorkspacePage>
     </SiteShell>
   );
 }

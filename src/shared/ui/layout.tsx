@@ -15,13 +15,14 @@ export function Container({children, className = ""}: ContainerProps) {
 
 type SectionProps = ContainerProps & {
   tone?: "base" | "shell";
-  size?: "sm" | "md" | "lg";
+  size?: "work" | "sm" | "md" | "lg";
   containerClassName?: string;
   id?: string;
   ariaLabelledBy?: string;
 };
 
 const paddings = {
+  work: "pt-5 pb-12 sm:pt-6 sm:pb-14",
   sm: "py-10 sm:py-12",
   md: "py-12 sm:py-16",
   lg: "py-14 sm:py-20 lg:py-24",

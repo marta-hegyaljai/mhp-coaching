@@ -10,7 +10,7 @@ export async function RoomsNav({
   const t = await getTranslations("Rooms");
 
   return (
-    <div className="mt-6 overflow-x-auto">
+    <div className="overflow-x-auto">
       <SegmentedLinks
         label={t("navLabel")}
         items={[

@@ -16,7 +16,7 @@ export function AccountNav({
   };
 }) {
   return (
-    <nav aria-label={labels.profile} className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2">
+    <nav aria-label={labels.profile} className="flex flex-wrap items-center gap-x-4 gap-y-2">
       <Link href="/account" className={itemClass}>
         {labels.profile}
       </Link>

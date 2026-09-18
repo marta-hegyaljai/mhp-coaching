@@ -9,7 +9,7 @@ import {parseAvailabilityQuery} from "@/features/rooms/query";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
-import {Eyebrow, Section} from "@/shared/ui/layout";
+import {WorkspacePage} from "@/shared/ui/workspace-page";
 
 type RoomsPageProps = {
   params: Promise<{locale: AppLocale}>;
@@ -62,12 +62,13 @@ export default async function RoomsPage({params, searchParams}: RoomsPageProps) 
 
   return (
     <SiteShell locale={locale} footerCta={null}>
-      <Section size="sm" className="pt-10 pb-16">
-        <Eyebrow>{t("eyebrow")}</Eyebrow>
-        <h1 className="mt-3 font-serif text-heading">{t("title")}</h1>
-        <p className="mt-4 max-w-2xl text-sm leading-7 text-ink-muted">{t("intro")}</p>
-        <RoomsNav current="calendar" />
-        <div className="mt-10">
+      <WorkspacePage
+        eyebrow={t("eyebrow")}
+        nav={<RoomsNav current="calendar" />}
+        title={t("title")}
+        intro={t("intro")}
+      >
+        <div className="mt-6">
           <AvailabilityCalendar
             locale={locale}
             query={query}
@@ -76,7 +77,7 @@ export default async function RoomsPage({params, searchParams}: RoomsPageProps) 
             discountPercent={therapistDiscountPercent(user)}
           />
         </div>
-      </Section>
+      </WorkspacePage>
     </SiteShell>
   );
 }

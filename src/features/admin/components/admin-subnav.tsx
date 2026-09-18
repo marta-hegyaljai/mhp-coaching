@@ -70,12 +70,13 @@ export function adminSectionLabels(admin: {
 /**
  * Admin destinations stay one row on a phone: the tabs scroll under the thumb
  * instead of wrapping into a three-line block that hides the records.
+ * Vertical gap belongs on WorkspacePage; do not add a default top margin here.
  */
 export function AdminSubnav({
   current,
   label,
   labels,
-  className = "mt-6",
+  className = "",
 }: {
   current: AdminSection;
   /** Names the landmark itself; the tab labels name the destinations. */

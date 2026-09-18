@@ -13,7 +13,7 @@ import type {AppLocale} from "@/i18n/routing";
 import {buttonStyles} from "@/shared/ui/button";
 import {Price} from "@/shared/ui/price";
 import {StatusLabel, statusRailClass} from "@/shared/ui/status-label";
-import {Eyebrow, Section} from "@/shared/ui/layout";
+import {WorkspacePage} from "@/shared/ui/workspace-page";
 
 type AdminRoomsPageProps = {
   params: Promise<{locale: AppLocale}>;
@@ -44,17 +44,19 @@ export default async function AdminRoomsPage({params}: AdminRoomsPageProps) {
 
   return (
     <SiteShell locale={locale} footerCta={null}>
-      <Section size="sm" className="pt-10 pb-16">
-        <Eyebrow>{admin("eyebrow")}</Eyebrow>
-        <AdminSubnav
-          current="rooms"
-          label={admin("sectionsNav")}
-          labels={adminSectionLabels(admin)}
-        />
-        <h1 className="mt-3 font-serif text-heading">{t("adminRoomsTitle")}</h1>
-        <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-muted">{t("adminRoomsIntro")}</p>
-
-        <div className="mt-10">
+      <WorkspacePage
+        eyebrow={admin("eyebrow")}
+        nav={
+          <AdminSubnav
+            current="rooms"
+            label={admin("sectionsNav")}
+            labels={adminSectionLabels(admin)}
+          />
+        }
+        title={t("adminRoomsTitle")}
+        intro={t("adminRoomsIntro")}
+      >
+        <div className="mt-6">
           {rooms.length === 0 ? (
             <div className="rounded-panel border border-ink bg-white px-5 py-8">
               <p className="text-sm text-ink-muted">{t("emptyRooms")}</p>
@@ -109,7 +111,7 @@ export default async function AdminRoomsPage({params}: AdminRoomsPageProps) {
             <CreateRoomForm locale={locale} />
           </div>
         </div>
-      </Section>
+      </WorkspacePage>
     </SiteShell>
   );
 }

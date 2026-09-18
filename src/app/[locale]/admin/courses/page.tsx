@@ -20,7 +20,7 @@ import {loadCatalogueCourses} from "@/features/courses/live";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
-import {Eyebrow, Section} from "@/shared/ui/layout";
+import {WorkspacePage} from "@/shared/ui/workspace-page";
 
 type AdminCoursesPageProps = {
   params: Promise<{locale: AppLocale}>;
@@ -76,15 +76,18 @@ export default async function AdminCoursesPage({params, searchParams}: AdminCour
 
   return (
     <SiteShell locale={locale} footerCta={null}>
-      <Section size="sm" className="pt-10 pb-16">
-        <Eyebrow>{t("eyebrow")}</Eyebrow>
-        <AdminSubnav
-          current="courses"
-          label={t("sectionsNav")}
-          labels={adminSectionLabels(t)}
-        />
-        <h1 className="mt-3 font-serif text-heading">{t("coursesTitle")}</h1>
-        <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-muted">{t("coursesIntro")}</p>
+      <WorkspacePage
+        eyebrow={t("eyebrow")}
+        nav={
+          <AdminSubnav
+            current="courses"
+            label={t("sectionsNav")}
+            labels={adminSectionLabels(t)}
+          />
+        }
+        title={t("coursesTitle")}
+        intro={t("coursesIntro")}
+      >
 
         <CatalogueOverview
           summary={summary}
@@ -144,7 +147,7 @@ export default async function AdminCoursesPage({params, searchParams}: AdminCour
             categories,
           }}
         />
-      </Section>
+      </WorkspacePage>
     </SiteShell>
   );
 }

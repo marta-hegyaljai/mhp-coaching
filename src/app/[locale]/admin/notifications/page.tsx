@@ -8,7 +8,7 @@ import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
 import {BackLink} from "@/shared/ui/back-link";
-import {Eyebrow, Section} from "@/shared/ui/layout";
+import {WorkspacePage} from "@/shared/ui/workspace-page";
 
 type AdminNotificationsPageProps = {
   params: Promise<{locale: AppLocale}>;
@@ -38,20 +38,21 @@ export default async function AdminNotificationsPage({params}: AdminNotification
 
   return (
     <SiteShell locale={locale} footerCta={null}>
-      <Section size="sm" className="pt-10 pb-16">
-        <Eyebrow>{t("eyebrow")}</Eyebrow>
-        <AdminSubnav
-          current="billing"
-          label={t("sectionsNav")}
-          labels={adminSectionLabels(t)}
-        />
-        <BackLink href="/admin/billing" className="mt-6">
-          {t("backToBilling")}
-        </BackLink>
-        <h1 className="mt-5 font-serif text-heading">{t("notificationsTitle")}</h1>
-        <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-muted">{t("notificationsIntro")}</p>
+      <WorkspacePage
+        eyebrow={t("eyebrow")}
+        nav={
+          <AdminSubnav
+            current="billing"
+            label={t("sectionsNav")}
+            labels={adminSectionLabels(t)}
+          />
+        }
+        back={<BackLink href="/admin/billing">{t("backToBilling")}</BackLink>}
+        title={t("notificationsTitle")}
+        intro={t("notificationsIntro")}
+      >
         <NotificationEvidenceList rows={rows} empty={t("notificationsEmpty")} />
-      </Section>
+      </WorkspacePage>
     </SiteShell>
   );
 }

@@ -9,7 +9,7 @@ import {getBookingSettings, listOpeningIntervals} from "@/features/rooms/setting
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
-import {Eyebrow, Section} from "@/shared/ui/layout";
+import {WorkspacePage} from "@/shared/ui/workspace-page";
 
 type AdminSettingsPageProps = {
   params: Promise<{locale: AppLocale}>;
@@ -44,15 +44,18 @@ export default async function AdminSettingsPage({params}: AdminSettingsPageProps
 
   return (
     <SiteShell locale={locale} footerCta={null}>
-      <Section size="sm" className="pt-10 pb-16">
-        <Eyebrow>{admin("eyebrow")}</Eyebrow>
-        <AdminSubnav
-          current="settings"
-          label={admin("sectionsNav")}
-          labels={adminSectionLabels(admin)}
-        />
-        <h1 className="mt-3 font-serif text-heading">{t("settingsTitle")}</h1>
-        <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-muted">{t("settingsIntro")}</p>
+      <WorkspacePage
+        eyebrow={admin("eyebrow")}
+        nav={
+          <AdminSubnav
+            current="settings"
+            label={admin("sectionsNav")}
+            labels={adminSectionLabels(admin)}
+          />
+        }
+        title={t("settingsTitle")}
+        intro={t("settingsIntro")}
+      >
         <div className="mt-10">
           <RoomSettingsForm locale={locale} settings={settings} hours={hours} />
         </div>
@@ -66,7 +69,7 @@ export default async function AdminSettingsPage({params}: AdminSettingsPageProps
             failedLabel={admin("opsFailed")}
           />
         </section>
-      </Section>
+      </WorkspacePage>
     </SiteShell>
   );
 }

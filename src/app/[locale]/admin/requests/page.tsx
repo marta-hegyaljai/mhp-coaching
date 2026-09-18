@@ -19,8 +19,8 @@ import type {AppLocale} from "@/i18n/routing";
 import {Button} from "@/shared/ui/button";
 import {InputField, SelectField} from "@/shared/ui/field";
 import {FilterBar} from "@/shared/ui/filter-bar";
-import {Eyebrow, Section} from "@/shared/ui/layout";
 import {Pagination} from "@/shared/ui/pagination";
+import {WorkspacePage} from "@/shared/ui/workspace-page";
 
 type AdminRequestsPageProps = {
   params: Promise<{locale: AppLocale}>;
@@ -59,17 +59,19 @@ export default async function AdminRequestsPage({params, searchParams}: AdminReq
 
   return (
     <SiteShell locale={locale} footerCta={null}>
-      <Section size="sm" className="pt-10 pb-16">
-        <Eyebrow>{t("eyebrow")}</Eyebrow>
-        <AdminSubnav
-          current="requests"
-          label={t("sectionsNav")}
-          labels={adminSectionLabels(t)}
-        />
-        <h1 className="mt-6 font-serif text-heading">{t("adminRequestsTitle")}</h1>
-        <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-muted">{t("adminRequestsIntro")}</p>
-
-        <div className="mt-10">
+      <WorkspacePage
+        eyebrow={t("eyebrow")}
+        nav={
+          <AdminSubnav
+            current="requests"
+            label={t("sectionsNav")}
+            labels={adminSectionLabels(t)}
+          />
+        }
+        title={t("adminRequestsTitle")}
+        intro={t("adminRequestsIntro")}
+      >
+        <div className="mt-6">
           <FilterBar
             action={localizedPath(locale, "/admin/requests")}
             label={t("filter")}
@@ -153,7 +155,7 @@ export default async function AdminRequestsPage({params, searchParams}: AdminReq
             />
           ) : null}
         </div>
-      </Section>
+      </WorkspacePage>
     </SiteShell>
   );
 }

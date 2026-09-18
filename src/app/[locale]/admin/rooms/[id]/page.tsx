@@ -11,7 +11,7 @@ import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
 import {BackLink} from "@/shared/ui/back-link";
-import {Eyebrow, Section} from "@/shared/ui/layout";
+import {WorkspacePage} from "@/shared/ui/workspace-page";
 
 type AdminRoomDetailPageProps = {
   params: Promise<{locale: AppLocale; id: string}>;
@@ -51,18 +51,19 @@ export default async function AdminRoomDetailPage({params}: AdminRoomDetailPageP
 
   return (
     <SiteShell locale={locale} footerCta={null}>
-      <Section size="sm" className="pt-10 pb-16">
-        <Eyebrow>{admin("eyebrow")}</Eyebrow>
-        <AdminSubnav
-          current="rooms"
-          label={admin("sectionsNav")}
-          labels={adminSectionLabels(admin)}
-        />
-        <BackLink href="/admin/rooms" className="mt-6">
-          {t("backToRooms")}
-        </BackLink>
-        <h1 className="mt-5 font-serif text-heading">{t("editTitle")}</h1>
-        <p className="mt-3 font-sans text-lg font-medium">{room.name}</p>
+      <WorkspacePage
+        eyebrow={admin("eyebrow")}
+        nav={
+          <AdminSubnav
+            current="rooms"
+            label={admin("sectionsNav")}
+            labels={adminSectionLabels(admin)}
+          />
+        }
+        back={<BackLink href="/admin/rooms">{t("backToRooms")}</BackLink>}
+        title={t("editTitle")}
+      >
+        <p className="mt-2 font-sans text-lg font-medium">{room.name}</p>
         <div className="mt-10">
           <EditRoomForm locale={locale} room={room} />
         </div>
@@ -77,7 +78,7 @@ export default async function AdminRoomDetailPage({params}: AdminRoomDetailPageP
             }))}
           />
         </div>
-      </Section>
+      </WorkspacePage>
     </SiteShell>
   );
 }

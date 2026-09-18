@@ -12,11 +12,12 @@ import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import {formatMonthYear} from "@/shared/format/calendar-date";
 import {formatLocalDate, parseZurichMonthKey} from "@/features/rooms/timezone";
-import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
-import {Eyebrow, Section} from "@/shared/ui/layout";
+import {Link} from "@/i18n/navigation";
+import {BackLink} from "@/shared/ui/back-link";
 import {Price} from "@/shared/ui/price";
 import {StatusLabel} from "@/shared/ui/status-label";
+import {WorkspacePage} from "@/shared/ui/workspace-page";
 
 type BillingMonthPageProps = {
   params: Promise<{locale: AppLocale; year: string; month: string}>;
@@ -79,17 +80,15 @@ export default async function BillingMonthPage({params}: BillingMonthPageProps) 
 
   return (
     <SiteShell locale={locale} footerCta={null}>
-      <Section size="sm" className="pt-10 pb-16">
-        <Eyebrow>{t("eyebrow")}</Eyebrow>
-        <RoomsNav current="usage" />
-        <p className="mt-6 text-sm">
-          <Link href="/billing" className="underline-offset-4 hover:underline">
-            {t("backToBilling")}
-          </Link>
-        </p>
-        <h1 className="mt-3 font-serif text-heading capitalize">{monthLabel}</h1>
+      <WorkspacePage
+        eyebrow={t("eyebrow")}
+        nav={<RoomsNav current="usage" />}
+        back={<BackLink href="/billing">{t("backToBilling")}</BackLink>}
+        title={monthLabel}
+        intro={intro}
+      >
         {row ? (
-          <StatusLabel className="mt-4" tone={row.kind === "open" ? "strong" : "muted"}>
+          <StatusLabel className="mt-2" tone={row.kind === "open" ? "strong" : "muted"}>
             {row.kind === "statement" && row.statementStatus
               ? t(`statementStatus.${row.statementStatus}`)
               : t(
@@ -101,7 +100,6 @@ export default async function BillingMonthPage({params}: BillingMonthPageProps) 
                 )}
           </StatusLabel>
         ) : null}
-        <p className="mt-4 max-w-2xl text-sm leading-7 text-ink-muted">{intro}</p>
 
         <div className="mt-6 flex flex-wrap items-baseline gap-x-6 gap-y-2 text-sm">
           <span>
@@ -142,7 +140,7 @@ export default async function BillingMonthPage({params}: BillingMonthPageProps) 
             })}
           />
         </section>
-      </Section>
+      </WorkspacePage>
     </SiteShell>
   );
 }

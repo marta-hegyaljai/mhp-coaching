@@ -30,9 +30,9 @@ import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
 import {BackLink} from "@/shared/ui/back-link";
 import {Chip} from "@/shared/ui/chip";
-import {Eyebrow, Section} from "@/shared/ui/layout";
 import {Price} from "@/shared/ui/price";
 import {StatusLabel, statusRailClass} from "@/shared/ui/status-label";
+import {WorkspacePage} from "@/shared/ui/workspace-page";
 
 type AdminCourseDetailPageProps = {
   params: Promise<{locale: AppLocale; id: string}>;
@@ -103,18 +103,19 @@ export default async function AdminCourseDetailPage({
 
   return (
     <SiteShell locale={locale} footerCta={null}>
-      <Section size="sm" className="pt-10 pb-16">
-        <Eyebrow>{t("eyebrow")}</Eyebrow>
-        <AdminSubnav
-          current="courses"
-          label={t("sectionsNav")}
-          labels={adminSectionLabels(t)}
-        />
-        <BackLink href="/admin/courses" className="mt-6">
-          {t("coursesBack")}
-        </BackLink>
-        <h1 className="mt-5 font-serif text-heading">{course.title[locale]}</h1>
-        <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+      <WorkspacePage
+        eyebrow={t("eyebrow")}
+        nav={
+          <AdminSubnav
+            current="courses"
+            label={t("sectionsNav")}
+            labels={adminSectionLabels(t)}
+          />
+        }
+        back={<BackLink href="/admin/courses">{t("coursesBack")}</BackLink>}
+        title={course.title[locale]}
+      >
+        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
           {!isCoursePublished(course) ? (
             <StatusLabel tone="stop">{t("coursesPublishedNo")}</StatusLabel>
           ) : null}
@@ -207,6 +208,10 @@ export default async function AdminCourseDetailPage({
                   status: t("status"),
                   created: t("coursesCreated"),
                   empty: t("coursesEnrolmentsEmpty"),
+                  copyEmail: (email) => t("copyEmail", {email}),
+                  copyPhone: (phone) => t("copyPhone", {phone}),
+                  copyAddress: (address) => t("copyAddress", {address}),
+                  copied: t("emailCopied"),
                 }}
               />
             </section>
@@ -274,7 +279,7 @@ export default async function AdminCourseDetailPage({
             </section>
           ) : null}
         </div>
-      </Section>
+      </WorkspacePage>
     </SiteShell>
   );
 }

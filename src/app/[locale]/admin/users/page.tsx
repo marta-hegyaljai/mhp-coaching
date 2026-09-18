@@ -13,8 +13,7 @@ import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
-import {Eyebrow, Section} from "@/shared/ui/layout";
-import {PageHeader} from "@/shared/ui/page-header";
+import {WorkspacePage} from "@/shared/ui/workspace-page";
 
 type AdminUsersPageProps = {
   params: Promise<{locale: AppLocale}>;
@@ -53,15 +52,19 @@ export default async function AdminUsersPage({params, searchParams}: AdminUsersP
 
   return (
     <SiteShell locale={locale} footerCta={null}>
-      <Section size="sm" className="pt-10 pb-16">
-        <Eyebrow>{t("eyebrow")}</Eyebrow>
-        <AdminSubnav
-          current="users"
-          label={t("sectionsNav")}
-          labels={adminSectionLabels(t)}
-        />
-        <PageHeader className="mt-3" title={t("title")} intro={t("intro")} />
-        <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-muted">{t("identityNote")}</p>
+      <WorkspacePage
+        eyebrow={t("eyebrow")}
+        nav={
+          <AdminSubnav
+            current="users"
+            label={t("sectionsNav")}
+            labels={adminSectionLabels(t)}
+          />
+        }
+        title={t("title")}
+        intro={t("intro")}
+      >
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-muted">{t("identityNote")}</p>
         <p className="mt-3 text-sm">
           <Link href="/staff/bookings" className="underline-offset-4 hover:underline">
             {t("bookingsLink")}
@@ -143,7 +146,7 @@ export default async function AdminUsersPage({params, searchParams}: AdminUsersP
             />
           </div>
         </div>
-      </Section>
+      </WorkspacePage>
     </SiteShell>
   );
 }

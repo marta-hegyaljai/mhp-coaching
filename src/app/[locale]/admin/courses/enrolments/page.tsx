@@ -19,9 +19,8 @@ import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
 import {BackLink} from "@/shared/ui/back-link";
-import {Eyebrow, Section} from "@/shared/ui/layout";
-import {PageHeader} from "@/shared/ui/page-header";
 import {Pagination} from "@/shared/ui/pagination";
+import {WorkspacePage} from "@/shared/ui/workspace-page";
 
 type AdminEnrolmentsPageProps = {
   params: Promise<{locale: AppLocale}>;
@@ -67,23 +66,20 @@ export default async function AdminEnrolmentsPage({
 
   return (
     <SiteShell locale={locale} footerCta={null}>
-      <Section size="sm" className="pt-10 pb-16">
-        <Eyebrow>{t("eyebrow")}</Eyebrow>
-        <AdminSubnav
-          current="courses"
-          label={t("sectionsNav")}
-          labels={adminSectionLabels(t)}
-        />
-        <BackLink href="/admin/courses" className="mt-6">
-          {t("coursesBack")}
-        </BackLink>
-        <PageHeader
-          className="mt-5"
-          title={t("coursesEnrolmentsIndexTitle")}
-          intro={t("coursesEnrolmentsIndexIntro")}
-        />
-
-        <div className="mt-8 lg:sticky lg:top-16 lg:z-20">
+      <WorkspacePage
+        eyebrow={t("eyebrow")}
+        nav={
+          <AdminSubnav
+            current="courses"
+            label={t("sectionsNav")}
+            labels={adminSectionLabels(t)}
+          />
+        }
+        back={<BackLink href="/admin/courses">{t("coursesBack")}</BackLink>}
+        title={t("coursesEnrolmentsIndexTitle")}
+        intro={t("coursesEnrolmentsIndexIntro")}
+      >
+        <div className="mt-6 lg:sticky lg:top-16 lg:z-20">
           <CatalogueEnrolmentFilters
             locale={locale}
             query={query}
@@ -122,6 +118,10 @@ export default async function AdminEnrolmentsPage({
               status: t("status"),
               created: t("coursesCreated"),
               empty: t("coursesEnrolmentsEmpty"),
+              copyEmail: (email) => t("copyEmail", {email}),
+              copyPhone: (phone) => t("copyPhone", {phone}),
+              copyAddress: (address) => t("copyAddress", {address}),
+              copied: t("emailCopied"),
             }}
           />
         </div>
@@ -146,7 +146,7 @@ export default async function AdminEnrolmentsPage({
             labels={{previous: t("previous"), next: t("next")}}
           />
         ) : null}
-      </Section>
+      </WorkspacePage>
     </SiteShell>
   );
 }

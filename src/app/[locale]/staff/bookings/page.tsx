@@ -11,7 +11,7 @@ import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
 import {Link} from "@/i18n/navigation";
 import {buttonStyles} from "@/shared/ui/button";
-import {Section} from "@/shared/ui/layout";
+import {WorkspacePage} from "@/shared/ui/workspace-page";
 
 type StaffPageProps = {
   params: Promise<{locale: AppLocale}>;
@@ -43,27 +43,24 @@ export default async function StaffBookingsPage({params}: StaffPageProps) {
 
   return (
     <SiteShell locale={locale} footerCta={null}>
-      <Section size="sm" className="pt-10 pb-16">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h1 className="font-serif text-heading">{t("title")}</h1>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-muted">
-              {t("intro")}
-            </p>
-            <p className="mt-3 text-sm">
-              <Link href="/admin/users" className="underline-offset-4 hover:underline">
-                {t("usersLink")}
-              </Link>
-            </p>
-          </div>
+      <WorkspacePage
+        title={t("title")}
+        intro={t("intro")}
+        action={
           <a
             href="/api/staff/bookings.csv"
             className={buttonStyles({variant: "secondary"})}
           >
             {t("csv")}
           </a>
-        </div>
-        <div className="mt-10">
+        }
+      >
+        <p className="mt-2 text-sm">
+          <Link href="/admin/users" className="underline-offset-4 hover:underline">
+            {t("usersLink")}
+          </Link>
+        </p>
+        <div className="mt-8">
           <StaffBookingsTable
             bookings={bookings}
             labels={{
@@ -113,7 +110,7 @@ export default async function StaffBookingsPage({params}: StaffPageProps) {
             }}
           />
         </div>
-      </Section>
+      </WorkspacePage>
     </SiteShell>
   );
 }

@@ -20,11 +20,10 @@ import type {AppLocale} from "@/i18n/routing";
 import {Button} from "@/shared/ui/button";
 import {InputField, SelectField} from "@/shared/ui/field";
 import {FilterBar} from "@/shared/ui/filter-bar";
-import {Eyebrow, Section} from "@/shared/ui/layout";
-import {PageHeader} from "@/shared/ui/page-header";
 import {Pagination} from "@/shared/ui/pagination";
 import {SegmentedLinks} from "@/shared/ui/segmented-links";
 import {StatusLabel, statusRailClass} from "@/shared/ui/status-label";
+import {WorkspacePage} from "@/shared/ui/workspace-page";
 
 type AdminCallsPageProps = {
   params: Promise<{locale: AppLocale}>;
@@ -67,20 +66,19 @@ export default async function AdminCallsPage({params, searchParams}: AdminCallsP
 
   return (
     <SiteShell locale={locale} footerCta={null}>
-      <Section size="sm" className="pt-10 pb-16">
-        <Eyebrow>{t("eyebrow")}</Eyebrow>
-        <AdminSubnav
-          current="calls"
-          label={t("sectionsNav")}
-          labels={adminSectionLabels(t)}
-        />
-        <PageHeader
-          className="mt-6"
-          title={t("callsTitle")}
-          intro={t("callsIntro")}
-        />
-
-        <div className="mt-8">
+      <WorkspacePage
+        eyebrow={t("eyebrow")}
+        nav={
+          <AdminSubnav
+            current="calls"
+            label={t("sectionsNav")}
+            labels={adminSectionLabels(t)}
+          />
+        }
+        title={t("callsTitle")}
+        intro={t("callsIntro")}
+      >
+        <div className="mt-6">
           <SegmentedLinks
             label={t("callsViews")}
             items={tabItems.map((item) => ({
@@ -136,7 +134,7 @@ export default async function AdminCallsPage({params, searchParams}: AdminCallsP
             }}
           />
         ) : null}
-      </Section>
+      </WorkspacePage>
     </SiteShell>
   );
 }

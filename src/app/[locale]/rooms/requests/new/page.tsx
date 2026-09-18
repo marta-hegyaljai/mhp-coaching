@@ -9,9 +9,9 @@ import {getBookingSettings} from "@/features/rooms/settings";
 import {listingTimes} from "@/features/rooms/timezone";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
-import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
-import {Eyebrow, Section} from "@/shared/ui/layout";
+import {BackLink} from "@/shared/ui/back-link";
+import {WorkspacePage} from "@/shared/ui/workspace-page";
 
 type NewRequestPageProps = {
   params: Promise<{locale: AppLocale}>;
@@ -50,16 +50,13 @@ export default async function NewRoomRequestPage({params, searchParams}: NewRequ
 
   return (
     <SiteShell locale={locale} footerCta={null}>
-      <Section size="sm" className="pt-10 pb-16">
-        <Eyebrow>{t("eyebrow")}</Eyebrow>
-        <h1 className="mt-3 font-serif text-heading">{t("requestTitle")}</h1>
-        <p className="mt-4 text-sm">
-          <Link href="/rooms/requests" className="underline-offset-4 hover:underline">
-            {t("backToRequests")}
-          </Link>
-        </p>
-        <RoomsNav current="requests" />
-        <p className="mt-8 max-w-2xl text-sm leading-7 text-ink-muted">{t("requestIntro")}</p>
+      <WorkspacePage
+        eyebrow={t("eyebrow")}
+        nav={<RoomsNav current="requests" />}
+        back={<BackLink href="/rooms/requests">{t("backToRequests")}</BackLink>}
+        title={t("requestTitle")}
+        intro={t("requestIntro")}
+      >
         <div className="mt-8 max-w-xl">
           <AvailabilityRequestForm
             locale={locale}
@@ -73,7 +70,7 @@ export default async function NewRoomRequestPage({params, searchParams}: NewRequ
             }}
           />
         </div>
-      </Section>
+      </WorkspacePage>
     </SiteShell>
   );
 }

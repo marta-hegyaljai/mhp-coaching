@@ -18,8 +18,8 @@ import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {BackLink} from "@/shared/ui/back-link";
-import {Eyebrow, Section} from "@/shared/ui/layout";
 import {StatusLabel} from "@/shared/ui/status-label";
+import {WorkspacePage} from "@/shared/ui/workspace-page";
 
 type AdminUserDetailPageProps = {
   params: Promise<{locale: AppLocale; id: string}>;
@@ -68,18 +68,19 @@ export default async function AdminUserDetailPage({
 
   return (
     <SiteShell locale={locale} footerCta={null}>
-      <Section size="sm" className="pt-10 pb-16">
-        <Eyebrow>{t("eyebrow")}</Eyebrow>
-        <AdminSubnav
-          current="users"
-          label={t("sectionsNav")}
-          labels={adminSectionLabels(t)}
-        />
-        <BackLink href="/admin/users" className="mt-6">
-          {t("backToList")}
-        </BackLink>
-        <h1 className="mt-5 font-serif text-heading">{t("detailTitle")}</h1>
-        <p className="mt-4 font-sans text-lg font-medium break-all">{view.email}</p>
+      <WorkspacePage
+        eyebrow={t("eyebrow")}
+        nav={
+          <AdminSubnav
+            current="users"
+            label={t("sectionsNav")}
+            labels={adminSectionLabels(t)}
+          />
+        }
+        back={<BackLink href="/admin/users">{t("backToList")}</BackLink>}
+        title={t("detailTitle")}
+      >
+        <p className="mt-2 font-sans text-lg font-medium break-all">{view.email}</p>
         <p className="mt-2 text-sm leading-7 text-ink-muted">
           {view.firstName} {view.lastName}
         </p>
@@ -126,7 +127,7 @@ export default async function AdminUserDetailPage({
             total={audit.total}
           />
         </div>
-      </Section>
+      </WorkspacePage>
     </SiteShell>
   );
 }

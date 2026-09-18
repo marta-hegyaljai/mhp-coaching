@@ -117,6 +117,16 @@ primary action behind an ambiguous icon.
   sans-serif text while editorial headings retain the serif. Admin screens may
   add dark green, dark red and gold status type plus a 3px left rail; they
   still never fill a card or row.
+- Signed-in working screens (admin, account, rooms, billing, staff) use
+  `<WorkspacePage>` in `src/shared/ui/workspace-page.tsx`. One compact masthead
+  row carries the gold eyebrow and, when the page is nested, the 44px
+  `<BackLink>` on the same row. Section tabs sit immediately under that row.
+  `<PageHeader>` then gives a subheading-sized title, one orientation line and
+  the single primary action so records sit near the fold. Do not restack
+  Administration, a full-width back control, a large heading and a long intro
+  as four separate bands. Public catalogue pages keep `Section` + `Eyebrow` and
+  the heading/title/display scale. The admin activity board stays a filled
+  viewport and does not use this chrome.
 - Account, profile and My Courses use the public header. The header shows the
   signed-in person's name, a menu with Profile, My courses and Sign out, and
   marks the current section with a square filled chip (black on white). Nav
@@ -167,9 +177,11 @@ primary action behind an ambiguous icon.
   collapsed until asked for. A session with no enrolments can be deleted from
   the open row; a session with enrolments can only be deactivated.
 - An admin record (course, user, room, booking, request, billing) leads with
-  a visible secondary back control to its list. Do not rely on a quiet
-  underlined “All …” line that can be mistaken for a heading. The selected
-  section tab marks the area; it is not the way back.
+  a visible secondary back control to its list, on the same row as the
+  Administration eyebrow. Do not give the back control its own full-width
+  band, and do not rely on a quiet underlined “All …” line that can be
+  mistaken for a heading. The selected section tab marks the area; it is not
+  the way back.
 - An operational index shows one list of its records, never a second copy of
   the same rows for a secondary task. The admin catalogue is a single dense row
   list that both manages and reorders courses: position, title, state chips,
@@ -186,8 +198,9 @@ primary action behind an ambiguous icon.
 - Group view, filter and presentation controls in the one hairline toolbar
   (`<Toolbar>` in `src/shared/ui/toolbar.tsx`) directly above the list; never
   scatter a segmented control, a checkbox and a layout switch as loose rows.
-  The screen leads with `<PageHeader>`: title, one line of orientation and the
-  single primary action on the title line, so the records stay near the fold.
+  The screen leads with `<PageHeader>`: a compact serif title, one line of
+  orientation and the single primary action on the title line, so the records
+  stay near the fold.
 - The admin control panel is one viewport board, not a filter-first timeline.
   Today, Upcoming and History are three simultaneous panes: equal columns from
   `lg`, a stacked board on a phone with Today given the larger share. The page
@@ -371,6 +384,8 @@ motion, or animated background. Always honor `prefers-reduced-motion`.
   `<SubmitButton>` in `src/shared/ui/submit-button.tsx` carries the pending
   spinner and label swap for every server action.
 - Rhythm: `Section`, `Container`, `Eyebrow` in `src/shared/ui/layout.tsx`.
+  Signed-in working screens use `<WorkspacePage>` (`Section` size `work`)
+  rather than `size="sm"` plus extra top padding.
 - Form controls: `fieldStyles()`, `fieldLabelClass`, `<InputField>` and
   `<SelectField>` in `src/shared/ui/field.tsx`. One geometry for the product;
   `size="sm"` is the compact operational filter bar. Both clear 44px. Dates
@@ -391,7 +406,12 @@ motion, or animated background. Always honor `prefers-reduced-motion`.
 - Mutually exclusive views: `<SegmentedLinks>` in
   `src/shared/ui/segmented-links.tsx`.
 - Nested-record exit: `<BackLink>` in `src/shared/ui/back-link.tsx`. Secondary
-  surface, left arrow, 44px target. Use it above the record title.
+  surface, left arrow, 44px target. Pass it as `WorkspacePage` `back` so it
+  sits on the eyebrow row, never as its own band above the title.
+- Working-screen title: `<PageHeader>` in `src/shared/ui/page-header.tsx`.
+  Subheading size, one orientation line, optional primary action. Do not
+  hand-roll a `text-heading` block with `mt-3` / `leading-7` intro on signed-in
+  pages.
 - Wall-clock day formatting: `src/shared/format/calendar-date.ts`. Never print
   a raw ISO date in the UI.
 - Shell: `src/features/site-shell`; do not fork per-page headers or switchers.

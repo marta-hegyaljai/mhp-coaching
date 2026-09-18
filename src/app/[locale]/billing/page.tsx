@@ -10,7 +10,7 @@ import {savedPaymentMethodFor} from "@/features/rooms/payment-method";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
-import {Eyebrow, Section} from "@/shared/ui/layout";
+import {WorkspacePage} from "@/shared/ui/workspace-page";
 
 type BillingPageProps = {
   params: Promise<{locale: AppLocale}>;
@@ -41,11 +41,12 @@ export default async function BillingPage({params}: BillingPageProps) {
 
   return (
     <SiteShell locale={locale} footerCta={null}>
-      <Section size="sm" className="pt-10 pb-16">
-        <Eyebrow>{t("eyebrow")}</Eyebrow>
-        <h1 className="mt-3 font-serif text-heading">{t("usageTitle")}</h1>
-        <p className="mt-4 max-w-2xl text-sm leading-7 text-ink-muted">{t("usageIntro")}</p>
-        <RoomsNav current="usage" />
+      <WorkspacePage
+        eyebrow={t("eyebrow")}
+        nav={<RoomsNav current="usage" />}
+        title={t("usageTitle")}
+        intro={t("usageIntro")}
+      >
 
         <BillingSettleBanner locale={locale} statements={overview.unsettledStatements} />
 
@@ -64,7 +65,7 @@ export default async function BillingPage({params}: BillingPageProps) {
         <div className="mt-12 max-w-xl">
           <PaymentMethodPanel method={paymentMethod} locale={locale} />
         </div>
-      </Section>
+      </WorkspacePage>
     </SiteShell>
   );
 }

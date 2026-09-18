@@ -39,10 +39,10 @@ import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {BackLink} from "@/shared/ui/back-link";
 import {buttonStyles} from "@/shared/ui/button";
-import {Eyebrow, Section} from "@/shared/ui/layout";
 import {Panel, PanelDivider} from "@/shared/ui/panel";
 import {SectionLabel} from "@/shared/ui/section-label";
 import {StatusLabel} from "@/shared/ui/status-label";
+import {WorkspacePage} from "@/shared/ui/workspace-page";
 
 type AdminBookingDetailProps = {
   params: Promise<{locale: AppLocale; id: string}>;
@@ -147,17 +147,18 @@ export default async function AdminBookingDetailPage({
 
   return (
     <SiteShell locale={locale} footerCta={null}>
-      <Section size="sm" className="pt-10 pb-16">
-        <Eyebrow>{t("eyebrow")}</Eyebrow>
-        <AdminSubnav
-          current="bookings"
-          label={t("sectionsNav")}
-          labels={adminSectionLabels(t)}
-        />
-        <BackLink href="/admin/bookings" className="mt-6">
-          {t("backToAdminBookings")}
-        </BackLink>
-        <h1 className="mt-5 font-serif text-heading">{t("detailBookingTitle")}</h1>
+      <WorkspacePage
+        eyebrow={t("eyebrow")}
+        nav={
+          <AdminSubnav
+            current="bookings"
+            label={t("sectionsNav")}
+            labels={adminSectionLabels(t)}
+          />
+        }
+        back={<BackLink href="/admin/bookings">{t("backToAdminBookings")}</BackLink>}
+        title={t("detailBookingTitle")}
+      >
 
         {notice ? (
           <div className="mt-8 max-w-xl">
@@ -278,7 +279,7 @@ export default async function AdminBookingDetailPage({
         </div>
 
         <BookingHistory className="mt-12 max-w-xl" events={events} locale={locale} />
-      </Section>
+      </WorkspacePage>
     </SiteShell>
   );
 }

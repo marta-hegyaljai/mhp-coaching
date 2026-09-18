@@ -8,12 +8,14 @@ import {
   adminEnrolmentListHref,
   type AdminEnrolmentQuery,
 } from "@/features/courses/admin-enrolment-query";
+import {formatEnrolmentAddress} from "@/features/courses/enrolment-address";
 import {enrolmentStatusTone} from "@/features/courses/enrolment-status-labels";
 import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
 import {localizedPath} from "@/features/seo/metadata";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {Button} from "@/shared/ui/button";
+import {CopyText} from "@/shared/ui/copy-text";
 import {FilterBar} from "@/shared/ui/filter-bar";
 import {InputField, SelectField} from "@/shared/ui/field";
 import {formatLongDate} from "@/shared/format/calendar-date";
@@ -186,6 +188,10 @@ export function CourseEnrolmentTable({
     created: string;
     empty: string;
     course?: string;
+    copyEmail: (email: string) => string;
+    copyPhone: (phone: string) => string;
+    copyAddress: (address: string) => string;
+    copied: string;
   };
   showCourse?: boolean;
 }) {
@@ -193,76 +199,118 @@ export function CourseEnrolmentTable({
     return <p className="text-sm text-ink-muted">{labels.empty}</p>;
   }
 
+  const catalogue = Boolean(showCourse && labels.course);
+  const head = "py-3 pr-4 font-medium";
+  const factHead = `${head} w-[1%] whitespace-nowrap`;
+  const fact = "w-[1%] whitespace-nowrap py-3 pr-4 align-top";
+  const grow = "min-w-0 w-full overflow-hidden py-3 pr-4 align-top";
+  const email = "w-[12rem] max-w-[12rem] min-w-0 overflow-hidden py-3 pr-4 align-top";
+
   return (
     <div className="overflow-x-auto">
-      <table className="min-w-full text-left text-sm">
+      <table className="w-full text-left text-sm">
         <thead>
-          <tr className="border-b border-line text-xs uppercase tracking-[0.14em] text-ink-subtle">
-            <th className="py-3 pr-4 font-medium">{labels.name}</th>
-            {showCourse && labels.course ? (
-              <th className="py-3 pr-4 font-medium">{labels.course}</th>
-            ) : null}
-            <th className="py-3 pr-4 font-medium">{labels.dateOfBirth}</th>
-            <th className="py-3 pr-4 font-medium">{labels.email}</th>
-            <th className="py-3 pr-4 font-medium">{labels.phone}</th>
-            <th className="py-3 pr-4 font-medium">{labels.address}</th>
-            <th className="py-3 pr-4 font-medium">{labels.session}</th>
-            <th className="py-3 pr-4 font-medium">{labels.amount}</th>
-            <th className="py-3 pr-4 font-medium">{labels.status}</th>
-            <th className="py-3 font-medium">{labels.created}</th>
+          <tr className="border-b border-l-[3px] border-l-transparent border-line text-xs uppercase tracking-[0.14em] text-ink-subtle">
+            <th className={`${factHead} pl-4`}>{labels.name}</th>
+            {catalogue ? <th className={`${head} min-w-[10rem] w-full`}>{labels.course}</th> : null}
+            <th className={factHead}>{labels.phone}</th>
+            <th className={`${head} w-[12rem]`}>{labels.email}</th>
+            <th className={factHead}>{labels.amount}</th>
+            <th className={factHead}>{labels.status}</th>
+            <th className={factHead}>{labels.created}</th>
+            <th className={factHead}>{labels.session}</th>
+            {catalogue ? null : (
+              <>
+                <th className={`${head} w-[1%] max-w-[7rem]`}>{labels.dateOfBirth}</th>
+                <th className={`${head} min-w-[8rem] w-full pr-4`}>{labels.address}</th>
+              </>
+            )}
           </tr>
         </thead>
         <tbody>
-          {bookings.map((booking) => (
+          {bookings.map((booking) => {
+            const address = formatEnrolmentAddress(booking);
+            const fullName = `${booking.firstName} ${booking.lastName}`.trim();
+
+            return (
             <tr
               key={booking.id}
-              className={`border-b border-line/70 align-top ${statusRailClass(enrolmentStatusTone(booking.status))}`}
+              className={`border-b border-line/70 ${statusRailClass(enrolmentStatusTone(booking.status))}`}
             >
-              <td className="py-3 pr-4">
-                {booking.firstName} {booking.lastName}
+              <td className={`${fact} pl-4 font-medium`}>
+                {fullName}
               </td>
-              {showCourse && labels.course ? (
-                <td className="py-3 pr-4">
+              {catalogue ? (
+                <td className={grow}>
                   <Link
                     href={courseDetailHref(booking.courseId, {tab: "enrolments"})}
-                    className="underline-offset-4 hover:underline"
+                    title={booking.courseTitle}
+                    className="block truncate underline-offset-4 hover:underline"
                   >
                     {booking.courseTitle}
                   </Link>
                 </td>
               ) : null}
-              <td className="py-3 pr-4 font-sans tabular-nums">
-                {booking.dateOfBirth
-                  ? formatLongDate(booking.dateOfBirth, locale)
-                  : "—"}
+              <td className={fact}>
+                <CopyText
+                  value={booking.phone}
+                  label={labels.copyPhone(booking.phone)}
+                  copiedLabel={labels.copied}
+                  truncate={false}
+                />
               </td>
-              <td className="py-3 pr-4">{booking.email}</td>
-              <td className="py-3 pr-4">{booking.phone}</td>
-              <td className="py-3 pr-4">
-                {booking.street}
-                <div className="text-ink-subtle">
-                  {booking.postalCode} {booking.city}
-                </div>
-                <div className="text-ink-subtle">{booking.country}</div>
+              <td className={email}>
+                <CopyText
+                  value={booking.email}
+                  label={labels.copyEmail(booking.email)}
+                  copiedLabel={labels.copied}
+                />
               </td>
-              <td className="py-3 pr-4 font-sans tabular-nums">
-                {booking.courseDateStart}
-                {booking.courseDateEnd ? ` – ${booking.courseDateEnd}` : ""}
-                <div className="text-ink-subtle">{booking.location}</div>
-              </td>
-              <td className="py-3 pr-4 font-sans tabular-nums">
+              <td className={`${fact} font-sans font-medium tabular-nums`}>
                 {formatChf(minorUnitsToFrancs(booking.amountMinor), locale)}
               </td>
-              <td className="py-3 pr-4">
+              <td className={fact}>
                 <StatusLabel tone={enrolmentStatusTone(booking.status)}>
                   {statusLabels[booking.status] ?? booking.status}
                 </StatusLabel>
               </td>
-              <td className="py-3 font-sans text-ink-muted tabular-nums">
+              <td className={`${fact} font-sans tabular-nums`}>
                 {booking.createdAt.toISOString().slice(0, 10)}
               </td>
+              <td className={`${fact} font-sans tabular-nums`}>
+                <span className="block">{booking.courseDateStart}</span>
+                {booking.courseDateEnd ? (
+                  <span className="block">– {booking.courseDateEnd}</span>
+                ) : null}
+                {booking.location ? (
+                  <span className="mt-0.5 block max-w-[9rem] truncate font-sans text-ink-subtle" title={booking.location}>
+                    {booking.location}
+                  </span>
+                ) : null}
+              </td>
+              {catalogue ? null : (
+                <>
+                  <td className={`${fact} font-sans tabular-nums`}>
+                    {booking.dateOfBirth
+                      ? formatLongDate(booking.dateOfBirth, locale)
+                      : "—"}
+                  </td>
+                  <td className={`${grow} pr-4`}>
+                    {address ? (
+                      <CopyText
+                        value={address}
+                        label={labels.copyAddress(address)}
+                        copiedLabel={labels.copied}
+                      />
+                    ) : (
+                      "—"
+                    )}
+                  </td>
+                </>
+              )}
             </tr>
-          ))}
+            );
+          })}
         </tbody>
       </table>
     </div>

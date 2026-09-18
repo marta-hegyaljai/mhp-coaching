@@ -7,7 +7,7 @@ import {requireSignedInUser} from "@/features/auth/require";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
-import {Eyebrow, Section} from "@/shared/ui/layout";
+import {WorkspacePage} from "@/shared/ui/workspace-page";
 
 type AccountPageProps = {
   params: Promise<{locale: AppLocale}>;
@@ -40,26 +40,27 @@ export default async function AccountPage({params, searchParams}: AccountPagePro
 
   return (
     <SiteShell locale={locale} footerCta={null}>
-      <Section size="sm" className="pt-10 pb-16">
-        <Eyebrow>{t("eyebrow")}</Eyebrow>
-        <h1 className="mt-3 font-serif text-heading">{t("profileTitle")}</h1>
-        <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-muted">
-          {t("profileIntro")}
-        </p>
+      <WorkspacePage
+        eyebrow={t("eyebrow")}
+        nav={
+          <AccountNav
+            locale={locale}
+            labels={{
+              profile: t("profileTitle"),
+              courses: t("myCoursesLink"),
+              signOut: navT("signOut"),
+            }}
+          />
+        }
+        title={t("profileTitle")}
+        intro={t("profileIntro")}
+      >
         {verified === "1" ? (
-          <div className="mt-6 max-w-xl">
+          <div className="mt-4 max-w-xl">
             <AuthNotice>{t("emailConfirmedNotice")}</AuthNotice>
           </div>
         ) : null}
-        <AccountNav
-          locale={locale}
-          labels={{
-            profile: t("profileTitle"),
-            courses: t("myCoursesLink"),
-            signOut: navT("signOut"),
-          }}
-        />
-        <div className="mt-10">
+        <div className="mt-8">
           <h2 className="font-serif text-subheading">{t("profileSection")}</h2>
           <div className="mt-6">
             <ProfileForm locale={locale} user={user} />
@@ -74,7 +75,7 @@ export default async function AccountPage({params, searchParams}: AccountPagePro
             <ChangePasswordForm locale={locale} />
           </div>
         </div>
-      </Section>
+      </WorkspacePage>
     </SiteShell>
   );
 }

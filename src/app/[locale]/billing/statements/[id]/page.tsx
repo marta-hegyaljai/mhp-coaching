@@ -12,12 +12,12 @@ import {formatMonthYear} from "@/shared/format/calendar-date";
 import {formatLocalDate} from "@/features/rooms/timezone";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
-import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {Button} from "@/shared/ui/button";
-import {Eyebrow, Section} from "@/shared/ui/layout";
+import {BackLink} from "@/shared/ui/back-link";
 import {Price} from "@/shared/ui/price";
 import {StatusLabel} from "@/shared/ui/status-label";
+import {WorkspacePage} from "@/shared/ui/workspace-page";
 
 type StatementPageProps = {
   params: Promise<{locale: AppLocale; id: string}>;
@@ -64,15 +64,12 @@ export default async function StatementPage({params}: StatementPageProps) {
 
   return (
     <SiteShell locale={locale} footerCta={null}>
-      <Section size="sm" className="pt-10 pb-16">
-        <Eyebrow>{t("eyebrow")}</Eyebrow>
-        <RoomsNav current="usage" />
-        <p className="mt-6 text-sm">
-          <Link href="/billing" className="underline-offset-4 hover:underline">
-            {t("backToBilling")}
-          </Link>
-        </p>
-        <h1 className="mt-3 font-serif text-heading capitalize">{monthLabel}</h1>
+      <WorkspacePage
+        eyebrow={t("eyebrow")}
+        nav={<RoomsNav current="usage" />}
+        back={<BackLink href="/billing">{t("backToBilling")}</BackLink>}
+        title={monthLabel}
+      >
         <StatusLabel
           className="mt-4"
           tone={detail.statement.status === "OPEN" ? "muted" : "strong"}
@@ -109,7 +106,7 @@ export default async function StatementPage({params}: StatementPageProps) {
             empty={t("statementLinesEmpty")}
           />
         </section>
-      </Section>
+      </WorkspacePage>
     </SiteShell>
   );
 }

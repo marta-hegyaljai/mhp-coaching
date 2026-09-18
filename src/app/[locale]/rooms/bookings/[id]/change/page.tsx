@@ -21,8 +21,8 @@ import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
 import {BackLink} from "@/shared/ui/back-link";
-import {Eyebrow, Section} from "@/shared/ui/layout";
 import {Panel} from "@/shared/ui/panel";
+import {WorkspacePage} from "@/shared/ui/workspace-page";
 import {SectionLabel} from "@/shared/ui/section-label";
 
 type ChangePageProps = {
@@ -105,14 +105,17 @@ export default async function ChangeRoomBookingPage({params, searchParams}: Chan
         en: {pathname: "/rooms/bookings/[id]/change", params: {id}},
       }}
     >
-      <Section size="sm" className="pt-10 pb-16">
-        <Eyebrow>{t("eyebrow")}</Eyebrow>
-        <RoomsNav current="bookings" />
-        <BackLink href={{pathname: "/rooms/bookings/[id]", params: {id}}} className="mt-6">
-          {t("backToBooking")}
-        </BackLink>
-        <h1 className="mt-5 font-serif text-heading">{t("changeTitle")}</h1>
-        <p className="mt-8 max-w-2xl text-sm leading-7 text-ink-muted">{t("changeIntro")}</p>
+      <WorkspacePage
+        eyebrow={t("eyebrow")}
+        nav={<RoomsNav current="bookings" />}
+        back={
+          <BackLink href={{pathname: "/rooms/bookings/[id]", params: {id}}}>
+            {t("backToBooking")}
+          </BackLink>
+        }
+        title={t("changeTitle")}
+        intro={t("changeIntro")}
+      >
 
         <div className="mt-8 max-w-xl space-y-6">
           <Panel>
@@ -152,7 +155,7 @@ export default async function ChangeRoomBookingPage({params, searchParams}: Chan
             </Panel>
           )}
         </div>
-      </Section>
+      </WorkspacePage>
     </SiteShell>
   );
 }

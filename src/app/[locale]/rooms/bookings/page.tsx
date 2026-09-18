@@ -14,9 +14,8 @@ import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {buttonStyles} from "@/shared/ui/button";
-import {Eyebrow, Section} from "@/shared/ui/layout";
-import {PageHeader} from "@/shared/ui/page-header";
 import {Panel} from "@/shared/ui/panel";
+import {WorkspacePage} from "@/shared/ui/workspace-page";
 
 type BookingsPageProps = {
   params: Promise<{locale: AppLocale}>;
@@ -68,10 +67,12 @@ export default async function RoomBookingsPage({params, searchParams}: BookingsP
 
   return (
     <SiteShell locale={locale} footerCta={null}>
-      <Section size="sm" className="pt-10 pb-16">
-        <Eyebrow>{t("eyebrow")}</Eyebrow>
-        <PageHeader className="mt-3" title={t("bookingsTitle")} intro={t("bookingsIntro")} />
-        <RoomsNav current="bookings" />
+      <WorkspacePage
+        eyebrow={t("eyebrow")}
+        nav={<RoomsNav current="bookings" />}
+        title={t("bookingsTitle")}
+        intro={t("bookingsIntro")}
+      >
 
         {notice ? (
           <div className="mt-8 max-w-xl">
@@ -121,7 +122,7 @@ export default async function RoomBookingsPage({params, searchParams}: BookingsP
             </Link>
           </Panel>
         )}
-      </Section>
+      </WorkspacePage>
     </SiteShell>
   );
 }

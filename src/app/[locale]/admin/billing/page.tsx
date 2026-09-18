@@ -24,10 +24,10 @@ import {Button} from "@/shared/ui/button";
 import {InputField} from "@/shared/ui/field";
 import {FilterBar} from "@/shared/ui/filter-bar";
 import {DownloadIcon} from "@/shared/ui/icons";
-import {Eyebrow, Section} from "@/shared/ui/layout";
 import {Panel} from "@/shared/ui/panel";
 import {Price} from "@/shared/ui/price";
 import {StatusLabel, statusRailClass} from "@/shared/ui/status-label";
+import {WorkspacePage} from "@/shared/ui/workspace-page";
 
 type AdminBillingPageProps = {
   params: Promise<{locale: AppLocale}>;
@@ -122,28 +122,31 @@ export default async function AdminBillingPage({params, searchParams}: AdminBill
 
   return (
     <SiteShell locale={locale} footerCta={null}>
-      <Section size="sm" className="pt-10 pb-16">
-        <Eyebrow>{t("eyebrow")}</Eyebrow>
-        <AdminSubnav
-          current="billing"
-          label={t("sectionsNav")}
-          labels={adminSectionLabels(t)}
-        />
-        <h1 className="mt-6 font-serif text-heading">
-          {report.singleMonth
+      <WorkspacePage
+        eyebrow={t("eyebrow")}
+        nav={
+          <AdminSubnav
+            current="billing"
+            label={t("sectionsNav")}
+            labels={adminSectionLabels(t)}
+          />
+        }
+        title={
+          report.singleMonth
             ? report.open
               ? t("billingTitle")
               : t("billingClosedTitle")
-            : t("billingRangeTitle")}
-        </h1>
-        <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-muted">
-          {report.singleMonth
+            : t("billingRangeTitle")
+        }
+        intro={
+          report.singleMonth
             ? report.open
               ? t("billingIntro")
               : t("billingClosedIntro")
-            : t("billingRangeIntro")}
-        </p>
-        <p className="mt-4">
+            : t("billingRangeIntro")
+        }
+      >
+        <p className="mt-2">
           <Link href="/admin/notifications" className="text-sm font-semibold underline-offset-4 hover:underline">
             {t("notificationsLink")}
           </Link>
@@ -323,7 +326,7 @@ export default async function AdminBillingPage({params, searchParams}: AdminBill
             })}
           </ul>
         )}
-      </Section>
+      </WorkspacePage>
     </SiteShell>
   );
 }

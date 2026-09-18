@@ -11,9 +11,9 @@ import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
 import {BackLink} from "@/shared/ui/back-link";
-import {Eyebrow, Section} from "@/shared/ui/layout";
 import {Panel} from "@/shared/ui/panel";
 import {StatusLabel} from "@/shared/ui/status-label";
+import {WorkspacePage} from "@/shared/ui/workspace-page";
 import {isUuid} from "@/lib/uuid";
 
 type AdminCallPageProps = {
@@ -55,19 +55,20 @@ export default async function AdminCallDetailPage({params}: AdminCallPageProps) 
 
   return (
     <SiteShell locale={locale} footerCta={null}>
-      <Section size="sm" className="pt-10 pb-16">
-        <Eyebrow>{t("eyebrow")}</Eyebrow>
-        <AdminSubnav
-          current="calls"
-          label={t("sectionsNav")}
-          labels={adminSectionLabels(t)}
-        />
-        <BackLink href={adminCallListHref()} className="mt-6">
-          {t("callsBack")}
-        </BackLink>
-        <h1 className="mt-6 font-serif text-heading">{name}</h1>
+      <WorkspacePage
+        eyebrow={t("eyebrow")}
+        nav={
+          <AdminSubnav
+            current="calls"
+            label={t("sectionsNav")}
+            labels={adminSectionLabels(t)}
+          />
+        }
+        back={<BackLink href={adminCallListHref()}>{t("callsBack")}</BackLink>}
+        title={name}
+      >
         <StatusLabel
-          className="mt-3"
+          className="mt-2"
           tone={call.status === "SCHEDULED" ? "ok" : "stop"}
         >
           {call.status === "SCHEDULED" ? t("callStatusScheduled") : t("callStatusCancelled")}
@@ -91,7 +92,7 @@ export default async function AdminCallDetailPage({params}: AdminCallPageProps) 
             </div>
           </div>
         ) : null}
-      </Section>
+      </WorkspacePage>
     </SiteShell>
   );
 }

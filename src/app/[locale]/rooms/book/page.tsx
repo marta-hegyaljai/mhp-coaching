@@ -14,9 +14,10 @@ import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
+import {BackLink} from "@/shared/ui/back-link";
 import {buttonStyles} from "@/shared/ui/button";
-import {Eyebrow, Section} from "@/shared/ui/layout";
 import {Panel} from "@/shared/ui/panel";
+import {WorkspacePage} from "@/shared/ui/workspace-page";
 import {formatWeekdayDate} from "@/shared/format/calendar-date";
 
 type BookPageProps = {
@@ -76,16 +77,13 @@ export default async function RoomBookPage({params, searchParams}: BookPageProps
 
   return (
     <SiteShell locale={locale} footerCta={null}>
-      <Section size="sm" className="pt-10 pb-16">
-        <Eyebrow>{t("bookEyebrow")}</Eyebrow>
-        <h1 className="mt-3 font-serif text-heading">{t("bookTitle")}</h1>
-        <p className="mt-4 text-sm">
-          <Link href="/rooms" className="underline-offset-4 hover:underline">
-            {t("backToRooms")}
-          </Link>
-        </p>
-        <RoomsNav current="calendar" />
-        <p className="mt-8 max-w-2xl text-sm leading-7 text-ink-muted">{t("bookIntro")}</p>
+      <WorkspacePage
+        eyebrow={t("bookEyebrow")}
+        nav={<RoomsNav current="calendar" />}
+        back={<BackLink href="/rooms">{t("backToRooms")}</BackLink>}
+        title={t("bookTitle")}
+        intro={t("bookIntro")}
+      >
 
         <div className="mt-8 max-w-xl space-y-6">
           {previews.length > 0 ? (
@@ -117,7 +115,7 @@ export default async function RoomBookPage({params, searchParams}: BookPageProps
             </Panel>
           )}
         </div>
-      </Section>
+      </WorkspacePage>
     </SiteShell>
   );
 }

@@ -11,12 +11,12 @@ import {bookingStamp, bookingWhen} from "@/features/rooms/format";
 import {assertNoPrivateNoteMaterial} from "@/features/rooms/privacy";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
-import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
-import {Eyebrow, Section} from "@/shared/ui/layout";
+import {BackLink} from "@/shared/ui/back-link";
 import {Panel, PanelDivider} from "@/shared/ui/panel";
 import {SectionLabel} from "@/shared/ui/section-label";
 import {StatusLabel} from "@/shared/ui/status-label";
+import {WorkspacePage} from "@/shared/ui/workspace-page";
 
 type RequestDetailPageProps = {
   params: Promise<{locale: AppLocale; id: string}>;
@@ -77,15 +77,12 @@ export default async function RoomRequestDetailPage({params}: RequestDetailPageP
         en: {pathname: "/rooms/requests/[id]", params: {id}},
       }}
     >
-      <Section size="sm" className="pt-10 pb-16">
-        <Eyebrow>{t("eyebrow")}</Eyebrow>
-        <h1 className="mt-3 font-serif text-heading">{t("requestDetailTitle")}</h1>
-        <p className="mt-4 text-sm">
-          <Link href="/rooms/requests" className="underline-offset-4 hover:underline">
-            {t("backToRequests")}
-          </Link>
-        </p>
-        <RoomsNav current="requests" />
+      <WorkspacePage
+        eyebrow={t("eyebrow")}
+        nav={<RoomsNav current="requests" />}
+        back={<BackLink href="/rooms/requests">{t("backToRequests")}</BackLink>}
+        title={t("requestDetailTitle")}
+      >
 
         <div className="mt-8 max-w-xl space-y-6">
           <Panel as="article">
@@ -122,7 +119,7 @@ export default async function RoomRequestDetailPage({params}: RequestDetailPageP
             <WithdrawRequestForm locale={locale} requestId={request.id} />
           ) : null}
         </div>
-      </Section>
+      </WorkspacePage>
     </SiteShell>
   );
 }

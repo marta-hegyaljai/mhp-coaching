@@ -19,10 +19,9 @@ import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {buttonStyles} from "@/shared/ui/button";
-import {Eyebrow, Section} from "@/shared/ui/layout";
 import {MetricStrip} from "@/shared/ui/metric-strip";
-import {PageHeader} from "@/shared/ui/page-header";
 import {Pagination} from "@/shared/ui/pagination";
+import {WorkspacePage} from "@/shared/ui/workspace-page";
 
 type AdminBookingsPageProps = {
   params: Promise<{locale: AppLocale}>;
@@ -81,26 +80,25 @@ export default async function AdminBookingsPage({params, searchParams}: AdminBoo
 
   return (
     <SiteShell locale={locale} footerCta={null}>
-      <Section size="sm" className="pt-10 pb-16">
-        <Eyebrow>{t("eyebrow")}</Eyebrow>
-        <AdminSubnav
-          current="bookings"
-          label={t("sectionsNav")}
-          labels={adminSectionLabels(t)}
-        />
-        <PageHeader
-          className="mt-6"
-          title={t("adminBookingsTitle")}
-          intro={t("adminBookingsIntro")}
-          action={
-            <Link href="/admin/bookings/new" className={buttonStyles()}>
-              {t("createBooking")}
-            </Link>
-          }
-        />
-
+      <WorkspacePage
+        eyebrow={t("eyebrow")}
+        nav={
+          <AdminSubnav
+            current="bookings"
+            label={t("sectionsNav")}
+            labels={adminSectionLabels(t)}
+          />
+        }
+        title={t("adminBookingsTitle")}
+        intro={t("adminBookingsIntro")}
+        action={
+          <Link href="/admin/bookings/new" className={buttonStyles()}>
+            {t("createBooking")}
+          </Link>
+        }
+      >
         <MetricStrip
-          className="mt-8"
+          className="mt-6"
           density="trio"
           metrics={[
             {
@@ -222,7 +220,7 @@ export default async function AdminBookingsPage({params, searchParams}: AdminBoo
             />
           ) : null}
         </div>
-      </Section>
+      </WorkspacePage>
     </SiteShell>
   );
 }

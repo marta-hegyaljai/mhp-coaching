@@ -12,8 +12,8 @@ import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
 import {BackLink} from "@/shared/ui/back-link";
-import {Eyebrow, Section} from "@/shared/ui/layout";
 import {Panel} from "@/shared/ui/panel";
+import {WorkspacePage} from "@/shared/ui/workspace-page";
 import {isUuid} from "@/lib/uuid";
 import {formatLongDate} from "@/shared/format/calendar-date";
 import {utcToZurich} from "@/features/rooms/timezone";
@@ -66,17 +66,20 @@ export default async function AdminInquiryDetailPage({
 
   return (
     <SiteShell locale={locale} footerCta={null}>
-      <Section size="sm" className="pt-10 pb-16">
-        <Eyebrow>{t("eyebrow")}</Eyebrow>
-        <AdminSubnav
-          current="calls"
-          label={t("sectionsNav")}
-          labels={adminSectionLabels(t)}
-        />
-        <BackLink href={adminCallListHref({tab: "messages"})} className="mt-6">
-          {t("callsBack")}
-        </BackLink>
-        <h1 className="mt-6 font-serif text-heading">{message.name}</h1>
+      <WorkspacePage
+        eyebrow={t("eyebrow")}
+        nav={
+          <AdminSubnav
+            current="calls"
+            label={t("sectionsNav")}
+            labels={adminSectionLabels(t)}
+          />
+        }
+        back={
+          <BackLink href={adminCallListHref({tab: "messages"})}>{t("callsBack")}</BackLink>
+        }
+        title={message.name}
+      >
         <StatusLabel className="mt-4" tone="gold">
           {t(`activityMessageTopics.${message.topic}`)}
         </StatusLabel>
@@ -114,7 +117,7 @@ export default async function AdminInquiryDetailPage({
             </div>
           </dl>
         </Panel>
-      </Section>
+      </WorkspacePage>
     </SiteShell>
   );
 }

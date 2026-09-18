@@ -11,8 +11,8 @@ import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {buttonStyles} from "@/shared/ui/button";
-import {Eyebrow, Section} from "@/shared/ui/layout";
 import {Panel} from "@/shared/ui/panel";
+import {WorkspacePage} from "@/shared/ui/workspace-page";
 
 type RequestsPageProps = {
   params: Promise<{locale: AppLocale}>;
@@ -52,16 +52,17 @@ export default async function RoomRequestsPage({params, searchParams}: RequestsP
 
   return (
     <SiteShell locale={locale} footerCta={null}>
-      <Section size="sm" className="pt-10 pb-16">
-        <Eyebrow>{t("eyebrow")}</Eyebrow>
-        <h1 className="mt-3 font-serif text-heading">{t("requestsTitle")}</h1>
-        <p className="mt-4 max-w-2xl text-sm leading-7 text-ink-muted">{t("requestsIntro")}</p>
-        <RoomsNav current="requests" />
-        <p className="mt-8">
+      <WorkspacePage
+        eyebrow={t("eyebrow")}
+        nav={<RoomsNav current="requests" />}
+        title={t("requestsTitle")}
+        intro={t("requestsIntro")}
+        action={
           <Link href="/rooms/requests/new" className={buttonStyles()}>
             {t("newRequest")}
           </Link>
-        </p>
+        }
+      >
 
         {notice ? (
           <div className="mt-8 max-w-xl">
@@ -93,7 +94,7 @@ export default async function RoomRequestsPage({params, searchParams}: RequestsP
             />
           </div>
         )}
-      </Section>
+      </WorkspacePage>
     </SiteShell>
   );
 }

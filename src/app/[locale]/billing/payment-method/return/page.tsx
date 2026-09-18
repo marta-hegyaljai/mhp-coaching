@@ -9,9 +9,9 @@ import {localizedPathname} from "@/i18n/path";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
-import {Link} from "@/i18n/navigation";
-import {Eyebrow, Section} from "@/shared/ui/layout";
+import {BackLink} from "@/shared/ui/back-link";
 import {Panel} from "@/shared/ui/panel";
+import {WorkspacePage} from "@/shared/ui/workspace-page";
 
 type ReturnPageProps = {
   params: Promise<{locale: AppLocale}>;
@@ -62,18 +62,15 @@ export default async function PaymentMethodReturnPage({params, searchParams}: Re
 
   return (
     <SiteShell locale={locale} footerCta={null}>
-      <Section size="sm" className="pt-10 pb-16">
-        <Eyebrow>{t("eyebrow")}</Eyebrow>
-        <h1 className="mt-3 font-serif text-heading">{t("paymentMethodReturnTitle")}</h1>
-        <Panel className="mt-8 max-w-xl">
-          <p className="text-sm leading-7 text-ink-muted">{t("paymentMethodReturnFailed")}</p>
-          <p className="mt-4">
-            <Link href="/billing" className="text-sm font-semibold underline-offset-4 hover:underline">
-              {t("backToBilling")}
-            </Link>
-          </p>
+      <WorkspacePage
+        eyebrow={t("eyebrow")}
+        back={<BackLink href="/billing">{t("backToBilling")}</BackLink>}
+        title={t("paymentMethodReturnTitle")}
+      >
+        <Panel className="mt-6 max-w-xl">
+          <p className="text-sm leading-6 text-ink-muted">{t("paymentMethodReturnFailed")}</p>
         </Panel>
-      </Section>
+      </WorkspacePage>
     </SiteShell>
   );
 }

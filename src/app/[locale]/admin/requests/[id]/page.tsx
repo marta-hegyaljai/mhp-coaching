@@ -14,10 +14,10 @@ import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
 import {BackLink} from "@/shared/ui/back-link";
-import {Eyebrow, Section} from "@/shared/ui/layout";
 import {Panel, PanelDivider} from "@/shared/ui/panel";
 import {SectionLabel} from "@/shared/ui/section-label";
 import {StatusLabel} from "@/shared/ui/status-label";
+import {WorkspacePage} from "@/shared/ui/workspace-page";
 
 type AdminRequestDetailProps = {
   params: Promise<{locale: AppLocale; id: string}>;
@@ -82,17 +82,18 @@ export default async function AdminRequestDetailPage({
 
   return (
     <SiteShell locale={locale} footerCta={null}>
-      <Section size="sm" className="pt-10 pb-16">
-        <Eyebrow>{t("eyebrow")}</Eyebrow>
-        <AdminSubnav
-          current="requests"
-          label={t("sectionsNav")}
-          labels={adminSectionLabels(t)}
-        />
-        <BackLink href="/admin/requests" className="mt-6">
-          {t("backToAdminRequests")}
-        </BackLink>
-        <h1 className="mt-5 font-serif text-heading">{t("adminRequestsTitle")}</h1>
+      <WorkspacePage
+        eyebrow={t("eyebrow")}
+        nav={
+          <AdminSubnav
+            current="requests"
+            label={t("sectionsNav")}
+            labels={adminSectionLabels(t)}
+          />
+        }
+        back={<BackLink href="/admin/requests">{t("backToAdminRequests")}</BackLink>}
+        title={t("adminRequestsTitle")}
+      >
 
         {notice ? (
           <div className="mt-8 max-w-xl">
@@ -138,7 +139,7 @@ export default async function AdminRequestDetailPage({
             <AdminRequestResolveForm locale={locale} requestId={request.id} />
           ) : null}
         </div>
-      </Section>
+      </WorkspacePage>
     </SiteShell>
   );
 }
