@@ -55,7 +55,7 @@ export default async function AdminCoursesPage({params, searchParams}: AdminCour
   const t = await getTranslations("Admin");
 
   const catalogue = await loadCatalogueCourses();
-  const enrolments = await listCourseEnrolments({});
+  const enrolments = await listCourseEnrolments({excludeCancelled: true});
   const enrolmentCounts = new Map<string, number>();
   for (const booking of enrolments) {
     enrolmentCounts.set(booking.courseId, (enrolmentCounts.get(booking.courseId) ?? 0) + 1);

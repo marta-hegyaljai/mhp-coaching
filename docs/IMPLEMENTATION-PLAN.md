@@ -109,6 +109,11 @@ audit log, which remains a quieter spotlight. Search and an optional channel
 narrow every pane at once; History pages with `hp`. Legacy `when=history&page=`
 still maps onto that page. No schema change.
 
+Extra-roadmap (2026-09-18): the admin catalogue enrolments metric opens a
+catalogue-wide inscription list at `/admin/courses/enrolments`, newest first,
+paginated, with cancelled rows hidden until staff opts in. This is
+course-domain work, not a new checkpoint.
+
 Extra-roadmap (2026-09-17): admin operational screens use the existing
 `gold-deep`, `status-ok` and `status-stop` tokens for status type and a 3px
 left rail. Gold marks selected admin subnav, pane titles, attention metrics

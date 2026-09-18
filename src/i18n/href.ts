@@ -46,6 +46,10 @@ export type PathnameHref =
       query?: {q?: string; category?: string; published?: string; upcoming?: string};
     }
   | {
+      pathname: "/admin/courses/enrolments";
+      query?: {q?: string; cancelled?: string; page?: string};
+    }
+  | {
       pathname: "/admin/calls";
       query?: {tab?: string; when?: string; q?: string; page?: string};
     }

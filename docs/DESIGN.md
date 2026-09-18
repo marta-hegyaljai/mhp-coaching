@@ -177,7 +177,9 @@ primary action behind an ambiguous icon.
   and one row-wide link to the record. Reserve cards for the public catalogue.
 - Lead such a list with a hairline-separated metric strip that answers what
   needs attention (total, published, without an upcoming date, enrolments), and
-  make each actionable metric a link into the matching filter.
+  make each actionable metric a link into the matching filter. The enrolments
+  count opens the catalogue-wide enrolment list (newest first, cancelled hidden
+  until asked for), not a second copy of the course rows.
 - Filters sit directly above the list they narrow and pin to the viewport only
   from `lg`, where the bar is one row and cannot cover the results. State the
   visible count against the catalogue total next to them.

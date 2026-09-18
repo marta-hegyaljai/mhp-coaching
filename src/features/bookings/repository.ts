@@ -1,4 +1,4 @@
-import {and, desc, eq, inArray, or, sql} from "drizzle-orm";
+import {and, desc, eq, inArray, ne, or, sql} from "drizzle-orm";
 
 import {getDb} from "@/db";
 import {
@@ -175,6 +175,7 @@ export async function listCourseEnrolments(input: {
   courseId?: string;
   courseDateId?: string;
   status?: BookingStatus | "all";
+  excludeCancelled?: boolean;
   q?: string;
   limit?: number;
 }): Promise<Booking[]> {
@@ -187,6 +188,8 @@ export async function listCourseEnrolments(input: {
   }
   if (input.status && input.status !== "all") {
     filters.push(eq(bookings.status, input.status));
+  } else if (input.excludeCancelled) {
+    filters.push(ne(bookings.status, "CANCELLED"));
   }
 
   const needle = input.q?.trim().toLowerCase();

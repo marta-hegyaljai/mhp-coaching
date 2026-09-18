@@ -4,6 +4,10 @@ import {
   courseDetailHref,
   type CourseEnrolmentQuery,
 } from "@/features/courses/admin-query";
+import {
+  adminEnrolmentListHref,
+  type AdminEnrolmentQuery,
+} from "@/features/courses/admin-enrolment-query";
 import {enrolmentStatusTone} from "@/features/courses/enrolment-status-labels";
 import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
 import {localizedPath} from "@/features/seo/metadata";
@@ -102,11 +106,70 @@ export function CourseEnrolmentFilters({
   );
 }
 
+export function CatalogueEnrolmentFilters({
+  locale,
+  query,
+  labels,
+}: {
+  locale: AppLocale;
+  query: AdminEnrolmentQuery;
+  labels: {
+    search: string;
+    searchPlaceholder: string;
+    showCancelled: string;
+    filter: string;
+    clear: string;
+  };
+}) {
+  return (
+    <FilterBar
+      action={localizedPath(locale, "/admin/courses/enrolments")}
+      label={labels.filter}
+      columnsClassName="sm:grid-cols-[minmax(0,1fr)_auto_auto]"
+      actions={
+        <>
+          <Button type="submit" variant="secondary">
+            {labels.filter}
+          </Button>
+          <Link
+            href={adminEnrolmentListHref()}
+            className="text-sm underline-offset-4 hover:underline"
+          >
+            {labels.clear}
+          </Link>
+        </>
+      }
+    >
+      <InputField
+        id="catalogue-enrolment-q"
+        name="q"
+        type="search"
+        size="sm"
+        label={labels.search}
+        defaultValue={query.q}
+        placeholder={labels.searchPlaceholder}
+        autoComplete="off"
+      />
+      <label className="flex min-h-11 items-center gap-3 text-sm text-ink">
+        <input
+          type="checkbox"
+          name="cancelled"
+          value="1"
+          defaultChecked={query.showCancelled}
+          className="h-4 w-4 rounded-panel border-ink"
+        />
+        {labels.showCancelled}
+      </label>
+    </FilterBar>
+  );
+}
+
 export function CourseEnrolmentTable({
   bookings,
   locale,
   statusLabels,
   labels,
+  showCourse = false,
 }: {
   bookings: Booking[];
   locale: AppLocale;
@@ -122,7 +185,9 @@ export function CourseEnrolmentTable({
     status: string;
     created: string;
     empty: string;
+    course?: string;
   };
+  showCourse?: boolean;
 }) {
   if (bookings.length === 0) {
     return <p className="text-sm text-ink-muted">{labels.empty}</p>;
@@ -134,6 +199,9 @@ export function CourseEnrolmentTable({
         <thead>
           <tr className="border-b border-line text-xs uppercase tracking-[0.14em] text-ink-subtle">
             <th className="py-3 pr-4 font-medium">{labels.name}</th>
+            {showCourse && labels.course ? (
+              <th className="py-3 pr-4 font-medium">{labels.course}</th>
+            ) : null}
             <th className="py-3 pr-4 font-medium">{labels.dateOfBirth}</th>
             <th className="py-3 pr-4 font-medium">{labels.email}</th>
             <th className="py-3 pr-4 font-medium">{labels.phone}</th>
@@ -153,6 +221,16 @@ export function CourseEnrolmentTable({
               <td className="py-3 pr-4">
                 {booking.firstName} {booking.lastName}
               </td>
+              {showCourse && labels.course ? (
+                <td className="py-3 pr-4">
+                  <Link
+                    href={courseDetailHref(booking.courseId, {tab: "enrolments"})}
+                    className="underline-offset-4 hover:underline"
+                  >
+                    {booking.courseTitle}
+                  </Link>
+                </td>
+              ) : null}
               <td className="py-3 pr-4 font-sans tabular-nums">
                 {booking.dateOfBirth
                   ? formatLongDate(booking.dateOfBirth, locale)

@@ -10,8 +10,9 @@ export type CatalogueOverviewLabels = {
 };
 
 /**
- * Answers "what needs attention?" before the admin reads a single row. The
- * two actionable counts double as filters into the list below.
+ * Answers "what needs attention?" before the admin reads a single row.
+ * Published and undated counts filter this list; enrolments open the
+ * catalogue-wide inscription index.
  */
 export function CatalogueOverview({
   summary,
@@ -36,7 +37,13 @@ export function CatalogueOverview({
       href: summary.withoutUpcoming > 0 ? courseListHref({upcoming: "no"}) : undefined,
       tone: "gold",
     },
-    {key: "enrolments", label: labels.enrolments, value: summary.enrolments},
+    {
+      key: "enrolments",
+      label: labels.enrolments,
+      value: summary.enrolments,
+      href:
+        summary.enrolments > 0 ? "/admin/courses/enrolments" : undefined,
+    },
   ];
 
   return <MetricStrip metrics={metrics} className="mt-8" />;
