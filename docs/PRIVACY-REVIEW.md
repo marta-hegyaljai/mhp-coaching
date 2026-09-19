@@ -14,6 +14,7 @@ the first live therapist cohort.
 | Room bookings, snapshots, statements | Scheduling and invoicing | Owner, admin (no private notes) |
 | Encrypted private booking notes | Owner memory aid | Owner only |
 | Availability-request messages | Operational scheduling | Requester, admin |
+| Contact and course-question replies | Operational correspondence | Recipient, admin |
 | Payment method display (brand, last4, exp) | Billing | Owner, admin |
 | Stripe customer / payment-method ids | Charging | System, Stripe |
 | Notification payloads | Delivery evidence | Admin |

@@ -12,7 +12,8 @@ import {
   type AdminCallTab,
   type AdminCallWhen,
 } from "@/features/course-calls/query";
-import {listAdminCalls, listAdminInquiries, listCallHours} from "@/features/course-calls/repository";
+import {listAdminCalls, listCallHours} from "@/features/course-calls/repository";
+import {adminMessageHref, listAdminMessages} from "@/features/inquiries/admin-message";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
@@ -270,7 +271,7 @@ async function Messages({
   };
 }) {
   const t = await getTranslations("Admin");
-  const listing = await listAdminInquiries({
+  const listing = await listAdminMessages({
     q: query.q || undefined,
     limit: pageSize,
     offset: (query.page - 1) * pageSize,
@@ -304,24 +305,31 @@ async function Messages({
         <p className="mt-8 text-sm leading-7 text-ink-muted">{labels.empty}</p>
       ) : (
         <ul className="mt-8 grid gap-3">
-          {listing.rows.map((inquiry) => (
-            <li key={inquiry.id}>
-              <Link
-                href={{pathname: "/admin/calls/messages/[id]", params: {id: inquiry.id}}}
-                className={`block rounded-panel border border-ink bg-white px-5 py-4 transition-colors duration-150 hover:bg-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink ${statusRailClass("gold")}`}
-              >
-                <p className="font-medium text-ink">
-                  {callPersonName(inquiry.firstName, inquiry.lastName)}
-                </p>
-                <p className="mt-1 text-sm text-ink-muted">
-                  {inquiry.courseTitle ?? t("callGeneral")}
-                </p>
-                <p className="mt-2 line-clamp-2 text-sm leading-6 text-ink-muted">
-                  {inquiry.message}
-                </p>
-              </Link>
-            </li>
-          ))}
+          {listing.rows.map((message) => {
+            const replied = Boolean(message.repliedAt);
+            return (
+              <li key={`${message.channel}:${message.id}`}>
+                <Link
+                  href={adminMessageHref(message.id, message.channel)}
+                  className={`block rounded-panel border border-ink bg-white px-5 py-4 transition-colors duration-150 hover:bg-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink ${statusRailClass(replied ? "ok" : "gold")}`}
+                >
+                  <StatusLabel tone={replied ? "ok" : "gold"}>
+                    {replied
+                      ? t("inquiryReplied")
+                      : t(`activityMessageTopics.${message.topic}`)}
+                  </StatusLabel>
+                  <p className="mt-2 font-medium text-ink">{message.name}</p>
+                  <p className="mt-1 text-sm text-ink-muted">
+                    {message.courseTitle ?? t("callGeneral")}
+                  </p>
+                  <p className="mt-2 line-clamp-2 text-sm leading-6 text-ink-muted">
+                    {message.excerpt ||
+                      (message.topic === "payment" ? t("inquiryLeadNote") : "")}
+                  </p>
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       )}
 

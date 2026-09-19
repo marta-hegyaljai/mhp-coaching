@@ -1,12 +1,23 @@
 "use server";
 
+import {revalidatePath} from "next/cache";
 import {getTranslations} from "next-intl/server";
 import {hasLocale} from "next-intl";
 
+import {requireAdmin} from "@/features/auth/require";
 import {sendInquiryNotification} from "@/features/email/inquiry-notification";
+import {localizedPath} from "@/features/seo/metadata";
 import {routing, type AppLocale} from "@/i18n/routing";
 
+import {replyToInquiry} from "./admin-reply";
+import {parseAdminMessageChannel, type AdminMessageChannel} from "./admin-message";
+import {InquiryReplyError} from "./errors";
 import {createInquiry} from "./repository";
+import {
+  parseInquiryReplyForm,
+  readInquiryReplyDraft,
+  type InquiryReplyErrors,
+} from "./reply-validation";
 import {
   parseInquiryForm,
   readInquiryDraft,
@@ -95,4 +106,68 @@ function localizeErrors(
   }
 
   return mapped;
+}
+
+export type ReplyInquiryState = {
+  ok?: boolean;
+  sentAt?: number;
+  errors?: InquiryReplyErrors;
+  draft?: string;
+};
+
+export async function replyInquiryAction(
+  locale: string,
+  inquiryId: string,
+  channel: AdminMessageChannel,
+  _previous: ReplyInquiryState | null,
+  formData: FormData,
+): Promise<ReplyInquiryState> {
+  const resolvedLocale = hasLocale(routing.locales, locale)
+    ? locale
+    : routing.defaultLocale;
+  const t = await getTranslations({
+    locale: resolvedLocale,
+    namespace: "Admin",
+  });
+  const resolvedChannel = parseAdminMessageChannel(channel);
+  const actor = await requireAdmin(
+    resolvedLocale,
+    localizedPath(resolvedLocale, {
+      pathname: "/admin/calls/messages/[id]",
+      params: {id: inquiryId},
+      query: resolvedChannel === "course" ? undefined : {channel: resolvedChannel},
+    }),
+  );
+
+  const draft = readInquiryReplyDraft(formData);
+  const parsed = parseInquiryReplyForm(formData);
+  if (parsed.errors || !parsed.values) {
+    return {errors: {body: t("inquiryReplyInvalid")}, draft};
+  }
+
+  try {
+    await replyToInquiry({
+      actor,
+      inquiryId,
+      channel: resolvedChannel,
+      body: parsed.values.body,
+    });
+  } catch (error) {
+    if (error instanceof InquiryReplyError) {
+      if (error.code === "notFound") {
+        return {errors: {form: t("inquiryReplyNotFound")}, draft};
+      }
+      if (error.code === "invalidBody") {
+        return {errors: {body: t("inquiryReplyInvalid")}, draft};
+      }
+      if (error.code === "sendFailed") {
+        return {errors: {form: t("inquiryReplyFailed")}, draft};
+      }
+    }
+    console.error("Failed to reply to inquiry", error);
+    return {errors: {form: t("inquiryReplyFailed")}, draft};
+  }
+
+  revalidatePath("/", "layout");
+  return {ok: true, sentAt: Date.now()};
 }

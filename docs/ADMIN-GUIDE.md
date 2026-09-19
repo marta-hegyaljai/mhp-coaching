@@ -32,6 +32,18 @@ is textual. Amounts use the sans-serif with tabular figures.
 3. Private notes are owner-only. They are not in this UI, CSV, email or the
    calendar. Do not paste clinical content into admin notes.
 
+## Messages
+
+1. **Calls → Messages**, or a message row on the control panel, opens the
+   inbound course question, contact-form or other-payment-method record.
+2. **Reply by email** sends the visitor a transactional message through the
+   same Resend path as other mail. The greeting follows their language; your
+   typed text is unchanged. Replies stay on the record.
+3. Someone who asked to pay another way is a Payment help row: the written
+   payment form if they sent one, otherwise the `LEAD` booking. Enrolment
+   lists and the control panel also offer Reply by email on those leads.
+4. Unanswered rows stay gold. After a send they read as Replied.
+
 ## Availability requests
 
 1. **Requests** → open, resolve (optionally by creating a booking) or decline.

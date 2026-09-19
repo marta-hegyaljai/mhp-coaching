@@ -21,6 +21,7 @@ import {getBookingById} from "@/features/bookings/repository";
 
 import {sendBookingConfirmation} from "./booking-confirmation";
 import {sendInquiryNotification} from "./inquiry-notification";
+import {sendInquiryReply} from "./inquiry-reply";
 import {sendLeadNotification} from "./lead-notification";
 import {sendPurchaseNotification} from "./purchase-notification";
 import {sendWaitlistNotification} from "./waitlist-notification";
@@ -584,5 +585,84 @@ describe("course advice emails", () => {
       }),
     );
     expectSharedChrome(sendMailMock.mock.calls[0]?.[0].html ?? "");
+  });
+});
+
+describe("admin inquiry reply", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    sendMailMock.mockResolvedValue({provider: "resend", messageId: "re_test"});
+    mockEmailCatalogues();
+  });
+
+  it("sends the typed reply to the visitor through the shared chrome", async () => {
+    const delivery = await sendInquiryReply({
+      to: "ada@example.com",
+      locale: "en",
+      greetingName: "Ada",
+      courseTitle: "OMNI Hypnosis Practitioner",
+      originalMessage: "Is this suitable for physicians?",
+      body: "Yes. The practitioner training is open to physicians.",
+    });
+
+    expect(delivery).toEqual({provider: "resend", messageId: "re_test"});
+    expect(sendMailMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        to: "ada@example.com",
+        replyTo: organization.email,
+        subject: "Our reply — OMNI Hypnosis Practitioner",
+      }),
+    );
+    const html = sendMailMock.mock.calls[0]?.[0].html ?? "";
+    const text = sendMailMock.mock.calls[0]?.[0].text ?? "";
+    expect(html).toContain("Yes. The practitioner training is open to physicians.");
+    expect(html).toContain("Is this suitable for physicians?");
+    expect(html).toContain("Hello Ada,");
+    expect(text).toContain("Yes. The practitioner training is open to physicians.");
+    expectSharedChrome(html);
+  });
+
+  it("uses payment copy when staff answer an other-payment-method contact", async () => {
+    await sendInquiryReply({
+      to: "sara.contact@example.test",
+      locale: "en",
+      greetingName: "Sara",
+      courseTitle: "Sport & Hypnosis",
+      originalMessage: "Could I pay by bank transfer?",
+      body: "Yes. We will send the bank details.",
+      topic: "payment",
+    });
+
+    expect(sendMailMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        to: "sara.contact@example.test",
+        subject: "About paying another way — Sport & Hypnosis",
+      }),
+    );
+    const html = sendMailMock.mock.calls[0]?.[0].html ?? "";
+    expect(html).toContain("You asked to pay by another method.");
+    expect(html).toContain("Could I pay by bank transfer?");
+    expectSharedChrome(html);
+  });
+
+  it("keeps a general contact reply free of a blank course row", async () => {
+    await sendInquiryReply({
+      to: "sara.contact@example.test",
+      locale: "en",
+      greetingName: "Sara",
+      courseTitle: null,
+      originalMessage: "Could I pay by bank transfer?",
+      body: "Yes. Write to us and we will send the coordinates.",
+    });
+
+    expect(sendMailMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        to: "sara.contact@example.test",
+        subject: "Our reply to your question",
+      }),
+    );
+    const html = sendMailMock.mock.calls[0]?.[0].html ?? "";
+    expect(html).not.toContain("Course:");
+    expectSharedChrome(html);
   });
 });

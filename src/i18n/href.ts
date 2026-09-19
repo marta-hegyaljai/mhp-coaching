@@ -70,7 +70,7 @@ export type PathnameHref =
   | {
       pathname: "/admin/calls/messages/[id]";
       params: {id: string};
-      /** `contact` reads the contact/payment-help table instead of course questions. */
+      /** `contact` or `lead` instead of a written course question. */
       query?: {channel?: string};
     }
   | {

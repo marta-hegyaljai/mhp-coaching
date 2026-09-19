@@ -171,7 +171,11 @@ function toEntry(
       params: {id: booking.courseId},
       query: {tab: "enrolments", q: booking.email},
     },
-    source: {kind: "registration", bookingId: booking.id},
+    source: {
+      kind: "registration",
+      bookingId: booking.id,
+      lead: booking.status === "LEAD",
+    },
   };
 }
 

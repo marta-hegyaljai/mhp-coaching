@@ -3,6 +3,7 @@ import {and, asc, desc, gte, lt, sql, type SQL} from "drizzle-orm";
 import {getDb} from "@/db";
 import {courseInquiries, inquiries, type CourseInquiry, type Inquiry} from "@/db/schema";
 import {callPersonName} from "@/features/course-calls/format";
+import {listLatestReplyAt} from "@/features/inquiries/replies";
 import type {AppLocale} from "@/i18n/routing";
 
 import {arrivalWhen, excerpt} from "../format";
@@ -77,8 +78,10 @@ function fromCourseInquiry(
   row: CourseInquiry,
   locale: AppLocale,
   copy: ActivityCopy,
+  repliedAt: Date | undefined,
 ): ActivityEntry {
   const person = callPersonName(row.firstName, row.lastName);
+  const replied = Boolean(repliedAt);
 
   return {
     id: `message:course:${row.id}`,
@@ -91,7 +94,10 @@ function fromCourseInquiry(
     personDetail: row.email,
     title: row.courseTitle ?? copy.noCourse,
     detail: excerpt(row.message),
-    status: {label: copy.messageTopic("course"), tone: "gold"},
+    status: {
+      label: replied ? copy.messageReplied : copy.messageTopic("course"),
+      tone: replied ? "ok" : "gold",
+    },
     href: {pathname: "/admin/calls/messages/[id]", params: {id: row.id}},
     source: {kind: "message", messageId: row.id, channel: "course"},
   };
@@ -101,8 +107,10 @@ function fromContactInquiry(
   row: Inquiry,
   locale: AppLocale,
   copy: ActivityCopy,
+  repliedAt: Date | undefined,
 ): ActivityEntry {
   const topic = contactTopic(row.kind);
+  const replied = Boolean(repliedAt);
 
   return {
     id: `message:contact:${row.id}`,
@@ -115,7 +123,10 @@ function fromContactInquiry(
     personDetail: row.email,
     title: row.courseTitle ?? copy.noCourse,
     detail: excerpt(row.message),
-    status: {label: copy.messageTopic(topic), tone: "gold"},
+    status: {
+      label: replied ? copy.messageReplied : copy.messageTopic(topic),
+      tone: replied ? "ok" : "gold",
+    },
     href: {
       pathname: "/admin/calls/messages/[id]",
       params: {id: row.id},
@@ -188,9 +199,24 @@ export const messageChannel: ActivityChannel = {
       }),
     ]);
 
+    const [courseReplied, contactReplied] = await Promise.all([
+      listLatestReplyAt(
+        "course",
+        course.rows.map((row) => row.id),
+      ),
+      listLatestReplyAt(
+        "contact",
+        contact.rows.map((row) => row.id),
+      ),
+    ]);
+
     const entries = [
-      ...course.rows.map((row) => fromCourseInquiry(row, locale, copy)),
-      ...contact.rows.map((row) => fromContactInquiry(row, locale, copy)),
+      ...course.rows.map((row) =>
+        fromCourseInquiry(row, locale, copy, courseReplied.get(row.id)),
+      ),
+      ...contact.rows.map((row) =>
+        fromContactInquiry(row, locale, copy, contactReplied.get(row.id)),
+      ),
     ]
       .sort(compareActivityEntries(bounds.when))
       .slice(0, limit);

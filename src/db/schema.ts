@@ -326,6 +326,46 @@ export const users = pgTable(
   ],
 );
 
+/**
+ * Staff answers to a written course question, a contact-form message, or a
+ * lead booking created when someone asks to pay another way. `inquiryId`
+ * points at `course_inquiries`, `inquiries` or `bookings` according to
+ * `channel`; those tables use UUID keys, so the pair is the lookup.
+ */
+export const inquiryReplyChannelEnum = pgEnum("inquiry_reply_channel", [
+  "course",
+  "contact",
+  "lead",
+]);
+
+export const inquiryReplies = pgTable(
+  "inquiry_replies",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    createdAt: timestamp("created_at", {withTimezone: true})
+      .defaultNow()
+      .notNull(),
+    channel: inquiryReplyChannelEnum("channel").notNull(),
+    inquiryId: uuid("inquiry_id").notNull(),
+    sentByUserId: uuid("sent_by_user_id")
+      .notNull()
+      .references(() => users.id, {onDelete: "restrict"}),
+    toEmail: text("to_email").notNull(),
+    body: text("body").notNull(),
+    locale: text("locale").notNull(),
+    provider: text("provider").notNull(),
+    providerMessageId: text("provider_message_id"),
+  },
+  (table) => [
+    index("inquiry_replies_inquiry_idx").on(table.channel, table.inquiryId),
+    index("inquiry_replies_created_at_idx").on(table.createdAt),
+  ],
+);
+
+export type InquiryReply = typeof inquiryReplies.$inferSelect;
+export type NewInquiryReply = typeof inquiryReplies.$inferInsert;
+export type InquiryReplyChannel = (typeof inquiryReplyChannelEnum.enumValues)[number];
+
 export const sessions = pgTable(
   "sessions",
   {

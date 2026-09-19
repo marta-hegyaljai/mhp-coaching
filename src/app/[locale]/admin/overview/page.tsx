@@ -65,6 +65,7 @@ export default async function AdminOverviewPage({
         confirmRemove: t("activityWaitlistConfirmRemove"),
         keep: t("activityWaitlistKeep"),
       },
+      reply: t("inquiryReplyAction"),
     },
     emptySearch: t("activityEmptySearch"),
     log: t("activityLog"),

@@ -113,6 +113,7 @@ export default async function AdminEnrolmentsPage({
               copyPhone: (phone) => t("copyPhone", {phone}),
               copyAddress: (address) => t("copyAddress", {address}),
               copied: t("emailCopied"),
+              reply: t("inquiryReplyAction"),
             }}
           />
         </div>

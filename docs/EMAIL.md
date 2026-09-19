@@ -88,6 +88,7 @@ Add new mail as a function in `src/features/email/` that calls
 | Advice call reserved | `sendCourseCallStaffNotification` | `contact@mhp-coaching.ch` |
 | Written question | `sendCourseInquiryConfirmation` | visitor |
 | Written question | `sendCourseInquiryStaffNotification` | `contact@mhp-coaching.ch` |
+| Admin reply to a question, contact or other-payment request | `sendInquiryReply` | visitor |
 | Account invitation | `sendAccountInvitation` | invited user |
 | Admin-created room booking | `sendAdminCreatedRoomBooking` | booking owner |
 | Admin-moved room booking | `sendAdminMovedRoomBooking` | booking owner |
