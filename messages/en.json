@@ -849,6 +849,8 @@
     "activityHistory": "History",
     "activitySearch": "Search",
     "activitySearchPlaceholder": "Name, email, course or room",
+    "activityRefresh": "Refresh",
+    "activityRefreshing": "Refreshing",
     "activityWhen": "When",
     "activityChannel": "Type",
     "activityWho": "Person",

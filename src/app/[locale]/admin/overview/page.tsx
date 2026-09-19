@@ -1,6 +1,7 @@
 import {getTranslations, setRequestLocale} from "next-intl/server";
 
 import {ActivityBoard} from "@/features/admin/activity/components/activity-board";
+import {ActivityRefresh} from "@/features/admin/activity/components/activity-refresh";
 import {ActivitySearch} from "@/features/admin/activity/components/activity-search";
 import {activityCopy, activityKindLabels} from "@/features/admin/activity/copy";
 import {loadActivityBriefing} from "@/features/admin/activity/feed";
@@ -78,17 +79,25 @@ export default async function AdminOverviewPage({
     <AdminWorkspace locale={locale} current="overview" fillViewport>
       <div className="flex min-h-0 flex-1 flex-col gap-2 px-3 py-2 sm:gap-3 sm:px-5 sm:py-3 lg:px-6">
         <h1 className="sr-only">{t("overviewTitle")}</h1>
-        <ActivitySearch
-          action={localizedPath(locale, "/admin/overview")}
-          query={query}
-          className="shrink-0 lg:max-w-md lg:self-end"
-          labels={{
-            filter: t("filter"),
-            search: t("activitySearch"),
-            searchPlaceholder: t("activitySearchPlaceholder"),
-            clear: t("clearFilters"),
-          }}
-        />
+        <div className="flex shrink-0 items-center gap-2">
+          <ActivityRefresh
+            labels={{
+              refresh: t("activityRefresh"),
+              refreshing: t("activityRefreshing"),
+            }}
+          />
+          <ActivitySearch
+            action={localizedPath(locale, "/admin/overview")}
+            query={query}
+            className="min-w-0 flex-1 lg:ml-auto lg:max-w-md"
+            labels={{
+              filter: t("filter"),
+              search: t("activitySearch"),
+              searchPlaceholder: t("activitySearchPlaceholder"),
+              clear: t("clearFilters"),
+            }}
+          />
+        </div>
         <ActivityBoard
           briefing={briefing}
           query={query}

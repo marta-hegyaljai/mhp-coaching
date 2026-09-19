@@ -849,6 +849,8 @@
     "activityHistory": "Verlauf",
     "activitySearch": "Suchen",
     "activitySearchPlaceholder": "Name, E-Mail, Ausbildung oder Raum",
+    "activityRefresh": "Aktualisieren",
+    "activityRefreshing": "Wird aktualisiert",
     "activityWhen": "Wann",
     "activityChannel": "Art",
     "activityWho": "Person",

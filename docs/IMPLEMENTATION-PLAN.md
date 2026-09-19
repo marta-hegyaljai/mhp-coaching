@@ -118,6 +118,11 @@ board shows one full-height pane; a Period switcher chooses Today, Upcoming or
 History (`when=`, default Today). Desktop still shows three columns. No schema
 change.
 
+Review pass (2026-09-19): the activity board search row has a refresh control
+that reloads every pane without changing the query (`router.refresh()`). It is
+icon-only below `lg` so the phone search row stays one 44px line, and a
+labelled secondary button from `lg`. No schema change.
+
 Extra-roadmap (2026-09-18): the admin catalogue enrolments metric opens a
 catalogue-wide inscription list at `/admin/courses/enrolments`, newest first,
 paginated, with cancelled rows hidden until staff opts in. This is
