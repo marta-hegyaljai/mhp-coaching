@@ -7,7 +7,7 @@ import {isFreeCancellation} from "@/features/rooms/billing";
 import {BookingFacts} from "@/features/rooms/components/booking/booking-facts";
 import {SlotNavigator} from "@/features/rooms/components/booking/slot-navigator";
 import {ChangeBookingForm} from "@/features/rooms/components/change-form";
-import {RoomsNav} from "@/features/rooms/components/rooms-nav";
+import {RoomsWorkspace} from "@/features/rooms/components/rooms-workspace";
 import {RoomError} from "@/features/rooms/errors";
 import {bookingWhen} from "@/features/rooms/format";
 import {ownerCanMutateBooking} from "@/features/rooms/lifecycle";
@@ -18,7 +18,6 @@ import {getBookingSettings} from "@/features/rooms/settings";
 import {utcToZurich} from "@/features/rooms/timezone";
 import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
-import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
 import {BackLink} from "@/shared/ui/back-link";
 import {Panel} from "@/shared/ui/panel";
@@ -96,9 +95,9 @@ export default async function ChangeRoomBookingPage({params, searchParams}: Chan
   }
 
   return (
-    <SiteShell
+    <RoomsWorkspace
       locale={locale}
-      footerCta={null}
+      current="bookings"
       hreflangs={{
         fr: {pathname: "/rooms/bookings/[id]/change", params: {id}},
         de: {pathname: "/rooms/bookings/[id]/change", params: {id}},
@@ -106,8 +105,6 @@ export default async function ChangeRoomBookingPage({params, searchParams}: Chan
       }}
     >
       <WorkspacePage
-        eyebrow={t("eyebrow")}
-        nav={<RoomsNav current="bookings" />}
         back={
           <BackLink href={{pathname: "/rooms/bookings/[id]", params: {id}}}>
             {t("backToBooking")}
@@ -156,6 +153,6 @@ export default async function ChangeRoomBookingPage({params, searchParams}: Chan
           )}
         </div>
       </WorkspacePage>
-    </SiteShell>
+    </RoomsWorkspace>
   );
 }

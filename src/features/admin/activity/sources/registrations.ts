@@ -1,4 +1,4 @@
-import {and, asc, desc, gte, lt, or, sql, type SQL} from "drizzle-orm";
+import {and, asc, desc, gte, lt, ne, or, sql, type SQL} from "drizzle-orm";
 
 import {getDb} from "@/db";
 import {bookings, type Booking} from "@/db/schema";
@@ -55,8 +55,16 @@ function scheduledDay(booking: Booking): string | null {
     : null;
 }
 
-function where(bounds: ActivityBounds, q: string): SQL | undefined {
+function where(
+  bounds: ActivityBounds,
+  q: string,
+  includeCancelled: boolean,
+): SQL | undefined {
   const filters: Array<SQL | undefined> = [];
+
+  if (!includeCancelled) {
+    filters.push(ne(bookings.status, "CANCELLED"));
+  }
 
   if (bounds.when === "today") {
     filters.push(
@@ -169,9 +177,9 @@ function toEntry(
 
 export const registrationChannel: ActivityChannel = {
   kind: "registration",
-  async load({bounds, q, limit, locale, copy}: ActivitySourceInput) {
+  async load({bounds, q, limit, locale, copy, includeCancelled}: ActivitySourceInput) {
     const db = getDb();
-    const filter = where(bounds, q);
+    const filter = where(bounds, q, includeCancelled);
     const ascending = bounds.when !== "history";
 
     const {total, rows} = await countAndList({

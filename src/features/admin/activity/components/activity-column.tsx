@@ -1,24 +1,40 @@
+import {addLocalDays} from "@/features/rooms/timezone";
 import type {AppLocale} from "@/i18n/routing";
 import {Link} from "@/i18n/navigation";
 import {Pagination} from "@/shared/ui/pagination";
+import {ChevronLeftIcon, ChevronRightIcon} from "@/shared/ui/icons";
 
 import type {ActivityFeed} from "../feed";
 import {listedActivityTotal} from "../listed";
 import {
   activityFilterHref,
+  activityFocusDay,
   activityHistoryPageHref,
+  activityHref,
+  showsCancelledActivity,
   type ActivityQuery,
 } from "../query";
 import type {ActivityKind, ActivityWindow} from "../types";
+import {ActivityCancelledFilter} from "./activity-cancelled-filter";
+import {ActivityDayJump} from "./activity-day-nav";
 import {ActivityList, type ActivityListLabels} from "./activity-list";
 
 export type ActivityColumnLabels = ActivityListLabels & {
   emptySearch: string;
+  emptyDay: string;
   log: string;
   pageStatus: (page: number, pageCount: number) => string;
   previous: string;
   next: string;
+  previousDay: string;
+  nextDay: string;
+  jumpToDate: string;
+  jumpToday: string;
+  showCancelled: string;
 };
+
+const dayStepClass =
+  "inline-flex h-8 w-8 shrink-0 items-center justify-center text-ink transition-colors duration-150 ease-standard hover:bg-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink";
 
 /**
  * One window of the board: a labelled pane that scrolls internally so the
@@ -48,46 +64,97 @@ export function ActivityColumn({
 }) {
   const {entries, total, page, pageCount} = feed.page;
   const listed = listedActivityTotal(feed.counts, query.kind);
-  const emptyMessage = query.q !== "" ? labels.emptySearch : empty;
+  const viewingToday = when === "today" && query.day === null;
+  const emptyMessage =
+    query.q !== ""
+      ? labels.emptySearch
+      : when === "today" && !viewingToday
+        ? labels.emptyDay
+        : empty;
   const showSpotlights =
-    feed.counts.waitlist > 0 || feed.counts.message > 0 || feed.counts.change > 0;
+    when !== "today" &&
+    (feed.counts.waitlist > 0 || feed.counts.message > 0 || feed.counts.change > 0);
+  const focusDay = activityFocusDay(query);
+  const nextDay = addLocalDays(focusDay, 1);
 
   return (
     <section
       aria-label={title}
       className="flex min-h-0 min-w-0 flex-col bg-white"
     >
-      <header className="shrink-0 border-b border-line px-3 py-2">
-        <div className="flex items-baseline justify-between gap-3">
-          <h2 className="font-sans text-[0.7rem] font-bold uppercase tracking-[0.16em] text-gold-deep">
-            {title}
-          </h2>
-          <p className="font-sans text-sm font-semibold tabular-nums text-ink">{listed}</p>
-        </div>
-        {showSpotlights ? (
-          <p className="mt-1 flex flex-wrap gap-x-2 gap-y-0.5 text-[0.65rem] font-bold uppercase tracking-[0.12em] text-ink-subtle">
-            <Spotlight
-              kind="waitlist"
-              count={feed.counts.waitlist}
-              label={labels.kinds.waitlist}
+      <header className="flex h-11 shrink-0 items-center gap-2 border-b border-line px-3">
+        <h2 className="shrink-0 font-sans text-[0.7rem] font-bold uppercase tracking-[0.16em] text-gold-deep">
+          {title}
+        </h2>
+        <div className="flex min-w-0 flex-1 items-center gap-2">
+          {when === "today" ? (
+            <div className="flex min-w-0 items-center">
+              <Link
+                href={activityHref({...query, day: addLocalDays(focusDay, -1)})}
+                aria-label={labels.previousDay}
+                className={dayStepClass}
+              >
+                <ChevronLeftIcon />
+              </Link>
+              <ActivityDayJump
+                locale={locale}
+                query={query}
+                day={focusDay}
+                label={labels.jumpToDate}
+              />
+              <Link
+                href={activityHref({...query, day: nextDay})}
+                aria-label={labels.nextDay}
+                className={dayStepClass}
+              >
+                <ChevronRightIcon />
+              </Link>
+              {viewingToday ? null : (
+                <Link
+                  href={activityHref({...query, day: null})}
+                  className="ml-1 shrink-0 font-sans text-[0.65rem] font-bold uppercase tracking-[0.12em] text-ink underline-offset-4 hover:underline"
+                >
+                  {labels.jumpToday}
+                </Link>
+              )}
+            </div>
+          ) : (
+            <ActivityCancelledFilter
+              locale={locale}
               query={query}
+              when={when}
+              checked={showsCancelledActivity(query, when)}
+              label={labels.showCancelled}
             />
-            <Spotlight
-              kind="message"
-              count={feed.counts.message}
-              label={labels.kinds.message}
-              query={query}
-            />
-            {feed.counts.change > 0 ? (
+          )}
+          {showSpotlights ? (
+            <p className="flex min-w-0 flex-1 items-center gap-x-2 overflow-x-auto whitespace-nowrap text-[0.65rem] font-bold uppercase tracking-[0.12em] text-ink-subtle [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               <Spotlight
-                kind="change"
-                count={feed.counts.change}
-                label={labels.log}
+                kind="waitlist"
+                count={feed.counts.waitlist}
+                label={labels.kinds.waitlist}
                 query={query}
               />
-            ) : null}
-          </p>
-        ) : null}
+              <Spotlight
+                kind="message"
+                count={feed.counts.message}
+                label={labels.kinds.message}
+                query={query}
+              />
+              {feed.counts.change > 0 ? (
+                <Spotlight
+                  kind="change"
+                  count={feed.counts.change}
+                  label={labels.log}
+                  query={query}
+                />
+              ) : null}
+            </p>
+          ) : null}
+        </div>
+        <p className="shrink-0 font-sans text-sm font-semibold tabular-nums text-ink">
+          {listed}
+        </p>
       </header>
 
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
@@ -152,7 +219,7 @@ function Spotlight({
     <Link
       href={activityFilterHref(query, {kind: current ? "all" : kind})}
       aria-current={current ? "page" : undefined}
-      className={`underline-offset-4 hover:underline ${
+      className={`shrink-0 underline-offset-4 hover:underline ${
         current
           ? "text-ink"
           : kind === "waitlist" || kind === "message"

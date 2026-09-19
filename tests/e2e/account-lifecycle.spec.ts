@@ -81,7 +81,7 @@ test("a new user can verify, change password and reset access", async ({page}) =
   await expect(page.getByText("No course registrations are linked")).toBeVisible();
   await expect(page.getByRole("heading", {name: "Certificates"})).toBeVisible();
 
-  await page.getByRole("navigation", {name: "Profile"}).getByRole("link", {name: "Profile"}).click();
+  await page.getByRole("navigation", {name: "Account pages"}).getByRole("link", {name: "Profile"}).click();
   await expect(page.getByRole("heading", {name: "Profile"})).toBeVisible();
   await expect(page.getByLabel("Email")).toHaveValue(email);
   await expect(page.getByLabel("Email")).toHaveAttribute("readonly");
@@ -94,7 +94,8 @@ test("a new user can verify, change password and reset access", async ({page}) =
   await page.getByRole("button", {name: "Change password"}).click();
   await expect(page.getByRole("status")).toContainText("Password updated");
 
-  await page.getByRole("navigation", {name: "Profile"}).getByRole("button", {name: "Sign out"}).click();
+  await page.getByRole("button", {name: "Account menu"}).click();
+  await page.getByRole("menuitem", {name: "Sign out"}).click();
   await expect(page).toHaveURL(/\/en\/sign-in/);
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill(nextPassword);

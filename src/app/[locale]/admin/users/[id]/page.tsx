@@ -2,7 +2,7 @@ import {getTranslations, setRequestLocale} from "next-intl/server";
 import {notFound} from "next/navigation";
 
 import {AccessHistory} from "@/features/admin/components/access-history";
-import {AdminSubnav, adminSectionLabels} from "@/features/admin/components/admin-subnav";
+import {AdminWorkspace} from "@/features/admin/components/admin-workspace";
 import {UserAccessForm} from "@/features/admin/components/user-access-form";
 import {UserDiscountForm} from "@/features/admin/components/user-discount-form";
 import {parseAuditHistoryPage, userAuditHref} from "@/features/admin/audit-history-query";
@@ -14,7 +14,6 @@ import {listCertificatesForUser} from "@/features/certificates/repository";
 import {toCertificateCardView} from "@/features/certificates/views";
 import {loadCatalogueCourses} from "@/features/courses/live";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
-import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {BackLink} from "@/shared/ui/back-link";
@@ -67,16 +66,8 @@ export default async function AdminUserDetailPage({
   }));
 
   return (
-    <SiteShell locale={locale} footerCta={null}>
+    <AdminWorkspace locale={locale} current="users">
       <WorkspacePage
-        eyebrow={t("eyebrow")}
-        nav={
-          <AdminSubnav
-            current="users"
-            label={t("sectionsNav")}
-            labels={adminSectionLabels(t)}
-          />
-        }
         back={<BackLink href="/admin/users">{t("backToList")}</BackLink>}
         title={t("detailTitle")}
       >
@@ -128,6 +119,6 @@ export default async function AdminUserDetailPage({
           />
         </div>
       </WorkspacePage>
-    </SiteShell>
+    </AdminWorkspace>
   );
 }

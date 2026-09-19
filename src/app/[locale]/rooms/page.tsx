@@ -4,10 +4,9 @@ import {requireRoomBooking} from "@/features/auth/require";
 import {therapistDiscountPercent} from "@/features/rooms/pricing";
 import {therapistAvailability, therapistMonthOverview} from "@/features/rooms/availability";
 import {AvailabilityCalendar} from "@/features/rooms/components/availability/calendar";
-import {RoomsNav} from "@/features/rooms/components/rooms-nav";
+import {RoomsWorkspace} from "@/features/rooms/components/rooms-workspace";
 import {parseAvailabilityQuery} from "@/features/rooms/query";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
-import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
 import {WorkspacePage} from "@/shared/ui/workspace-page";
 
@@ -61,10 +60,8 @@ export default async function RoomsPage({params, searchParams}: RoomsPageProps) 
         });
 
   return (
-    <SiteShell locale={locale} footerCta={null}>
+    <RoomsWorkspace locale={locale} current="calendar">
       <WorkspacePage
-        eyebrow={t("eyebrow")}
-        nav={<RoomsNav current="calendar" />}
         title={t("title")}
         intro={t("intro")}
       >
@@ -78,6 +75,6 @@ export default async function RoomsPage({params, searchParams}: RoomsPageProps) 
           />
         </div>
       </WorkspacePage>
-    </SiteShell>
+    </RoomsWorkspace>
   );
 }

@@ -1,6 +1,6 @@
 import {getTranslations, setRequestLocale} from "next-intl/server";
 
-import {AdminSubnav, adminSectionLabels} from "@/features/admin/components/admin-subnav";
+import {AdminWorkspace} from "@/features/admin/components/admin-workspace";
 import {requireAdmin} from "@/features/auth/require";
 import {CallHoursForm} from "@/features/course-calls/components/hours-form";
 import {callPersonName, callWhen} from "@/features/course-calls/format";
@@ -14,7 +14,6 @@ import {
 } from "@/features/course-calls/query";
 import {listAdminCalls, listAdminInquiries, listCallHours} from "@/features/course-calls/repository";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
-import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {Button} from "@/shared/ui/button";
@@ -65,16 +64,8 @@ export default async function AdminCallsPage({params, searchParams}: AdminCallsP
   ];
 
   return (
-    <SiteShell locale={locale} footerCta={null}>
+    <AdminWorkspace locale={locale} current="calls">
       <WorkspacePage
-        eyebrow={t("eyebrow")}
-        nav={
-          <AdminSubnav
-            current="calls"
-            label={t("sectionsNav")}
-            labels={adminSectionLabels(t)}
-          />
-        }
         title={t("callsTitle")}
         intro={t("callsIntro")}
       >
@@ -135,7 +126,7 @@ export default async function AdminCallsPage({params, searchParams}: AdminCallsP
           />
         ) : null}
       </WorkspacePage>
-    </SiteShell>
+    </AdminWorkspace>
   );
 }
 

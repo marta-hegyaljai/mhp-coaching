@@ -1,6 +1,6 @@
 import {getTranslations, setRequestLocale} from "next-intl/server";
 
-import {AdminSubnav, adminSectionLabels} from "@/features/admin/components/admin-subnav";
+import {AdminWorkspace} from "@/features/admin/components/admin-workspace";
 import {requireAdmin} from "@/features/auth/require";
 import {parseBookQuery} from "@/features/rooms/book-query";
 import {AdminCreateBookingForm} from "@/features/rooms/components/admin/bookings/create-form";
@@ -11,7 +11,6 @@ import {previewBookableSlot} from "@/features/rooms/reservations";
 import {todayInZurich} from "@/features/rooms/timezone";
 import {RoomError} from "@/features/rooms/errors";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
-import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
 import {isUuid} from "@/lib/uuid";
 import {BackLink} from "@/shared/ui/back-link";
@@ -85,16 +84,8 @@ export default async function AdminNewBookingPage({params, searchParams}: NewBoo
   }
 
   return (
-    <SiteShell locale={locale} footerCta={null}>
+    <AdminWorkspace locale={locale} current="bookings">
       <WorkspacePage
-        eyebrow={t("eyebrow")}
-        nav={
-          <AdminSubnav
-            current="bookings"
-            label={t("sectionsNav")}
-            labels={adminSectionLabels(t)}
-          />
-        }
         back={<BackLink href="/admin/bookings">{t("backToAdminBookings")}</BackLink>}
         title={t("createBookingTitle")}
         intro={t("createBookingIntro")}
@@ -148,6 +139,6 @@ export default async function AdminNewBookingPage({params, searchParams}: NewBoo
           )}
         </div>
       </WorkspacePage>
-    </SiteShell>
+    </AdminWorkspace>
   );
 }

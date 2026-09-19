@@ -2,10 +2,9 @@ import {getTranslations, setRequestLocale} from "next-intl/server";
 
 import {ChangePasswordForm, ProfileForm} from "@/features/auth/components/account-forms";
 import {AuthNotice} from "@/features/auth/components/auth-field";
-import {AccountNav} from "@/features/auth/components/account-nav";
+import {AccountWorkspace} from "@/features/auth/components/account-workspace";
 import {requireSignedInUser} from "@/features/auth/require";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
-import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
 import {WorkspacePage} from "@/shared/ui/workspace-page";
 
@@ -36,22 +35,10 @@ export default async function AccountPage({params, searchParams}: AccountPagePro
   setRequestLocale(locale);
   const user = await requireSignedInUser(locale, localizedPath(locale, "/account"));
   const t = await getTranslations("Auth");
-  const navT = await getTranslations("Nav");
-
+  
   return (
-    <SiteShell locale={locale} footerCta={null}>
+    <AccountWorkspace locale={locale} current="profile">
       <WorkspacePage
-        eyebrow={t("eyebrow")}
-        nav={
-          <AccountNav
-            locale={locale}
-            labels={{
-              profile: t("profileTitle"),
-              courses: t("myCoursesLink"),
-              signOut: navT("signOut"),
-            }}
-          />
-        }
         title={t("profileTitle")}
         intro={t("profileIntro")}
       >
@@ -76,6 +63,6 @@ export default async function AccountPage({params, searchParams}: AccountPagePro
           </div>
         </div>
       </WorkspacePage>
-    </SiteShell>
+    </AccountWorkspace>
   );
 }

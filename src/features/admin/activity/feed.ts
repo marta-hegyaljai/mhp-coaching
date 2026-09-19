@@ -57,7 +57,16 @@ export async function loadActivityFeed(input: {
 }): Promise<ActivityFeed> {
   const pageSize = Math.max(1, input.pageSize ?? ACTIVITY_BOARD_SIZE);
   const page = input.page ?? 1;
-  const bounds = activityBounds(input.when, input.now);
+  const bounds = activityBounds(
+    input.when,
+    input.now,
+    input.when === "today" ? input.query.day : null,
+  );
+  const includeCancelled =
+    input.when === "today" ||
+    (input.when === "upcoming"
+      ? input.query.showUpcomingCancelled
+      : input.query.showHistoryCancelled);
   const channels = input.channels ?? defaultChannels;
   const isSelected = (kind: ActivityKind) =>
     isListedActivityKind(input.query.kind, kind);
@@ -71,6 +80,7 @@ export async function loadActivityFeed(input: {
         limit: isSelected(channel.kind) ? page * pageSize : 0,
         locale: input.locale,
         copy: input.copy,
+        includeCancelled,
       }),
     })),
   );

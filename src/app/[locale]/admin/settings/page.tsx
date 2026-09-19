@@ -1,13 +1,12 @@
 import {getTranslations, setRequestLocale} from "next-intl/server";
 
-import {AdminSubnav, adminSectionLabels} from "@/features/admin/components/admin-subnav";
+import {AdminWorkspace} from "@/features/admin/components/admin-workspace";
 import {requireAdmin} from "@/features/auth/require";
 import {HeartbeatList} from "@/features/ops/components/heartbeat-list";
 import {listRecentHeartbeats} from "@/features/ops/heartbeats";
 import {RoomSettingsForm} from "@/features/rooms/components/admin/settings-form";
 import {getBookingSettings, listOpeningIntervals} from "@/features/rooms/settings";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
-import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
 import {WorkspacePage} from "@/shared/ui/workspace-page";
 
@@ -43,16 +42,8 @@ export default async function AdminSettingsPage({params}: AdminSettingsPageProps
   ]);
 
   return (
-    <SiteShell locale={locale} footerCta={null}>
+    <AdminWorkspace locale={locale} current="settings">
       <WorkspacePage
-        eyebrow={admin("eyebrow")}
-        nav={
-          <AdminSubnav
-            current="settings"
-            label={admin("sectionsNav")}
-            labels={adminSectionLabels(admin)}
-          />
-        }
         title={t("settingsTitle")}
         intro={t("settingsIntro")}
       >
@@ -70,6 +61,6 @@ export default async function AdminSettingsPage({params}: AdminSettingsPageProps
           />
         </section>
       </WorkspacePage>
-    </SiteShell>
+    </AdminWorkspace>
   );
 }

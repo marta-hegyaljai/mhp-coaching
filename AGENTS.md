@@ -32,8 +32,9 @@ brown, shadows, decorative animation, hidden phone navigation, long full-width
 option lists, or locale-dependent control shifts.
 Course/date possibilities use compact bordered card grids. The language
 switcher remains a fixed-width dropdown. Signed-in working screens use
-`WorkspacePage` so the eyebrow and back control share one row and records
-stay near the fold. These rules apply to Codex and all other coding agents.
+`WorkspaceFrame` (desktop rail, phone section sheet) plus `WorkspacePage` so
+section switching is not a tab row, the back control stays compact, and
+records stay near the fold. The product header keeps the booking action. These rules apply to Codex and all other coding agents.
 
 ## Binding email direction
 Before adding or restyling any notification, read `docs/EMAIL.md`. Compose

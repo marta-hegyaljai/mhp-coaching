@@ -1,6 +1,7 @@
 import {describe, expect, it} from "vitest";
 
 import {
+  formatCompactDate,
   formatDayHeading,
   formatDayRange,
   formatLongDate,
@@ -17,6 +18,11 @@ describe("calendar date formatting", () => {
   it("keeps the day stable at a UTC midnight boundary", () => {
     expect(formatLongDate("2026-01-01", "en")).toBe("1 January 2026");
     expect(formatLongDate("2026-12-31", "en")).toBe("31 December 2026");
+  });
+
+  it("shortens the month for a compact toolbar date", () => {
+    expect(formatCompactDate("2026-09-19", "en")).toBe("19 Sept 2026");
+    expect(formatCompactDate("2026-09-19", "fr")).toBe("19 sept. 2026");
   });
 
   it("adds the weekday for a single day heading", () => {

@@ -107,7 +107,10 @@ locks to `100dvh` and drops the footer so the page does not scroll; each pane
 scrolls internally. The default list is live activity — `kind=all` excludes the
 audit log, which remains a quieter spotlight. Search and an optional channel
 narrow every pane at once; History pages with `hp`. Legacy `when=history&page=`
-still maps onto that page. No schema change.
+still maps onto that page. Review pass (2026-09-19): Today can step to any
+Zurich day (`day=YYYY-MM-DD`, previous/next plus a DateField jump). Upcoming
+and History hide cancelled registrations, reservations and calls until `uc=1`
+or `hc=1`. No schema change.
 
 Extra-roadmap (2026-09-18): the admin catalogue enrolments metric opens a
 catalogue-wide inscription list at `/admin/courses/enrolments`, newest first,

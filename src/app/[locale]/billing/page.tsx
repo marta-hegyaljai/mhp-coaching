@@ -5,10 +5,9 @@ import {loadOwnBillingOverview} from "@/features/rooms/billing-overview";
 import {BillingMonthTable} from "@/features/rooms/components/billing-month-table";
 import {BillingSettleBanner} from "@/features/rooms/components/billing-settle-banner";
 import {PaymentMethodPanel} from "@/features/rooms/components/payment-method-panel";
-import {RoomsNav} from "@/features/rooms/components/rooms-nav";
+import {RoomsWorkspace} from "@/features/rooms/components/rooms-workspace";
 import {savedPaymentMethodFor} from "@/features/rooms/payment-method";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
-import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
 import {WorkspacePage} from "@/shared/ui/workspace-page";
 
@@ -40,10 +39,8 @@ export default async function BillingPage({params}: BillingPageProps) {
   const paymentMethod = savedPaymentMethodFor(user);
 
   return (
-    <SiteShell locale={locale} footerCta={null}>
+    <RoomsWorkspace locale={locale} current="usage">
       <WorkspacePage
-        eyebrow={t("eyebrow")}
-        nav={<RoomsNav current="usage" />}
         title={t("usageTitle")}
         intro={t("usageIntro")}
       >
@@ -66,6 +63,6 @@ export default async function BillingPage({params}: BillingPageProps) {
           <PaymentMethodPanel method={paymentMethod} locale={locale} />
         </div>
       </WorkspacePage>
-    </SiteShell>
+    </RoomsWorkspace>
   );
 }

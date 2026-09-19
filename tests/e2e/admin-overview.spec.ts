@@ -81,7 +81,7 @@ test("search narrows every pane and can be cleared", async ({page}) => {
   await page.goto("/en/admin/overview");
 
   await page.getByLabel("Search").fill("zzz-no-such-person");
-  await page.getByRole("button", {name: "Show"}).click();
+  await page.getByRole("button", {name: "Show", exact: true}).click();
   await expect(page.getByText("No activity matches this search.")).toHaveCount(3);
 
   await page.getByRole("link", {name: "Clear"}).click();
@@ -130,6 +130,69 @@ test("the control panel fits a phone in every locale without scrolling the page"
       overflow.viewport + 1,
     );
   }
+});
+
+test("the Today pane can move to another Zurich day and back", async ({page}) => {
+  await page.goto("/en/admin/overview");
+
+  const today = pane(page, "Today");
+  await today.getByRole("link", {name: "Previous day"}).click();
+  await expect(page).toHaveURL(/[?&]day=\d{4}-\d{2}-\d{2}/);
+  await expect(today.getByRole("link", {name: "Today", exact: true})).toBeVisible();
+
+  await today.getByRole("link", {name: "Today", exact: true}).click();
+  await expect(page).not.toHaveURL(/[?&]day=/);
+  await expect(today.getByRole("link", {name: "Today", exact: true})).toHaveCount(0);
+});
+
+test("Upcoming and History hide cancelled rows until asked", async ({page}) => {
+  await page.goto("/en/admin/overview");
+
+  const upcoming = pane(page, "Upcoming");
+  const history = pane(page, "History");
+  await expect(upcoming.getByRole("checkbox", {name: "Show cancelled"})).not.toBeChecked();
+  await expect(history.getByRole("checkbox", {name: "Show cancelled"})).not.toBeChecked();
+  await expect(upcoming.getByText("Nina Abgesagt")).toHaveCount(0);
+
+  await upcoming.getByRole("checkbox", {name: "Show cancelled"}).check();
+  await expect(page).toHaveURL(/uc=1/);
+  await expect(upcoming.getByText("Nina Abgesagt")).toBeVisible();
+  await expect(history.getByRole("checkbox", {name: "Show cancelled"})).not.toBeChecked();
+});
+
+test("the admin rail stays beside the board and the booking action stays in the header", async ({
+  page,
+}) => {
+  await page.setViewportSize({width: 1440, height: 900});
+  await page.goto("/en/admin/overview");
+
+  const sections = page.getByRole("navigation", {name: "Admin sections"});
+  await expect(sections.getByRole("link", {name: "Overview"})).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
+  await expect(page.getByRole("link", {name: "Dates and registration"})).toBeVisible();
+
+  await sections.getByRole("link", {name: "Users"}).click();
+  await expect(page).toHaveURL(/\/en\/admin\/users/);
+  await expect(page.getByRole("heading", {name: "Users", exact: true})).toBeVisible();
+  await expect(page.getByRole("link", {name: "Dates and registration"})).toBeVisible();
+});
+
+test("the phone section sheet switches destinations without hiding the booking action", async ({
+  page,
+}) => {
+  await page.setViewportSize(phone);
+  await page.goto("/en/admin/overview");
+
+  await expect(page.getByRole("link", {name: "Dates", exact: true})).toBeVisible();
+  await page.getByRole("button", {name: "Administration: Overview"}).click();
+  const sections = page.getByRole("navigation", {name: "Admin sections"});
+  await expect(sections).toBeVisible();
+  await sections.getByRole("link", {name: "Users"}).click();
+  await expect(page).toHaveURL(/\/en\/admin\/users/);
+  await expect(page.getByRole("heading", {name: "Users", exact: true})).toBeVisible();
+  await expect(page.getByRole("link", {name: "Dates", exact: true})).toBeVisible();
 });
 
 test("the desktop board fills the viewport without scrolling the page", async ({page}) => {

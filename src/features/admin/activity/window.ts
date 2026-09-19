@@ -1,26 +1,33 @@
 import {todayInZurich, zurichDayRange} from "@/features/rooms/timezone";
+import {isIsoDate} from "@/shared/ui/date-field-calendar";
 
 import type {ActivityEntry, ActivityWindow} from "./types";
 
 export type ActivityBounds = {
   when: ActivityWindow;
   now: Date;
-  /** Zurich calendar day, `YYYY-MM-DD`. */
+  /** Zurich calendar day this window is ordered against, `YYYY-MM-DD`. */
   today: string;
   dayStart: Date;
   dayEndExclusive: Date;
 };
 
-export function activityBounds(when: ActivityWindow, now = new Date()): ActivityBounds {
-  const today = todayInZurich(now);
-  const day = zurichDayRange(today);
+export function activityBounds(
+  when: ActivityWindow,
+  now = new Date(),
+  day?: string | null,
+): ActivityBounds {
+  const calendarToday = todayInZurich(now);
+  const focusDay =
+    when === "today" && day && isIsoDate(day) ? day : calendarToday;
+  const range = zurichDayRange(focusDay);
 
   return {
     when,
     now,
-    today,
-    dayStart: day.start,
-    dayEndExclusive: day.endExclusive,
+    today: focusDay,
+    dayStart: range.start,
+    dayEndExclusive: range.endExclusive,
   };
 }
 

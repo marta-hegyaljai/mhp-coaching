@@ -15,6 +15,11 @@ export type ActivitySourceInput = {
   limit: number;
   locale: AppLocale;
   copy: ActivityCopy;
+  /**
+   * Upcoming and History hide cancelled registrations, reservations and calls
+   * unless the pane asks for them. Today always includes them.
+   */
+  includeCancelled: boolean;
 };
 
 export type ActivitySourceResult = {

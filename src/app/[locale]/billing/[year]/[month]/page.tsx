@@ -5,11 +5,10 @@ import {requireRoomBooking} from "@/features/auth/require";
 import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
 import {loadOwnBillingOverview} from "@/features/rooms/billing-overview";
 import {UsageLineTable} from "@/features/rooms/components/usage-line-table";
-import {RoomsNav} from "@/features/rooms/components/rooms-nav";
+import {RoomsWorkspace} from "@/features/rooms/components/rooms-workspace";
 import {loadOwnMonthUsage} from "@/features/rooms/usage";
 import {findStatementForUserMonth, isFinalizedStatus} from "@/features/rooms/statement-repository";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
-import {SiteShell} from "@/features/site-shell/site-shell";
 import {formatMonthYear} from "@/shared/format/calendar-date";
 import {formatLocalDate, parseZurichMonthKey} from "@/features/rooms/timezone";
 import type {AppLocale} from "@/i18n/routing";
@@ -79,10 +78,8 @@ export default async function BillingMonthPage({params}: BillingMonthPageProps) 
         : t("billingMonthIntroOpen");
 
   return (
-    <SiteShell locale={locale} footerCta={null}>
+    <RoomsWorkspace locale={locale} current="usage">
       <WorkspacePage
-        eyebrow={t("eyebrow")}
-        nav={<RoomsNav current="usage" />}
         back={<BackLink href="/billing">{t("backToBilling")}</BackLink>}
         title={monthLabel}
         intro={intro}
@@ -141,6 +138,6 @@ export default async function BillingMonthPage({params}: BillingMonthPageProps) 
           />
         </section>
       </WorkspacePage>
-    </SiteShell>
+    </RoomsWorkspace>
   );
 }

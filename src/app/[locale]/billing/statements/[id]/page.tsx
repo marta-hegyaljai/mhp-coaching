@@ -4,14 +4,13 @@ import {notFound} from "next/navigation";
 import {requireRoomBooking} from "@/features/auth/require";
 import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
 import {startPaymentMethodSetupAction} from "@/features/rooms/billing-actions";
-import {RoomsNav} from "@/features/rooms/components/rooms-nav";
+import {RoomsWorkspace} from "@/features/rooms/components/rooms-workspace";
 import {StatementLineList} from "@/features/rooms/components/statement-line-list";
 import {loadStatementDetail} from "@/features/rooms/statements";
 import {RoomError} from "@/features/rooms/errors";
 import {formatMonthYear} from "@/shared/format/calendar-date";
 import {formatLocalDate} from "@/features/rooms/timezone";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
-import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
 import {Button} from "@/shared/ui/button";
 import {BackLink} from "@/shared/ui/back-link";
@@ -63,10 +62,8 @@ export default async function StatementPage({params}: StatementPageProps) {
   );
 
   return (
-    <SiteShell locale={locale} footerCta={null}>
+    <RoomsWorkspace locale={locale} current="usage">
       <WorkspacePage
-        eyebrow={t("eyebrow")}
-        nav={<RoomsNav current="usage" />}
         back={<BackLink href="/billing">{t("backToBilling")}</BackLink>}
         title={monthLabel}
       >
@@ -107,6 +104,6 @@ export default async function StatementPage({params}: StatementPageProps) {
           />
         </section>
       </WorkspacePage>
-    </SiteShell>
+    </RoomsWorkspace>
   );
 }

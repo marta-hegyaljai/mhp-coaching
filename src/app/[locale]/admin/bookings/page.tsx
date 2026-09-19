@@ -1,6 +1,6 @@
 import {getTranslations, setRequestLocale} from "next-intl/server";
 
-import {AdminSubnav, adminSectionLabels} from "@/features/admin/components/admin-subnav";
+import {AdminWorkspace} from "@/features/admin/components/admin-workspace";
 import {requireAdmin} from "@/features/auth/require";
 import {
   adminBookingListHref,
@@ -15,7 +15,6 @@ import {AdminBookingsToolbar} from "@/features/rooms/components/admin/bookings/t
 import {listAdminBookingMetrics, listAdminBookingsPage} from "@/features/rooms/repository";
 import {todayInZurich} from "@/features/rooms/timezone";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
-import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {buttonStyles} from "@/shared/ui/button";
@@ -79,16 +78,8 @@ export default async function AdminBookingsPage({params, searchParams}: AdminBoo
   const openLabel = t("openBooking");
 
   return (
-    <SiteShell locale={locale} footerCta={null}>
+    <AdminWorkspace locale={locale} current="bookings">
       <WorkspacePage
-        eyebrow={t("eyebrow")}
-        nav={
-          <AdminSubnav
-            current="bookings"
-            label={t("sectionsNav")}
-            labels={adminSectionLabels(t)}
-          />
-        }
         title={t("adminBookingsTitle")}
         intro={t("adminBookingsIntro")}
         action={
@@ -221,6 +212,6 @@ export default async function AdminBookingsPage({params, searchParams}: AdminBoo
           ) : null}
         </div>
       </WorkspacePage>
-    </SiteShell>
+    </AdminWorkspace>
   );
 }

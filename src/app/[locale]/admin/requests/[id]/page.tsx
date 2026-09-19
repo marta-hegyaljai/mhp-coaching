@@ -1,7 +1,7 @@
 import {notFound} from "next/navigation";
 import {getTranslations, setRequestLocale} from "next-intl/server";
 
-import {AdminSubnav, adminSectionLabels} from "@/features/admin/components/admin-subnav";
+import {AdminWorkspace} from "@/features/admin/components/admin-workspace";
 import {AuthNotice} from "@/features/auth/components/auth-field";
 import {requireAdmin} from "@/features/auth/require";
 import {getAdminAvailabilityRequest} from "@/features/rooms/availability-requests";
@@ -11,7 +11,6 @@ import {RoomError} from "@/features/rooms/errors";
 import {bookingWhen} from "@/features/rooms/format";
 import {assertNoPrivateNoteMaterial} from "@/features/rooms/privacy";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
-import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
 import {BackLink} from "@/shared/ui/back-link";
 import {Panel, PanelDivider} from "@/shared/ui/panel";
@@ -81,16 +80,8 @@ export default async function AdminRequestDetailPage({
         : null;
 
   return (
-    <SiteShell locale={locale} footerCta={null}>
+    <AdminWorkspace locale={locale} current="requests">
       <WorkspacePage
-        eyebrow={t("eyebrow")}
-        nav={
-          <AdminSubnav
-            current="requests"
-            label={t("sectionsNav")}
-            labels={adminSectionLabels(t)}
-          />
-        }
         back={<BackLink href="/admin/requests">{t("backToAdminRequests")}</BackLink>}
         title={t("adminRequestsTitle")}
       >
@@ -140,7 +131,7 @@ export default async function AdminRequestDetailPage({
           ) : null}
         </div>
       </WorkspacePage>
-    </SiteShell>
+    </AdminWorkspace>
   );
 }
 

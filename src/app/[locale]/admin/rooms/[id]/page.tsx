@@ -1,14 +1,13 @@
 import {getTranslations, setRequestLocale} from "next-intl/server";
 import {notFound} from "next/navigation";
 
-import {AdminSubnav, adminSectionLabels} from "@/features/admin/components/admin-subnav";
+import {AdminWorkspace} from "@/features/admin/components/admin-workspace";
 import {requireAdmin} from "@/features/auth/require";
 import {blockLocalLabel} from "@/features/rooms/blocks";
 import {RoomBlockForm} from "@/features/rooms/components/admin/block-form";
 import {EditRoomForm} from "@/features/rooms/components/admin/edit-room-form";
 import {findRoomById, listBlocksForRoom} from "@/features/rooms/repository";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
-import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
 import {BackLink} from "@/shared/ui/back-link";
 import {WorkspacePage} from "@/shared/ui/workspace-page";
@@ -40,7 +39,6 @@ export default async function AdminRoomDetailPage({params}: AdminRoomDetailPageP
     params: {id},
   }));
   const t = await getTranslations("Rooms");
-  const admin = await getTranslations("Admin");
   const room = await findRoomById(id);
 
   if (!room) {
@@ -50,16 +48,8 @@ export default async function AdminRoomDetailPage({params}: AdminRoomDetailPageP
   const blocks = await listBlocksForRoom(room.id);
 
   return (
-    <SiteShell locale={locale} footerCta={null}>
+    <AdminWorkspace locale={locale} current="rooms">
       <WorkspacePage
-        eyebrow={admin("eyebrow")}
-        nav={
-          <AdminSubnav
-            current="rooms"
-            label={admin("sectionsNav")}
-            labels={adminSectionLabels(admin)}
-          />
-        }
         back={<BackLink href="/admin/rooms">{t("backToRooms")}</BackLink>}
         title={t("editTitle")}
       >
@@ -79,6 +69,6 @@ export default async function AdminRoomDetailPage({params}: AdminRoomDetailPageP
           />
         </div>
       </WorkspacePage>
-    </SiteShell>
+    </AdminWorkspace>
   );
 }

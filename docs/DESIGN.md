@@ -103,11 +103,15 @@ dashboard.
 Public and authenticated shells may organize navigation differently, but they
 must share tokens, controls and brand language. Authenticated navigation exposes
 only server-derived capabilities: a course-only user does not see Rooms/Billing;
-a therapist does. Admin navigation may group operational screens without turning
-the whole product into a generic sidebar-heavy SaaS dashboard. On phones, use a
-clear compact navigation pattern once the authenticated information architecture
-no longer fits the public single-row rule; never hide the current section or
-primary action behind an ambiguous icon.
+a therapist does. Signed-in working screens (admin, rooms, account, billing)
+use `<WorkspaceFrame>`: a left rail from `lg`, and below `lg` a single labeled
+bar (`Workspace · current section`) pinned under the product header that opens
+a sheet of that workspace’s destinations. The product header stays as it is and
+keeps the booking action in the bar. Do not put a second hamburger in the
+header, do not nest workspace links inside the product sheet, and do not
+restack a full-width tab row above the records. The rail is a white column
+with a black rule and a gold left rail on the current item — not a dark SaaS
+sidebar.
 
 ## Authenticated platform and room calendar
 
@@ -118,14 +122,15 @@ primary action behind an ambiguous icon.
   add dark green, dark red and gold status type plus a 3px left rail; they
   still never fill a card or row.
 - Signed-in working screens (admin, account, rooms, billing, staff) use
-  `<WorkspacePage>` in `src/shared/ui/workspace-page.tsx`. One compact masthead
-  row carries the gold eyebrow and, when the page is nested, the 44px
-  `<BackLink>` on the same row. Section tabs sit immediately under that row.
-  `<PageHeader>` then gives a subheading-sized title, one orientation line and
-  the single primary action so records sit near the fold. Do not restack
-  Administration, a full-width back control, a large heading and a long intro
-  as four separate bands. Public catalogue pages keep `Section` + `Eyebrow` and
-  the heading/title/display scale. The admin activity board stays a filled
+  `<WorkspacePage>` in `src/shared/ui/workspace-page.tsx` inside
+  `<WorkspaceFrame>`. Section switching is the rail / mobile sheet, never a
+  second tab row. One compact masthead row carries an optional gold eyebrow
+  and, when the page is nested, the 44px `<BackLink>`. `<PageHeader>` then
+  gives a subheading-sized title, one orientation line and the single primary
+  action so records sit near the fold. Do not restack Administration, a
+  full-width back control, a large heading and a long intro as four separate
+  bands. Public catalogue pages keep `Section` + `Eyebrow` and the
+  heading/title/display scale. The admin activity board stays a filled
   viewport and does not use this chrome.
 - Account, profile and My Courses use the public header. The header shows the
   signed-in person's name, a menu with Profile, My courses and Sign out, and
@@ -204,14 +209,18 @@ primary action behind an ambiguous icon.
 - The admin control panel is one viewport board, not a filter-first timeline.
   Today, Upcoming and History are three simultaneous panes: equal columns from
   `lg`, a stacked board on a phone with Today given the larger share. The page
-  itself does not scroll; each pane does. Default rows are live school activity
-  (registrations, reservations, calls, messages, waiting lists). The audit log
-  is a quieter spotlight in the pane header, never the thing that buries the
-  day. One search covers every pane. Time leads each row; the person or title
-  is the scan target; the channel is an uppercase qualifier, never a bordered
-  chip. Upcoming and History group on the Zurich day so the date is not
-  repeated on every row. Do not split the same entries into a wide table and a
-  stack of cards.
+  itself does not scroll; each pane does.   The three pane headers share one compact row. Today is a Zurich-day pane:
+  previous / next day and an inline `DateField` jump, defaulting to the current
+  day. Upcoming and History hide cancelled registrations, reservations and
+  calls until a Show cancelled checkbox in that pane header is on. Spotlight
+  counts sit on the same row; they must not add a second header band. Default rows are live
+  school activity (registrations, reservations, calls, messages, waiting lists).
+  The audit log is a quieter spotlight in the pane header, never the thing that
+  buries the day. One search covers every pane. Time leads each row; the person
+  or title is the scan target; the channel is an uppercase qualifier, never a
+  bordered chip. Upcoming and History group on the Zurich day so the date is
+  not repeated on every row. Do not split the same entries into a wide table
+  and a stack of cards.
 - Reordering swaps neighbours in the full catalogue, so offer the move controls
   only on the unfiltered list and say why they are gone otherwise.
 - Status styles remain monochrome and textual on public catalogue and

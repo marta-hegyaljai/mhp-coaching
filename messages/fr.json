@@ -35,6 +35,8 @@
     "account": "Compte",
     "accountMenu": "Menu du compte",
     "accountSection": "Mon compte",
+    "workspaceMenu": "Rubriques",
+    "workspaceClose": "Fermer les rubriques",
     "admin": "Admin",
     "rooms": "Salles",
     "myCourses": "Mes cours"
@@ -599,6 +601,7 @@
   },
   "Auth": {
     "eyebrow": "Compte",
+    "accountNav": "Pages du compte",
     "signInTitle": "Connexion",
     "signInIntro": "Connectez-vous avec l’e-mail et le mot de passe de votre compte MHP.",
     "signInLink": "Déjà un compte ? Se connecter",
@@ -855,6 +858,7 @@
     "activityList": "Activité",
     "activityCount": "{from}–{to} sur {total} entrées",
     "activityEmptyToday": "Rien d’enregistré pour aujourd’hui.",
+    "activityEmptyDay": "Rien d’enregistré pour ce jour.",
     "activityEmptyUpcoming": "Rien de prévu à venir.",
     "activityEmptyHistory": "Aucune activité enregistrée.",
     "activityEmptySearch": "Aucune activité ne correspond à cette recherche.",

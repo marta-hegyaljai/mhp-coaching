@@ -1,6 +1,6 @@
 import {getTranslations, setRequestLocale} from "next-intl/server";
 
-import {AdminSubnav, adminSectionLabels} from "@/features/admin/components/admin-subnav";
+import {AdminWorkspace} from "@/features/admin/components/admin-workspace";
 import {requireAdmin} from "@/features/auth/require";
 import {
   BillingPeriodPicker,
@@ -17,7 +17,6 @@ import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
 import {formatLocalDate} from "@/features/rooms/timezone";
 import {formatMonthYear} from "@/shared/format/calendar-date";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
-import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {Button} from "@/shared/ui/button";
@@ -121,16 +120,8 @@ export default async function AdminBillingPage({params, searchParams}: AdminBill
   const periodSearch = billingPeriodSearch(report.from, report.to);
 
   return (
-    <SiteShell locale={locale} footerCta={null}>
+    <AdminWorkspace locale={locale} current="billing">
       <WorkspacePage
-        eyebrow={t("eyebrow")}
-        nav={
-          <AdminSubnav
-            current="billing"
-            label={t("sectionsNav")}
-            labels={adminSectionLabels(t)}
-          />
-        }
         title={
           report.singleMonth
             ? report.open
@@ -327,6 +318,6 @@ export default async function AdminBillingPage({params, searchParams}: AdminBill
           </ul>
         )}
       </WorkspacePage>
-    </SiteShell>
+    </AdminWorkspace>
   );
 }

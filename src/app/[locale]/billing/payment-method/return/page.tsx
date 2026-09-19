@@ -7,7 +7,7 @@ import {paymentMethodFromSetupSession} from "@/features/payments/stripe/billing-
 import {applyStripePaymentMethodSetup} from "@/features/rooms/payment-method";
 import {localizedPathname} from "@/i18n/path";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
-import {SiteShell} from "@/features/site-shell/site-shell";
+import {RoomsWorkspace} from "@/features/rooms/components/rooms-workspace";
 import type {AppLocale} from "@/i18n/routing";
 import {BackLink} from "@/shared/ui/back-link";
 import {Panel} from "@/shared/ui/panel";
@@ -61,9 +61,8 @@ export default async function PaymentMethodReturnPage({params, searchParams}: Re
   }
 
   return (
-    <SiteShell locale={locale} footerCta={null}>
+    <RoomsWorkspace locale={locale} current="usage">
       <WorkspacePage
-        eyebrow={t("eyebrow")}
         back={<BackLink href="/billing">{t("backToBilling")}</BackLink>}
         title={t("paymentMethodReturnTitle")}
       >
@@ -71,6 +70,6 @@ export default async function PaymentMethodReturnPage({params, searchParams}: Re
           <p className="text-sm leading-6 text-ink-muted">{t("paymentMethodReturnFailed")}</p>
         </Panel>
       </WorkspacePage>
-    </SiteShell>
+    </RoomsWorkspace>
   );
 }

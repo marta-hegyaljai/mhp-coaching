@@ -11,7 +11,7 @@ import {CancelBookingDialog} from "@/features/rooms/components/cancel-booking-di
 import {PrivateNoteForm} from "@/features/rooms/components/private-note-form";
 import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
 import {getBookingSettings} from "@/features/rooms/settings";
-import {RoomsNav} from "@/features/rooms/components/rooms-nav";
+import {RoomsWorkspace} from "@/features/rooms/components/rooms-workspace";
 import {RoomError} from "@/features/rooms/errors";
 import {bookingWhen} from "@/features/rooms/format";
 import {ownerCanMutateBooking} from "@/features/rooms/lifecycle";
@@ -19,7 +19,6 @@ import {assertOwnBookingPrivacy, getMyRoomBooking} from "@/features/rooms/my-boo
 import {getOwnPrivateNote} from "@/features/rooms/private-notes";
 import {utcToZurich} from "@/features/rooms/timezone";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
-import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {availabilityHref} from "@/features/rooms/query";
@@ -103,9 +102,9 @@ export default async function RoomBookingDetailPage({params, searchParams}: Book
       : null;
 
   return (
-    <SiteShell
+    <RoomsWorkspace
       locale={locale}
-      footerCta={null}
+      current="bookings"
       hreflangs={{
         fr: {pathname: "/rooms/bookings/[id]", params: {id}},
         de: {pathname: "/rooms/bookings/[id]", params: {id}},
@@ -113,8 +112,6 @@ export default async function RoomBookingDetailPage({params, searchParams}: Book
       }}
     >
       <WorkspacePage
-        eyebrow={t("eyebrow")}
-        nav={<RoomsNav current="bookings" />}
         back={<BackLink href="/rooms/bookings">{t("backToBookings")}</BackLink>}
         title={t("bookingDetailTitle")}
       >
@@ -207,7 +204,7 @@ export default async function RoomBookingDetailPage({params, searchParams}: Book
           </p>
         </div>
       </WorkspacePage>
-    </SiteShell>
+    </RoomsWorkspace>
   );
 }
 

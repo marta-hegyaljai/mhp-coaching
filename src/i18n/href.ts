@@ -39,7 +39,16 @@ export type PathnameHref =
     }
   | {
       pathname: "/admin/overview";
-      query?: {when?: string; kind?: string; q?: string; page?: string; hp?: string};
+      query?: {
+        when?: string;
+        kind?: string;
+        q?: string;
+        page?: string;
+        hp?: string;
+        day?: string;
+        uc?: string;
+        hc?: string;
+      };
     }
   | {
       pathname: "/admin/courses";

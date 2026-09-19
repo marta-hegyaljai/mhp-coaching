@@ -69,10 +69,12 @@ source of truth and overrides generic design preferences.
   animation.
 - Reuse `src/shared/ui` and `src/features/site-shell`; do not make page-specific
   versions of the shell, buttons, or locale switcher. Signed-in working screens
-  use `<WorkspacePage>`: eyebrow and `<BackLink>` share one row, section tabs
-  sit tight underneath, and `<PageHeader>` is a compact title plus one
-  orientation line. Do not restack Administration, a full-width back control
-  and a large heading as separate bands. Admin records lead with `<BackLink>`:
+  use `<WorkspacePage>` inside `<WorkspaceFrame>`: the section rail (or the
+  phone section sheet) replaces the old tab row; eyebrow and `<BackLink>`
+  share one compact row when needed, and `<PageHeader>` is a compact title
+  plus one orientation line. Do not restack Administration, a full-width back
+  control and a large heading as separate bands. The product header keeps the
+  booking action; never add a second hamburger for workspace destinations. Admin records lead with `<BackLink>`:
   a secondary 44px control back to the list, never a quiet underlined “All …”
   line that can be mistaken for a heading. Public catalogue pages keep the
   editorial type scale and must not use this compact chrome.

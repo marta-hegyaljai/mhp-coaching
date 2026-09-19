@@ -1,13 +1,12 @@
 import {getTranslations, setRequestLocale} from "next-intl/server";
 
-import {AdminSubnav, adminSectionLabels} from "@/features/admin/components/admin-subnav";
+import {AdminWorkspace} from "@/features/admin/components/admin-workspace";
 import {requireAdmin} from "@/features/auth/require";
 import {CreateRoomForm} from "@/features/rooms/components/admin/create-room-form";
 import {RoomOrderControls} from "@/features/rooms/components/admin/room-order-controls";
 import {listRooms} from "@/features/rooms/inventory";
 import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
-import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {buttonStyles} from "@/shared/ui/button";
@@ -39,20 +38,11 @@ export default async function AdminRoomsPage({params}: AdminRoomsPageProps) {
   setRequestLocale(locale);
   await requireAdmin(locale, localizedPath(locale, "/admin/rooms"));
   const t = await getTranslations("Rooms");
-  const admin = await getTranslations("Admin");
   const rooms = await listRooms();
 
   return (
-    <SiteShell locale={locale} footerCta={null}>
+    <AdminWorkspace locale={locale} current="rooms">
       <WorkspacePage
-        eyebrow={admin("eyebrow")}
-        nav={
-          <AdminSubnav
-            current="rooms"
-            label={admin("sectionsNav")}
-            labels={adminSectionLabels(admin)}
-          />
-        }
         title={t("adminRoomsTitle")}
         intro={t("adminRoomsIntro")}
       >
@@ -112,6 +102,6 @@ export default async function AdminRoomsPage({params}: AdminRoomsPageProps) {
           </div>
         </div>
       </WorkspacePage>
-    </SiteShell>
+    </AdminWorkspace>
   );
 }

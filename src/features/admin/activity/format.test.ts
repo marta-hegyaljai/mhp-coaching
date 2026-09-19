@@ -51,4 +51,26 @@ describe("activityBounds", () => {
     expect(bounds.dayStart.toISOString()).toBe("2026-09-16T22:00:00.000Z");
     expect(bounds.dayEndExclusive.toISOString()).toBe("2026-09-17T22:00:00.000Z");
   });
+
+  it("can bound a chosen Zurich day for the Today pane", () => {
+    const bounds = activityBounds(
+      "today",
+      new Date("2026-09-16T23:30:00.000Z"),
+      "2026-09-15",
+    );
+
+    expect(bounds.today).toBe("2026-09-15");
+    expect(bounds.dayStart.toISOString()).toBe("2026-09-14T22:00:00.000Z");
+    expect(bounds.dayEndExclusive.toISOString()).toBe("2026-09-15T22:00:00.000Z");
+  });
+
+  it("ignores a chosen day for Upcoming and History", () => {
+    const bounds = activityBounds(
+      "upcoming",
+      new Date("2026-09-16T23:30:00.000Z"),
+      "2026-09-15",
+    );
+
+    expect(bounds.today).toBe("2026-09-17");
+  });
 });

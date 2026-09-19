@@ -5,10 +5,9 @@ import {ActivitySearch} from "@/features/admin/activity/components/activity-sear
 import {activityCopy, activityKindLabels} from "@/features/admin/activity/copy";
 import {loadActivityBriefing} from "@/features/admin/activity/feed";
 import {activityHref, parseActivityQuery} from "@/features/admin/activity/query";
-import {AdminSubnav, adminSectionLabels} from "@/features/admin/components/admin-subnav";
+import {AdminWorkspace} from "@/features/admin/components/admin-workspace";
 import {requireAdmin} from "@/features/auth/require";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
-import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
 
 type AdminOverviewPageProps = {
@@ -19,6 +18,9 @@ type AdminOverviewPageProps = {
     q?: string | string[];
     page?: string | string[];
     hp?: string | string[];
+    day?: string | string[];
+    uc?: string | string[];
+    hc?: string | string[];
   }>;
 };
 
@@ -72,28 +74,20 @@ export default async function AdminOverviewPage({
   };
 
   return (
-    <SiteShell locale={locale} footerCta={null} fillViewport>
-      <div className="flex min-h-0 flex-1 flex-col gap-2 px-3 py-2 sm:gap-3 sm:px-5 sm:py-3 lg:px-8">
+    <AdminWorkspace locale={locale} current="overview" fillViewport>
+      <div className="flex min-h-0 flex-1 flex-col gap-2 px-3 py-2 sm:gap-3 sm:px-5 sm:py-3 lg:px-6">
         <h1 className="sr-only">{t("overviewTitle")}</h1>
-        <div className="flex shrink-0 flex-col gap-2 lg:flex-row lg:items-end lg:gap-6">
-          <AdminSubnav
-            current="overview"
-            label={t("sectionsNav")}
-            labels={adminSectionLabels(t)}
-            className="mt-0 min-w-0 flex-1"
-          />
-          <ActivitySearch
-            action={localizedPath(locale, "/admin/overview")}
-            query={query}
-            className="lg:w-[26rem] lg:shrink-0"
-            labels={{
-              filter: t("filter"),
-              search: t("activitySearch"),
-              searchPlaceholder: t("activitySearchPlaceholder"),
-              clear: t("clearFilters"),
-            }}
-          />
-        </div>
+        <ActivitySearch
+          action={localizedPath(locale, "/admin/overview")}
+          query={query}
+          className="shrink-0 lg:max-w-md lg:self-end"
+          labels={{
+            filter: t("filter"),
+            search: t("activitySearch"),
+            searchPlaceholder: t("activitySearchPlaceholder"),
+            clear: t("clearFilters"),
+          }}
+        />
         <ActivityBoard
           briefing={briefing}
           query={query}
@@ -106,9 +100,15 @@ export default async function AdminOverviewPage({
             emptyToday: t("activityEmptyToday"),
             emptyUpcoming: t("activityEmptyUpcoming"),
             emptyHistory: t("activityEmptyHistory"),
+            emptyDay: t("activityEmptyDay"),
+            previousDay: t("previousDay"),
+            nextDay: t("nextDay"),
+            jumpToDate: t("jumpToDate"),
+            jumpToday: t("jumpToday"),
+            showCancelled: t("showCancelled"),
           }}
         />
       </div>
-    </SiteShell>
+    </AdminWorkspace>
   );
 }

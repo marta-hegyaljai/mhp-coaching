@@ -1,6 +1,6 @@
 import {getTranslations, setRequestLocale} from "next-intl/server";
 
-import {AdminSubnav, adminSectionLabels} from "@/features/admin/components/admin-subnav";
+import {AdminWorkspace} from "@/features/admin/components/admin-workspace";
 import {requireAdmin} from "@/features/auth/require";
 import {listAdminAvailabilityRequests} from "@/features/rooms/availability-requests";
 import {RequestCard} from "@/features/rooms/components/request-card";
@@ -13,7 +13,6 @@ import {
   type AdminRequestStatusFilter,
 } from "@/features/rooms/request-query";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
-import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {Button} from "@/shared/ui/button";
@@ -58,16 +57,8 @@ export default async function AdminRequestsPage({params, searchParams}: AdminReq
   };
 
   return (
-    <SiteShell locale={locale} footerCta={null}>
+    <AdminWorkspace locale={locale} current="requests">
       <WorkspacePage
-        eyebrow={t("eyebrow")}
-        nav={
-          <AdminSubnav
-            current="requests"
-            label={t("sectionsNav")}
-            labels={adminSectionLabels(t)}
-          />
-        }
         title={t("adminRequestsTitle")}
         intro={t("adminRequestsIntro")}
       >
@@ -156,6 +147,6 @@ export default async function AdminRequestsPage({params, searchParams}: AdminReq
           ) : null}
         </div>
       </WorkspacePage>
-    </SiteShell>
+    </AdminWorkspace>
   );
 }

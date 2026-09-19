@@ -5,12 +5,11 @@ import {requireRoomBooking} from "@/features/auth/require";
 import {OwnBookingCancelledFilter} from "@/features/rooms/components/own-bookings/cancelled-filter";
 import {presentOwnBooking} from "@/features/rooms/components/own-bookings/item";
 import {OwnBookingLists} from "@/features/rooms/components/own-bookings/lists";
-import {RoomsNav} from "@/features/rooms/components/rooms-nav";
+import {RoomsWorkspace} from "@/features/rooms/components/rooms-workspace";
 import {listMyRoomBookings, visibleOwnBookings} from "@/features/rooms/my-bookings";
 import {parseOwnBookingQuery} from "@/features/rooms/own-booking-query";
 import {todayInZurich} from "@/features/rooms/timezone";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
-import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {buttonStyles} from "@/shared/ui/button";
@@ -66,10 +65,8 @@ export default async function RoomBookingsPage({params, searchParams}: BookingsP
   const hasBookings = stored.upcoming.length > 0 || stored.history.length > 0;
 
   return (
-    <SiteShell locale={locale} footerCta={null}>
+    <RoomsWorkspace locale={locale} current="bookings">
       <WorkspacePage
-        eyebrow={t("eyebrow")}
-        nav={<RoomsNav current="bookings" />}
         title={t("bookingsTitle")}
         intro={t("bookingsIntro")}
       >
@@ -123,6 +120,6 @@ export default async function RoomBookingsPage({params, searchParams}: BookingsP
           </Panel>
         )}
       </WorkspacePage>
-    </SiteShell>
+    </RoomsWorkspace>
   );
 }

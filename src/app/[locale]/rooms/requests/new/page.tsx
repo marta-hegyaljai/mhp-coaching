@@ -2,13 +2,12 @@ import {getTranslations, setRequestLocale} from "next-intl/server";
 
 import {requireRoomBooking} from "@/features/auth/require";
 import {AvailabilityRequestForm} from "@/features/rooms/components/request-form";
-import {RoomsNav} from "@/features/rooms/components/rooms-nav";
+import {RoomsWorkspace} from "@/features/rooms/components/rooms-workspace";
 import {listRooms} from "@/features/rooms/inventory";
 import {parseRequestDraftQuery} from "@/features/rooms/request-query";
 import {getBookingSettings} from "@/features/rooms/settings";
 import {listingTimes} from "@/features/rooms/timezone";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
-import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
 import {BackLink} from "@/shared/ui/back-link";
 import {WorkspacePage} from "@/shared/ui/workspace-page";
@@ -49,10 +48,8 @@ export default async function NewRoomRequestPage({params, searchParams}: NewRequ
     defaultEndFromStart(draft.start, settings.minimumBookingMinutes, settings.bookingIntervalMinutes);
 
   return (
-    <SiteShell locale={locale} footerCta={null}>
+    <RoomsWorkspace locale={locale} current="requests">
       <WorkspacePage
-        eyebrow={t("eyebrow")}
-        nav={<RoomsNav current="requests" />}
         back={<BackLink href="/rooms/requests">{t("backToRequests")}</BackLink>}
         title={t("requestTitle")}
         intro={t("requestIntro")}
@@ -71,7 +68,7 @@ export default async function NewRoomRequestPage({params, searchParams}: NewRequ
           />
         </div>
       </WorkspacePage>
-    </SiteShell>
+    </RoomsWorkspace>
   );
 }
 

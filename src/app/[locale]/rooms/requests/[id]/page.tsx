@@ -4,13 +4,12 @@ import {getTranslations, setRequestLocale} from "next-intl/server";
 import {requireRoomBooking} from "@/features/auth/require";
 import {getMyAvailabilityRequest} from "@/features/rooms/availability-requests";
 import {BookingFacts} from "@/features/rooms/components/booking/booking-facts";
-import {RoomsNav} from "@/features/rooms/components/rooms-nav";
+import {RoomsWorkspace} from "@/features/rooms/components/rooms-workspace";
 import {WithdrawRequestForm} from "@/features/rooms/components/withdraw-request-form";
 import {RoomError} from "@/features/rooms/errors";
 import {bookingStamp, bookingWhen} from "@/features/rooms/format";
 import {assertNoPrivateNoteMaterial} from "@/features/rooms/privacy";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
-import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
 import {BackLink} from "@/shared/ui/back-link";
 import {Panel, PanelDivider} from "@/shared/ui/panel";
@@ -68,9 +67,9 @@ export default async function RoomRequestDetailPage({params}: RequestDetailPageP
         : "requestStatusOpen";
 
   return (
-    <SiteShell
+    <RoomsWorkspace
       locale={locale}
-      footerCta={null}
+      current="requests"
       hreflangs={{
         fr: {pathname: "/rooms/requests/[id]", params: {id}},
         de: {pathname: "/rooms/requests/[id]", params: {id}},
@@ -78,8 +77,6 @@ export default async function RoomRequestDetailPage({params}: RequestDetailPageP
       }}
     >
       <WorkspacePage
-        eyebrow={t("eyebrow")}
-        nav={<RoomsNav current="requests" />}
         back={<BackLink href="/rooms/requests">{t("backToRequests")}</BackLink>}
         title={t("requestDetailTitle")}
       >
@@ -120,6 +117,6 @@ export default async function RoomRequestDetailPage({params}: RequestDetailPageP
           ) : null}
         </div>
       </WorkspacePage>
-    </SiteShell>
+    </RoomsWorkspace>
   );
 }

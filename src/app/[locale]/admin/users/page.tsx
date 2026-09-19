@@ -1,6 +1,6 @@
 import {getTranslations, setRequestLocale} from "next-intl/server";
 
-import {AdminSubnav, adminSectionLabels} from "@/features/admin/components/admin-subnav";
+import {AdminWorkspace} from "@/features/admin/components/admin-workspace";
 import {InviteUserDialog} from "@/features/admin/components/invite-user-dialog";
 import {UserListFilters} from "@/features/admin/components/user-filters";
 import {UserListPagination} from "@/features/admin/components/user-pagination";
@@ -10,7 +10,6 @@ import {toAdminUserView} from "@/features/admin/user-view";
 import {listUsersPage} from "@/features/auth/repository";
 import {requireAdmin} from "@/features/auth/require";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
-import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {WorkspacePage} from "@/shared/ui/workspace-page";
@@ -51,16 +50,8 @@ export default async function AdminUsersPage({params, searchParams}: AdminUsersP
   const hasFilters = Boolean(query.q || query.status !== "all" || query.access !== "all");
 
   return (
-    <SiteShell locale={locale} footerCta={null}>
+    <AdminWorkspace locale={locale} current="users">
       <WorkspacePage
-        eyebrow={t("eyebrow")}
-        nav={
-          <AdminSubnav
-            current="users"
-            label={t("sectionsNav")}
-            labels={adminSectionLabels(t)}
-          />
-        }
         title={t("title")}
         intro={t("intro")}
       >
@@ -147,6 +138,6 @@ export default async function AdminUsersPage({params, searchParams}: AdminUsersP
           </div>
         </div>
       </WorkspacePage>
-    </SiteShell>
+    </AdminWorkspace>
   );
 }

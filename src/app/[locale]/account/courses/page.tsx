@@ -3,13 +3,12 @@ import {getTranslations, setRequestLocale} from "next-intl/server";
 import {MyCourseCard} from "@/features/account/components/my-course-card";
 import {listMyCourses} from "@/features/account/my-courses";
 import {registrationStatusMessageKey} from "@/features/account/status-label";
-import {AccountNav} from "@/features/auth/components/account-nav";
+import {AccountWorkspace} from "@/features/auth/components/account-workspace";
 import {requireSignedInUser} from "@/features/auth/require";
 import {CertificateLibrary} from "@/features/certificates/components/certificate-library";
 import {listOwnCertificates} from "@/features/certificates/service";
 import {toCertificateCardView} from "@/features/certificates/views";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
-import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {buttonStyles} from "@/shared/ui/button";
@@ -42,7 +41,6 @@ export default async function MyCoursesPage({params}: MyCoursesPageProps) {
     localizedPath(locale, "/account/courses"),
   );
   const t = await getTranslations("Auth");
-  const navT = await getTranslations("Nav");
   const certificatesT = await getTranslations("Certificates");
   const {upcoming, past} = await listMyCourses(user.id);
   const certificates = (await listOwnCertificates(user.id)).map((certificate) =>
@@ -51,19 +49,8 @@ export default async function MyCoursesPage({params}: MyCoursesPageProps) {
   const hasRegistrations = upcoming.length > 0 || past.length > 0;
 
   return (
-    <SiteShell locale={locale} footerCta={null}>
+    <AccountWorkspace locale={locale} current="courses">
       <WorkspacePage
-        eyebrow={t("eyebrow")}
-        nav={
-          <AccountNav
-            locale={locale}
-            labels={{
-              profile: t("profileTitle"),
-              courses: t("myCoursesLink"),
-              signOut: navT("signOut"),
-            }}
-          />
-        }
         title={t("myCoursesTitle")}
         intro={t("myCoursesIntro")}
       >
@@ -122,6 +109,6 @@ export default async function MyCoursesPage({params}: MyCoursesPageProps) {
           <CertificateLibrary certificates={certificates} />
         </section>
       </WorkspacePage>
-    </SiteShell>
+    </AccountWorkspace>
   );
 }

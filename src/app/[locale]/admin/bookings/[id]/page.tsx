@@ -1,7 +1,7 @@
 import {notFound} from "next/navigation";
 import {getTranslations, setRequestLocale} from "next-intl/server";
 
-import {AdminSubnav, adminSectionLabels} from "@/features/admin/components/admin-subnav";
+import {AdminWorkspace} from "@/features/admin/components/admin-workspace";
 import {AuthNotice} from "@/features/auth/components/auth-field";
 import {findUserById} from "@/features/auth/repository";
 import {requireAdmin} from "@/features/auth/require";
@@ -34,7 +34,6 @@ import {getBookingSettings} from "@/features/rooms/settings";
 import {utcToZurich} from "@/features/rooms/timezone";
 import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
-import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {BackLink} from "@/shared/ui/back-link";
@@ -146,16 +145,8 @@ export default async function AdminBookingDetailPage({
   }
 
   return (
-    <SiteShell locale={locale} footerCta={null}>
+    <AdminWorkspace locale={locale} current="bookings">
       <WorkspacePage
-        eyebrow={t("eyebrow")}
-        nav={
-          <AdminSubnav
-            current="bookings"
-            label={t("sectionsNav")}
-            labels={adminSectionLabels(t)}
-          />
-        }
         back={<BackLink href="/admin/bookings">{t("backToAdminBookings")}</BackLink>}
         title={t("detailBookingTitle")}
       >
@@ -280,7 +271,7 @@ export default async function AdminBookingDetailPage({
 
         <BookingHistory className="mt-12 max-w-xl" events={events} locale={locale} />
       </WorkspacePage>
-    </SiteShell>
+    </AdminWorkspace>
   );
 }
 

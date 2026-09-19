@@ -1,7 +1,7 @@
 import {getTranslations, setRequestLocale} from "next-intl/server";
 import {notFound} from "next/navigation";
 
-import {AdminSubnav, adminSectionLabels} from "@/features/admin/components/admin-subnav";
+import {AdminWorkspace} from "@/features/admin/components/admin-workspace";
 import {requireAdmin} from "@/features/auth/require";
 import {adminCallListHref} from "@/features/course-calls/query";
 import {
@@ -9,7 +9,6 @@ import {
   parseAdminMessageChannel,
 } from "@/features/inquiries/admin-message";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
-import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
 import {BackLink} from "@/shared/ui/back-link";
 import {Panel} from "@/shared/ui/panel";
@@ -65,16 +64,8 @@ export default async function AdminInquiryDetailPage({
   const received = utcToZurich(message.receivedAt);
 
   return (
-    <SiteShell locale={locale} footerCta={null}>
+    <AdminWorkspace locale={locale} current="calls">
       <WorkspacePage
-        eyebrow={t("eyebrow")}
-        nav={
-          <AdminSubnav
-            current="calls"
-            label={t("sectionsNav")}
-            labels={adminSectionLabels(t)}
-          />
-        }
         back={
           <BackLink href={adminCallListHref({tab: "messages"})}>{t("callsBack")}</BackLink>
         }
@@ -118,6 +109,6 @@ export default async function AdminInquiryDetailPage({
           </dl>
         </Panel>
       </WorkspacePage>
-    </SiteShell>
+    </AdminWorkspace>
   );
 }

@@ -1,6 +1,6 @@
 import {getTranslations, setRequestLocale} from "next-intl/server";
 
-import {AdminSubnav, adminSectionLabels} from "@/features/admin/components/admin-subnav";
+import {AdminWorkspace} from "@/features/admin/components/admin-workspace";
 import {requireAdmin} from "@/features/auth/require";
 import {listCourseEnrolments} from "@/features/bookings/repository";
 import {
@@ -16,7 +16,6 @@ import {
 } from "@/features/courses/components/admin/enrolments";
 import {enrolmentStatusLabels} from "@/features/courses/enrolment-status-labels";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
-import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
 import {BackLink} from "@/shared/ui/back-link";
 import {Pagination} from "@/shared/ui/pagination";
@@ -65,16 +64,8 @@ export default async function AdminEnrolmentsPage({
   const statusLabels = enrolmentStatusLabels({auth, admin: t});
 
   return (
-    <SiteShell locale={locale} footerCta={null}>
+    <AdminWorkspace locale={locale} current="courses">
       <WorkspacePage
-        eyebrow={t("eyebrow")}
-        nav={
-          <AdminSubnav
-            current="courses"
-            label={t("sectionsNav")}
-            labels={adminSectionLabels(t)}
-          />
-        }
         back={<BackLink href="/admin/courses">{t("coursesBack")}</BackLink>}
         title={t("coursesEnrolmentsIndexTitle")}
         intro={t("coursesEnrolmentsIndexIntro")}
@@ -147,6 +138,6 @@ export default async function AdminEnrolmentsPage({
           />
         ) : null}
       </WorkspacePage>
-    </SiteShell>
+    </AdminWorkspace>
   );
 }

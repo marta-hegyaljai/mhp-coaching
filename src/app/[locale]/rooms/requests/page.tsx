@@ -4,10 +4,9 @@ import {AuthNotice} from "@/features/auth/components/auth-field";
 import {requireRoomBooking} from "@/features/auth/require";
 import {listMyAvailabilityRequests} from "@/features/rooms/availability-requests";
 import {RequestCard} from "@/features/rooms/components/request-card";
-import {RoomsNav} from "@/features/rooms/components/rooms-nav";
+import {RoomsWorkspace} from "@/features/rooms/components/rooms-workspace";
 import {assertNoPrivateNoteMaterial} from "@/features/rooms/privacy";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
-import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {buttonStyles} from "@/shared/ui/button";
@@ -51,10 +50,8 @@ export default async function RoomRequestsPage({params, searchParams}: RequestsP
   const closed = requests.filter((request) => request.status !== "OPEN");
 
   return (
-    <SiteShell locale={locale} footerCta={null}>
+    <RoomsWorkspace locale={locale} current="requests">
       <WorkspacePage
-        eyebrow={t("eyebrow")}
-        nav={<RoomsNav current="requests" />}
         title={t("requestsTitle")}
         intro={t("requestsIntro")}
         action={
@@ -95,7 +92,7 @@ export default async function RoomRequestsPage({params, searchParams}: RequestsP
           </div>
         )}
       </WorkspacePage>
-    </SiteShell>
+    </RoomsWorkspace>
   );
 }
 

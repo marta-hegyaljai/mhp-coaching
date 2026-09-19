@@ -1,14 +1,13 @@
 import {getTranslations, setRequestLocale} from "next-intl/server";
 import {notFound} from "next/navigation";
 
-import {AdminSubnav, adminSectionLabels} from "@/features/admin/components/admin-subnav";
+import {AdminWorkspace} from "@/features/admin/components/admin-workspace";
 import {requireAdmin} from "@/features/auth/require";
 import {CancelCallForm} from "@/features/course-calls/components/cancel-call-form";
 import {callPersonName, callWhen} from "@/features/course-calls/format";
 import {adminCallListHref} from "@/features/course-calls/query";
 import {getCourseCallById} from "@/features/course-calls/repository";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
-import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
 import {BackLink} from "@/shared/ui/back-link";
 import {Panel} from "@/shared/ui/panel";
@@ -54,16 +53,8 @@ export default async function AdminCallDetailPage({params}: AdminCallPageProps) 
   const name = callPersonName(call.firstName, call.lastName);
 
   return (
-    <SiteShell locale={locale} footerCta={null}>
+    <AdminWorkspace locale={locale} current="calls">
       <WorkspacePage
-        eyebrow={t("eyebrow")}
-        nav={
-          <AdminSubnav
-            current="calls"
-            label={t("sectionsNav")}
-            labels={adminSectionLabels(t)}
-          />
-        }
         back={<BackLink href={adminCallListHref()}>{t("callsBack")}</BackLink>}
         title={name}
       >
@@ -93,7 +84,7 @@ export default async function AdminCallDetailPage({params}: AdminCallPageProps) 
           </div>
         ) : null}
       </WorkspacePage>
-    </SiteShell>
+    </AdminWorkspace>
   );
 }
 

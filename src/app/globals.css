@@ -48,6 +48,15 @@
 :root {
   --background: var(--color-ivory);
   --foreground: var(--color-ink);
+  --mhp-header-height: calc(3.5rem + env(safe-area-inset-top, 0px));
+  --mhp-workspace-bar-height: 2.75rem;
+  --mhp-workspace-sheet-top: calc(var(--mhp-header-height) + var(--mhp-workspace-bar-height));
+}
+
+@media (min-width: 40rem) {
+  :root {
+    --mhp-header-height: calc(4rem + env(safe-area-inset-top, 0px));
+  }
 }
 
 * {

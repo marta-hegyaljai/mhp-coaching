@@ -4,6 +4,9 @@ import {Suspense, type ReactNode} from "react";
 import type {PathnameHref} from "@/i18n/href";
 import type {AppLocale} from "@/i18n/routing";
 
+import {WorkspaceFrame} from "@/shared/ui/workspace-frame";
+import type {WorkspaceNavModel} from "@/shared/ui/workspace-nav";
+
 import {SiteHeader} from "./header";
 import {NavigationFeedback} from "./navigation-feedback";
 import {SiteFooter, type FooterCta} from "./site-footer";
@@ -15,6 +18,7 @@ export async function SiteShell({
   footerCta,
   bottomBar,
   fillViewport = false,
+  workspace,
 }: {
   locale: AppLocale;
   children: ReactNode;
@@ -28,6 +32,8 @@ export async function SiteShell({
    * board can fill the remaining height without the page itself scrolling.
    */
   fillViewport?: boolean;
+  /** Section rail for signed-in working screens (admin, rooms, account). */
+  workspace?: WorkspaceNavModel;
 }) {
   const t = await getTranslations({locale, namespace: "Nav"});
 
@@ -52,9 +58,15 @@ export async function SiteShell({
       <main
         id="main-content"
         tabIndex={-1}
-        className={fillViewport ? "flex min-h-0 flex-1 flex-col overflow-hidden" : "flex-1"}
+        className={fillViewport ? "flex min-h-0 flex-1 flex-col" : "flex-1"}
       >
-        {children}
+        {workspace ? (
+          <WorkspaceFrame nav={workspace} fillViewport={fillViewport}>
+            {children}
+          </WorkspaceFrame>
+        ) : (
+          children
+        )}
       </main>
       {fillViewport ? null : <SiteFooter locale={locale} cta={footerCta} />}
       {bottomBar}

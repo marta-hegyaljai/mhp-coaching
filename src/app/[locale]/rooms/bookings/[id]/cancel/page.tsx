@@ -5,7 +5,7 @@ import {requireRoomBooking} from "@/features/auth/require";
 import {isFreeCancellation} from "@/features/rooms/billing";
 import {BookingFacts} from "@/features/rooms/components/booking/booking-facts";
 import {CancelBookingDialog} from "@/features/rooms/components/cancel-booking-dialog";
-import {RoomsNav} from "@/features/rooms/components/rooms-nav";
+import {RoomsWorkspace} from "@/features/rooms/components/rooms-workspace";
 import {RoomError} from "@/features/rooms/errors";
 import {bookingWhen} from "@/features/rooms/format";
 import {ownerCanMutateBooking} from "@/features/rooms/lifecycle";
@@ -13,7 +13,6 @@ import {getMyRoomBooking} from "@/features/rooms/my-bookings";
 import {getBookingSettings} from "@/features/rooms/settings";
 import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
-import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
 import {BackLink} from "@/shared/ui/back-link";
 import {Panel} from "@/shared/ui/panel";
@@ -64,9 +63,9 @@ export default async function CancelRoomBookingPage({params}: CancelPageProps) {
   const amount = formatChf(minorUnitsToFrancs(booking.amountMinor), locale);
 
   return (
-    <SiteShell
+    <RoomsWorkspace
       locale={locale}
-      footerCta={null}
+      current="bookings"
       hreflangs={{
         fr: {pathname: "/rooms/bookings/[id]/cancel", params: {id}},
         de: {pathname: "/rooms/bookings/[id]/cancel", params: {id}},
@@ -74,8 +73,6 @@ export default async function CancelRoomBookingPage({params}: CancelPageProps) {
       }}
     >
       <WorkspacePage
-        eyebrow={t("eyebrow")}
-        nav={<RoomsNav current="bookings" />}
         back={
           <BackLink href={{pathname: "/rooms/bookings/[id]", params: {id}}}>
             {t("backToBooking")}
@@ -108,6 +105,6 @@ export default async function CancelRoomBookingPage({params}: CancelPageProps) {
           />
         </div>
       </WorkspacePage>
-    </SiteShell>
+    </RoomsWorkspace>
   );
 }

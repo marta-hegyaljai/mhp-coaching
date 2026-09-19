@@ -4,14 +4,13 @@ import {requireRoomBooking} from "@/features/auth/require";
 import {parseBookQuery} from "@/features/rooms/book-query";
 import {requestHref} from "@/features/rooms/request-query";
 import {RoomBookForm} from "@/features/rooms/components/book-form";
-import {RoomsNav} from "@/features/rooms/components/rooms-nav";
+import {RoomsWorkspace} from "@/features/rooms/components/rooms-workspace";
 import {RoomError} from "@/features/rooms/errors";
 import {
   previewReservationChoices,
   type ReservationPreview,
 } from "@/features/rooms/reservations";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
-import {SiteShell} from "@/features/site-shell/site-shell";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
 import {BackLink} from "@/shared/ui/back-link";
@@ -76,10 +75,9 @@ export default async function RoomBookPage({params, searchParams}: BookPageProps
   }
 
   return (
-    <SiteShell locale={locale} footerCta={null}>
+    <RoomsWorkspace locale={locale} current="calendar">
       <WorkspacePage
         eyebrow={t("bookEyebrow")}
-        nav={<RoomsNav current="calendar" />}
         back={<BackLink href="/rooms">{t("backToRooms")}</BackLink>}
         title={t("bookTitle")}
         intro={t("bookIntro")}
@@ -116,6 +114,6 @@ export default async function RoomBookPage({params, searchParams}: BookPageProps
           )}
         </div>
       </WorkspacePage>
-    </SiteShell>
+    </RoomsWorkspace>
   );
 }

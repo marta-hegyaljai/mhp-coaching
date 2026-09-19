@@ -1,15 +1,22 @@
 import type {PathnameHref} from "@/i18n/href";
+import {todayInZurich} from "@/features/rooms/timezone";
+import {isIsoDate} from "@/shared/ui/date-field-calendar";
 
 import {
   ACTIVITY_KINDS,
   type ActivityKind,
   type ActivityKindFilter,
+  type ActivityWindow,
 } from "./types";
 
 export type ActivityQuery = {
   kind: ActivityKindFilter;
   q: string;
   historyPage: number;
+  /** Zurich day the Today pane is showing. `null` means the current day. */
+  day: string | null;
+  showUpcomingCancelled: boolean;
+  showHistoryCancelled: boolean;
 };
 
 export const ACTIVITY_BOARD_SIZE = 40;
@@ -26,6 +33,9 @@ export const defaultActivityQuery: ActivityQuery = {
   kind: "all",
   q: "",
   historyPage: 1,
+  day: null,
+  showUpcomingCancelled: false,
+  showHistoryCancelled: false,
 };
 
 function firstString(value: string | string[] | undefined): string {
@@ -45,6 +55,9 @@ export type ActivitySearchParams = {
   q?: string | string[];
   page?: string | string[];
   hp?: string | string[];
+  day?: string | string[];
+  uc?: string | string[];
+  hc?: string | string[];
 };
 
 function parsePage(value: string): number {
@@ -52,7 +65,14 @@ function parsePage(value: string): number {
   return Number.isFinite(page) && page > 0 ? Math.min(page, ACTIVITY_MAX_PAGE) : 1;
 }
 
-export function parseActivityQuery(search: ActivitySearchParams): ActivityQuery {
+function parseDay(value: string, today: string): string | null {
+  return isIsoDate(value) && value !== today ? value : null;
+}
+
+export function parseActivityQuery(
+  search: ActivitySearchParams,
+  now = new Date(),
+): ActivityQuery {
   const kind = firstString(search.kind);
   const historyPage = firstString(search.hp) || (
     firstString(search.when) === "history" ? firstString(search.page) : ""
@@ -62,21 +82,53 @@ export function parseActivityQuery(search: ActivitySearchParams): ActivityQuery 
     kind: isKind(kind) ? kind : "all",
     q: firstString(search.q).trim().slice(0, SEARCH_MAX_LENGTH),
     historyPage: parsePage(historyPage),
+    day: parseDay(firstString(search.day), todayInZurich(now)),
+    showUpcomingCancelled: firstString(search.uc) === "1",
+    showHistoryCancelled: firstString(search.hc) === "1",
   };
 }
 
 /** Only non-default values reach the URL, so the board stays a clean path. */
-export function activityHref(query: Partial<ActivityQuery> = {}): PathnameHref {
+export function activityQueryParams(
+  query: Partial<ActivityQuery> = {},
+  now = new Date(),
+): Record<string, string> {
   const merged = {...defaultActivityQuery, ...query};
+  const day =
+    merged.day && merged.day !== todayInZurich(now) ? merged.day : null;
 
   return {
-    pathname: "/admin/overview",
-    query: {
-      ...(merged.kind !== "all" ? {kind: merged.kind} : {}),
-      ...(merged.q ? {q: merged.q} : {}),
-      ...(merged.historyPage > 1 ? {hp: String(merged.historyPage)} : {}),
-    },
+    ...(merged.kind !== "all" ? {kind: merged.kind} : {}),
+    ...(merged.q ? {q: merged.q} : {}),
+    ...(merged.historyPage > 1 ? {hp: String(merged.historyPage)} : {}),
+    ...(day ? {day} : {}),
+    ...(merged.showUpcomingCancelled ? {uc: "1"} : {}),
+    ...(merged.showHistoryCancelled ? {hc: "1"} : {}),
   };
+}
+
+export function activityHref(
+  query: Partial<ActivityQuery> = {},
+  now = new Date(),
+): PathnameHref {
+  return {
+    pathname: "/admin/overview",
+    query: activityQueryParams(query, now),
+  };
+}
+
+/** Zurich day the Today pane should load: a chosen day, or the current one. */
+export function activityFocusDay(query: ActivityQuery, now = new Date()): string {
+  return query.day ?? todayInZurich(now);
+}
+
+export function showsCancelledActivity(
+  query: ActivityQuery,
+  when: Exclude<ActivityWindow, "today">,
+): boolean {
+  return when === "upcoming"
+    ? query.showUpcomingCancelled
+    : query.showHistoryCancelled;
 }
 
 /** Changing the channel always returns History to its first page. */

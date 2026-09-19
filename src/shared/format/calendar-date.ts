@@ -48,6 +48,11 @@ export function formatLongDate(isoDate: string, locale: AppLocale): string {
   return format(isoDate, locale, {day: "numeric", month: "long", year: "numeric"});
 }
 
+/** "20 sept. 2026" — tight toolbars where a long month name would wrap. */
+export function formatCompactDate(isoDate: string, locale: AppLocale): string {
+  return format(isoDate, locale, {day: "numeric", month: "short", year: "numeric"});
+}
+
 /** "septembre 2026" — open billing month labels. */
 export function formatMonthYear(isoDate: string, locale: AppLocale): string {
   return format(isoDate, locale, {month: "long", year: "numeric"});

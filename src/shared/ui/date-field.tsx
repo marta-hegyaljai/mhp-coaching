@@ -12,7 +12,12 @@ import {
 import {createPortal} from "react-dom";
 import {useLocale, useTranslations} from "next-intl";
 
-import {formatLongDate, formatMonthYear, formatWeekdayDate} from "@/shared/format/calendar-date";
+import {
+  formatCompactDate,
+  formatLongDate,
+  formatMonthYear,
+  formatWeekdayDate,
+} from "@/shared/format/calendar-date";
 import {intlLocale} from "@/i18n/intl-locale";
 import type {AppLocale} from "@/i18n/routing";
 import {buttonStyles} from "@/shared/ui/button";
@@ -45,6 +50,11 @@ type DateFieldProps = {
   max?: string;
   /** Month shown first when the field is empty. */
   initialView?: string;
+  /**
+   * `inline` is a text-sized trigger for toolbars. The calendar is the same;
+   * only the resting control drops the full field frame.
+   */
+  variant?: "field" | "inline";
   fieldClassName?: string;
 };
 
@@ -63,6 +73,7 @@ export function DateField({
   min,
   max,
   initialView,
+  variant = "field",
   fieldClassName = "",
 }: DateFieldProps) {
   const locale = useLocale() as AppLocale;
@@ -146,6 +157,7 @@ export function DateField({
       required={required}
       disabled={disabled}
       selected={selectedDate}
+      variant={variant}
       min={min}
       max={max}
       open={open}
@@ -216,6 +228,7 @@ function DateControl({
   required,
   disabled,
   selected,
+  variant,
   min,
   max,
   open,
@@ -238,6 +251,7 @@ function DateControl({
   required: boolean;
   disabled: boolean;
   selected: string;
+  variant: "field" | "inline";
   min?: string;
   max?: string;
   open: boolean;
@@ -293,12 +307,22 @@ function DateControl({
         aria-invalid={error || undefined}
         aria-required={required || undefined}
         onClick={onToggle}
-        className={`${fieldStyles({size, numeric: true, invalid: error})} flex items-center justify-between gap-3 text-left ${
-          open ? "border-ink" : ""
-        }`}
+        className={
+          variant === "inline"
+            ? `inline-flex items-center gap-1 rounded-panel px-1.5 py-0.5 text-left font-sans text-sm tabular-nums transition-colors duration-150 ease-standard hover:bg-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink ${
+                open ? "bg-hover" : ""
+              }`
+            : `${fieldStyles({size, numeric: true, invalid: error})} flex items-center justify-between gap-3 text-left ${
+                open ? "border-ink" : ""
+              }`
+        }
       >
         <span className={selected ? "text-ink" : "text-ink-subtle"}>
-          {selected ? formatLongDate(selected, locale) : t("empty")}
+          {selected
+            ? variant === "inline"
+              ? formatCompactDate(selected, locale)
+              : formatLongDate(selected, locale)
+            : t("empty")}
         </span>
         <CalendarIcon className="text-ink-subtle" />
       </button>

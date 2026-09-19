@@ -1,5 +1,6 @@
 import {getTranslations, setRequestLocale} from "next-intl/server";
 
+import {AdminWorkspace} from "@/features/admin/components/admin-workspace";
 import {listBookings} from "@/features/bookings/repository";
 import {requireAdmin} from "@/features/auth/require";
 import {StaffBookingsTable} from "@/features/staff/bookings-table";
@@ -7,7 +8,6 @@ import {StaffWaitlistTable} from "@/features/staff/waitlist-table";
 import {listWaitlistEntries} from "@/features/waitlist/repository";
 import {loadCatalogueCourses} from "@/features/courses/live";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
-import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
 import {Link} from "@/i18n/navigation";
 import {buttonStyles} from "@/shared/ui/button";
@@ -42,7 +42,7 @@ export default async function StaffBookingsPage({params}: StaffPageProps) {
   const catalogue = await loadCatalogueCourses();
 
   return (
-    <SiteShell locale={locale} footerCta={null}>
+    <AdminWorkspace locale={locale} current="users">
       <WorkspacePage
         title={t("title")}
         intro={t("intro")}
@@ -111,6 +111,6 @@ export default async function StaffBookingsPage({params}: StaffPageProps) {
           />
         </div>
       </WorkspacePage>
-    </SiteShell>
+    </AdminWorkspace>
   );
 }

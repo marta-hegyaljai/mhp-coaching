@@ -1,5 +1,5 @@
 import type {PathnameHref} from "@/i18n/href";
-import {Link} from "@/i18n/navigation";
+import type {WorkspaceNavModel} from "@/shared/ui/workspace-nav";
 
 export type AdminSection =
   | "overview"
@@ -37,9 +37,6 @@ const order: AdminSection[] = [
   "settings",
 ];
 
-const itemClass =
-  "inline-flex min-h-11 items-center border-b-2 px-1 text-sm font-semibold tracking-[0.02em] transition-colors duration-150 ease-standard";
-
 export function adminSectionLabels(admin: {
   (
     key:
@@ -67,46 +64,22 @@ export function adminSectionLabels(admin: {
   };
 }
 
-/**
- * Admin destinations stay one row on a phone: the tabs scroll under the thumb
- * instead of wrapping into a three-line block that hides the records.
- * Vertical gap belongs on WorkspacePage; do not add a default top margin here.
- */
-export function AdminSubnav({
-  current,
-  label,
-  labels,
-  className = "",
-}: {
-  current: AdminSection;
-  /** Names the landmark itself; the tab labels name the destinations. */
-  label: string;
-  labels: Record<AdminSection, string>;
-  className?: string;
-}) {
-  return (
-    <nav
-      aria-label={label}
-      className={`flex min-w-0 gap-5 overflow-x-auto overscroll-x-contain border-b border-line [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${className}`}
-    >
-      {order.map((section) => {
-        const active = section === current;
-
-        return (
-          <Link
-            key={section}
-            href={hrefs[section]}
-            aria-current={active ? "page" : undefined}
-            className={`${itemClass} shrink-0 ${
-              active
-                ? "border-gold-deep text-gold-deep"
-                : "border-transparent text-ink-muted hover:text-ink"
-            }`}
-          >
-            {labels[section]}
-          </Link>
-        );
-      })}
-    </nav>
-  );
+export function adminWorkspaceNav(
+  current: AdminSection,
+  copy: {
+    eyebrow: string;
+    label: string;
+    labels: Record<AdminSection, string>;
+  },
+): WorkspaceNavModel {
+  return {
+    eyebrow: copy.eyebrow,
+    label: copy.label,
+    current,
+    items: order.map((key) => ({
+      key,
+      href: hrefs[key],
+      label: copy.labels[key],
+    })),
+  };
 }

@@ -2,7 +2,7 @@ import {getTranslations, setRequestLocale} from "next-intl/server";
 import {notFound} from "next/navigation";
 
 import type {Booking} from "@/db/schema";
-import {AdminSubnav, adminSectionLabels} from "@/features/admin/components/admin-subnav";
+import {AdminWorkspace} from "@/features/admin/components/admin-workspace";
 import {requireAdmin} from "@/features/auth/require";
 import {listCourseEnrolments} from "@/features/bookings/repository";
 import {
@@ -26,7 +26,6 @@ import {listWaitlistForCourse} from "@/features/waitlist/repository";
 import {waitlistSessionLabel} from "@/features/waitlist/session-label";
 import {WaitlistNotifyButton} from "@/features/waitlist/components/waitlist-notify-button";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
-import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
 import {BackLink} from "@/shared/ui/back-link";
 import {Chip} from "@/shared/ui/chip";
@@ -102,16 +101,8 @@ export default async function AdminCourseDetailPage({
   const statusLabels = enrolmentStatusLabels({auth, admin: t});
 
   return (
-    <SiteShell locale={locale} footerCta={null}>
+    <AdminWorkspace locale={locale} current="courses">
       <WorkspacePage
-        eyebrow={t("eyebrow")}
-        nav={
-          <AdminSubnav
-            current="courses"
-            label={t("sectionsNav")}
-            labels={adminSectionLabels(t)}
-          />
-        }
         back={<BackLink href="/admin/courses">{t("coursesBack")}</BackLink>}
         title={course.title[locale]}
       >
@@ -280,6 +271,6 @@ export default async function AdminCourseDetailPage({
           ) : null}
         </div>
       </WorkspacePage>
-    </SiteShell>
+    </AdminWorkspace>
   );
 }

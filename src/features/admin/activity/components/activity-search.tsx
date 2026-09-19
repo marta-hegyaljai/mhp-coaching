@@ -3,6 +3,7 @@ import {Button} from "@/shared/ui/button";
 import {InputField} from "@/shared/ui/field";
 
 import {activityHref, type ActivityQuery} from "../query";
+import {ActivityQueryFields} from "./activity-query-fields";
 
 export type ActivitySearchLabels = {
   filter: string;
@@ -33,6 +34,7 @@ export function ActivitySearch({
       className={`flex min-w-0 flex-nowrap items-center gap-2 ${className}`}
     >
       <input type="hidden" name="kind" value={query.kind} />
+      <ActivityQueryFields query={query} omit={["kind", "q"]} />
       <InputField
         id="activity-q"
         name="q"
@@ -50,7 +52,11 @@ export function ActivitySearch({
       </Button>
       {filtered ? (
         <Link
-          href={activityHref()}
+          href={activityHref({
+            day: query.day,
+            showUpcomingCancelled: query.showUpcomingCancelled,
+            showHistoryCancelled: query.showHistoryCancelled,
+          })}
           className="inline-flex min-h-11 shrink-0 items-center text-sm underline-offset-4 hover:underline"
         >
           {labels.clear}

@@ -1,7 +1,7 @@
 import {getTranslations, setRequestLocale} from "next-intl/server";
 import {notFound} from "next/navigation";
 
-import {AdminSubnav, adminSectionLabels} from "@/features/admin/components/admin-subnav";
+import {AdminWorkspace} from "@/features/admin/components/admin-workspace";
 import {requireAdmin} from "@/features/auth/require";
 import {formatChf, minorUnitsToFrancs} from "@/features/payments/money";
 import {ChargeStatementForm} from "@/features/rooms/components/charge-statement-form";
@@ -15,7 +15,6 @@ import {loadStatementDetail} from "@/features/rooms/statements";
 import {formatMonthYear} from "@/shared/format/calendar-date";
 import {formatLocalDate} from "@/features/rooms/timezone";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
-import {SiteShell} from "@/features/site-shell/site-shell";
 import type {AppLocale} from "@/i18n/routing";
 import {BackLink} from "@/shared/ui/back-link";
 import {DownloadIcon} from "@/shared/ui/icons";
@@ -75,16 +74,8 @@ export default async function AdminStatementPage({params}: AdminStatementPagePro
   );
 
   return (
-    <SiteShell locale={locale} footerCta={null}>
+    <AdminWorkspace locale={locale} current="billing">
       <WorkspacePage
-        eyebrow={t("eyebrow")}
-        nav={
-          <AdminSubnav
-            current="billing"
-            label={t("sectionsNav")}
-            labels={adminSectionLabels(t)}
-          />
-        }
         back={
           <BackLink href={{pathname: "/admin/billing/[userId]", params: {userId}}}>
             {t("backToUserBilling")}
@@ -171,6 +162,6 @@ export default async function AdminStatementPage({params}: AdminStatementPagePro
           />
         </section>
       </WorkspacePage>
-    </SiteShell>
+    </AdminWorkspace>
   );
 }
