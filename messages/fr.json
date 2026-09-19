@@ -849,6 +849,8 @@
     "activityHistory": "Historique",
     "activitySearch": "Rechercher",
     "activitySearchPlaceholder": "Nom, e-mail, formation ou salle",
+    "activityRefresh": "Actualiser",
+    "activityRefreshing": "Actualisation",
     "activityWhen": "Quand",
     "activityChannel": "Type",
     "activityWho": "Personne",

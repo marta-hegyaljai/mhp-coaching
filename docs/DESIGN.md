@@ -218,7 +218,9 @@ sidebar.
   counts sit on the same row; they must not add a second header band. Default rows are live
   school activity (registrations, reservations, calls, messages, waiting lists).
   The audit log is a quieter spotlight in the pane header, never the thing that
-  buries the day. One search covers every pane. Time leads each row; the person
+  buries the day. One search covers every pane. A refresh control reloads every
+  pane without changing the query: a 44px square below `lg`, a labelled
+  secondary button from `lg`. Time leads each row; the person
   or title is the scan target; the channel is an uppercase qualifier, never a
   bordered chip. Upcoming and History group on the Zurich day so the date is
   not repeated on every row. Do not split the same entries into a wide table

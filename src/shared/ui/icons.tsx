@@ -246,6 +246,24 @@ export function DownloadIcon({className = ""}: IconProps) {
   );
 }
 
+export function RefreshIcon({className = ""}: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={`${base} ${className}`}
+    >
+      <path d="M13.25 6.25A5.25 5.25 0 103.8 5.5" />
+      <path d="M13.25 2.75v3.5h-3.5" />
+    </svg>
+  );
+}
+
 export function SpinnerIcon({className = ""}: IconProps) {
   return (
     <svg

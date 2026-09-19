@@ -77,6 +77,49 @@ test("paging through history moves only that pane", async ({page}) => {
   expect(await rowSummaries(history)).not.toEqual(firstPage);
 });
 
+test("refresh reloads the board without changing the query", async ({page}) => {
+  await page.setViewportSize({width: 1440, height: 900});
+  await page.goto("/en/admin/overview?kind=waitlist");
+
+  const refresh = page.getByRole("button", {name: "Refresh"});
+  await expect(refresh).toBeVisible();
+  await expect(refresh.getByText("Refresh")).toBeVisible();
+
+  const reload = page.waitForResponse((response) => {
+    const headers = response.request().headers();
+    return (
+      response.url().includes("/admin/overview") &&
+      (headers.rsc === "1" || headers["next-router-state-tree"] !== undefined)
+    );
+  });
+  await refresh.click();
+  await reload;
+
+  await expect(page).toHaveURL(/kind=waitlist/);
+  await expect(page).not.toHaveURL(/q=/);
+  await expect(refresh).toBeEnabled();
+  await expect(entries(page).first()).toBeVisible();
+});
+
+test("a phone refresh stays a square and keeps the selected pane", async ({page}) => {
+  await page.setViewportSize(phone);
+  await page.goto("/en/admin/overview?when=upcoming");
+
+  const refresh = page.getByRole("button", {name: "Refresh"});
+  await expect(refresh).toBeVisible();
+  await expect(refresh.getByText("Refresh")).toBeHidden();
+
+  const box = await refresh.boundingBox();
+  expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
+  expect(box?.width ?? 0).toBeGreaterThanOrEqual(44);
+  expect(box?.width ?? 0).toBeLessThanOrEqual(48);
+
+  await refresh.click();
+  await expect(page).toHaveURL(/when=upcoming/);
+  await expect(pane(page, "Upcoming")).toBeVisible();
+  await expect(pane(page, "Today")).toBeHidden();
+});
+
 test("search narrows every pane and can be cleared", async ({page}) => {
   await page.goto("/en/admin/overview");
 
@@ -109,11 +152,15 @@ test("the control panel fits a phone in every locale without scrolling the page"
   await page.setViewportSize(phone);
 
   const todayLabel = {fr: "Aujourd’hui", de: "Heute", en: "Today"} as const;
+  const refreshLabel = {fr: "Actualiser", de: "Aktualisieren", en: "Refresh"} as const;
 
   for (const locale of ["fr", "de", "en"] as const) {
     await page.goto(`/${locale}/admin/overview`);
     await expect(entries(page).first()).toBeVisible();
     await expect(pane(page, todayLabel[locale])).toBeVisible();
+    const refresh = page.getByRole("button", {name: refreshLabel[locale]});
+    await expect(refresh).toBeVisible();
+    await expect(refresh.getByText(refreshLabel[locale])).toBeHidden();
 
     const overflow = await page.evaluate((label) => {
       const board = document.querySelector(`[aria-label="${label}"]`);
