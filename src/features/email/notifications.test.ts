@@ -622,6 +622,29 @@ describe("admin inquiry reply", () => {
     expectSharedChrome(html);
   });
 
+  it("uses payment copy when staff answer an other-payment-method contact", async () => {
+    await sendInquiryReply({
+      to: "sara.contact@example.test",
+      locale: "en",
+      greetingName: "Sara",
+      courseTitle: "Sport & Hypnosis",
+      originalMessage: "Could I pay by bank transfer?",
+      body: "Yes. We will send the bank details.",
+      topic: "payment",
+    });
+
+    expect(sendMailMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        to: "sara.contact@example.test",
+        subject: "About paying another way — Sport & Hypnosis",
+      }),
+    );
+    const html = sendMailMock.mock.calls[0]?.[0].html ?? "";
+    expect(html).toContain("You asked to pay by another method.");
+    expect(html).toContain("Could I pay by bank transfer?");
+    expectSharedChrome(html);
+  });
+
   it("keeps a general contact reply free of a blank course row", async () => {
     await sendInquiryReply({
       to: "sara.contact@example.test",

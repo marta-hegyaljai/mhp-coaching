@@ -203,6 +203,7 @@ export default async function AdminCourseDetailPage({
                   copyPhone: (phone) => t("copyPhone", {phone}),
                   copyAddress: (address) => t("copyAddress", {address}),
                   copied: t("emailCopied"),
+                  reply: t("inquiryReplyAction"),
                 }}
               />
             </section>

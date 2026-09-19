@@ -53,6 +53,41 @@ test("an admin can email a reply to a written course question", async ({page}) =
   expect(mail.HTML).toContain("#c8aa6a");
 });
 
+test("an admin can email a reply to an other-payment-method contact", async ({
+  page,
+}) => {
+  const body = "Yes. We will email the bank transfer details today.";
+  await page.goto("/en/admin/calls?tab=messages");
+
+  await page.getByRole("link", {name: /Sara Contact/}).click();
+  await expect(page.getByRole("heading", {level: 1, name: "Sara Contact"})).toBeVisible();
+  await expect(page.getByText("Payment help").or(page.getByText("Replied"))).toBeVisible();
+
+  await page.getByLabel("Your reply").fill(body);
+  await page.getByRole("button", {name: "Send email"}).click();
+
+  await expect(page.getByRole("status")).toContainText("The reply has been sent.");
+
+  const mail = await latestMailpitMessage(
+    "sara.contact@example.test",
+    "About paying another way — Sport & Hypnosis",
+  );
+  expect(mail.Text).toContain(body);
+  expect(mail.Text).toContain("You asked to pay by another method.");
+});
+
+test("a lead booking without a written message can still be answered", async ({
+  page,
+}) => {
+  await page.goto("/en/admin/calls?tab=messages");
+
+  await page.getByRole("link", {name: /Emma Wilson/}).click();
+  await expect(
+    page.getByText("This person asked to pay by another method."),
+  ).toBeVisible();
+  await expect(page.getByRole("heading", {name: "Reply by email"})).toBeVisible();
+});
+
 test("the reply form stays localized in French and German", async ({page}) => {
   await page.goto("/en/admin/calls?tab=messages");
   await page.getByRole("link", {name: /Sara Contact/}).click();

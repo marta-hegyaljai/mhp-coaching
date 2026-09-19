@@ -30,7 +30,7 @@ export type ActivityWindow = (typeof ACTIVITY_WINDOWS)[number];
  * matching channel actually has.
  */
 export type ActivitySourceRef =
-  | {kind: "registration"; bookingId: string}
+  | {kind: "registration"; bookingId: string; lead: boolean}
   | {kind: "reservation"; bookingId: string}
   | {kind: "call"; callId: string}
   | {kind: "message"; messageId: string; channel: "course" | "contact"}

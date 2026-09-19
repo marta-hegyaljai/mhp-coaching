@@ -936,6 +936,8 @@
     "inquiryReplyNotFound": "Diese Nachricht wurde nicht gefunden.",
     "inquiryRepliesTitle": "Gesendete Antworten",
     "inquiryReplied": "Beantwortet",
+    "inquiryLeadNote": "Diese Person möchte auf anderem Weg zahlen. Sie hat noch keine schriftliche Nachricht gesendet.",
+    "inquiryReplyAction": "Per E-Mail antworten",
     "closedDay": "Geschlossen",
     "opens": "Öffnet",
     "closes": "Schließt",
@@ -1889,6 +1891,10 @@
       "courseLine": "Ausbildung: {course}",
       "originalLabel": "Ihre Nachricht",
       "originalLine": "Ihre Nachricht:",
+      "introPayment": "Sie möchten auf anderem Weg zahlen. Hier ist unsere Antwort.",
+      "eyebrowPayment": "Zahlung",
+      "subjectPayment": "Andere Zahlungsart",
+      "subjectPaymentCourse": "Andere Zahlungsart — {course}",
       "closing": "Wenn Sie eine weitere Frage haben, antworten Sie auf diese E-Mail."
     },
     "purchaseNotification": {

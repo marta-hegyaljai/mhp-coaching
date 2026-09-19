@@ -13,4 +13,9 @@ describe("parseAdminMessageChannel", () => {
     expect(parseAdminMessageChannel("contact")).toBe("contact");
     expect(parseAdminMessageChannel(["contact", "course"])).toBe("contact");
   });
+
+  it("reads the other-payment-method lead channel", () => {
+    expect(parseAdminMessageChannel("lead")).toBe("lead");
+    expect(parseAdminMessageChannel(["lead"])).toBe("lead");
+  });
 });

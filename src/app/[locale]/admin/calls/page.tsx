@@ -13,7 +13,7 @@ import {
   type AdminCallWhen,
 } from "@/features/course-calls/query";
 import {listAdminCalls, listCallHours} from "@/features/course-calls/repository";
-import {listAdminMessages} from "@/features/inquiries/admin-message";
+import {adminMessageHref, listAdminMessages} from "@/features/inquiries/admin-message";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import {Link} from "@/i18n/navigation";
 import type {AppLocale} from "@/i18n/routing";
@@ -310,11 +310,7 @@ async function Messages({
             return (
               <li key={`${message.channel}:${message.id}`}>
                 <Link
-                  href={{
-                    pathname: "/admin/calls/messages/[id]",
-                    params: {id: message.id},
-                    query: message.channel === "course" ? undefined : {channel: message.channel},
-                  }}
+                  href={adminMessageHref(message.id, message.channel)}
                   className={`block rounded-panel border border-ink bg-white px-5 py-4 transition-colors duration-150 hover:bg-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink ${statusRailClass(replied ? "ok" : "gold")}`}
                 >
                   <StatusLabel tone={replied ? "ok" : "gold"}>
@@ -327,7 +323,8 @@ async function Messages({
                     {message.courseTitle ?? t("callGeneral")}
                   </p>
                   <p className="mt-2 line-clamp-2 text-sm leading-6 text-ink-muted">
-                    {message.excerpt}
+                    {message.excerpt ||
+                      (message.topic === "payment" ? t("inquiryLeadNote") : "")}
                   </p>
                 </Link>
               </li>

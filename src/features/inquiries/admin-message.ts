@@ -1,12 +1,18 @@
-import type {CourseInquiry, Inquiry, InquiryReply} from "@/db/schema";
+import type {Booking, CourseInquiry, Inquiry, InquiryReply} from "@/db/schema";
 import {callPersonName} from "@/features/course-calls/format";
 import {listAdminInquiries, getCourseInquiryById} from "@/features/course-calls/repository";
+import type {PathnameHref} from "@/i18n/href";
 
 import {listInquiryReplies, listLatestReplyAt} from "./replies";
-import {getInquiryById, listAdminContactInquiries} from "./repository";
+import {
+  getInquiryById,
+  getLeadBookingById,
+  listAdminContactInquiries,
+  listAdminLeadBookings,
+} from "./repository";
 
 /** Which table the message came from, and therefore how it is read back. */
-export const ADMIN_MESSAGE_CHANNELS = ["course", "contact"] as const;
+export const ADMIN_MESSAGE_CHANNELS = ["course", "contact", "lead"] as const;
 
 export type AdminMessageChannel = (typeof ADMIN_MESSAGE_CHANNELS)[number];
 
@@ -43,7 +49,22 @@ export function parseAdminMessageChannel(
 ): AdminMessageChannel {
   const raw = Array.isArray(value) ? value[0] : value;
 
-  return raw === "contact" ? "contact" : "course";
+  if (raw === "contact" || raw === "lead") {
+    return raw;
+  }
+
+  return "course";
+}
+
+export function adminMessageHref(
+  id: string,
+  channel: AdminMessageChannel,
+): PathnameHref {
+  return {
+    pathname: "/admin/calls/messages/[id]",
+    params: {id},
+    query: channel === "course" ? undefined : {channel},
+  };
 }
 
 function greetingNameFromFullName(name: string): string {
@@ -103,6 +124,24 @@ function fromContactInquiry(row: Inquiry): Omit<AdminMessage, "replies"> {
   };
 }
 
+function fromLeadBooking(row: Booking): Omit<AdminMessage, "replies"> {
+  const name = callPersonName(row.firstName, row.lastName) || row.email;
+
+  return {
+    id: row.id,
+    channel: "lead",
+    topic: "payment",
+    receivedAt: row.createdAt,
+    name,
+    greetingName: row.firstName.trim() || greetingNameFromFullName(name),
+    email: row.email,
+    phone: row.phone.trim() || null,
+    courseTitle: row.courseTitle,
+    message: "",
+    locale: row.locale,
+  };
+}
+
 /**
  * Written course questions and contact/payment-help messages are one inbox for
  * the admin, so both resolve through a single lookup.
@@ -114,7 +153,9 @@ export async function findAdminMessage(
   const message =
     channel === "contact"
       ? await loadContactMessage(id)
-      : await loadCourseMessage(id);
+      : channel === "lead"
+        ? await loadLeadMessage(id)
+        : await loadCourseMessage(id);
   if (!message) {
     return undefined;
   }
@@ -133,6 +174,11 @@ async function loadCourseMessage(id: string) {
   return row ? fromCourseInquiry(row) : undefined;
 }
 
+async function loadLeadMessage(id: string) {
+  const row = await getLeadBookingById(id);
+  return row ? fromLeadBooking(row) : undefined;
+}
+
 /**
  * Newest first across both inbound tables, then sliced for the messages tab.
  * Each source is read far enough that a later page still sees the merged order.
@@ -143,12 +189,13 @@ export async function listAdminMessages(input: {
   offset: number;
 }): Promise<{rows: AdminMessageListItem[]; total: number}> {
   const take = input.offset + input.limit;
-  const [course, contact] = await Promise.all([
+  const [course, contact, lead] = await Promise.all([
     listAdminInquiries({q: input.q, limit: take, offset: 0}),
     listAdminContactInquiries({q: input.q, limit: take, offset: 0}),
+    listAdminLeadBookings({q: input.q, limit: take, offset: 0}),
   ]);
 
-  const [courseReplied, contactReplied] = await Promise.all([
+  const [courseReplied, contactReplied, leadReplied] = await Promise.all([
     listLatestReplyAt(
       "course",
       course.rows.map((row) => row.id),
@@ -157,11 +204,16 @@ export async function listAdminMessages(input: {
       "contact",
       contact.rows.map((row) => row.id),
     ),
+    listLatestReplyAt(
+      "lead",
+      lead.rows.map((row) => row.id),
+    ),
   ]);
 
   const merged: AdminMessageListItem[] = [
     ...course.rows.map((row) => toListItem(fromCourseInquiry(row), courseReplied.get(row.id))),
     ...contact.rows.map((row) => toListItem(fromContactInquiry(row), contactReplied.get(row.id))),
+    ...lead.rows.map((row) => toListItem(fromLeadBooking(row), leadReplied.get(row.id))),
   ].sort((left, right) => {
     const delta = right.receivedAt.getTime() - left.receivedAt.getTime();
     return delta !== 0 ? delta : right.id.localeCompare(left.id);
@@ -169,7 +221,7 @@ export async function listAdminMessages(input: {
 
   return {
     rows: merged.slice(input.offset, input.offset + input.limit),
-    total: course.total + contact.total,
+    total: course.total + contact.total + lead.total,
   };
 }
 

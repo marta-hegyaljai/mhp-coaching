@@ -12,6 +12,7 @@ export type InquiryReplyMail = {
   courseTitle: string | null;
   originalMessage: string;
   body: string;
+  topic?: "course" | "general" | "payment";
 };
 
 /**
@@ -23,6 +24,8 @@ export async function sendInquiryReply(input: InquiryReplyMail): Promise<MailDel
   const t = await getTranslations({locale, namespace: "Email.inquiryReply"});
   const fields = await getTranslations({locale, namespace: "Email.fields"});
   const greeting = t("greeting", {name: input.greetingName});
+  const payment = input.topic === "payment";
+  const intro = payment ? t("introPayment") : t("intro");
   const details: EmailDetail[] = [];
   if (input.courseTitle) {
     details.push({label: fields("course"), value: input.courseTitle});
@@ -34,13 +37,13 @@ export async function sendInquiryReply(input: InquiryReplyMail): Promise<MailDel
   const text = [
     greeting,
     "",
-    t("intro"),
+    intro,
     "",
     input.body,
     "",
     input.courseTitle ? t("courseLine", {course: input.courseTitle}) : "",
-    t("originalLine"),
-    input.originalMessage,
+    input.originalMessage.trim() ? t("originalLine") : "",
+    input.originalMessage.trim(),
     "",
     t("closing"),
   ]
@@ -49,22 +52,28 @@ export async function sendInquiryReply(input: InquiryReplyMail): Promise<MailDel
 
   const html = composeTransactionalEmail({
     locale,
-    preheader: t("intro"),
-    eyebrow: t("eyebrow"),
+    preheader: intro,
+    eyebrow: payment ? t("eyebrowPayment") : t("eyebrow"),
     title: input.courseTitle ?? t("title"),
     greeting,
-    intro: t("intro"),
+    intro,
     details: details.length > 0 ? details : undefined,
     message: input.body,
     closing: t("closing"),
   });
 
+  const subject = payment
+    ? input.courseTitle
+      ? t("subjectPaymentCourse", {course: input.courseTitle})
+      : t("subjectPayment")
+    : input.courseTitle
+      ? t("subjectCourse", {course: input.courseTitle})
+      : t("subject");
+
   return sendMail({
     to: input.to,
     replyTo: organization.email,
-    subject: input.courseTitle
-      ? t("subjectCourse", {course: input.courseTitle})
-      : t("subject"),
+    subject,
     text,
     html,
   });

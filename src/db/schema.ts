@@ -327,13 +327,15 @@ export const users = pgTable(
 );
 
 /**
- * Staff answers to a written course question or a contact-form message.
- * `inquiryId` points at `course_inquiries` or `inquiries` according to
- * `channel`; both tables use UUID keys, so the pair is the lookup.
+ * Staff answers to a written course question, a contact-form message, or a
+ * lead booking created when someone asks to pay another way. `inquiryId`
+ * points at `course_inquiries`, `inquiries` or `bookings` according to
+ * `channel`; those tables use UUID keys, so the pair is the lookup.
  */
 export const inquiryReplyChannelEnum = pgEnum("inquiry_reply_channel", [
   "course",
   "contact",
+  "lead",
 ]);
 
 export const inquiryReplies = pgTable(

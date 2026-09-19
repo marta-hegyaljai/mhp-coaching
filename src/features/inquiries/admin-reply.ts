@@ -33,6 +33,7 @@ export async function replyToInquiry(input: {
       courseTitle: message.courseTitle,
       originalMessage: message.message,
       body: input.body,
+      topic: message.topic,
     });
   } catch (error) {
     if (error instanceof PreviewMailBlockedError) {

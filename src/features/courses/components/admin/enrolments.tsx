@@ -4,6 +4,7 @@ import {
   courseDetailHref,
   type CourseEnrolmentQuery,
 } from "@/features/courses/admin-query";
+import {adminMessageHref} from "@/features/inquiries/admin-message";
 import {
   adminEnrolmentListHref,
   type AdminEnrolmentQuery,
@@ -192,6 +193,7 @@ export function CourseEnrolmentTable({
     copyPhone: (phone: string) => string;
     copyAddress: (address: string) => string;
     copied: string;
+    reply?: string;
   };
   showCourse?: boolean;
 }) {
@@ -238,7 +240,15 @@ export function CourseEnrolmentTable({
               className={`border-b border-line/70 ${statusRailClass(enrolmentStatusTone(booking.status))}`}
             >
               <td className={`${fact} pl-4 font-medium`}>
-                {fullName}
+                <span className="block">{fullName}</span>
+                {booking.status === "LEAD" && labels.reply ? (
+                  <Link
+                    href={adminMessageHref(booking.id, "lead")}
+                    className="mt-1 block text-xs font-semibold underline-offset-4 hover:underline"
+                  >
+                    {labels.reply}
+                  </Link>
+                ) : null}
               </td>
               {catalogue ? (
                 <td className={grow}>

@@ -936,6 +936,8 @@
     "inquiryReplyNotFound": "Ce message est introuvable.",
     "inquiryRepliesTitle": "Réponses envoyées",
     "inquiryReplied": "Répondu",
+    "inquiryLeadNote": "Cette personne a demandé un autre moyen de paiement. Elle n’a pas encore envoyé de message écrit.",
+    "inquiryReplyAction": "Répondre par e-mail",
     "closedDay": "Fermé",
     "opens": "Ouverture",
     "closes": "Fermeture",
@@ -1889,6 +1891,10 @@
       "courseLine": "Formation : {course}",
       "originalLabel": "Votre message",
       "originalLine": "Votre message :",
+      "introPayment": "Vous avez demandé un autre moyen de paiement. Voici notre réponse.",
+      "eyebrowPayment": "Paiement",
+      "subjectPayment": "Payer autrement",
+      "subjectPaymentCourse": "Payer autrement — {course}",
       "closing": "Si vous avez une autre question, répondez à cet e-mail."
     },
     "purchaseNotification": {

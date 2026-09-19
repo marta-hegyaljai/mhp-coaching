@@ -112,7 +112,10 @@ export default async function AdminInquiryDetailPage({
               <dt className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-ink-subtle">
                 {t("callMessage")}
               </dt>
-              <dd className="mt-1 whitespace-pre-wrap text-ink">{message.message}</dd>
+              <dd className="mt-1 whitespace-pre-wrap text-ink">
+                {message.message ||
+                  (message.topic === "payment" ? t("inquiryLeadNote") : "—")}
+              </dd>
             </div>
           </dl>
         </Panel>

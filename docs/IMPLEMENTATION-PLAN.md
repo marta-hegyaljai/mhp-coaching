@@ -122,7 +122,9 @@ contact-form message from the message record. The reply is stored on
 `inquiry_replies`, audited as `INQUIRY_REPLY_SENT`, and delivered through
 `sendInquiryReply` → `sendMail()` (Resend when hosted). The Calls → Messages
 inbox now includes contact-form rows. Unanswered messages stay gold; a sent
-reply marks the row Replied. Not a new checkpoint.
+reply marks the row Replied. Review pass: other-payment-method contacts are
+the same inbox — payment-help form rows and `LEAD` bookings that never left a
+written message, with payment-specific mail chrome. Not a new checkpoint.
 
 Extra-roadmap (2026-09-17): admin operational screens use the existing
 `gold-deep`, `status-ok` and `status-stop` tokens for status type and a 3px
