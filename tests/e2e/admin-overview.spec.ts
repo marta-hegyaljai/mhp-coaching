@@ -107,7 +107,7 @@ test("a phone refresh stays a square and keeps the selected pane", async ({page}
 
   const refresh = page.getByRole("button", {name: "Refresh"});
   await expect(refresh).toBeVisible();
-  await expect(refresh.getByText("Refresh")).toBeHidden();
+  await expect(refresh.locator("span")).toHaveClass(/sr-only/);
 
   const box = await refresh.boundingBox();
   expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
@@ -160,7 +160,8 @@ test("the control panel fits a phone in every locale without scrolling the page"
     await expect(pane(page, todayLabel[locale])).toBeVisible();
     const refresh = page.getByRole("button", {name: refreshLabel[locale]});
     await expect(refresh).toBeVisible();
-    await expect(refresh.getByText(refreshLabel[locale])).toBeHidden();
+    const box = await refresh.boundingBox();
+    expect(box?.width ?? 0, `refresh wider than a square in ${locale}`).toBeLessThanOrEqual(48);
 
     const overflow = await page.evaluate((label) => {
       const board = document.querySelector(`[aria-label="${label}"]`);
