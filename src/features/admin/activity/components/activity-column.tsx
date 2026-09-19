@@ -42,6 +42,7 @@ const dayStepClass =
  */
 export function ActivityColumn({
   when,
+  active = true,
   feed,
   query,
   locale,
@@ -52,6 +53,8 @@ export function ActivityColumn({
   paginate = false,
 }: {
   when: ActivityWindow;
+  /** On a phone only the selected pane is shown; desktop always shows all three. */
+  active?: boolean;
   feed: ActivityFeed;
   query: ActivityQuery;
   locale: AppLocale;
@@ -80,7 +83,9 @@ export function ActivityColumn({
   return (
     <section
       aria-label={title}
-      className="flex min-h-0 min-w-0 flex-col bg-white"
+      className={`min-h-0 min-w-0 flex-col bg-white ${
+        active ? "flex" : "hidden lg:flex"
+      }`}
     >
       <header className="flex h-11 shrink-0 items-center gap-2 border-b border-line px-3">
         <h2 className="shrink-0 font-sans text-[0.7rem] font-bold uppercase tracking-[0.16em] text-gold-deep">

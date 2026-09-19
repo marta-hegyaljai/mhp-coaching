@@ -1,7 +1,8 @@
 import type {AppLocale} from "@/i18n/routing";
+import {SegmentedLinks} from "@/shared/ui/segmented-links";
 
 import type {ActivityBriefing} from "../feed";
-import type {ActivityQuery} from "../query";
+import {activityHref, type ActivityQuery} from "../query";
 import type {ActivityWindow} from "../types";
 import {ActivityColumn, type ActivityColumnLabels} from "./activity-column";
 
@@ -12,12 +13,13 @@ export type ActivityBoardLabels = {
   emptyToday: string;
   emptyUpcoming: string;
   emptyHistory: string;
+  windows: string;
 } & ActivityColumnLabels;
 
 /**
- * Three windows, one viewport. Desktop is three equal columns; a phone stacks
- * the same panes with Today given the larger share. Each pane scrolls; the
- * page does not have to.
+ * Three windows, one viewport. Desktop is three equal columns. A phone shows
+ * one full-height pane at a time and a Period switcher, defaulting to Today.
+ * Each pane scrolls; the page does not have to.
  */
 export function ActivityBoard({
   briefing,
@@ -61,21 +63,36 @@ export function ActivityBoard({
   ];
 
   return (
-    <div className="grid min-h-0 flex-1 grid-rows-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] gap-px overflow-hidden rounded-panel border border-ink bg-ink lg:grid-cols-3 lg:grid-rows-[minmax(0,1fr)]">
-      {panes.map((pane) => (
-        <ActivityColumn
-          key={pane.when}
-          when={pane.when}
-          feed={pane.feed}
-          query={query}
-          locale={locale}
-          title={pane.title}
-          todayLabel={labels.today}
-          empty={pane.empty}
-          paginate={pane.paginate}
-          labels={labels}
+    <div className="flex min-h-0 flex-1 flex-col gap-2">
+      <div className="shrink-0 lg:hidden">
+        <SegmentedLinks
+          fill
+          label={labels.windows}
+          items={panes.map((pane) => ({
+            key: pane.when,
+            href: activityHref({...query, window: pane.when}),
+            label: pane.title,
+            current: query.window === pane.when,
+          }))}
         />
-      ))}
+      </div>
+      <div className="grid min-h-0 flex-1 grid-rows-[minmax(0,1fr)] gap-px overflow-hidden rounded-panel border border-ink bg-ink lg:grid-cols-3">
+        {panes.map((pane) => (
+          <ActivityColumn
+            key={pane.when}
+            when={pane.when}
+            active={query.window === pane.when}
+            feed={pane.feed}
+            query={query}
+            locale={locale}
+            title={pane.title}
+            todayLabel={labels.today}
+            empty={pane.empty}
+            paginate={pane.paginate}
+            labels={labels}
+          />
+        ))}
+      </div>
     </div>
   );
 }

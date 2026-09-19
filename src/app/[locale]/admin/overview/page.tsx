@@ -98,6 +98,7 @@ export default async function AdminOverviewPage({
             today: t("activityToday"),
             upcoming: t("activityUpcoming"),
             history: t("activityHistory"),
+            windows: t("activityWindowGroup"),
             emptyToday: t("activityEmptyToday"),
             emptyUpcoming: t("activityEmptyUpcoming"),
             emptyHistory: t("activityEmptyHistory"),
