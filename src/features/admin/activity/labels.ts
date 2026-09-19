@@ -10,6 +10,7 @@ export type ActivityCopy = {
   callStatus: (status: CourseCallStatus) => string;
   waitlistStatus: (notified: boolean) => string;
   messageTopic: (topic: "course" | "general" | "payment") => string;
+  messageReplied: string;
   auditAction: (action: string) => string;
   /** Advice calls and messages may arrive without a course attached. */
   noCourse: string;

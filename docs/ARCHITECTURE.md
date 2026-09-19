@@ -107,6 +107,8 @@ Initial durable concepts:
   `course_title` stay nullable: the standalone `/advice` page books the same
   slots with no course attached, and the admin screens label those rows as a
   general enquiry
+- inquiry_replies for staff answers to a course question or contact-form
+  message, sent through `sendMail()` (Resend when hosted, Mailpit locally)
 
 Courses/course dates are seeded into PostgreSQL from the typed TypeScript
 catalogue (`src/features/courses/catalog.ts`) so go-live data is durable. Public

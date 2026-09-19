@@ -31,6 +31,7 @@ export async function activityCopy(locale: AppLocale): Promise<ActivityCopy> {
     waitlistStatus: (notified) =>
       notified ? admin("coursesWaitlistNotified") : admin("activityWaitlistPending"),
     messageTopic: (topic) => admin(`activityMessageTopics.${topic}`),
+    messageReplied: admin("inquiryReplied"),
     // An unknown action can only come from an older row; never show the enum.
     auditAction: (action) =>
       isKnownAuditAction(action)

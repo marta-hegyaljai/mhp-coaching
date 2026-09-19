@@ -8,6 +8,7 @@ import {
   findAdminMessage,
   parseAdminMessageChannel,
 } from "@/features/inquiries/admin-message";
+import {InquiryReplyForm} from "@/features/inquiries/components/reply-form";
 import {buildPageMetadata, localizedPath} from "@/features/seo/metadata";
 import type {AppLocale} from "@/i18n/routing";
 import {BackLink} from "@/shared/ui/back-link";
@@ -71,14 +72,21 @@ export default async function AdminInquiryDetailPage({
         }
         title={message.name}
       >
-        <StatusLabel className="mt-4" tone="gold">
-          {t(`activityMessageTopics.${message.topic}`)}
+        <StatusLabel
+          className="mt-4"
+          tone={message.replies.length > 0 ? "ok" : "gold"}
+        >
+          {message.replies.length > 0
+            ? t("inquiryReplied")
+            : t(`activityMessageTopics.${message.topic}`)}
         </StatusLabel>
         <p className="mt-3 text-sm text-ink-muted">
           {formatLongDate(received.date, locale)} · {received.time}
         </p>
 
-        <Panel className={`mt-8 max-w-xl ${statusRailClass("gold")}`}>
+        <Panel
+          className={`mt-8 max-w-xl ${statusRailClass(message.replies.length > 0 ? "ok" : "gold")}`}
+        >
           <dl className="space-y-5 text-sm">
             <div>
               <dt className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-ink-subtle">
@@ -108,6 +116,41 @@ export default async function AdminInquiryDetailPage({
             </div>
           </dl>
         </Panel>
+
+        {message.replies.length > 0 ? (
+          <section className="mt-10 max-w-xl">
+            <h2 className="font-serif text-subheading">{t("inquiryRepliesTitle")}</h2>
+            <ul className="mt-4 grid gap-3">
+              {message.replies.map((reply) => {
+                const sent = utcToZurich(reply.createdAt);
+                return (
+                  <li
+                    key={reply.id}
+                    className={`rounded-panel border border-ink bg-white px-5 py-4 ${statusRailClass("ok")}`}
+                  >
+                    <p className="text-sm text-ink-muted">
+                      {formatLongDate(sent.date, locale)} · {sent.time}
+                    </p>
+                    <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-ink">
+                      {reply.body}
+                    </p>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        ) : null}
+
+        <section className="mt-10 max-w-xl">
+          <h2 className="font-serif text-subheading">{t("inquiryReplyTitle")}</h2>
+          <div className="mt-4">
+            <InquiryReplyForm
+              locale={locale}
+              inquiryId={message.id}
+              channel={message.channel}
+            />
+          </div>
+        </section>
       </WorkspacePage>
     </AdminWorkspace>
   );

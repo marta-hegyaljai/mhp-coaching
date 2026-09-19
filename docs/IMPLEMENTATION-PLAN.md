@@ -22,7 +22,7 @@ later scope forward.
 | Field | Value |
 | --- | --- |
 | Plan revision | 3 |
-| Last updated | 2026-09-17 |
+| Last updated | 2026-09-19 |
 | Last completed checkpoint | CP-11 |
 | Next checkpoint | — |
 | Active checkpoint | — |
@@ -116,6 +116,13 @@ Extra-roadmap (2026-09-18): the admin catalogue enrolments metric opens a
 catalogue-wide inscription list at `/admin/courses/enrolments`, newest first,
 paginated, with cancelled rows hidden until staff opts in. This is
 course-domain work, not a new checkpoint.
+
+Extra-roadmap (2026-09-19): staff can answer a written course question or
+contact-form message from the message record. The reply is stored on
+`inquiry_replies`, audited as `INQUIRY_REPLY_SENT`, and delivered through
+`sendInquiryReply` → `sendMail()` (Resend when hosted). The Calls → Messages
+inbox now includes contact-form rows. Unanswered messages stay gold; a sent
+reply marks the row Replied. Not a new checkpoint.
 
 Extra-roadmap (2026-09-17): admin operational screens use the existing
 `gold-deep`, `status-ok` and `status-stop` tokens for status type and a 3px

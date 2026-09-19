@@ -197,6 +197,13 @@
       "when": 1789130000000,
       "tag": "0027_magic_laughter_hypnosis",
       "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1789131000000,
+      "tag": "0028_inquiry_replies",
+      "breakpoints": true
     }
   ]
 }
