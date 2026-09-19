@@ -26,6 +26,7 @@ describe("parseActivityQuery", () => {
       day: null,
       showUpcomingCancelled: false,
       showHistoryCancelled: false,
+      window: "today",
     });
   });
 
@@ -39,12 +40,14 @@ describe("parseActivityQuery", () => {
       day: null,
       showUpcomingCancelled: false,
       showHistoryCancelled: false,
+      window: "today",
     });
   });
 
   it("maps a legacy History deep link onto the History page", () => {
     expect(parseActivityQuery({when: "history", page: "4"})).toMatchObject({
       historyPage: 4,
+      window: "history",
     });
   });
 
@@ -82,7 +85,15 @@ describe("parseActivityQuery", () => {
       day: yesterday,
       showUpcomingCancelled: true,
       showHistoryCancelled: true,
+      window: "today",
     });
+  });
+
+  it("reads a chosen pane and falls back to Today", () => {
+    expect(parseActivityQuery({when: "upcoming"}, now).window).toBe("upcoming");
+    expect(parseActivityQuery({when: "history"}, now).window).toBe("history");
+    expect(parseActivityQuery({when: "today"}, now).window).toBe("today");
+    expect(parseActivityQuery({when: "later"}, now).window).toBe("today");
   });
 
   it("drops today and junk days so the default board stays a clean path", () => {
@@ -125,6 +136,21 @@ describe("activityHref", () => {
 
   it("omits the current Zurich day from the path", () => {
     expect(activityHref({day: today}, now)).toEqual({
+      pathname: "/admin/overview",
+      query: {},
+    });
+  });
+
+  it("serializes a non-Today pane and keeps Today off the path", () => {
+    expect(activityHref({window: "upcoming"}, now)).toEqual({
+      pathname: "/admin/overview",
+      query: {when: "upcoming"},
+    });
+    expect(activityHref({window: "history", historyPage: 2}, now)).toEqual({
+      pathname: "/admin/overview",
+      query: {when: "history", hp: "2"},
+    });
+    expect(activityHref({window: "today"}, now)).toEqual({
       pathname: "/admin/overview",
       query: {},
     });

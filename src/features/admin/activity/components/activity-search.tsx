@@ -53,6 +53,7 @@ export function ActivitySearch({
       {filtered ? (
         <Link
           href={activityHref({
+            window: query.window,
             day: query.day,
             showUpcomingCancelled: query.showUpcomingCancelled,
             showHistoryCancelled: query.showHistoryCancelled,

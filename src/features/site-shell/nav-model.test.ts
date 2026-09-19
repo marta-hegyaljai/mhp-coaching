@@ -57,6 +57,15 @@ describe("primaryNavNodes", () => {
     expect(keys(nodes)).toEqual(["courses", "school", "rooms", "admin"]);
     expect(keys(nodes.find(isNavGroup)?.entries ?? [])).not.toContain("admin");
   });
+
+  it("sends the Admin chip to the activity board, not another staff list", () => {
+    const admin = primaryNavEntries(viewer({isAdmin: true})).find(
+      (entry) => entry.key === "admin",
+    );
+
+    expect(admin?.href).toBe("/admin/overview");
+    expect(admin?.match).toBe("/admin");
+  });
 });
 
 describe("primaryNavEntries", () => {

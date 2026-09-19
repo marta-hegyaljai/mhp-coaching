@@ -112,6 +112,12 @@ Zurich day (`day=YYYY-MM-DD`, previous/next plus a DateField jump). Upcoming
 and History hide cancelled registrations, reservations and calls until `uc=1`
 or `hc=1`. No schema change.
 
+Review pass (2026-09-19): the Admin chip in the header and the phone sheet
+lands on the activity board (`/admin/overview`), not Users. Below `lg` the
+board shows one full-height pane; a Period switcher chooses Today, Upcoming or
+History (`when=`, default Today). Desktop still shows three columns. No schema
+change.
+
 Extra-roadmap (2026-09-18): the admin catalogue enrolments metric opens a
 catalogue-wide inscription list at `/admin/courses/enrolments`, newest first,
 paginated, with cancelled rows hidden until staff opts in. This is

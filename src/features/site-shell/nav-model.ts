@@ -108,7 +108,7 @@ export function primaryNavNodes(viewer: Viewer | null): NavNode[] {
   }
 
   if (viewer?.isAdmin) {
-    nodes.push({key: "admin", href: "/admin/users", origin: "app", match: "/admin"});
+    nodes.push({key: "admin", href: "/admin/overview", origin: "app", match: "/admin"});
   }
 
   return nodes;

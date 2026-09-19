@@ -208,8 +208,10 @@ sidebar.
   stay near the fold.
 - The admin control panel is one viewport board, not a filter-first timeline.
   Today, Upcoming and History are three simultaneous panes: equal columns from
-  `lg`, a stacked board on a phone with Today given the larger share. The page
-  itself does not scroll; each pane does.   The three pane headers share one compact row. Today is a Zurich-day pane:
+  `lg`. Below `lg`, one pane fills the board and a Period segmented control
+  switches Today, Upcoming or History, defaulting to Today (`when=` stays off
+  the path until another pane is chosen). The page itself does not scroll; each
+  pane does. The three pane headers share one compact row. Today is a Zurich-day pane:
   previous / next day and an inline `DateField` jump, defaulting to the current
   day. Upcoming and History hide cancelled registrations, reservations and
   calls until a Show cancelled checkbox in that pane header is on. Spotlight

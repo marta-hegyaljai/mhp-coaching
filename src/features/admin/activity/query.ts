@@ -4,6 +4,7 @@ import {isIsoDate} from "@/shared/ui/date-field-calendar";
 
 import {
   ACTIVITY_KINDS,
+  ACTIVITY_WINDOWS,
   type ActivityKind,
   type ActivityKindFilter,
   type ActivityWindow,
@@ -17,6 +18,11 @@ export type ActivityQuery = {
   day: string | null;
   showUpcomingCancelled: boolean;
   showHistoryCancelled: boolean;
+  /**
+   * Which pane a phone is looking at. Desktop still shows all three; the
+   * default Today stays off the path.
+   */
+  window: ActivityWindow;
 };
 
 export const ACTIVITY_BOARD_SIZE = 40;
@@ -36,6 +42,7 @@ export const defaultActivityQuery: ActivityQuery = {
   day: null,
   showUpcomingCancelled: false,
   showHistoryCancelled: false,
+  window: "today",
 };
 
 function firstString(value: string | string[] | undefined): string {
@@ -47,6 +54,10 @@ function firstString(value: string | string[] | undefined): string {
 
 function isKind(value: string): value is ActivityKind {
   return (ACTIVITY_KINDS as readonly string[]).includes(value);
+}
+
+function isWindow(value: string): value is ActivityWindow {
+  return (ACTIVITY_WINDOWS as readonly string[]).includes(value);
 }
 
 export type ActivitySearchParams = {
@@ -74,8 +85,9 @@ export function parseActivityQuery(
   now = new Date(),
 ): ActivityQuery {
   const kind = firstString(search.kind);
+  const when = firstString(search.when);
   const historyPage = firstString(search.hp) || (
-    firstString(search.when) === "history" ? firstString(search.page) : ""
+    when === "history" ? firstString(search.page) : ""
   );
 
   return {
@@ -85,6 +97,7 @@ export function parseActivityQuery(
     day: parseDay(firstString(search.day), todayInZurich(now)),
     showUpcomingCancelled: firstString(search.uc) === "1",
     showHistoryCancelled: firstString(search.hc) === "1",
+    window: isWindow(when) ? when : "today",
   };
 }
 
@@ -98,6 +111,7 @@ export function activityQueryParams(
     merged.day && merged.day !== todayInZurich(now) ? merged.day : null;
 
   return {
+    ...(merged.window !== "today" ? {when: merged.window} : {}),
     ...(merged.kind !== "all" ? {kind: merged.kind} : {}),
     ...(merged.q ? {q: merged.q} : {}),
     ...(merged.historyPage > 1 ? {hp: String(merged.historyPage)} : {}),

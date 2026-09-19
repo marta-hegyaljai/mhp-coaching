@@ -108,11 +108,12 @@ test("the control panel fits a phone in every locale without scrolling the page"
 }) => {
   await page.setViewportSize(phone);
 
-  const historyLabel = {fr: "Historique", de: "Verlauf", en: "History"} as const;
+  const todayLabel = {fr: "Aujourd’hui", de: "Heute", en: "Today"} as const;
 
   for (const locale of ["fr", "de", "en"] as const) {
     await page.goto(`/${locale}/admin/overview`);
     await expect(entries(page).first()).toBeVisible();
+    await expect(pane(page, todayLabel[locale])).toBeVisible();
 
     const overflow = await page.evaluate((label) => {
       const board = document.querySelector(`[aria-label="${label}"]`);
@@ -123,13 +124,56 @@ test("the control panel fits a phone in every locale without scrolling the page"
         boardBottom: bottom,
         viewport: window.innerHeight,
       };
-    }, historyLabel[locale]);
+    }, todayLabel[locale]);
     expect(overflow.x, `horizontal overflow in ${locale}`).toBeLessThanOrEqual(0);
     expect(overflow.y, `page scroll in ${locale}`).toBeLessThanOrEqual(1);
     expect(overflow.boardBottom, `board clipped to viewport in ${locale}`).toBeLessThanOrEqual(
       overflow.viewport + 1,
     );
   }
+});
+
+test("a phone shows one activity pane at a time and starts on Today", async ({page}) => {
+  await page.setViewportSize(phone);
+  await page.goto("/en/admin/overview");
+
+  const period = page.getByRole("group", {name: "Period"});
+  await expect(period.getByRole("link", {name: "Today"})).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
+  await expect(pane(page, "Today")).toBeVisible();
+  await expect(pane(page, "Upcoming")).toBeHidden();
+  await expect(pane(page, "History")).toBeHidden();
+
+  await period.getByRole("link", {name: "Upcoming"}).click();
+  await expect(page).toHaveURL(/[?&]when=upcoming/);
+  await expect(pane(page, "Upcoming")).toBeVisible();
+  await expect(pane(page, "Today")).toBeHidden();
+  await expect(pane(page, "History")).toBeHidden();
+
+  const upcomingBox = await pane(page, "Upcoming").boundingBox();
+  expect(upcomingBox?.width ?? 0).toBeGreaterThan(300);
+
+  await period.getByRole("link", {name: "History"}).click();
+  await expect(page).toHaveURL(/[?&]when=history/);
+  await expect(pane(page, "History")).toBeVisible();
+  await expect(pane(page, "Today")).toBeHidden();
+
+  await period.getByRole("link", {name: "Today"}).click();
+  await expect(page).not.toHaveURL(/[?&]when=/);
+  await expect(pane(page, "Today")).toBeVisible();
+});
+
+test("the phone Admin destination is the activity board", async ({page}) => {
+  await page.setViewportSize(phone);
+  await page.goto("/en/courses");
+
+  await page.getByRole("button", {name: "Open menu"}).click();
+  await page.getByRole("navigation", {name: "Main navigation"}).getByRole("link", {name: "Admin"}).click();
+  await expect(page).toHaveURL(/\/en\/admin\/overview$/);
+  await expect(pane(page, "Today")).toBeVisible();
+  await expect(pane(page, "Upcoming")).toBeHidden();
 });
 
 test("the Today pane can move to another Zurich day and back", async ({page}) => {
